@@ -28,3 +28,19 @@ The `_redirects` file provides single-page route fallback on Cloudflare Pages.
 `wheel-app/` currently contains the verified production build from Unc Wheel United commit `6ecbcdc`. Rebuild it when the upstream Wheel changes. Touchline requires a persistent Python service and database, so its Pick'em deployment is tracked separately from this static shell.
 
 `pickems-app/` is a focused extraction of Touchline's Pick'em modes from commit `9bbf3fe`. Only Simple Pick'ems is currently visible; Detailed Pick'ems remains bundled but hidden for future use. The prototype keeps ballots on the current device and excludes Touchline's unrelated league-admin workspaces. Production Discord identity, shared ballots, scoring, and leaderboards still require the planned backend/database deployment.
+
+## Discord authentication setup
+
+The authentication foundation uses Cloudflare Pages Functions and D1. First login creates a member record using only the Discord ID, username, display name, and avatar. Discord access tokens are not retained.
+
+1. In the Discord Developer Portal, create an application and add this OAuth2 redirect:
+   `https://www.uncfutbolleague.com/api/auth/callback`
+2. Create a Cloudflare D1 database and apply `migrations/0001_auth.sql`.
+3. In the Pages project, bind that database to the variable `DB` for Production and Preview.
+4. Add these encrypted Cloudflare secrets/variables:
+   - `DISCORD_CLIENT_ID`
+   - `DISCORD_CLIENT_SECRET`
+   - `OWNER_DISCORD_ID`
+5. Redeploy after adding the D1 binding and variables.
+
+`OWNER_DISCORD_ID` must be the owner's numeric Discord user ID. The backend derives the owner role from this server-side value on every authenticated request, so another site administrator cannot demote the configured owner. Never commit `.dev.vars`, the Discord client secret, session cookies, or exported member data.

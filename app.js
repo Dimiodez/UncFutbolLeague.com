@@ -1,7 +1,9 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', pickems: '/pickems', wheel: '/wheel', contact: '/contact'
+  standings: '/standings', pickems: '/pickems', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
 };
+
+const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 
 const virtualArena = {
   '6v6': {
@@ -141,6 +143,61 @@ function contactPage() {
   return pageHero('Get in the game','Contact & Discord','UFL lives online. The Discord is our clubhouse, match lobby, transfer desk, and questionable pundit studio.') + `<section class="section contact-grid"><div class="contact-panel"><span class="section-kicker">The clubhouse</span><h2>JOIN THE DISCORD</h2><p>Find a team, register for competition, report results, and meet the Uncs. Add the permanent invite link to activate this button.</p><span class="button button-primary" aria-disabled="true">Invite link coming soon</span></div><div class="card"><span class="num">?</span><h3>Need league help?</h3><p>Commissioner contacts, support channels, and partnership information will be listed here after the Discord details are confirmed.</p><p><strong>League location:</strong><br><span id="contact-location">Wherever the Wi-Fi reaches.</span></p><button class="tab" id="contact-reroll">Relocate Unc</button></div></section>`;
 }
 
+function accountPage() {
+  return pageHero('Member access','Discord account','Sign in with Discord to create your UFL member profile and prepare for account-based Pick’ems.') +
+    `<section class="section auth-section"><div class="auth-card" id="account-root"><p>Checking your UFL session…</p></div></section>`;
+}
+
+function adminPage() {
+  return pageHero('League operations','Admin clubhouse','Registered members and league permissions, protected by Discord identity.') +
+    `<section class="section auth-section"><div class="auth-card admin-card" id="admin-root"><p>Verifying administrator access…</p></div></section>`;
+}
+
+async function getAuthState() {
+  try {
+    const response = await fetch('/api/auth/session', { credentials: 'same-origin', headers: { accept: 'application/json' } });
+    if (!response.ok) throw new Error('Unavailable');
+    return await response.json();
+  } catch {
+    return { authenticated: false, configured: false, user: null };
+  }
+}
+
+function userCard(user) {
+  const avatar = user.avatarUrl ? `<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : '<span class="discord-avatar avatar-fallback">UFL</span>';
+  return `<div class="account-profile">${avatar}<div><span class="season-chip season-chip-live">${escapeHtml(user.role)}</span><h2>${escapeHtml(user.displayName)}</h2><p>@${escapeHtml(user.username)}</p></div></div>`;
+}
+
+async function hydrateAccount() {
+  const state = await getAuthState();
+  const nav = document.querySelector('#account-nav');
+  if (nav) nav.textContent = state.authenticated ? state.user.displayName : 'Sign in';
+  const accountRoot = document.querySelector('#account-root');
+  if (accountRoot) {
+    if (!state.configured) accountRoot.innerHTML = `<h2>Discord login setup</h2><p>The secure login code is ready. Connect the Cloudflare database and Discord application secrets to activate registration.</p>`;
+    else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
+    else accountRoot.innerHTML = `${userCard(state.user)}<div class="button-row">${['owner','admin'].includes(state.user.role)?'<a class="button button-primary" href="/admin" data-link>Open admin clubhouse →</a>':''}<button class="button button-secondary" id="logout-button" type="button">Sign out</button></div>`;
+  }
+  document.querySelector('#logout-button')?.addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    window.location.assign('/account');
+  });
+  const adminRoot = document.querySelector('#admin-root');
+  if (!adminRoot) return;
+  if (!state.configured) return void (adminRoot.innerHTML = '<h2>Backend setup required</h2><p>Connect Discord OAuth and the UFL database before using the admin clubhouse.</p>');
+  if (!state.authenticated) return void (adminRoot.innerHTML = '<h2>Sign in required</h2><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>');
+  if (!['owner','admin'].includes(state.user.role)) return void (adminRoot.innerHTML = '<h2>Administrator access required</h2><p>Your account is registered, but it does not have permission to open this page.</p>');
+  const response = await fetch('/api/admin/users', { credentials: 'same-origin' });
+  if (!response.ok) return void (adminRoot.innerHTML = '<h2>Unable to load members</h2><p>Please sign in again or try later.</p>');
+  const data = await response.json();
+  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Registered through Discord</p><h2>${data.users.length} members</h2></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="member-list">${data.users.map(user => `<article class="member-row">${user.avatarUrl?`<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`:'<span class="discord-avatar avatar-fallback">UFL</span>'}<div><strong>${escapeHtml(user.displayName)}</strong><small>@${escapeHtml(user.username)} · ${escapeHtml(user.status)}</small></div><span class="member-role">${escapeHtml(user.role)}</span>${data.canManageRoles&&user.role!=='owner'?`<button class="tab" data-role-user="${escapeHtml(user.id)}" data-next-role="${user.role==='admin'?'member':'admin'}">${user.role==='admin'?'Remove admin':'Make admin'}</button>`:'<span></span>'}</article>`).join('')}</div>`;
+  document.querySelectorAll('[data-role-user]').forEach(button => button.addEventListener('click', async () => {
+    button.disabled = true;
+    const update = await fetch('/api/admin/role', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId: button.dataset.roleUser, role: button.dataset.nextRole }) });
+    if (update.ok) hydrateAccount(); else button.disabled = false;
+  }));
+}
+
 function render() {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
   const params = new URLSearchParams(window.location.search);
@@ -152,9 +209,12 @@ function render() {
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
+  else if (path === routes.account) main.innerHTML = accountPage();
+  else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
   document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   bindDynamicActions();
+  hydrateAccount();
   window.scrollTo(0,0);
 }
 

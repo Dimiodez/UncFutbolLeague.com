@@ -1,3 +1,5 @@
 .edge-qa*/
 .edge-*-qa/
 preview-*.png
+.dev.vars
+.dev.vars.*
