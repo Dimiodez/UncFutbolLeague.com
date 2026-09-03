@@ -134,7 +134,7 @@ function wheelPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260903-2" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
