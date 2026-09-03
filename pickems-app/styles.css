@@ -28,3 +28,4 @@
 select option{color:var(--ink);background:var(--panel)}
 input::placeholder{color:var(--muted);opacity:1}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.activity-row .avatar{overflow:hidden}.activity-row .avatar img{width:100%;height:100%;object-fit:cover}

@@ -116,9 +116,23 @@ function schedulesPage(params) {
   const data = scheduleTypes[type];
   const tabs = ['events','league-cup'].map(key => {
     const val = scheduleTypes[key];
-    return `<a class="tab ${key===type?'active':''}" href="/schedules?type=${key}" data-link>${val[0]}</a>`;
+    return `<a class="tab ${key===type?'active':''}" href="/schedules/${key==='events'?'community-events':'league-cup'}" data-link>${val[0]}</a>`;
   }).join('');
   return pageHero('Match centre',data[0],data[1]) + `<section class="section"><div class="tabs">${tabs}</div><div class="table-wrap"><table><thead><tr><th>Matchweek</th><th>Date</th><th>Home</th><th>Away</th><th>Status</th></tr></thead><tbody><tr><td><strong>Season setup</strong></td><td>To be announced</td><td>—</td><td>—</td><td><span class="status">Coming soon</span></td></tr></tbody></table></div></section>`;
+}
+
+function scheduleLandingTabs(active) {
+  return `<div class="tabs"><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events Schedule</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup Schedule</a></div>`;
+}
+
+function communityEventsPage() {
+  return pageHero('Community calendar','Community Events Schedule','Draft nights, random squads, special formats, and the sort of ideas that sound even better after kickoff.') +
+    `<section class="section schedule-landing">${scheduleLandingTabs('events')}<div class="status-row"><span class="season-chip season-chip-upcoming">Dates being arranged</span></div><div class="schedule-feature"><div><span class="section-kicker">No league table required</span><h2>SHOW UP.<br>GET A TEAM.<br>BLAME THE WHEEL.</h2><p class="section-intro">Community events are flexible one-night competitions built for whoever is around. Official dates and signup details will appear here as each event is announced.</p></div><div class="cards schedule-cards"><article class="card"><span class="num">01</span><h3>Random Squad Nights</h3><p>Let the Unc Wheel handle recruitment, then insist the draw was rigged.</p></article><article class="card"><span class="num">02</span><h3>Draft Events</h3><p>Captains, player pools, and just enough strategy to cause a group-chat investigation.</p></article><article class="card"><span class="num">03</span><h3>Special Formats</h3><p>Theme nights, quick cups, and community experiments that do not need a full season.</p></article></div></div>${emptyState('The cookout calendar is warming up','No community event has been officially scheduled yet. Once a date is confirmed, the event format, signup window, and kickoff time will be posted here.')}</section>`;
+}
+
+function leagueCupPage() {
+  return pageHero('Road to silverware','League Cup Schedule','One bracket, no league-table excuses, and a trophy somebody will mention for the next five years.') +
+    `<section class="section schedule-landing">${scheduleLandingTabs('league-cup')}<div class="status-row"><span class="season-chip season-chip-upcoming">Cup draw coming soon</span></div><div class="cup-road"><article><span>01</span><strong>Draw</strong><small>Teams enter the hat</small></article><i>→</i><article><span>02</span><strong>Opening Round</strong><small>Win or find a new excuse</small></article><i>→</i><article><span>03</span><strong>Semifinals</strong><small>The pressure gets real</small></article><i>→</i><article><span>04</span><strong>Final</strong><small>One last night for glory</small></article></div>${emptyState('The bracket is still at the engraver','The official League Cup draw, matchups, and kickoff dates will appear here when the competition is announced. Bring shin pads and several believable connection excuses.')}</section>`;
 }
 
 function standingsPage(params) {
@@ -132,11 +146,11 @@ function utilityPage(kind) {
 }
 
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260903-readability1" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260903-2" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260903-votes1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
@@ -175,7 +189,7 @@ async function hydrateAccount() {
   const accountRoot = document.querySelector('#account-root');
   if (accountRoot) {
     if (!state.configured) accountRoot.innerHTML = `<h2>Discord login setup</h2><p>The secure login code is ready. Connect the Cloudflare database and Discord application secrets to activate registration.</p>`;
-    else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
+    else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages. If you enter Pick’ems, your display name and avatar may appear on the public leaderboard.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
     else accountRoot.innerHTML = `${userCard(state.user)}<div class="button-row">${['owner','admin'].includes(state.user.role)?'<a class="button button-primary" href="/admin" data-link>Open admin clubhouse →</a>':''}<button class="button button-secondary" id="logout-button" type="button">Sign out</button></div>`;
   }
   document.querySelector('#logout-button')?.addEventListener('click', async () => {
@@ -204,6 +218,8 @@ function render() {
   const main = document.querySelector('main');
   if (path === routes.rules) main.innerHTML = rulesPage();
   else if (path === routes.teams) main.innerHTML = teamsPage(params);
+  else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
+  else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
   else if (path === routes.pickems) main.innerHTML = pickemsPage();

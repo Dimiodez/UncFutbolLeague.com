@@ -106,3 +106,51 @@ select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px s
 .team-color-control i, .brand-mark, .brand-mark img { color-scheme: dark; }
 .wheel-center { color: #fff; }
 .wheel-card .eyebrow { color: var(--uwu-muted); }
+
+/* Keep dense standings data crisp against the white classic-theme panels. */
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-table .table-head {
+  color: #405a78;
+  font-weight: 800;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-table > div {
+  color: #102946;
+  border-bottom-color: #d9e3ed;
+  font-weight: 650;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-table > div:not(.table-head) > :nth-child(2),
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixtures span {
+  color: #061b38;
+  font-weight: 800;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-table b {
+  color: #9a6a00;
+  font-weight: 900;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixtures {
+  color: #102946;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixtures > div {
+  border-bottom: 1px solid #e3eaf1;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixtures em {
+  color: #526b88;
+  font-weight: 800;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixtures input,
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-playoffs input {
+  color: #061b38;
+  background: #edf3f8;
+  border-color: #adc1d5;
+  font-weight: 900;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .qualification-key {
+  color: #536d8a;
+  font-weight: 700;
+}
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-fixture-card > button:disabled,
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .league-playoffs > button:disabled {
+  color: #735300;
+  background: #fff4c7;
+  border-color: #d8af22;
+  opacity: 1;
+}
