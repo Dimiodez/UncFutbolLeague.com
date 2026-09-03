@@ -15,7 +15,7 @@
     <header class="pickems-hero">
       <img src="/assets/ufl-mark.png" alt="UFL crest">
       <div><p class="eyebrow">Weekly challenge</p><h1>UFL Pick’ems</h1><p id="subtitle">Pick the winner or a draw across all five scheduled matches.</p></div>
-      <span class="live-badge"><i></i> WEEK 10 · OPEN</span>
+      <span class="live-badge" id="live-badge"><i></i> LOADING SEASON</span>
     </header>
 
     <nav class="mode-switch" aria-label="Pick’ems format" hidden>
@@ -24,7 +24,7 @@
     </nav>
 
     <section class="mode-pane active" data-pane="simple">
-      <div class="week-browser"><div><p class="eyebrow">Choose gameweek</p><h2>Season weeks</h2></div><div class="week-tabs" id="simple-weeks"></div></div>
+      <div class="week-browser"><div><p class="eyebrow">FC26 · Season 1</p><h2>Final gameweeks</h2><small class="data-source">Virtual Arena snapshot · updated September 3, 2026</small></div><div class="week-tabs" id="simple-weeks"></div></div>
       <div class="pick-layout">
         <section class="panel">
           <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Gameweek 10</h2></div><span class="status open" id="simple-status">Voting open</span></header>
@@ -34,7 +34,7 @@
           <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer>
         </section>
         <aside class="rail">
-          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Leaderboard</p><h2 id="simple-leader-title">Week 10</h2></div><div class="period-toggle"><button class="active" data-simple-period="weekly">Weekly</button><button data-simple-period="season">Season</button></div></header><div class="leader-head"><span>Entry</span><span>Score</span><span>TB</span></div><div id="simple-leaders"></div></section>
+          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" href="https://ufl.virtualarena.app/competitions/1/seasons/1/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
           <section class="panel activity"><p class="eyebrow">Community</p><h2>Entry activity</h2><div id="activity"></div></section>
         </aside>
       </div>
@@ -50,6 +50,7 @@
     </section>
   </main>
   <div class="toast" id="toast" role="status"></div>
+  <script src="/pickems-app/season-data.js"></script>
   <script src="/pickems-app/app.js"></script>
 </body>
 </html>

@@ -1,63 +1,62 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const state = { mode: 'simple', simpleWeek: 10, detailWeek: 10, simplePeriod: 'weekly', detailPeriod: 'weekly' };
-
-const teams = [
-  ['Arsenal','ARS','#e30613'],['Chelsea','CHE','#034694'],['Liverpool','LIV','#c8102e'],['Manchester City','MCI','#6cabdd'],
-  ['Manchester United','MUN','#da291c'],['Newcastle United','NEW','#241f20'],['Tottenham Hotspur','TOT','#132257'],
-  ['West Ham United','WHU','#7a263a'],['Real Madrid','RMA','#7c8ba8'],['Barcelona','FCB','#a50044']
-].map(([name,short,color]) => ({ name, short, color }));
+const season = window.UFL_SEASON;
+const teamByKey = Object.fromEntries(Object.entries(season.teams).map(([key,[name,logo]]) => [key,{key,name,logo}]));
+const currentWeek = season.weeks.find(week => week.matches.some(match => match[3] === null))?.week ?? season.weeks.at(-1).week;
+const state = { mode: 'simple', simpleWeek: currentWeek, detailWeek: currentWeek, simplePeriod: 'weekly', detailPeriod: 'weekly' };
+const teams = Object.values(teamByKey);
 const rosters = {
   ARS:['Saka','Ødegaard','Rice','Havertz'], CHE:['Palmer','Jackson','Fernández','Caicedo'], LIV:['Salah','Díaz','Szoboszlai','Mac Allister'],
   MCI:['Haaland','Foden','De Bruyne','Rodri'], MUN:['Fernandes','Rashford','Garnacho','Højlund'], NEW:['Isak','Gordon','Guimarães','Tonali'],
   TOT:['Son','Maddison','Kulusevski','Johnson'], WHU:['Bowen','Kudus','Paquetá','Ward-Prowse']
 };
-const entries = [
-  ['MayaFC','@maya',5,36,284,5],['ChrisOnTheCall','@chris',4,34,271,4],['Jordan6','@jordan',4,31,255,4],
-  ['SamUnited','@sam',3,29,239,3],['TaylorTactics','@taylor',3,27,226,2],['AlexPresses','@alex',2,24,211,2]
-];
+const entries = [];
 const escapeHtml = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-const badge = team => `<span class="team-badge" style="--team:${team.color}">${team.short}</span>`;
+const badge = team => `<img class="team-badge team-logo" src="${team.logo}" alt="${escapeHtml(team.name)} crest" loading="lazy">`;
 
-function fixturesForWeek(week, pool = teams) {
-  let rotation = [...pool];
-  for (let round = 0; round < (week - 1) % (rotation.length - 1); round++) rotation = [rotation[0], rotation.at(-1), ...rotation.slice(1,-1)];
-  return Array.from({length: rotation.length / 2}, (_,i) => {
-    const a = rotation[i], b = rotation[rotation.length - 1 - i], swap = (week + i) % 2 === 0;
-    return { id:`w${week}m${i}`, home:swap?b:a, away:swap?a:b, hs:(week+i*2)%5, as:(week+i+2)%4 };
-  });
+function weekData(week) { return season.weeks.find(item => item.week === week) || season.weeks[0]; }
+function fixturesForWeek(week) {
+  return weekData(week).matches.map(([id,home,away,hs,as]) => ({
+    id: String(id), home: teamByKey[home], away: teamByKey[away], hs, as,
+    url: `https://ufl.virtualarena.app/matches/${id}`
+  }));
 }
 function weekTabs(target, selected, type) {
-  $(target).innerHTML = Array.from({length:10},(_,i)=>`<button class="${i+1===selected?'active ':''}${i<9?'complete':''}" data-${type}-week="${i+1}"><span>${i<9?'✓':'LIVE'}</span>Week ${i+1}</button>`).join('');
+  $(target).innerHTML = season.weeks.map(week => {
+    const complete = week.matches.every(match => match[3] !== null && match[4] !== null);
+    return `<button class="${week.week===selected?'active ':''}${complete?'complete':''}" data-${type}-week="${week.week}"><span>${complete?'✓':'OPEN'}</span>Week ${week.week}</button>`;
+  }).join('');
 }
-function formatKickoff(week,index) { return `${index < 3 ? 'Tue' : 'Thu'} · ${7 + (index%3)}:${index%3===1?'30':'00'} PM`; }
+function formatKickoff(week) { return weekData(week).date; }
 function getBallot(key) { try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; } }
 function showToast(message) { const toast=$('#toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>toast.classList.remove('show'),2400); }
 
 function renderSimple() {
-  const week=state.simpleWeek, open=week===10, fixtures=fixturesForWeek(week), saved=getBallot(`ufl-simple-${week}`);
+  const week=state.simpleWeek, data=weekData(week), fixtures=fixturesForWeek(week), complete=fixtures.every(f=>f.hs!==null&&f.as!==null), open=!complete&&Date.now()<data.scheduledAt*1000, saved=getBallot(`ufl-simple-${week}`);
   weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`Gameweek ${week} · 5 matches`;
-  $('#simple-status').textContent=open?'Voting open':'Scored · voting closed'; $('#simple-status').className=`status ${open?'open':'closed'}`;
+  $('#simple-status').textContent=open?'Voting open':complete?'Final · voting closed':'Voting closed'; $('#simple-status').className=`status ${open?'open':'closed'}`;
+  $('#live-badge').innerHTML=`<i></i> WEEK ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
   $('#simple-fixtures').innerHTML=fixtures.map((f,i)=>{
-    const result=f.hs>f.as?'home':f.hs<f.as?'away':'draw', chosen=open?saved.picks?.[f.id]:['home','draw','away'][(week+i)%3];
-    const cls=choice=>`${choice===chosen?' selected':''}${!open&&choice===result?' correct':''}`;
-    return `<article class="simple-match"><header><span>Match ${i+1} · ${formatKickoff(week,i)}</span><strong>${open?'Pick one':`Final ${f.hs}–${f.as}`}</strong></header><div>
+    const result=complete?(f.hs>f.as?'home':f.hs<f.as?'away':'draw'):null, chosen=saved.picks?.[f.id];
+    const cls=choice=>`${choice===chosen?' selected':''}${complete&&choice===result?' correct':''}`;
+    return `<article class="simple-match"><header><span>Match ${i+1} · ${formatKickoff(week)}</span><a href="${f.url}" target="_blank" rel="noopener noreferrer">${complete?`Final ${f.hs}–${f.as}`:open?'Pick one':'Awaiting result'} ↗</a></header><div>
       <button data-choice="home" data-match="${f.id}" class="${cls('home')}" ${open?'':'disabled'}>${badge(f.home)}<span><strong>${f.home.name}</strong><small>Home win</small></span></button>
       <button data-choice="draw" data-match="${f.id}" class="draw${cls('draw')}" ${open?'':'disabled'}><b>×</b><span><strong>Draw</strong><small>Level</small></span></button>
       <button data-choice="away" data-match="${f.id}" class="${cls('away')}" ${open?'':'disabled'}>${badge(f.away)}<span><strong>${f.away.name}</strong><small>Away win</small></span></button>
     </div></article>`;
   }).join('');
-  const featured=fixtures.at(-1); $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent='Thursday · locks at kickoff';
-  $('#tiebreaker').value=open?(saved.tiebreaker??''):(featured.hs+featured.as); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?'Submit your picks':`Week ${week} scored`;
+  const featured=fixtures.at(-1); $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=`Locks ${formatKickoff(week)}`;
+  $('#tiebreaker').value=open?(saved.tiebreaker??''):(complete?featured.hs+featured.as:''); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?'Submit your picks':complete?`Week ${week} final`:`Week ${week} locked`;
   updateProgress(); renderSimpleLeaders(); renderActivity(open);
 }
-function updateProgress(){ const count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/5 picks made`; $('#progress-bar').style.width=`${count*20}%`; }
+function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
 function renderSimpleLeaders(){
-  const season=state.simplePeriod==='season'; $('#simple-leader-title').textContent=season?'Season leaderboard':`Week ${state.simpleWeek}`;
-  $$('[data-simple-period]').forEach(b=>b.classList.toggle('active',b.dataset.simplePeriod===state.simplePeriod));
-  $('#simple-leaders').innerHTML=entries.map((e,i)=>({e,score:season?e[3]:Math.max(1,e[2]-((state.simpleWeek+i)%2))})).sort((a,b)=>b.score-a.score).map(({e,score},i)=>leaderRow(i,e[0],e[1],season?score:`${score}/5`,season?Math.min(10,state.simpleWeek):`±${i%3}`)).join('');
+  $('#simple-leaders').innerHTML=season.standings.map(([key,played,wins,draws,losses,gf,ga,gd,points],index)=>{
+    const team=teamByKey[key];
+    return `<a class="standing-row" href="${season.standingsSource}" target="_blank" rel="noopener noreferrer"><b>${index+1}</b>${badge(team)}<p><strong>${team.name}</strong><small>${wins}W · ${draws}D · ${losses}L</small></p><span>${played}</span><span>${gd>0?'+':''}${gd}</span><strong>${points}</strong></a>`;
+  }).join('');
 }
-function renderActivity(open){ $('#activity').innerHTML=entries.slice(0,5).map((e,i)=>`<div class="activity-row"><span class="avatar">${e[0].slice(0,2).toUpperCase()}</span><p><strong>${e[0]}</strong><small>${open?(i===4?'4/5 picks saved':'5/5 picks saved'):`${e[2]}/5 correct`}</small></p><b>${open?(i===4?'Draft':'Ready'):`${e[2]} pt`}</b></div>`).join(''); }
+function renderActivity(){ $('#activity').innerHTML='<p class="empty-community">Community entries will appear after secure Discord login launches.</p>'; }
 function leaderRow(rank,name,handle,value,last){ return `<div class="leader-row ${rank===0?'leader':''}"><b>${rank+1}</b><span class="avatar">${name.slice(0,2).toUpperCase()}</span><p><strong>${name}</strong><small>${handle}</small></p><strong>${value}</strong><span>${last}</span></div>`; }
 
 function renderDetail(){
@@ -83,4 +82,4 @@ document.addEventListener('click',event=>{
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
-renderSimple();renderDetail();
+renderSimple();
