@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#071b36" />
+    <meta name="description" content="UNC Futbol League — an online EA SPORTS FC community for competitive 6v6 and 10v10 play." />
+    <title>UNC Futbol League</title>
+    <script>document.documentElement.dataset.theme = localStorage.getItem('ufl-theme') || 'classic';</script>
+    <link rel="icon" href="/assets/ufl-mark.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="/" data-link aria-label="UNC Futbol League home">
+        <img src="/assets/ufl-mark.png" alt="" />
+        <span><strong>UNC</strong> FUTBOL LEAGUE</span>
+      </a>
+      <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menu</b></button>
+      <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+        <a href="/" data-link>Home</a>
+        <a href="/rules" data-link>Rules</a>
+        <div class="nav-group">
+          <button aria-expanded="false">Teams <span>⌄</span></button>
+          <div class="nav-menu">
+            <a href="https://ufl.virtualarena.app/competitions/1/seasons/1/teams" target="_blank" rel="noopener noreferrer">6v6 ↗</a>
+            <a href="/teams?division=10v10" data-link>10v10</a>
+            <a href="/teams?division=house" data-link>House Teams</a>
+          </div>
+        </div>
+        <div class="nav-group">
+          <button aria-expanded="false">Schedules <span>⌄</span></button>
+          <div class="nav-menu">
+            <a href="https://ufl.virtualarena.app/competitions/1/seasons/1/matches" target="_blank" rel="noopener noreferrer">6v6 League ↗</a>
+            <a href="/schedules?type=10v10" data-link>10v10 League</a>
+            <a href="/schedules?type=events" data-link>Community Events</a>
+            <a href="/schedules?type=league-cup" data-link>League Cup</a>
+          </div>
+        </div>
+        <a href="/standings" data-link>Standings</a>
+        <a href="/pickems" data-link>Pick’ems</a>
+        <a href="/wheel" data-link>Unc Wheel</a>
+        <div class="theme-switcher" role="group" aria-label="Choose site theme">
+          <button type="button" data-theme-choice="classic" title="Classic red, white, and blue"><i></i><span>Classic</span></button>
+          <button type="button" data-theme-choice="dark" title="Dark navy theme"><i></i><span>Dark</span></button>
+          <button type="button" data-theme-choice="vintage" title="Vintage beige theme"><i></i><span>Vintage</span></button>
+        </div>
+        <a class="nav-cta" href="/contact" data-link>Join Discord</a>
+      </nav>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer class="site-footer">
+      <div class="footer-brand">
+        <img src="/assets/ufl-mark.png" alt="UFL crest" />
+        <div><strong>UNC FUTBOL LEAGUE</strong><span>Older. Wiser. Still pressing.</span></div>
+      </div>
+      <div class="unc-location" aria-live="polite">
+        <span>UNC SPOTTED</span>
+        <strong id="unc-location">Checking the touchline…</strong>
+        <button id="reroll-location" type="button">Find another Unc ↻</button>
+      </div>
+      <p>Community-run EA SPORTS FC league. Not affiliated with Electronic Arts Inc.</p>
+    </footer>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

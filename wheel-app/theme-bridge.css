@@ -1,0 +1,108 @@
+/* UFL theme bridge. Wheel rotors, segment colors, team-color controls, and logo art
+   intentionally keep their original UWU palette in every theme. */
+:root {
+  --uwu-bg: #f7f9fc;
+  --uwu-bg-deep: #e8eef5;
+  --uwu-panel: #ffffff;
+  --uwu-panel-alt: #eef3f8;
+  --uwu-ink: #081a34;
+  --uwu-muted: #60738c;
+  --uwu-line: #cbd7e4;
+  --uwu-accent: #e9143c;
+  --uwu-accent-2: #0768b8;
+  --uwu-highlight: #dbeeff;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --uwu-bg: #030d20;
+  --uwu-bg-deep: #020917;
+  --uwu-panel: #091a33;
+  --uwu-panel-alt: #071327;
+  --uwu-ink: #f7f9fc;
+  --uwu-muted: #91a4bf;
+  --uwu-line: #29415f;
+  --uwu-accent: #ed1740;
+  --uwu-accent-2: #1594d0;
+  --uwu-highlight: #102b4d;
+  color-scheme: dark;
+}
+
+:root[data-theme="vintage"] {
+  --uwu-bg: #dfcfad;
+  --uwu-bg-deep: #c9b68f;
+  --uwu-panel: #f4ead2;
+  --uwu-panel-alt: #e8dcc0;
+  --uwu-ink: #30291f;
+  --uwu-muted: #746550;
+  --uwu-line: #aa9878;
+  --uwu-accent: #7d302c;
+  --uwu-accent-2: #59624e;
+  --uwu-highlight: #d8c59e;
+  color-scheme: light;
+}
+
+html, body { color: var(--uwu-ink); background: var(--uwu-bg); }
+body { background-image: radial-gradient(circle at 50% -12%, var(--uwu-panel) 0, var(--uwu-bg) 42%, var(--uwu-bg-deep) 100%); }
+:root[data-theme="vintage"] body { background-image: radial-gradient(rgba(72,55,33,.09) 1px,transparent 1px),linear-gradient(145deg,var(--uwu-panel),var(--uwu-bg)); background-size: 5px 5px,auto; }
+
+.topbar { border-color: var(--uwu-line); }
+h1, h2, h3, h4, .progress-block strong, .toolbar-panel strong { color: var(--uwu-ink); }
+.eyebrow, .progress-block, .add-wheel-control, .connector, .status-message,
+.section-heading > span, .player-heading-actions, .team-settings label,
+.draft-actions label, .standings-hero label, .league-controls label,
+.collapsible-summary-meta, .collapsible-panel > summary span { color: var(--uwu-muted); }
+
+.workspace-tabs { border-color: var(--uwu-line); background: var(--uwu-panel-alt); }
+.workspace-tabs button { color: var(--uwu-muted); }
+.workspace-tabs button.active { color: #fff; background: linear-gradient(135deg,var(--uwu-accent),var(--uwu-accent-2)); box-shadow: 0 8px 24px color-mix(in srgb,var(--uwu-accent) 24%,transparent); }
+
+.team-card, .add-card, .next-panel, .player-editor, .draft-player-pool, .draft-team,
+.entrant-panel, .league-table-card, .league-fixture-card, .bracket-match, .group-card,
+.group-player-pool, .manual-groups article, .pickem-panel, .standings-panel {
+  color: var(--uwu-ink); border-color: var(--uwu-line); background: var(--uwu-panel);
+  box-shadow: 0 13px 36px color-mix(in srgb,var(--uwu-ink) 14%,transparent);
+}
+
+.toolbar-panel, .position-panel, .custom-wheel-panel, .draft-hero, .standings-hero,
+.group-stage-board, .group-draw-board, .league-controls, .league-playoffs, .bracket-board,
+.match-centre, .test-tools-panel {
+  color: var(--uwu-ink); border-color: var(--uwu-line); background: var(--uwu-panel-alt);
+}
+
+.collapsible-panel > summary { color: var(--uwu-ink); border-color: var(--uwu-line); background: linear-gradient(110deg,var(--uwu-panel),var(--uwu-panel-alt)); }
+.collapsible-panel > summary:hover { border-color: var(--uwu-accent-2); background: var(--uwu-highlight); }
+.collapsible-panel.player-editor > summary,
+.collapsible-panel.next-panel > summary,
+.collapsible-panel.draft-player-pool > summary { background: transparent; }
+
+select, input, textarea,
+.team-card-head input, .entry-row, .draft-player, .draft-order,
+.entrant-grid input, .bracket-match input, .league-fixtures input,
+.group-fixtures input, .league-playoffs input, .upcoming-match {
+  color: var(--uwu-ink); border-color: var(--uwu-line); background-color: var(--uwu-panel-alt);
+}
+select option { color: var(--uwu-ink); background: var(--uwu-panel); }
+input::placeholder, textarea::placeholder { color: var(--uwu-muted); opacity: 1; }
+select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px solid var(--uwu-accent-2); outline-offset: 2px; }
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] select option { color: #f7f9fc; background-color: #091a33; }
+:root[data-theme="vintage"] select,
+:root[data-theme="vintage"] select option { color: #30291f; background-color: #f4ead2; }
+.secondary-actions button, .input-actions button, .waiting-row button {
+  color: var(--uwu-ink); border-color: var(--uwu-line); background: var(--uwu-panel-alt);
+}
+.add-card button, .input-actions button:first-child, .draft-actions button,
+.standings-hero button, .group-draw-actions button:first-of-type {
+  color: #fff; border-color: var(--uwu-accent); background: linear-gradient(135deg,var(--uwu-accent),var(--uwu-accent-2));
+}
+.auto-button { color: var(--uwu-accent-2); border-color: var(--uwu-accent-2); background: color-mix(in srgb,var(--uwu-accent-2) 10%,transparent); }
+.player-heading-actions button { color: var(--uwu-accent); border-color: color-mix(in srgb,var(--uwu-accent) 50%,transparent); background: color-mix(in srgb,var(--uwu-accent) 8%,transparent); }
+
+/* The wheels and their logo buttons stay recognizably UWU. */
+.wheel, .wheel::after, .wheel-rotor, .segment-label, .wheel-pointer,
+.roll-button, .roll-button img, .captain-wheel-button img,
+.team-color-slider, .team-color-slider::-webkit-slider-thumb,
+.team-color-control i, .brand-mark, .brand-mark img { color-scheme: dark; }
+.wheel-center { color: #fff; }
+.wheel-card .eyebrow { color: var(--uwu-muted); }

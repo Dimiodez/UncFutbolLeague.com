@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-theme="classic">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#071b36">
+  <title>UFL Pick’ems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/pickems-app/styles.css">
+</head>
+<body>
+  <main class="pickems-shell">
+    <header class="pickems-hero">
+      <img src="/assets/ufl-mark.png" alt="UFL crest">
+      <div><p class="eyebrow">Weekly challenge</p><h1>UFL Pick’ems</h1><p id="subtitle">Pick the winner or a draw across all five scheduled matches.</p></div>
+      <span class="live-badge"><i></i> WEEK 10 · OPEN</span>
+    </header>
+
+    <nav class="mode-switch" aria-label="Pick’ems format" hidden>
+      <button class="active" data-mode="simple"><span>✓</span><strong>Simple Pick’ems</strong><small>Win, draw, or loss</small></button>
+      <button data-mode="detailed"><span>◎</span><strong>Detailed Pick’ems</strong><small>Scores, scorers, and assists</small></button>
+    </nav>
+
+    <section class="mode-pane active" data-pane="simple">
+      <div class="week-browser"><div><p class="eyebrow">Choose gameweek</p><h2>Season weeks</h2></div><div class="week-tabs" id="simple-weeks"></div></div>
+      <div class="pick-layout">
+        <section class="panel">
+          <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Gameweek 10</h2></div><span class="status open" id="simple-status">Voting open</span></header>
+          <p class="helper">Choose the home team, draw, or away team. Each correct result earns one point.</p>
+          <div id="simple-fixtures" class="simple-fixtures"></div>
+          <div class="tiebreaker"><span>TB</span><div><strong id="tb-question"></strong><small id="tb-lock"></small></div><input id="tiebreaker" type="number" min="0" max="30" placeholder="Goals" aria-label="Total goals tiebreaker"></div>
+          <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer>
+        </section>
+        <aside class="rail">
+          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Leaderboard</p><h2 id="simple-leader-title">Week 10</h2></div><div class="period-toggle"><button class="active" data-simple-period="weekly">Weekly</button><button data-simple-period="season">Season</button></div></header><div class="leader-head"><span>Entry</span><span>Score</span><span>TB</span></div><div id="simple-leaders"></div></section>
+          <section class="panel activity"><p class="eyebrow">Community</p><h2>Entry activity</h2><div id="activity"></div></section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="mode-pane" data-pane="detailed" hidden>
+      <div class="scoring-strip"><div><strong>3</strong><span>Exact score</span></div><div><strong>2</strong><span>Correct result</span></div><div><strong>1</strong><span>Scorer / assist</span></div><div><strong>2×</strong><span>Double Down</span></div></div>
+      <div class="week-browser"><div><p class="eyebrow">Choose gameweek</p><h2>Detailed predictions</h2></div><div class="week-tabs" id="detail-weeks"></div></div>
+      <div class="detail-layout">
+        <section><div class="panel-heading detail-heading"><div><p class="eyebrow">Make your picks</p><h2 id="detail-title">Gameweek 10</h2></div><span class="status open" id="detail-status">Voting open</span></div><div id="detail-fixtures" class="detail-fixtures"></div></section>
+        <aside class="rail"><section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">The table</p><h2 id="detail-leader-title">Week 10</h2></div><div class="period-toggle"><button class="active" data-detail-period="weekly">Weekly</button><button data-detail-period="season">Season</button></div></header><div class="leader-head"><span>Entry</span><span>Exact</span><span>Pts</span></div><div id="detail-leaders"></div></section><section class="panel note"><strong>Discord-ready</strong><p>Live ballots will attach to each member’s Discord account. This preview saves picks on this device.</p></section></aside>
+      </div>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="/pickems-app/app.js"></script>
+</body>
+</html>

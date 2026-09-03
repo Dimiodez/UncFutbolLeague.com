@@ -1,0 +1,234 @@
+:root {
+  --navy: #061a35;
+  --blue: #0666b9;
+  --sky: #62b5ef;
+  --red: #ea1235;
+  --cream: #f3ebd8;
+  --ink: #0d1728;
+  --muted: #607086;
+  --paper: #fbfaf6;
+  --white: #fff;
+  --line: #d9e0e8;
+  --shadow: 0 22px 60px rgba(3, 20, 43, .14);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; overflow-x: hidden; background: var(--paper); color: var(--ink); font-family: Inter, system-ui, sans-serif; }
+button, a { font: inherit; }
+a { color: inherit; }
+.skip-link { position: fixed; left: 1rem; top: -4rem; z-index: 99; padding: .75rem 1rem; background: white; }
+.skip-link:focus { top: 1rem; }
+
+.site-header { height: 82px; padding: 0 clamp(1rem, 4vw, 4.5rem); display: flex; align-items: center; justify-content: space-between; background: rgba(5,24,50,.97); color: white; position: sticky; top: 0; z-index: 50; border-bottom: 3px solid var(--red); }
+.brand { display: flex; gap: .75rem; align-items: center; text-decoration: none; font: 800 1.15rem/1 "Barlow Condensed", sans-serif; letter-spacing: .055em; white-space: nowrap; }
+.brand img { width: 52px; height: 58px; object-fit: contain; }
+.brand strong { color: var(--red); }
+.main-nav { display: flex; align-items: center; gap: clamp(.25rem, 1vw, 1rem); font: 700 .96rem "Barlow Condensed", sans-serif; letter-spacing: .035em; text-transform: uppercase; }
+.main-nav > a, .nav-group > button { padding: .7rem .3rem; border: 0; background: transparent; color: inherit; text-decoration: none; cursor: pointer; white-space: nowrap; }
+.main-nav > a:hover, .main-nav > a.active, .nav-group > button:hover { color: var(--sky); }
+.main-nav .nav-cta { padding: .7rem 1rem; background: var(--red); color: white; clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); }
+.main-nav .nav-cta:hover { color: white; background: #ff3150; }
+.nav-group { position: relative; }
+.theme-switcher { display: flex; padding: .22rem; gap: .15rem; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; }
+.theme-switcher button { display: grid; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: white; cursor: pointer; }
+.theme-switcher button:hover, .theme-switcher button.active { background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
+.theme-switcher i { display: block; width: 11px; height: 11px; border: 2px solid white; border-radius: 50%; background: linear-gradient(135deg,#ea1235 0 34%,#fff 34% 66%,#0666b9 66%); }
+.theme-switcher [data-theme-choice="dark"] i { background: linear-gradient(135deg,#020b18 0 48%,#ea1235 48% 72%,#f3f6fa 72%); }
+.theme-switcher [data-theme-choice="vintage"] i { background: linear-gradient(135deg,#372f24 0 35%,#8d6c3e 35% 60%,#e1d0aa 60%); }
+.theme-switcher span { position: absolute; clip: rect(0 0 0 0); }
+.nav-menu { position: absolute; display: none; min-width: 190px; right: 0; top: 100%; padding: .55rem; background: white; color: var(--ink); box-shadow: var(--shadow); border-top: 3px solid var(--red); }
+.nav-group:hover .nav-menu, .nav-group.open .nav-menu { display: grid; }
+.nav-menu a { padding: .7rem .8rem; text-decoration: none; }
+.nav-menu a:hover { background: #eef6fc; color: var(--blue); }
+.menu-button { display: none; border: 0; color: white; background: transparent; }
+
+main { min-height: 70vh; }
+.hero { min-height: calc(100vh - 82px); position: relative; display: grid; align-items: end; overflow: hidden; background: var(--navy); color: white; isolation: isolate; }
+.hero::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(3,17,37,.97) 0%, rgba(3,17,37,.78) 48%, rgba(3,17,37,.2) 100%), url('/assets/ufl-banner.jpg') center/cover; z-index: -2; }
+.hero::after { content: ""; position: absolute; inset: auto -10% -24% 40%; height: 55%; border: 2px solid rgba(255,255,255,.14); border-radius: 50% 50% 0 0; transform: rotate(-8deg); z-index: -1; }
+.hero-inner { width: min(1180px, 92vw); margin: 0 auto; padding: clamp(5rem, 12vh, 9rem) 0 clamp(4rem, 10vh, 7rem); }
+.eyebrow { display: flex; align-items: center; gap: .7rem; margin: 0 0 1rem; color: var(--sky); font: 800 .9rem "Barlow Condensed", sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+.eyebrow::before { content: ""; width: 34px; height: 3px; background: var(--red); }
+.hero h1 { max-width: 760px; margin: 0; font: 900 clamp(4rem, 9vw, 8.2rem)/.79 "Barlow Condensed", sans-serif; letter-spacing: -.035em; text-transform: uppercase; }
+.hero h1 em { display: block; color: transparent; -webkit-text-stroke: 2px white; font-style: italic; }
+.hero-copy { max-width: 610px; margin: 1.8rem 0 2.2rem; color: #d6dfeb; font-size: clamp(1rem, 2vw, 1.2rem); line-height: 1.65; }
+.button-row { display: flex; flex-wrap: wrap; gap: .8rem; }
+.button { display: inline-flex; align-items: center; gap: .6rem; padding: .95rem 1.25rem; border: 1px solid transparent; font: 800 1rem "Barlow Condensed", sans-serif; letter-spacing: .06em; text-decoration: none; text-transform: uppercase; transition: transform .2s, background .2s; }
+.button:hover { transform: translateY(-2px); }
+.button-primary { background: var(--red); color: white; }
+.button-secondary { border-color: rgba(255,255,255,.5); color: white; background: rgba(5,22,45,.5); }
+.ticker { position: absolute; bottom: 0; left: 0; right: 0; display: flex; gap: 0; background: var(--red); color: white; overflow: hidden; white-space: nowrap; font: 800 .9rem "Barlow Condensed", sans-serif; letter-spacing: .09em; text-transform: uppercase; }
+.ticker span { padding: .65rem 2rem; border-right: 1px solid rgba(255,255,255,.3); }
+
+.section { width: min(1180px, 92vw); margin: 0 auto; padding: clamp(4rem, 8vw, 7rem) 0; }
+.section-kicker { color: var(--red); font: 800 .85rem "Barlow Condensed", sans-serif; letter-spacing: .16em; text-transform: uppercase; }
+.section h2, .page-hero h1 { margin: .35rem 0 1.2rem; font: 900 clamp(2.8rem, 6vw, 5.3rem)/.92 "Barlow Condensed", sans-serif; letter-spacing: -.02em; text-transform: uppercase; }
+.section-intro { max-width: 720px; color: var(--muted); font-size: 1.08rem; line-height: 1.7; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2.5rem; }
+.card { position: relative; padding: 1.5rem; background: white; border: 1px solid var(--line); box-shadow: 0 10px 25px rgba(5,26,53,.06); overflow: hidden; }
+.card::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--blue); }
+.card .num { display: block; color: #c8d1dc; font: 900 3rem/1 "Barlow Condensed", sans-serif; }
+.card h3 { margin: .45rem 0; font: 800 1.65rem "Barlow Condensed", sans-serif; text-transform: uppercase; }
+.card p { color: var(--muted); line-height: 1.55; }
+.status-row { display: flex; flex-wrap: wrap; gap: .4rem; margin: .15rem 0 .9rem; }
+.status-row-center { justify-content: center; margin-bottom: 1rem; }
+.season-chip { display: inline-flex; align-items: center; width: fit-content; padding: .34rem .55rem; border: 1px solid; border-radius: 999px; font: 800 .68rem "Inter", sans-serif; letter-spacing: .03em; line-height: 1.15; text-transform: uppercase; }
+.season-chip-live { color: #0e4828; background: #c9f4d9; border-color: #5bb47d; }
+.season-chip-upcoming { color: #5b4300; background: #ffedaa; border-color: #d2aa22; }
+.house-team-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1.25rem; }
+.house-team-card { text-align: center; }
+.house-team-card .season-chip { margin: .2rem auto .9rem; }
+.team-logo-placeholder { display: grid; place-items: center; width: 112px; height: 112px; margin: 0 auto 1rem; border: 2px dashed var(--line); border-radius: 50%; color: var(--muted); background: var(--paper); font: 900 2rem "Barlow Condensed", sans-serif; }
+.house-team-card h2 { font-size: 2rem; }
+.logo-note { color: var(--muted); font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.card a { color: var(--blue); font-weight: 700; text-decoration: none; }
+.dark-section { background: var(--navy); color: white; }
+.dark-section .section-intro { color: #b8c5d5; }
+.feature-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 2rem; align-items: center; }
+.crest-stage { min-height: 440px; display: grid; place-items: center; background: radial-gradient(circle, rgba(23,114,192,.3), transparent 63%); }
+.crest-stage img { width: min(340px, 75vw); filter: drop-shadow(0 26px 28px rgba(0,0,0,.35)); }
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 2rem; border: 1px solid rgba(255,255,255,.15); }
+.stat { padding: 1.25rem; border-right: 1px solid rgba(255,255,255,.15); }
+.stat:last-child { border-right: 0; }
+.stat strong { display: block; color: var(--sky); font: 800 1.8rem "Barlow Condensed", sans-serif; }
+.stat span { color: #9fb0c5; font-size: .8rem; text-transform: uppercase; }
+
+.page-hero { min-height: 330px; display: flex; align-items: end; color: white; background: linear-gradient(120deg, rgba(4,23,49,.98), rgba(5,61,110,.84)), url('/assets/ufl-banner.jpg') center/cover; }
+.page-hero > div { width: min(1180px, 92vw); margin: auto auto 0; padding: 5rem 0 3rem; }
+.page-hero p { max-width: 700px; color: #c7d4e2; line-height: 1.6; }
+.tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 2rem 0; }
+.tab { padding: .75rem 1rem; border: 1px solid #bdc9d6; background: white; text-decoration: none; font: 800 .95rem "Barlow Condensed", sans-serif; text-transform: uppercase; }
+.tab.active, .tab:hover { background: var(--navy); color: white; border-color: var(--navy); }
+.table-wrap { overflow-x: auto; background: white; border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; min-width: 650px; }
+th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--line); }
+th { background: var(--navy); color: white; font: 800 .9rem "Barlow Condensed", sans-serif; letter-spacing: .07em; text-transform: uppercase; }
+td strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.1rem; }
+.status { display: inline-block; padding: .3rem .55rem; background: #edf4fa; color: var(--blue); font-size: .75rem; font-weight: 800; text-transform: uppercase; }
+.empty-state { padding: clamp(2rem, 7vw, 5rem); text-align: center; background: white; border: 1px dashed #aebdcb; }
+.empty-state img { width: 90px; max-height: 100px; object-fit: contain; }
+.empty-state h2 { font-size: 2.5rem; }
+.empty-state p { max-width: 600px; margin: 0 auto 1.5rem; color: var(--muted); line-height: 1.6; }
+.rule-list { counter-reset: rules; display: grid; gap: .75rem; margin-top: 2rem; }
+.rule { counter-increment: rules; padding: 1.25rem 1.5rem; background: white; border: 1px solid var(--line); }
+.rule summary { cursor: pointer; list-style: none; font: 800 1.3rem "Barlow Condensed", sans-serif; text-transform: uppercase; }
+.rule summary::before { content: counter(rules, decimal-leading-zero); margin-right: 1rem; color: var(--red); }
+.rule p { padding-left: 2.8rem; color: var(--muted); line-height: 1.65; }
+.rule ul { margin: .85rem 0 .25rem; padding-left: 3.9rem; color: var(--muted); line-height: 1.6; }
+.rule li { padding: .2rem 0 .45rem .2rem; }
+.rule li::marker { color: var(--red); }
+.rule li strong { color: var(--ink); }
+.rule-update { display: block; width: fit-content; margin-top: .45rem; padding: .3rem .55rem; border-left: 3px solid var(--red); background: color-mix(in srgb, var(--red) 9%, var(--white)); color: var(--ink); font-weight: 700; }
+.notice { padding: 1rem 1.25rem; border-left: 4px solid var(--red); background: #fff4f5; color: #6d2430; }
+.commissioner-note { margin-top: 1.25rem; font-size: 1.02rem; line-height: 1.55; }
+.utility-frame { min-height: 430px; display: grid; place-items: center; padding: 2rem; border: 1px solid var(--line); background: linear-gradient(145deg,#fff,#eef4f9); text-align: center; }
+.integrated-app { width: 100%; min-height: calc(100vh - 82px); background: #06162f; overflow: visible; }
+.integrated-app iframe { display: block; width: 100%; height: max(1200px, calc(100vh - 82px)); border: 0; background: #06162f; overflow: hidden; }
+.pickems-host, .pickems-host iframe { background: var(--paper); }
+.contact-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 1.2rem; }
+.contact-panel { padding: clamp(1.5rem,4vw,3rem); background: var(--navy); color: white; }
+.contact-panel h2 { font-size: 3rem; }
+.contact-panel p { color: #bbc8d7; line-height: 1.65; }
+
+.site-footer { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: center; padding: 2.2rem clamp(1rem,4vw,4.5rem); background: #030f20; color: white; border-top: 4px solid var(--red); }
+.footer-brand { display: flex; align-items: center; gap: 1rem; }
+.footer-brand img { width: 64px; height: 68px; object-fit: contain; }
+.footer-brand strong, .footer-brand span { display: block; }
+.footer-brand strong { font: 800 1.25rem "Barlow Condensed", sans-serif; }
+.footer-brand span, .site-footer > p { color: #8295ac; font-size: .8rem; }
+.site-footer > p { grid-column: 1/-1; margin: 0; }
+.unc-location { display: grid; justify-items: end; }
+.unc-location span { color: var(--red); font: 800 .7rem "Barlow Condensed",sans-serif; letter-spacing: .12em; }
+.unc-location strong { font: 800 1.1rem "Barlow Condensed",sans-serif; }
+.unc-location button { padding: .25rem 0; border: 0; background: none; color: var(--sky); cursor: pointer; font-size: .75rem; }
+
+@media (max-width: 1000px) {
+  .menu-button { display: grid; width: 44px; gap: 5px; cursor: pointer; }
+  .menu-button span { display: block; height: 2px; background: white; }
+  .menu-button b { position: absolute; clip: rect(0 0 0 0); }
+  .main-nav { display: none; position: fixed; inset: 82px 0 0; padding: 1.5rem; align-items: stretch; overflow-y: auto; background: var(--navy); }
+  .main-nav.open { display: grid; align-content: start; }
+  .main-nav > a, .nav-group > button { display: block; width: 100%; text-align: left; padding: .9rem; font-size: 1.2rem; }
+  .theme-switcher { width: max-content; margin: .75rem; }
+  .theme-switcher button { width: 34px; height: 34px; }
+  .nav-menu { position: static; box-shadow: none; border: 0; background: #0b2b54; color: white; }
+  .cards { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .brand span { font-size: 1rem; }
+  .hero { min-height: 720px; }
+  .hero::before { background: linear-gradient(0deg, rgba(3,17,37,.98), rgba(3,17,37,.55)), url('/assets/ufl-banner.jpg') center/cover; }
+  .hero h1 { font-size: clamp(4rem, 20vw, 6rem); }
+  .cards, .feature-grid, .contact-grid, .site-footer, .house-team-grid { grid-template-columns: 1fr; }
+  .page-hero h1 { font-size: clamp(2.8rem, 14vw, 4.2rem); overflow-wrap: anywhere; }
+  .page-hero p { max-width: 100%; overflow-wrap: anywhere; }
+  .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tab { min-width: 0; padding-inline: .6rem; text-align: center; }
+  .empty-state { padding-inline: 1rem; overflow: hidden; }
+  .empty-state h2 { font-size: clamp(2rem, 11vw, 2.8rem); overflow-wrap: anywhere; }
+  .integrated-app iframe { min-height: calc(100vh - 82px); }
+  .crest-stage { min-height: 310px; order: -1; }
+  .stat-row { grid-template-columns: 1fr; }
+  .stat { border-right: 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+  .unc-location { justify-items: start; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #071423;
+  --ink: #f3f6fa;
+  --muted: #a8b6c8;
+  --white: #10243d;
+  --line: #29415f;
+  --cream: #d9e0e8;
+  --shadow: 0 22px 60px rgba(0,0,0,.35);
+}
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .empty-state,
+html[data-theme="dark"] .rule,
+html[data-theme="dark"] .table-wrap { background: #0d2038; }
+html[data-theme="dark"] .tab { background: #0d2038; border-color: #39516e; color: #edf3fa; }
+html[data-theme="dark"] .tab.active,
+html[data-theme="dark"] .tab:hover { background: var(--red); border-color: var(--red); }
+html[data-theme="dark"] .utility-frame { background: linear-gradient(145deg,#0d2038,#071423); }
+html[data-theme="dark"] .notice { background: #311722; color: #ffd2da; }
+html[data-theme="dark"] .nav-menu { background: #0d2038; color: #f3f6fa; border-color: var(--red); }
+html[data-theme="dark"] .nav-menu a:hover { background: #173250; color: var(--sky); }
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] option { background: #0d2038; color: #f3f6fa; border-color: #39516e; }
+
+html[data-theme="vintage"] {
+  color-scheme: light;
+  --navy: #2f2a21;
+  --blue: #59624e;
+  --sky: #c2a66f;
+  --red: #7d302c;
+  --cream: #e8dcc0;
+  --ink: #30291f;
+  --muted: #6f6250;
+  --paper: #e9dcc0;
+  --white: #f4ead2;
+  --line: #aa9878;
+  --shadow: 0 22px 60px rgba(56,43,25,.22);
+}
+html[data-theme="vintage"] body { background-image: radial-gradient(rgba(72,55,33,.08) 1px, transparent 1px); background-size: 5px 5px; }
+html[data-theme="vintage"] .site-header { background: rgba(46,41,32,.98); }
+html[data-theme="vintage"] .hero::before { background: linear-gradient(90deg,rgba(39,34,26,.96),rgba(58,47,34,.67),rgba(74,57,35,.12)),url('/assets/ufl-banner.jpg') center/cover; filter: sepia(.28); }
+html[data-theme="vintage"] .page-hero { background: linear-gradient(120deg,rgba(43,37,28,.97),rgba(89,78,57,.72)),url('/assets/ufl-banner.jpg') center/cover; }
+html[data-theme="vintage"] .card,
+html[data-theme="vintage"] .empty-state,
+html[data-theme="vintage"] .rule,
+html[data-theme="vintage"] .table-wrap,
+html[data-theme="vintage"] .tab { background: #f4ead2; }
+html[data-theme="vintage"] .utility-frame { background: linear-gradient(145deg,#f4ead2,#dfcfad); }
+html[data-theme="vintage"] .notice { background: #e5ccb0; color: #63342f; }
+html[data-theme="vintage"] .nav-menu { background: #f4ead2; color: #30291f; border-color: var(--red); }
+html[data-theme="vintage"] .nav-menu a:hover { background: #dfcfad; color: var(--red); }
+html[data-theme="vintage"] input,
+html[data-theme="vintage"] select,
+html[data-theme="vintage"] textarea,
+html[data-theme="vintage"] option { background: #f4ead2; color: #30291f; border-color: #998565; }
