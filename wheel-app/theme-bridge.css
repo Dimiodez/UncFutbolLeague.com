@@ -185,3 +185,16 @@ select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px s
 }
 :root:not([data-theme="dark"]) .live-group-wall article>div { border-color: var(--uwu-line); color: var(--uwu-muted); }
 :root[data-theme="vintage"] .draw-ceremony { background: radial-gradient(circle at 50% 8%,#f7edda 0,#e3d3b2 48%,#c8b58d 100%); }
+
+@media (max-width: 720px) {
+  :root:not([data-theme="dark"]) .workspace-tabs button {
+    border-color: color-mix(in srgb,var(--uwu-line) 80%,var(--uwu-ink));
+    background: linear-gradient(145deg,var(--uwu-panel),var(--uwu-panel-alt));
+    box-shadow: inset 0 1px 0 color-mix(in srgb,#fff 72%,transparent),0 3px 10px color-mix(in srgb,var(--uwu-ink) 10%,transparent);
+  }
+  :root:not([data-theme="dark"]) .workspace-tabs button.active {
+    color: #fff;
+    border-color: color-mix(in srgb,var(--uwu-accent-2) 65%,#fff);
+    background: linear-gradient(135deg,var(--uwu-accent),var(--uwu-accent-2));
+  }
+}
