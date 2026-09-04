@@ -113,4 +113,5 @@ document.addEventListener('click',async event=>{
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
 async function initialize(){await loadAuth();await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();}
+const syncedLabel=$('#data-source');if(syncedLabel&&season.syncedAt)syncedLabel.textContent=`Virtual Arena · synced ${new Date(season.syncedAt).toLocaleString()}`;
 initialize();

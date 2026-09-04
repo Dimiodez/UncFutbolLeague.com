@@ -13,6 +13,10 @@ const virtualArena = {
   }
 };
 
+const leagueSeason = window.UFL_SEASON;
+const leagueTeam = key => leagueSeason?.teams?.[key] || [key, ''];
+const signed = value => Number(value) > 0 ? `+${value}` : String(value);
+
 const divisions = {
   '6v6': { title: '6v6 Teams', intro: 'Fast, technical, and just chaotic enough. Meet the squads competing in the six-a-side division.' },
   '10v10': { title: '10v10 Teams', intro: 'Full-pitch tactics, organized squads, and ninety virtual minutes to settle it.' },
@@ -53,7 +57,7 @@ function houseTeamsPage() {
 
 function homePage() {
   return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Join the league →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
-  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC26 Season 1 · In Progress</span><span class="season-chip season-chip-upcoming">FC27 Season 2 · Late October</span></div><h3>6v6 League</h3><p>Quick matches, tight spaces, and nowhere to hide.</p><a href="${virtualArena['6v6'].teams}" target="_blank" rel="noopener noreferrer">Meet the teams ↗</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div><h3>10v10 League</h3><p>The full tactical experience for organized clubs.</p><a href="/teams?division=10v10" data-link>Coming in FC27 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
+  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC26 Season 1 · In Progress</span><span class="season-chip season-chip-upcoming">FC27 Season 2 · Late October</span></div><h3>6v6 League</h3><p>Quick matches, tight spaces, and nowhere to hide.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div><h3>10v10 League</h3><p>The full tactical experience for organized clubs.</p><a href="/teams?division=10v10" data-link>Coming in FC27 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.gif" alt="Animated UNC Futbol League crest"></div></div></section>`;
 }
 
@@ -104,9 +108,10 @@ function teamsPage(params) {
   if (division === 'house') return houseTeamsPage();
   const data = divisions[division] || divisions['6v6'];
   const tabs = Object.entries(divisions).map(([key,val]) => key === '6v6'
-    ? `<a class="tab" href="${virtualArena['6v6'].teams}" target="_blank" rel="noopener noreferrer" aria-label="6v6 teams on Virtual Arena (opens in a new tab)">${val.title} ↗</a>`
+    ? `<a class="tab active" href="/teams?division=6v6" data-link>${val.title}</a>`
     : `<a class="tab ${key===division?'active':''}" href="/teams?division=${key}" data-link>${val.title}</a>`).join('');
-  return pageHero('The clubs',data.title,data.intro) + `<section class="section"><div class="tabs">${tabs}</div>${emptyState('Squads assembling','Team cards, crests, managers, records, and roster links will appear here once the official team list is added.','<a class="button button-primary" href="/contact" data-link>Enter the Discord →</a>')}</section>`;
+  const cards = leagueSeason?.teamDetails?.map(team => `<a class="league-team-card" href="${escapeHtml(team.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(team.logo)}" alt="${escapeHtml(team.name)} crest" loading="lazy"><div><span>${escapeHtml(team.abbreviation)}</span><h2>${escapeHtml(team.name)}</h2><p>${team.stats.wins ?? 0}W · ${team.stats.draws ?? 0}D · ${team.stats.losses ?? 0}L${team.rosterSize!==null?` · ${team.rosterSize} players`:''}</p></div><b>View team ↗</b></a>`).join('');
+  return pageHero('The clubs',data.title,data.intro) + `<section class="section"><div class="tabs">${tabs}</div><p class="sync-note">Synced from Virtual Arena · ${leagueSeason?new Date(leagueSeason.syncedAt).toLocaleString():'data unavailable'}</p>${cards?`<div class="league-team-grid">${cards}</div>`:emptyState('Squads assembling','Official team data is temporarily unavailable.')}</section>`;
 }
 
 function schedulesPage(params) {
@@ -118,7 +123,11 @@ function schedulesPage(params) {
     const val = scheduleTypes[key];
     return `<a class="tab ${key===type?'active':''}" href="/schedules/${key==='events'?'community-events':'league-cup'}" data-link>${val[0]}</a>`;
   }).join('');
-  return pageHero('Match centre',data[0],data[1]) + `<section class="section"><div class="tabs">${tabs}</div><div class="table-wrap"><table><thead><tr><th>Matchweek</th><th>Date</th><th>Home</th><th>Away</th><th>Status</th></tr></thead><tbody><tr><td><strong>Season setup</strong></td><td>To be announced</td><td>—</td><td>—</td><td><span class="status">Coming soon</span></td></tr></tbody></table></div></section>`;
+  const rows = leagueSeason?.weeks?.flatMap(week => week.matches.map(([id,home,away,homeScore,awayScore], matchIndex) => {
+    const played = homeScore !== null && awayScore !== null;
+    return `<tr><td><strong>Week ${week.week}</strong><small class="match-number">Match ${matchIndex+1}</small></td><td>${escapeHtml(week.date)}</td><td>${escapeHtml(leagueTeam(home)[0])}</td><td>${escapeHtml(leagueTeam(away)[0])}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;
+  })).join('');
+  return pageHero('Match centre',data[0],data[1]) + `<section class="section"><div class="tabs">${tabs}</div><p class="sync-note">Official fixtures and results · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>Matchweek</th><th>Date</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${rows || '<tr><td colspan="5">League schedule temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
 }
 
 function scheduleLandingTabs(active) {
@@ -138,7 +147,8 @@ function leagueCupPage() {
 function standingsPage(params) {
   const division = params.get('division') === '10v10' ? '10v10' : '6v6';
   if (division === '10v10') return tenVTenComingSoon('Standings and statistics');
-  return pageHero('Race for the title','Standings','Form, points, goal difference, and the weekly reminder that the table never lies.') + `<section class="section"><div class="tabs"><a class="tab" href="${virtualArena['6v6'].standings}" target="_blank" rel="noopener noreferrer" aria-label="6v6 standings on Virtual Arena (opens in a new tab)">6v6 ↗</a><a class="tab" href="/standings?division=10v10" data-link>10v10</a></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody><tr><td>—</td><td><strong>Open the official 6v6 table on Virtual Arena</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div></section>`;
+  const rows = leagueSeason?.standings?.map(([key,played,wins,draws,losses,gf,ga,gd,points], index) => { const [name,logo]=leagueTeam(key); return `<tr><td><strong>${index+1}</strong></td><td><a class="table-team" href="${virtualArena['6v6'].standings}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(logo)}" alt="" loading="lazy"><strong>${escapeHtml(name)}</strong></a></td><td>${played}</td><td>${wins}</td><td>${draws}</td><td>${losses}</td><td>${signed(gd)}</td><td><strong>${points}</strong></td></tr>`; }).join('');
+  return pageHero('Race for the title','Standings','Form, points, goal difference, and the weekly reminder that the table never lies.') + `<section class="section"><div class="tabs"><a class="tab active" href="/standings" data-link>6v6</a><a class="tab" href="/standings?division=10v10" data-link>10v10</a></div><p class="sync-note">Official table · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows || '<tr><td colspan="8">Standings temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
 }
 
 function utilityPage(kind) {
@@ -150,7 +160,7 @@ function wheelPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260903-avatar1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260904-va-sync1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
@@ -261,7 +271,8 @@ function bindDynamicActions() {
     appFrame.addEventListener('load', () => {
       fitApp();
       const observer = new ResizeObserver(fitApp);
-      observer.observe(appFrame.contentDocument.documentElement);
+      const frameRoot = appFrame.contentDocument?.documentElement;
+      if (frameRoot) observer.observe(frameRoot);
       window.setTimeout(fitApp, 250);
       window.setTimeout(fitApp, 1000);
     });

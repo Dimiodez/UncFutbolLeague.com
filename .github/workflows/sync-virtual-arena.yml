@@ -1,0 +1,35 @@
+name: Sync UNC Futbol League data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 5,11,17,23 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: virtual-arena-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Sync competition 1 season 1
+        run: node scripts/sync-virtual-arena.mjs
+      - name: Publish changed league data
+        run: |
+          if git diff --quiet -- pickems-app/season-data.js; then
+            echo "UNC Futbol League data is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pickems-app/season-data.js
+          git commit -m "Sync Virtual Arena league data"
+          git push

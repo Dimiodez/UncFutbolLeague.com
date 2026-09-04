@@ -12,6 +12,14 @@ node dev-server.mjs
 
 The `_redirects` file provides single-page route fallback on Cloudflare Pages.
 
+## Virtual Arena league data
+
+Fixtures, results, standings, team crests, and Pick'ems match data are synced only from UNC Futbol League competition `1`, season `1`:
+
+`https://ufl.virtualarena.app/competitions/1/seasons/1/matches`
+
+Run `node scripts/sync-virtual-arena.mjs` to refresh the local snapshot. The GitHub Actions workflow checks the same season four times daily and commits only when the official data changes.
+
 ## Before launch
 
 - Add the permanent Discord invitation URL in `app.js`.
