@@ -41,7 +41,7 @@ function renderSimple() {
   $('#live-badge').innerHTML=`<i></i> WEEK ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
   $('#simple-fixtures').innerHTML=fixtures.map((f,i)=>{
     const result=complete?(f.hs>f.as?'home':f.hs<f.as?'away':'draw'):null, chosen=saved.picks?.[f.id];
-    const cls=choice=>`${choice===chosen?' selected':''}${complete&&choice===result?' correct':''}`;
+    const cls=choice=>`${choice===chosen?' selected':''}${complete&&choice===chosen?(choice===result?' correct':' incorrect'):''}`;
     return `<article class="simple-match"><header><span>Match ${i+1} · ${formatKickoff(week)}</span><a href="${f.url}" target="_blank" rel="noopener noreferrer">${complete?`Final ${f.hs}–${f.as}`:open?'Pick one':'Awaiting result'} ↗</a></header><div>
       <button data-choice="home" data-match="${f.id}" class="${cls('home')}" ${open?'':'disabled'}>${badge(f.home)}<span><strong>${f.home.name}</strong><small>Home win</small></span></button>
       <button data-choice="draw" data-match="${f.id}" class="draw${cls('draw')}" ${open?'':'disabled'}><b>×</b><span><strong>Draw</strong><small>Level</small></span></button>
