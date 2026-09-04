@@ -68,4 +68,5 @@ const season = {
 
 await mkdir('pickems-app', { recursive: true });
 await writeFile('pickems-app/season-data.js', `window.UFL_SEASON = ${JSON.stringify(season, null, 2)};\n`);
+await writeFile('pickems-app/season-data.json', `${JSON.stringify(season, null, 2)}\n`);
 console.log(`Synced ${teamDetails.length} teams, ${weeks.length} matchweeks, and ${weeks.flatMap(week => week.matches).length} matches.`);
