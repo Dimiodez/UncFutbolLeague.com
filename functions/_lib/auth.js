@@ -61,6 +61,8 @@ export function publicUser(user) {
     displayName: user.display_name,
     avatarUrl: user.avatar_url,
     role: user.role,
+    teamTitle: user.teamTitle || null,
+    teamName: user.teamName || null,
     createdAt: user.created_at
   } : null;
 }

@@ -258,7 +258,28 @@ async function getAuthState() {
 
 function userCard(user) {
   const avatar = user.avatarUrl ? `<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : '<span class="discord-avatar avatar-fallback">UFL</span>';
-  return `<div class="account-profile">${avatar}<div><span class="season-chip season-chip-live">${escapeHtml(user.role)}</span><h2>${escapeHtml(user.displayName)}</h2><p>@${escapeHtml(user.username)}</p></div></div>`;
+  const teamTitle = user.teamTitle && user.teamName ? `<span class="season-chip member-team-title">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>` : '';
+  return `<div class="account-profile">${avatar}<div><div class="profile-chips"><span class="season-chip season-chip-live">${escapeHtml(user.role)}</span>${teamTitle}</div><h2>${escapeHtml(user.displayName)}</h2><p>@${escapeHtml(user.username)}</p></div></div>`;
+}
+
+const assignableTeams = [...new Set([
+  ...Object.values(leagueSeason?.teams || {}).map(team => team[0]),
+  'FC Sandy Bums', 'FC Mountains'
+])].sort((a,b) => a.localeCompare(b));
+
+function teamTitleControls(user) {
+  const title = user.teamTitle || '';
+  const teams = assignableTeams.map(team => `<option value="${escapeHtml(team)}" ${user.teamName===team?'selected':''}>${escapeHtml(team)}</option>`).join('');
+  return `<div class="member-title-controls"><select data-title-kind="${escapeHtml(user.id)}" aria-label="Title for ${escapeHtml(user.displayName)}"><option value="" ${!title?'selected':''}>No team title</option><option value="captain" ${title==='captain'?'selected':''}>Captain</option><option value="manager" ${title==='manager'?'selected':''}>Manager</option></select><select data-title-team="${escapeHtml(user.id)}" aria-label="Team for ${escapeHtml(user.displayName)}"><option value="">Choose team…</option>${teams}</select><button class="tab" data-title-save="${escapeHtml(user.id)}">Save title</button></div>`;
+}
+
+function adminMemberRow(user, canManageRoles) {
+  const avatar = user.avatarUrl ? `<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : '<span class="discord-avatar avatar-fallback">UFL</span>';
+  const titleBadge = user.teamTitle && user.teamName ? `<span class="member-title-badge">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>` : '';
+  const roleControl = canManageRoles && user.role !== 'owner'
+    ? `<button class="tab" data-role-user="${escapeHtml(user.id)}" data-next-role="${user.role==='admin'?'member':'admin'}">${user.role==='admin'?'Remove admin':'Make admin'}</button>`
+    : `<span class="owner-only-note">${user.role==='owner'?'Configured owner':'Owner controls admin access'}</span>`;
+  return `<article class="member-row">${avatar}<div class="member-identity"><strong>${escapeHtml(user.displayName)}</strong><small>@${escapeHtml(user.username)} · ${escapeHtml(user.status)}</small>${titleBadge}</div><span class="member-role">${escapeHtml(user.role)}</span><div class="member-admin-action">${roleControl}</div>${teamTitleControls(user)}</article>`;
 }
 
 async function hydrateAccount() {
@@ -283,11 +304,24 @@ async function hydrateAccount() {
   const response = await fetch('/api/admin/users', { credentials: 'same-origin' });
   if (!response.ok) return void (adminRoot.innerHTML = '<h2>Unable to load members</h2><p>Please sign in again or try later.</p>');
   const data = await response.json();
-  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Registered through Discord</p><h2>${data.users.length} members</h2></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="member-list">${data.users.map(user => `<article class="member-row">${user.avatarUrl?`<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">`:'<span class="discord-avatar avatar-fallback">UFL</span>'}<div><strong>${escapeHtml(user.displayName)}</strong><small>@${escapeHtml(user.username)} · ${escapeHtml(user.status)}</small></div><span class="member-role">${escapeHtml(user.role)}</span>${data.canManageRoles&&user.role!=='owner'?`<button class="tab" data-role-user="${escapeHtml(user.id)}" data-next-role="${user.role==='admin'?'member':'admin'}">${user.role==='admin'?'Remove admin':'Make admin'}</button>`:'<span></span>'}</article>`).join('')}</div>`;
+  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>${data.users.length} members</h2><p class="admin-note">Captain and Manager are display titles only. They grant no administrative permissions. Only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="member-list">${data.users.map(user => adminMemberRow(user, data.canManageRoles)).join('')}</div>`;
   document.querySelectorAll('[data-role-user]').forEach(button => button.addEventListener('click', async () => {
     button.disabled = true;
     const update = await fetch('/api/admin/role', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId: button.dataset.roleUser, role: button.dataset.nextRole }) });
     if (update.ok) hydrateAccount(); else button.disabled = false;
+  }));
+  document.querySelectorAll('[data-title-save]').forEach(button => button.addEventListener('click', async () => {
+    const discordId = button.dataset.titleSave;
+    const title = document.querySelector(`[data-title-kind="${discordId}"]`).value;
+    const teamName = document.querySelector(`[data-title-team="${discordId}"]`).value;
+    if (title && !teamName) return void window.alert('Choose a team before saving this title.');
+    button.disabled = true;
+    const update = await fetch('/api/admin/title', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId, title, teamName }) });
+    if (update.ok) hydrateAccount(); else {
+      const result = await update.json().catch(() => ({}));
+      window.alert(result.error || 'Unable to update the team title.');
+      button.disabled = false;
+    }
   }));
 }
 
