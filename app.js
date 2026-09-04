@@ -146,9 +146,11 @@ function leagueCupPage() {
 
 function standingsPage(params) {
   const division = params.get('division') === '10v10' ? '10v10' : '6v6';
-  if (division === '10v10') return tenVTenComingSoon('Standings and statistics');
+  const hero = pageHero('Race for the title','Standings','Form, points, goal difference, and the weekly reminder that the table never lies.');
+  const tabs = `<div class="tabs"><a class="tab ${division==='6v6'?'active':''}" href="/standings" data-link>6v6</a><a class="tab ${division==='10v10'?'active':''}" href="/standings?division=10v10" data-link>10v10</a></div>`;
+  if (division === '10v10') return hero + `<section class="section">${tabs}<div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('10v10 standings coming soon','The table will appear in this tab when the FC27 10v10 season begins.')}</section>`;
   const rows = leagueSeason?.standings?.map(([key,played,wins,draws,losses,gf,ga,gd,points], index) => { const [name,logo]=leagueTeam(key); return `<tr><td><strong>${index+1}</strong></td><td><a class="table-team" href="${virtualArena['6v6'].standings}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(logo)}" alt="" loading="lazy"><strong>${escapeHtml(name)}</strong></a></td><td>${played}</td><td>${wins}</td><td>${draws}</td><td>${losses}</td><td>${signed(gd)}</td><td><strong>${points}</strong></td></tr>`; }).join('');
-  return pageHero('Race for the title','Standings','Form, points, goal difference, and the weekly reminder that the table never lies.') + `<section class="section"><div class="tabs"><a class="tab active" href="/standings" data-link>6v6</a><a class="tab" href="/standings?division=10v10" data-link>10v10</a></div><p class="sync-note">Official table · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows || '<tr><td colspan="8">Standings temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
+  return hero + `<section class="section">${tabs}<p class="sync-note">Official table · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows || '<tr><td colspan="8">Standings temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
 }
 
 function utilityPage(kind) {
