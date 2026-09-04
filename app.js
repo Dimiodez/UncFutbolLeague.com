@@ -136,12 +136,36 @@ function scheduleLandingTabs(active) {
 
 function communityEventsPage() {
   return pageHero('Community calendar','Community Events Schedule','Draft nights, random squads, special formats, and the sort of ideas that sound even better after kickoff.') +
-    `<section class="section schedule-landing">${scheduleLandingTabs('events')}<div class="status-row"><span class="season-chip season-chip-upcoming">Dates being arranged</span></div><div class="schedule-feature"><div><span class="section-kicker">No league table required</span><h2>SHOW UP.<br>GET A TEAM.<br>BLAME THE WHEEL.</h2><p class="section-intro">Community events are flexible one-night competitions built for whoever is around. Official dates and signup details will appear here as each event is announced.</p></div><div class="cards schedule-cards"><article class="card"><span class="num">01</span><h3>Random Squad Nights</h3><p>Let the Unc Wheel handle recruitment, then insist the draw was rigged.</p></article><article class="card"><span class="num">02</span><h3>Draft Events</h3><p>Captains, player pools, and just enough strategy to cause a group-chat investigation.</p></article><article class="card"><span class="num">03</span><h3>Special Formats</h3><p>Theme nights, quick cups, and community experiments that do not need a full season.</p></article></div></div>${emptyState('The cookout calendar is warming up','No community event has been officially scheduled yet. Once a date is confirmed, the event format, signup window, and kickoff time will be posted here.')}</section>`;
+    `<section class="section schedule-landing">${scheduleLandingTabs('events')}<div id="published-events" data-destination="community-events">${emptyState('Checking the cookout calendar','Loading published community events…')}</div></section>`;
 }
 
 function leagueCupPage() {
   return pageHero('Road to silverware','League Cup Schedule','One bracket, no league-table excuses, and a trophy somebody will mention for the next five years.') +
-    `<section class="section schedule-landing">${scheduleLandingTabs('league-cup')}<div class="status-row"><span class="season-chip season-chip-upcoming">Cup draw coming soon</span></div><div class="cup-road"><article><span>01</span><strong>Draw</strong><small>Teams enter the hat</small></article><i>→</i><article><span>02</span><strong>Opening Round</strong><small>Win or find a new excuse</small></article><i>→</i><article><span>03</span><strong>Semifinals</strong><small>The pressure gets real</small></article><i>→</i><article><span>04</span><strong>Final</strong><small>One last night for glory</small></article></div>${emptyState('The bracket is still at the engraver','The official League Cup draw, matchups, and kickoff dates will appear here when the competition is announced. Bring shin pads and several believable connection excuses.')}</section>`;
+    `<section class="section schedule-landing">${scheduleLandingTabs('league-cup')}<div id="published-events" data-destination="league-cup">${emptyState('Checking the engraver','Loading the published cup draw…')}</div></section>`;
+}
+
+function eventMatches(snapshot) {
+  if (snapshot?.kind === 'draw') return (snapshot.session?.teams || []).map(team => ({ home: team.name, away: (team.playerIds || []).map(id => snapshot.session.players.find(player => player.id === id)?.name).filter(Boolean).join(', '), label: 'Roster' }));
+  const group = snapshot?.groupStage?.fixtures || [];
+  const league = snapshot?.leagueSnapshot?.fixtures || [];
+  const bracket = (snapshot?.rounds || []).flatMap((round, roundIndex) => round.map(match => ({ ...match, label: roundIndex === snapshot.rounds.length - 1 ? 'Final' : `Round ${roundIndex + 1}` })));
+  return [...group.map(match => ({ ...match, label: `Group ${String.fromCharCode(65 + match.groupIndex)}` })), ...league.map(match => ({ ...match, label: 'League phase' })), ...bracket].filter(match => match.home || match.away);
+}
+
+async function hydratePublishedEvents() {
+  const root = document.querySelector('#published-events');
+  if (!root) return;
+  try {
+    const response = await fetch(`/api/events?destination=${root.dataset.destination}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error();
+    if (!data.events.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
+    root.innerHTML = `<div class="published-event-list">${data.events.map(item => {
+      const matches = eventMatches(item.snapshot);
+      const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' }) : 'Time to be announced';
+      return `<article class="published-event"><div class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2></div><span class="season-chip season-chip-live">${escapeHtml(date)}</span></div><div class="published-match-list">${matches.length ? matches.map(match => `<div><small>${escapeHtml(match.label || 'Match')}</small><strong>${escapeHtml(match.home || 'TBD')}</strong><span>vs</span><strong>${escapeHtml(match.away || 'TBD')}</strong>${match.homeScore !== '' && match.homeScore != null ? `<b>${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}</b>` : ''}</div>`).join('') : '<p>Teams and fixtures will be added by the event organizer.</p>'}</div></article>`;
+    }).join('')}</div>`;
+  } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
 }
 
 function standingsPage(params) {
@@ -158,7 +182,7 @@ function utilityPage(kind) {
 }
 
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-logo-cache1" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-event-publishing1" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function pickemsPage() {
@@ -243,6 +267,7 @@ function render() {
   document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   bindDynamicActions();
   hydrateAccount();
+  hydratePublishedEvents();
   window.scrollTo(0,0);
 }
 
