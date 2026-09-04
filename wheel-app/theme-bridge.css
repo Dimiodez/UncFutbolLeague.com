@@ -66,7 +66,7 @@ h1, h2, h3, h4, .progress-block strong, .toolbar-panel strong { color: var(--uwu
 
 .toolbar-panel, .position-panel, .custom-wheel-panel, .draft-hero, .standings-hero,
 .group-stage-board, .group-draw-board, .league-controls, .league-playoffs, .bracket-board,
-.match-centre, .test-tools-panel {
+.match-centre, .test-tools-panel, .competition-save-panel, .competition-controls, .qualification-preview > div, .qualification-preview article {
   color: var(--uwu-ink); border-color: var(--uwu-line); background: var(--uwu-panel-alt);
 }
 
@@ -95,6 +95,15 @@ select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px s
 .secondary-actions button, .input-actions button, .waiting-row button {
   color: var(--uwu-ink); border-color: var(--uwu-line); background: var(--uwu-panel-alt);
 }
+.competition-save-panel h2, .competition-save-panel strong { color: var(--uwu-ink); }
+.competition-save-panel label, .competition-save-panel p:last-child, .competition-controls label, .competition-controls > div { color: var(--uwu-muted); }
+.competition-save-panel > button, .save-actions button { color: var(--uwu-accent-2); border-color: var(--uwu-accent-2); background: var(--uwu-highlight); }
+.save-actions .publish-button { color: #fff; border-color: var(--uwu-accent); background: var(--uwu-accent); }
+.save-actions .remove-event-button { color: var(--uwu-accent); border-color: var(--uwu-accent); background: color-mix(in srgb,var(--uwu-accent) 8%,var(--uwu-panel)); }
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .test-tools-panel button,
+:root:not([data-theme="dark"]):not([data-theme="vintage"]) .inline-test-tools button { color:#614500;border-color:#b88600;background:#fff3c4; }
+:root[data-theme="vintage"] .test-tools-panel button,
+:root[data-theme="vintage"] .inline-test-tools button { color:#4c3520;border-color:#8a6840;background:#f7e8c7; }
 .add-card button, .input-actions button:first-child, .draft-actions button,
 .standings-hero button, .group-draw-actions button:first-of-type {
   color: #fff; border-color: var(--uwu-accent); background: linear-gradient(135deg,var(--uwu-accent),var(--uwu-accent-2));

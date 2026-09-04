@@ -152,6 +152,11 @@ function eventMatches(snapshot) {
   return [...group.map(match => ({ ...match, label: `Group ${String.fromCharCode(65 + match.groupIndex)}` })), ...league.map(match => ({ ...match, label: 'League phase' })), ...bracket].filter(match => match.home || match.away);
 }
 
+function eventWinner(snapshot) {
+  const rounds = snapshot?.rounds || [];
+  return rounds.length ? rounds[rounds.length - 1]?.[0]?.winner : null;
+}
+
 async function hydratePublishedEvents() {
   const root = document.querySelector('#published-events');
   if (!root) return;
@@ -162,8 +167,9 @@ async function hydratePublishedEvents() {
     if (!data.events.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
     root.innerHTML = `<div class="published-event-list">${data.events.map(item => {
       const matches = eventMatches(item.snapshot);
+      const winner = eventWinner(item.snapshot);
       const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
-      return `<article class="published-event"><div class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2></div><span class="season-chip season-chip-live">${escapeHtml(date)}</span></div><div class="published-match-list">${matches.length ? matches.map(match => `<div><small>${escapeHtml(match.label || 'Match')}</small><strong>${escapeHtml(match.home || 'TBD')}</strong><span>vs</span><strong>${escapeHtml(match.away || 'TBD')}</strong>${match.homeScore !== '' && match.homeScore != null ? `<b>${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}</b>` : ''}</div>`).join('') : '<p>Teams and fixtures will be added by the event organizer.</p>'}</div></article>`;
+      return `<article class="published-event"><div class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><span class="season-chip season-chip-live">${escapeHtml(date)}</span></div><div class="published-match-list">${matches.length ? matches.map(match => `<div><small>${escapeHtml(match.label || 'Match')}</small><strong class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</strong><span>vs</span><strong class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</strong>${match.homeScore !== '' && match.homeScore != null ? `<b>${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}</b>` : ''}</div>`).join('') : '<p>Teams and fixtures will be added by the event organizer.</p>'}</div></article>`;
     }).join('')}</div>`;
   } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
 }
@@ -182,7 +188,7 @@ function utilityPage(kind) {
 }
 
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-color-restore1" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-theme-publish4" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function pickemsPage() {
