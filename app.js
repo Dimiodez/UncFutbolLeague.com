@@ -70,6 +70,7 @@ function houseTeamsPage() {
 
 function homePage() {
   return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Join the league →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
+  <section class="section home-calendar" id="home-calendar"><span class="section-kicker">Coming up</span><h2>From the clubhouse calendar</h2><div class="home-calendar-grid"><p>Checking the schedule…</p></div></section>
   <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC26 Season 1 · In Progress</span><span class="season-chip season-chip-upcoming">FC27 Season 2 · Late October</span></div><h3>6v6 League</h3><p>Quick matches, tight spaces, and nowhere to hide.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div><h3>10v10 League</h3><p>The full tactical experience for organized clubs.</p><a href="/teams?division=10v10" data-link>Coming in FC27 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.gif" alt="Animated UNC Futbol League crest"></div></div></section>`;
 }
@@ -219,9 +220,19 @@ async function hydratePublishedEvents() {
     root.innerHTML = `<div class="published-event-list">${data.events.map(item => {
       const winner = eventWinner(item.snapshot);
       const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
-      return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;
+      return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;
     }).join('')}</div>`;
   } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
+}
+
+async function hydrateHomeCalendar() {
+  const root=document.querySelector('#home-calendar .home-calendar-grid');
+  if(!root) return;
+  try {
+    const response=await fetch('/api/events?calendar=1'),data=await response.json();
+    if(!response.ok) throw new Error();
+    root.innerHTML=data.events.length?data.events.map(event=>`<a class="home-event-card" href="/schedules/${event.destination==='league-cup'?'league-cup':'community-events'}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${event.destination==='league-cup'?'League Cup':'Community Event'} →</small></a>`).join(''):'<p class="admin-empty">No upcoming community events or cups yet.</p>';
+  } catch { root.innerHTML='<p class="admin-empty">Calendar temporarily unavailable.</p>'; }
 }
 
 function standingsPage(params) {
@@ -295,10 +306,37 @@ function adminMemberRow(user, canManageRoles) {
   return `<article class="member-row">${avatar}<div class="member-identity"><strong>${escapeHtml(user.displayName)}</strong><small>@${escapeHtml(user.username)} · ${escapeHtml(user.status)}</small>${titleBadge}</div><span class="member-role">${escapeHtml(user.role)}</span><div class="member-admin-action">${roleControl}</div>${teamTitleControls(user)}</article>`;
 }
 
+function localDateTimeValue(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  const local = new Date(date.getTime()-date.getTimezoneOffset()*60000);
+  return local.toISOString().slice(0,16);
+}
+
+function adminCompetitionCard(event) {
+  const lifecycle = event.lifecycleStatus || 'upcoming';
+  return `<article class="admin-event-card" data-admin-event="${escapeHtml(event.id)}"><div class="admin-event-heading"><div><span class="season-chip ${lifecycle==='live'?'season-chip-live':'season-chip-upcoming'}">${escapeHtml(event.status==='draft'?'draft':lifecycle)}</span><h3>${escapeHtml(event.title)}</h3></div><small>${escapeHtml(event.format)} · ${escapeHtml(event.destination)}</small></div><div class="admin-event-fields"><label>Title<input data-event-title value="${escapeHtml(event.title)}"></label><label>Date and kickoff<input data-event-start type="datetime-local" value="${localDateTimeValue(event.startsAt)}"></label><label>Publish to<select data-event-destination><option value="community-events" ${event.destination==='community-events'?'selected':''}>Community Events</option><option value="league-cup" ${event.destination==='league-cup'?'selected':''}>League Cup</option></select></label><label>Event status<select data-event-lifecycle ${event.status==='draft'?'disabled':''}>${['upcoming','live','completed','archived'].map(status=>`<option value="${status}" ${lifecycle===status?'selected':''}>${status[0].toUpperCase()+status.slice(1)}</option>`).join('')}</select></label></div><div class="admin-event-actions"><button class="tab" data-event-save>Save changes</button><button class="tab" data-event-status ${event.status==='draft'?'disabled':''}>Update status</button><button class="tab" data-event-publish>${event.status==='published'?'Unpublish':'Publish'}</button><button class="tab" data-event-duplicate>Duplicate</button><button class="tab danger-action" data-event-delete>Delete</button></div></article>`;
+}
+
+function adminChat(messages) {
+  return `<div class="admin-chat-log">${messages.length?messages.map(message=>`<article><div><strong>${escapeHtml(message.displayName)}</strong><span>${escapeHtml(message.role)}</span><time>${new Date(message.createdAt+'Z').toLocaleString()}</time></div><p>${escapeHtml(message.message)}</p></article>`).join(''):'<p class="admin-empty">No staff messages yet.</p>'}</div><form class="admin-chat-form" id="admin-chat-form"><textarea maxlength="1000" required placeholder="Message the admin team…" aria-label="Admin chat message"></textarea><button class="button button-primary" type="submit">Send message</button></form>`;
+}
+
+function adminAudit(entries) {
+  return `<div class="admin-audit-list">${entries.length?entries.map(entry=>`<article><strong>${escapeHtml(entry.actorName || 'System')}</strong><span>${escapeHtml(entry.action.replaceAll('_',' '))}${entry.targetName?` · ${escapeHtml(entry.targetName)}`:''}</span><time>${new Date(entry.createdAt+'Z').toLocaleString()}</time></article>`).join(''):'<p class="admin-empty">No recorded actions yet.</p>'}</div>`;
+}
+
 async function hydrateAccount() {
   const state = await getAuthState();
   const nav = document.querySelector('#account-nav');
   if (nav) nav.textContent = state.authenticated ? state.user.displayName : 'Sign in';
+  const mayAdmin = state.authenticated && ['owner','admin'].includes(state.user.role);
+  let adminNav = document.querySelector('#admin-nav');
+  if (mayAdmin && !adminNav && nav) {
+    nav.insertAdjacentHTML('beforebegin','<a href="/admin" data-link id="admin-nav">Admin</a>');
+    adminNav = document.querySelector('#admin-nav');
+  } else if (!mayAdmin) adminNav?.remove();
+  adminNav?.classList.toggle('active', window.location.pathname === '/admin');
   const accountRoot = document.querySelector('#account-root');
   if (accountRoot) {
     if (!state.configured) accountRoot.innerHTML = `<h2>Discord login setup</h2><p>The secure login code is ready. Connect the Cloudflare database and Discord application secrets to activate registration.</p>`;
@@ -314,10 +352,20 @@ async function hydrateAccount() {
   if (!state.configured) return void (adminRoot.innerHTML = '<h2>Backend setup required</h2><p>Connect Discord OAuth and the UFL database before using the admin clubhouse.</p>');
   if (!state.authenticated) return void (adminRoot.innerHTML = '<h2>Sign in required</h2><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>');
   if (!['owner','admin'].includes(state.user.role)) return void (adminRoot.innerHTML = '<h2>Administrator access required</h2><p>Your account is registered, but it does not have permission to open this page.</p>');
-  const response = await fetch('/api/admin/users', { credentials: 'same-origin' });
-  if (!response.ok) return void (adminRoot.innerHTML = '<h2>Unable to load members</h2><p>Please sign in again or try later.</p>');
-  const data = await response.json();
-  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>${data.users.length} members</h2><p class="admin-note">Captain and Manager are display titles only. They grant no administrative permissions. Only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="member-list">${data.users.map(user => adminMemberRow(user, data.canManageRoles)).join('')}</div>`;
+  const [membersResponse,eventsResponse,chatResponse,auditResponse] = await Promise.all([
+    fetch('/api/admin/users',{credentials:'same-origin'}),fetch('/api/admin/events',{credentials:'same-origin'}),
+    fetch('/api/admin/chat',{credentials:'same-origin'}),fetch('/api/admin/audit',{credentials:'same-origin'})
+  ]);
+  if (!membersResponse.ok) return void (adminRoot.innerHTML = '<h2>Unable to load the admin panel</h2><p>Please sign in again or try later.</p>');
+  const data = await membersResponse.json();
+  const events = eventsResponse.ok ? (await eventsResponse.json()).events : [];
+  const messages = chatResponse.ok ? (await chatResponse.json()).messages : [];
+  const audit = auditResponse.ok ? (await auditResponse.json()).entries : [];
+  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>League operations</h2><p class="admin-note">Manage competitions and staff titles here. Captain and Manager remain display titles only; only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="admin-tabs" role="tablist"><button class="tab active" data-admin-tab="competitions">Competitions</button><button class="tab" data-admin-tab="members">Members (${data.users.length})</button><button class="tab" data-admin-tab="chat">Staff chat</button><button class="tab" data-admin-tab="audit">Audit history</button></div><section class="admin-panel active" data-admin-panel="competitions"><div class="admin-section-heading"><div><h2>Competition manager</h2><p>Draft, publish, update status, duplicate, archive, or remove events and cups.</p></div><a class="button button-primary" href="/wheel" data-link>Create in Unc Wheel →</a></div><div class="admin-event-list">${events.length?events.map(adminCompetitionCard).join(''):'<p class="admin-empty">No saved competitions yet.</p>'}</div></section><section class="admin-panel" data-admin-panel="members"><div class="member-list">${data.users.map(user => adminMemberRow(user,data.canManageRoles)).join('')}</div></section><section class="admin-panel" data-admin-panel="chat"><div class="admin-section-heading"><div><h2>Staff chat</h2><p>Private to owners and administrators.</p></div><button class="tab" id="refresh-admin-chat">Refresh</button></div>${adminChat(messages)}</section><section class="admin-panel" data-admin-panel="audit"><div class="admin-section-heading"><div><h2>Audit history</h2><p>The latest protected administrative actions.</p></div></div>${adminAudit(audit)}</section>`;
+  document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{
+    document.querySelectorAll('[data-admin-tab]').forEach(tab=>tab.classList.toggle('active',tab===button));
+    document.querySelectorAll('[data-admin-panel]').forEach(panel=>panel.classList.toggle('active',panel.dataset.adminPanel===button.dataset.adminTab));
+  }));
   document.querySelectorAll('[data-role-user]').forEach(button => button.addEventListener('click', async () => {
     button.disabled = true;
     const update = await fetch('/api/admin/role', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId: button.dataset.roleUser, role: button.dataset.nextRole }) });
@@ -336,6 +384,53 @@ async function hydrateAccount() {
       button.disabled = false;
     }
   }));
+  const eventPayload = (card,event,overrides={}) => ({
+    id:event.id,title:card.querySelector('[data-event-title]').value.trim(),
+    startsAt:card.querySelector('[data-event-start]').value ? new Date(card.querySelector('[data-event-start]').value).toISOString() : null,
+    destination:card.querySelector('[data-event-destination]').value,format:event.format,status:event.status,snapshot:event.snapshot,...overrides
+  });
+  document.querySelectorAll('[data-admin-event]').forEach(card => {
+    const event = events.find(item=>item.id===card.dataset.adminEvent);
+    card.querySelector('[data-event-save]')?.addEventListener('click',async buttonEvent=>{
+      const button=buttonEvent.currentTarget; button.disabled=true;
+      const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(eventPayload(card,event))});
+      if(response.ok) hydrateAccount(); else button.disabled=false;
+    });
+    card.querySelector('[data-event-status]')?.addEventListener('click',async buttonEvent=>{
+      const button=buttonEvent.currentTarget; button.disabled=true;
+      const status=card.querySelector('[data-event-lifecycle]').value;
+      const response=await fetch('/api/admin/event-status',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({id:event.id,status})});
+      if(response.ok) hydrateAccount(); else button.disabled=false;
+    });
+    card.querySelector('[data-event-publish]')?.addEventListener('click',async buttonEvent=>{
+      const action=event.status==='published'?'unpublish':'publish';
+      if(!window.confirm(`${action[0].toUpperCase()+action.slice(1)} ${event.title}?`)) return;
+      const button=buttonEvent.currentTarget; button.disabled=true;
+      const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(eventPayload(card,event,{status:event.status==='published'?'draft':'published'}))});
+      if(response.ok) hydrateAccount(); else button.disabled=false;
+    });
+    card.querySelector('[data-event-duplicate]')?.addEventListener('click',async buttonEvent=>{
+      const title=window.prompt('Name for the duplicated draft:',`${event.title} copy`);
+      if(!title?.trim()) return;
+      const button=buttonEvent.currentTarget; button.disabled=true;
+      const duplicate=eventPayload(card,event,{id:undefined,title:title.trim(),status:'draft'}); delete duplicate.id;
+      const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(duplicate)});
+      if(response.ok) hydrateAccount(); else button.disabled=false;
+    });
+    card.querySelector('[data-event-delete]')?.addEventListener('click',async ()=>{
+      if(!window.confirm(`Permanently delete ${event.title}? This cannot be undone.`)) return;
+      const response=await fetch(`/api/admin/events?id=${encodeURIComponent(event.id)}`,{method:'DELETE',credentials:'same-origin'});
+      if(response.ok) hydrateAccount();
+    });
+  });
+  document.querySelector('#admin-chat-form')?.addEventListener('submit',async submitEvent=>{
+    submitEvent.preventDefault();
+    const form=submitEvent.currentTarget,textarea=form.querySelector('textarea'),button=form.querySelector('button');
+    button.disabled=true;
+    const response=await fetch('/api/admin/chat',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({message:textarea.value})});
+    if(response.ok) hydrateAccount(); else button.disabled=false;
+  });
+  document.querySelector('#refresh-admin-chat')?.addEventListener('click',hydrateAccount);
 }
 
 function render() {
@@ -358,6 +453,7 @@ function render() {
   bindDynamicActions();
   hydrateAccount();
   hydratePublishedEvents();
+  hydrateHomeCalendar();
   window.scrollTo(0,0);
 }
 
