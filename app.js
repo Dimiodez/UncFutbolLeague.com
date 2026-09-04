@@ -157,6 +157,39 @@ function eventWinner(snapshot) {
   return rounds.length ? rounds[rounds.length - 1]?.[0]?.winner : null;
 }
 
+function publicGroupTable(group, fixtures) {
+  const rows = new Map(group.map(name => [name, { name, played: 0, difference: 0, points: 0 }]));
+  fixtures.forEach(match => {
+    if (match.homeScore === '' || match.awayScore === '') return;
+    const home = rows.get(match.home), away = rows.get(match.away);
+    if (!home || !away) return;
+    const hs = Number(match.homeScore), as = Number(match.awayScore);
+    home.played++; away.played++; home.difference += hs-as; away.difference += as-hs;
+    if (hs === as) { home.points++; away.points++; } else if (hs > as) home.points += 3; else away.points += 3;
+  });
+  return [...rows.values()].sort((a,b) => b.points-a.points || b.difference-a.difference || a.name.localeCompare(b.name));
+}
+
+function publicMatch(match, label) {
+  const score = match.homeScore !== '' && match.homeScore != null ? `${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}` : 'TBD';
+  return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</span><b>${score}</b><span class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</span></div>`;
+}
+
+function eventBoard(snapshot) {
+  if (snapshot?.kind === 'draw') {
+    return `<div class="event-roster-grid">${(snapshot.session?.teams || []).map(team => `<article><h3>${escapeHtml(team.name)}</h3><p>${(team.playerIds || []).map(id => snapshot.session.players.find(player => player.id === id)?.name).filter(Boolean).map(escapeHtml).join(' · ') || 'Roster pending'}</p></article>`).join('')}</div>`;
+  }
+  const columns = [];
+  (snapshot?.groupStage?.groups || snapshot?.groupSetup || []).forEach((group, index) => {
+    const fixtures = (snapshot.groupStage?.fixtures || []).filter(match => match.groupIndex === index);
+    const table = publicGroupTable(group, fixtures);
+    columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table">${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}P</span><span>${row.points} pts</span></div>`).join('')}</div><details><summary>Group matches (${fixtures.length})</summary><div class="event-stage-matches">${fixtures.map(match => publicMatch(match, 'Group match')).join('')}</div></details></section>`);
+  });
+  (snapshot?.rounds || []).forEach((round, index, rounds) => columns.push(`<section class="event-stage-column"><h3>${index === rounds.length-1 ? 'Final' : index === rounds.length-2 ? 'KO round' : `Round ${index+1}`}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, index === rounds.length-1 ? 'Final' : 'Knockout')).join('')}</div></section>`));
+  if (!columns.length && snapshot?.leagueSnapshot?.fixtures?.length) columns.push(`<section class="event-stage-column"><h3>League matches</h3><div class="event-stage-matches">${snapshot.leagueSnapshot.fixtures.map(match => publicMatch(match, 'League')).join('')}</div></section>`);
+  return `<div class="event-tournament-board">${columns.join('')}</div>`;
+}
+
 async function hydratePublishedEvents() {
   const root = document.querySelector('#published-events');
   if (!root) return;
@@ -166,10 +199,9 @@ async function hydratePublishedEvents() {
     if (!response.ok) throw new Error();
     if (!data.events.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
     root.innerHTML = `<div class="published-event-list">${data.events.map(item => {
-      const matches = eventMatches(item.snapshot);
       const winner = eventWinner(item.snapshot);
       const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
-      return `<article class="published-event"><div class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><span class="season-chip season-chip-live">${escapeHtml(date)}</span></div><div class="published-match-list">${matches.length ? matches.map(match => `<div><small>${escapeHtml(match.label || 'Match')}</small><strong class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</strong><span>vs</span><strong class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</strong>${match.homeScore !== '' && match.homeScore != null ? `<b>${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}</b>` : ''}</div>`).join('') : '<p>Teams and fixtures will be added by the event organizer.</p>'}</div></article>`;
+      return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;
     }).join('')}</div>`;
   } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
 }
