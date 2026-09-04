@@ -48,8 +48,8 @@ function renderSimple() {
       <button data-choice="away" data-match="${f.id}" class="${cls('away')}" ${open?'':'disabled'}>${badge(f.away)}<span><strong>${f.away.name}</strong><small>Away win</small></span></button>
     </div></article>`;
   }).join('');
-  const featured=fixtures.at(-1); $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=`Locks ${formatKickoff(week)}`;
-  $('#tiebreaker').value=open?(saved.tiebreaker??''):(complete?featured.hs+featured.as:''); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?(authState.authenticated?'Save server ballot':'Sign in to submit'):complete?`Week ${week} final`:`Week ${week} locked`;
+  const featured=fixtures.at(-1), finalTotal=complete?featured.hs+featured.as:null; $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=complete?`Final total: ${finalTotal} · Your pick: ${saved.tiebreaker??'—'}`:`Locks ${formatKickoff(week)}`;
+  $('#tiebreaker').value=saved.tiebreaker??(complete?finalTotal:''); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?(authState.authenticated?'Save server ballot':'Sign in to submit'):complete?`Week ${week} final`:`Week ${week} locked`;
   updateProgress(); renderSimpleLeaders(); renderActivity(open);
 }
 function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
