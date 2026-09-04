@@ -183,11 +183,16 @@ function eventBoard(snapshot) {
   (snapshot?.groupStage?.groups || snapshot?.groupSetup || []).forEach((group, index) => {
     const fixtures = (snapshot.groupStage?.fixtures || []).filter(match => match.groupIndex === index);
     const table = publicGroupTable(group, fixtures);
-    columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table">${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}P</span><span>${row.points} pts</span></div>`).join('')}</div><details><summary>Group matches (${fixtures.length})</summary><div class="event-stage-matches">${fixtures.map(match => publicMatch(match, 'Group match')).join('')}</div></details></section>`);
+    columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>GD</span><span>Pts</span></div>${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.difference > 0 ? '+' : ''}${row.difference}</span><span>${row.points}</span></div>`).join('')}</div><h4>Matches</h4><div class="event-group-matches">${fixtures.map(match => `<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore !== '' ? escapeHtml(String(match.homeScore)) : '–'}</b><em>–</em><b>${match.awayScore !== '' ? escapeHtml(String(match.awayScore)) : '–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
   });
-  (snapshot?.rounds || []).forEach((round, index, rounds) => columns.push(`<section class="event-stage-column"><h3>${index === rounds.length-1 ? 'Final' : index === rounds.length-2 ? 'KO round' : `Round ${index+1}`}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, index === rounds.length-1 ? 'Final' : 'Knockout')).join('')}</div></section>`));
+  (snapshot?.rounds || []).forEach((round, index, rounds) => {
+    const remaining = rounds.length-index;
+    const title = remaining === 1 ? 'Final' : remaining === 2 ? 'Semifinals' : remaining === 3 ? 'Quarterfinals' : `KO round ${index+1}`;
+    columns.push(`<section class="event-stage-column knockout-column"><h3>${title}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, title)).join('')}</div></section>`);
+  });
   if (!columns.length && snapshot?.leagueSnapshot?.fixtures?.length) columns.push(`<section class="event-stage-column"><h3>League matches</h3><div class="event-stage-matches">${snapshot.leagueSnapshot.fixtures.map(match => publicMatch(match, 'League')).join('')}</div></section>`);
-  return `<div class="event-tournament-board">${columns.join('')}</div>`;
+  const winner = eventWinner(snapshot);
+  return `<div class="event-tournament-board">${columns.join('')}${winner ? `<aside class="event-champion-panel"><small>Match centre</small><h3>Champion</h3><div><span>🏆</span><strong>${escapeHtml(winner)}</strong></div></aside>` : ''}</div>`;
 }
 
 async function hydratePublishedEvents() {
