@@ -195,6 +195,13 @@ function publicLeagueTable(names, fixtures) {
   return [...rows.values()].sort((a,b)=>b.points-a.points||b.difference-a.difference||a.name.localeCompare(b.name));
 }
 
+function publicGroupFixtures(group,index,doubleRound=false) {
+  return group.flatMap((home,homeIndex)=>group.slice(homeIndex+1).flatMap((away,awayIndex)=>{
+    const first={id:`public-g${index}-${homeIndex}-${awayIndex}-1`,groupIndex:index,home,away,homeScore:'',awayScore:''};
+    return doubleRound?[first,{...first,id:`${first.id}-2`,home:away,away:home}]:[first];
+  }));
+}
+
 function publicMatch(match, label) {
   const score = match.homeScore !== '' && match.homeScore != null ? `${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}` : 'TBD';
   return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</span><b>${score}</b><span class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</span></div>`;
@@ -211,11 +218,12 @@ function eventBoard(snapshot) {
     snapshot.names.filter(Boolean).forEach((name,index)=>groups[index%count].push(name));
   }
   groups.forEach((group, index) => {
-    const fixtures = (snapshot.groupStage?.fixtures || []).filter(match => match.groupIndex === index);
+    const savedFixtures = (snapshot.groupStage?.fixtures || []).filter(match => match.groupIndex === index);
+    const fixtures = savedFixtures.length ? savedFixtures : publicGroupFixtures(group,index,Boolean(snapshot.doubleElimination));
     const table = publicGroupTable(group, fixtures);
     columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>GD</span><span>Pts</span></div>${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.difference > 0 ? '+' : ''}${row.difference}</span><span>${row.points}</span></div>`).join('')}</div><h4>Matches</h4><div class="event-group-matches">${fixtures.map(match => `<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore !== '' ? escapeHtml(String(match.homeScore)) : '–'}</b><em>–</em><b>${match.awayScore !== '' ? escapeHtml(String(match.awayScore)) : '–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
   });
-  if(snapshot?.leagueSnapshot) {
+  if(snapshot?.format==='league' && snapshot?.leagueSnapshot) {
     const league=snapshot.leagueSnapshot,table=publicLeagueTable(snapshot.names,league.fixtures);
     columns.push(`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore!==''?escapeHtml(String(match.homeScore)):'–'}</b><em>–</em><b>${match.awayScore!==''?escapeHtml(String(match.awayScore)):'–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
     columns.push(`<section class="event-stage-column knockout-column qualification-column"><h3>Qualification playoffs</h3>${league.playoffs?.length?`<div class="event-stage-matches">${league.playoffs.map(match=>publicMatch(match,'Playoff')).join('')}</div>`:`<div class="event-stage-placeholder"><strong>${league.playoffPlaces||0} playoff places</strong><p>Matchups appear when the league phase is complete.</p></div>`}</section>`);
