@@ -84,6 +84,9 @@ select, input, textarea,
 }
 select option { color: var(--uwu-ink); background: var(--uwu-panel); }
 input::placeholder, textarea::placeholder { color: var(--uwu-muted); opacity: 1; }
+.competition-save-panel input[type="datetime-local"]::-webkit-calendar-picker-indicator { border-color: var(--uwu-accent-2); background-color: #fff; filter: none; }
+:root[data-theme="dark"] .competition-save-panel input[type="datetime-local"]::-webkit-calendar-picker-indicator { border-color: #62d5ff; background-color: #dff7ff; filter: none; }
+:root[data-theme="vintage"] .competition-save-panel input[type="datetime-local"]::-webkit-calendar-picker-indicator { border-color: #7d302c; background-color: #fff7e3; filter: none; }
 select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px solid var(--uwu-accent-2); outline-offset: 2px; }
 :root[data-theme="dark"] select,
 :root[data-theme="dark"] select option { color: #f7f9fc; background-color: #091a33; }
