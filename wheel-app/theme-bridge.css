@@ -166,3 +166,22 @@ select:focus, input:focus, textarea:focus, button:focus-visible { outline: 3px s
   border-color: #d8af22;
   opacity: 1;
 }
+
+/* Live Drawings keeps its gala presentation while adapting to each site theme. */
+:root:not([data-theme="dark"]) .draw-ceremony {
+  color: var(--uwu-ink);
+  border-color: color-mix(in srgb,#b88a28 60%,var(--uwu-line));
+  background: radial-gradient(circle at 50% 8%,var(--uwu-panel) 0,var(--uwu-panel-alt) 46%,var(--uwu-bg-deep) 100%);
+  box-shadow: 0 28px 70px color-mix(in srgb,var(--uwu-ink) 18%,transparent),inset 0 0 80px #b88a280d;
+}
+:root:not([data-theme="dark"]) .ceremony-heading h2,
+:root:not([data-theme="dark"]) .draw-reveal h3,
+:root:not([data-theme="dark"]) .live-group-wall article>div.filled { color: var(--uwu-ink); }
+:root:not([data-theme="dark"]) .ceremony-heading p,
+:root:not([data-theme="dark"]) .ceremony-controls p { color: var(--uwu-muted); }
+:root:not([data-theme="dark"]) .draw-reveal,
+:root:not([data-theme="dark"]) .live-group-wall article {
+  color: var(--uwu-ink); border-color: #b88a2866; background: color-mix(in srgb,var(--uwu-panel) 92%,#b88a28 8%);
+}
+:root:not([data-theme="dark"]) .live-group-wall article>div { border-color: var(--uwu-line); color: var(--uwu-muted); }
+:root[data-theme="vintage"] .draw-ceremony { background: radial-gradient(circle at 50% 8%,#f7edda 0,#e3d3b2 48%,#c8b58d 100%); }

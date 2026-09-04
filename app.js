@@ -278,7 +278,7 @@ function utilityPage(kind) {
 }
 
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-theme-publish5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings2" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function pickemsPage() {
