@@ -3,6 +3,7 @@
   --blue: #0666b9;
   --sky: #62b5ef;
   --red: #ea1235;
+  --good: #168a4b;
   --cream: #f3ebd8;
   --ink: #0d1728;
   --muted: #607086;
@@ -189,6 +190,7 @@ html[data-theme="dark"] {
   --muted: #a8b6c8;
   --white: #10243d;
   --line: #29415f;
+  --good: #55e991;
   --cream: #d9e0e8;
   --shadow: 0 22px 60px rgba(0,0,0,.35);
 }
@@ -220,6 +222,7 @@ html[data-theme="vintage"] {
   --paper: #e9dcc0;
   --white: #f4ead2;
   --line: #aa9878;
+  --good: #47753e;
   --shadow: 0 22px 60px rgba(56,43,25,.22);
 }
 html[data-theme="vintage"] body { background-image: radial-gradient(rgba(72,55,33,.08) 1px, transparent 1px); background-size: 5px 5px; }
