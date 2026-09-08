@@ -247,7 +247,7 @@ function eventBoard(snapshot) {
   (snapshot?.rounds || []).forEach((round, index, rounds) => {
     const remaining = rounds.length-index;
     const title = remaining === 1 ? 'Final' : remaining === 2 ? 'Semifinals' : remaining === 3 ? 'Quarterfinals' : `KO round ${index+1}`;
-    columns.push(`<section class="event-stage-column knockout-column event-round-${roundIndex + 1}"><h3>${title}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, title)).join('')}</div></section>`);
+    columns.push(`<section class="event-stage-column knockout-column event-round-${index + 1}"><h3>${title}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, title)).join('')}</div></section>`);
   });
   if((snapshot?.format==='groups'||snapshot?.format==='league') && !(snapshot?.rounds||[]).length) columns.push(`<section class="event-stage-column knockout-column"><h3>Knockout bracket</h3><div class="event-stage-placeholder"><strong>Awaiting qualifiers</strong><p>The bracket will appear here automatically when it is created in the event builder.</p></div></section>`);
   const winner = eventWinner(snapshot);
