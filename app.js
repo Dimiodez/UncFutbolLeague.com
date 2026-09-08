@@ -27,7 +27,8 @@ const scheduleTypes = {
   '6v6': ['6v6 League Schedule','Six-a-side fixtures and matchweek results.'],
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
-  'league-cup': ['League Cup Schedule','The knockout road to silverware.']
+  'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
+  byot: ['BYOT Tournaments','Bring your own four-player team and chase the recurring 4v4 crown.']
 };
 
 const locations = [
@@ -65,7 +66,7 @@ function tenVTenComingSoon(area) {
 
 function houseTeamsPage() {
   return pageHero('House teams', 'From the beach to the mountains, find your house.', 'Two houses. One community. Plenty of opportunities to blame the connection.') +
-    `<section class="section"><div class="house-team-grid"><article class="card house-team-card"><div class="team-logo-placeholder" aria-label="FC Sandy Bums logo coming soon">SB</div><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p><span class="logo-note">Official crest coming soon</span></article><article class="card house-team-card"><div class="team-logo-placeholder" aria-label="FC Mountains logo coming soon">FM</div><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p><span class="logo-note">Official crest coming soon</span></article></div></section>`;
+    `<section class="section"><div class="house-team-callout"><span class="section-kicker">Open pickup nights</span><h2>Free to join. Pickup games almost every night.</h2><p>Choose a house, meet the community, and jump in whenever a lobby opens.</p></div><div class="house-team-grid"><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-sandy-bums.png" alt="FC Sandy Bums crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p></article><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-mountains.png" alt="FC Mountains crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p></article></div></section>`;
 }
 
 function homePage() {
@@ -145,7 +146,7 @@ function schedulesPage(params) {
 }
 
 function scheduleLandingTabs(active) {
-  return `<div class="tabs"><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events Schedule</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup Schedule</a></div>`;
+  return `<div class="tabs"><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
 }
 
 function communityEventsPage() {
@@ -156,6 +157,19 @@ function communityEventsPage() {
 function leagueCupPage() {
   return pageHero('Road to silverware','League Cup Schedule','One bracket, no league-table excuses, and a trophy somebody will mention for the next five years.') +
     `<section class="section schedule-landing">${scheduleLandingTabs('league-cup')}<div id="published-events" data-destination="league-cup">${emptyState('Checking the engraver','Loading the published cup draw…')}</div></section>`;
+}
+
+function byotBuilder() {
+  return `<section class="byot-builder" id="byot-builder" hidden><div class="byot-builder-head"><div><span class="section-kicker">Owner / admin tools</span><h2>Create the next 4v4 BYOT</h2><p>Set the field, groups, bracket and local kickoff time, then publish it directly to this schedule.</p></div><span class="season-chip season-chip-live">Protected</span></div><form id="byot-form"><div class="byot-fields"><label>Tournament name<input name="title" value="4v4 BYOT" maxlength="120" required></label><label>Date and kickoff<input name="startsAt" type="datetime-local" required></label><label>Team count<select name="teamCount"><option>4</option><option selected>8</option><option>12</option><option>16</option></select></label><label>Group count<select name="groupCount"><option>2</option><option>4</option></select></label><label>Format<select name="format"><option value="groups">Groups + knockout</option><option value="knockout">Straight knockout</option></select></label><label>Advance per group<select name="qualifiers"><option selected>2</option><option>1</option><option>4</option></select></label></div><label class="byot-team-label">Team names <small>One per line. The list automatically follows the selected team count.</small><textarea name="teams" rows="8" placeholder="Pistoleros CF&#10;UFL Lyon&#10;Team 3&#10;Team 4" required></textarea></label><div class="button-row"><button class="button button-primary" type="submit">Save + publish BYOT →</button><button class="button button-secondary" type="button" id="byot-preview">Preview format</button></div><p class="byot-message" id="byot-message" aria-live="polite"></p><div id="byot-preview-board"></div></form></section>`;
+}
+
+function inauguralByot() {
+  return `<details class="published-event byot-inaugural" open><summary class="published-event-head"><div><span class="section-kicker">Inaugural 4v4 BYOT</span><h2>Pistoleros CF lift the first crown</h2><strong class="event-winner">🏆 Champion: Pistoleros CF</strong></div><div><span class="season-chip event-status-completed">completed</span><i aria-hidden="true"></i></div></summary><div class="published-event-body"><div class="byot-champion"><img src="/assets/pistoleros-cf.png" alt="Pistoleros CF crest" loading="lazy" decoding="async"><div><span class="section-kicker">Final</span><h3>Pistoleros CF <b>5–2</b> UFL Lyon</h3><p><strong>Winning team:</strong> Dez · Gucci · Dloww · Luis</p></div></div></div></details>`;
+}
+
+function byotTournamentsPage() {
+  return pageHero('Recurring 4v4 series','BYOT Tournaments','Bring your own team, choose the format, and play from group stage to trophy night.') +
+    `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>One night. Four players. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
 }
 
 function eventMatches(snapshot) {
@@ -245,13 +259,51 @@ async function hydratePublishedEvents() {
     const response = await fetch(`/api/events?destination=${root.dataset.destination}`);
     const data = await response.json();
     if (!response.ok) throw new Error();
-    if (!data.events.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
-    root.innerHTML = `<div class="published-event-list">${data.events.map(item => {
+    const visibleEvents = root.dataset.destination === 'community-events' ? data.events.filter(item=>item.snapshot?.series!=='byot') : data.events;
+    if (!visibleEvents.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
+    root.innerHTML = `<div class="published-event-list">${visibleEvents.map(item => {
       const winner = eventWinner(item.snapshot);
       const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
       return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;
     }).join('')}</div>`;
   } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
+}
+
+function makeByotSnapshot(form) {
+  const count = Number(form.elements.teamCount.value);
+  const names = form.elements.teams.value.split(/\r?\n/).map(name=>name.trim()).filter(Boolean);
+  if (names.length !== count) throw new Error(`Enter exactly ${count} team names.`);
+  const format = form.elements.format.value;
+  const groupCount = Math.min(Number(form.elements.groupCount.value), Math.max(1, Math.floor(count/2)));
+  const groupSetup = Array.from({length:groupCount},()=>[]);
+  names.forEach((name,index)=>groupSetup[index%groupCount].push(name));
+  if (format === 'groups' && groupSetup.some(group=>group.length<2)) throw new Error('Each group needs at least two teams. Reduce the group count.');
+  if (format === 'knockout' && (count & (count-1))) throw new Error('Straight knockout requires 4, 8, or 16 teams.');
+  const fixtures = format === 'groups' ? groupSetup.flatMap((group,index)=>publicGroupFixtures(group,index)) : [];
+  const qualifiers = format === 'groups' ? Math.min(Number(form.elements.qualifiers.value), Math.min(...groupSetup.map(group=>group.length))) : count;
+  const bracketSize = format === 'groups' ? groupCount*qualifiers : count;
+  const rounds=[];
+  for(let matchCount=Math.floor(bracketSize/2),roundIndex=0;matchCount>=1;matchCount=Math.floor(matchCount/2),roundIndex++) rounds.push(Array.from({length:matchCount},(_,index)=>({id:`byot-ko-${roundIndex}-${index}`,home:roundIndex===0&&format==='knockout'?names[index*2]:'TBD',away:roundIndex===0&&format==='knockout'?names[index*2+1]:'TBD',homeScore:'',awayScore:'',winner:''})));
+  return {series:'byot',kind:'competition',format:format==='groups'?'groups':'knockout',names,groupCount,qualifiers,groupSetup:format==='groups'?groupSetup:[],groupStage:format==='groups'?{groups:groupSetup,fixtures}:undefined,rounds};
+}
+
+async function hydrateByotPage() {
+  const eventsRoot=document.querySelector('#byot-events');
+  if(!eventsRoot) return;
+  try {
+    const response=await fetch('/api/events?destination=community-events'),data=await response.json();
+    const events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
+    const cards=events.map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">4v4 BYOT</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;}).join('');
+    eventsRoot.innerHTML=`<div class="published-event-list">${cards}${inauguralByot()}</div>`;
+  } catch { eventsRoot.innerHTML=`<div class="published-event-list">${inauguralByot()}</div>`; }
+
+  const state=await getAuthState(),builder=document.querySelector('#byot-builder');
+  if(!builder || !state.authenticated || !['owner','admin'].includes(state.user.role)) return;
+  builder.hidden=false;
+  const form=document.querySelector('#byot-form'),preview=document.querySelector('#byot-preview-board'),message=document.querySelector('#byot-message');
+  const showPreview=()=>{try{preview.innerHTML=eventBoard(makeByotSnapshot(form));message.textContent='';}catch(error){message.textContent=error.message;}};
+  document.querySelector('#byot-preview')?.addEventListener('click',showPreview);
+  form.addEventListener('submit',async event=>{event.preventDefault();message.textContent='Publishing…';const button=form.querySelector('[type="submit"]');button.disabled=true;try{const snapshot=makeByotSnapshot(form);const startsAt=new Date(form.elements.startsAt.value).toISOString();const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({title:form.elements.title.value.trim(),destination:'community-events',format:'4v4-byot',startsAt,status:'published',snapshot})});const result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to publish this tournament.');message.textContent='Published. Refreshing the BYOT schedule…';window.setTimeout(()=>hydrateByotPage(),300);}catch(error){message.textContent=error.message;}finally{button.disabled=false;}});
 }
 
 async function hydrateHomeCalendar() {
@@ -260,7 +312,7 @@ async function hydrateHomeCalendar() {
   try {
     const response=await fetch('/api/events?calendar=1'),data=await response.json();
     if(!response.ok) throw new Error();
-    root.innerHTML=data.events.length?data.events.map(event=>`<a class="home-event-card" href="/schedules/${event.destination==='league-cup'?'league-cup':'community-events'}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${event.destination==='league-cup'?'League Cup':'Community Event'} →</small></a>`).join(''):'<p class="admin-empty">No upcoming community events or cups yet.</p>';
+    root.innerHTML=data.events.length?data.events.map(event=>{const byot=event.snapshot?.series==='byot';const route=byot?'byot-tournaments':event.destination==='league-cup'?'league-cup':'community-events';const label=byot?'BYOT Tournament':event.destination==='league-cup'?'League Cup':'Community Event';return `<a class="home-event-card" href="/schedules/${route}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${label} →</small></a>`;}).join(''):'<p class="admin-empty">No upcoming community events or cups yet.</p>';
   } catch { root.innerHTML='<p class="admin-empty">Calendar temporarily unavailable.</p>'; }
 }
 
@@ -470,6 +522,7 @@ function render() {
   else if (path === routes.teams) main.innerHTML = teamsPage(params);
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
   else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
+  else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
@@ -482,6 +535,7 @@ function render() {
   bindDynamicActions();
   hydrateAccount();
   hydratePublishedEvents();
+  hydrateByotPage();
   hydrateHomeCalendar();
   window.scrollTo(0,0);
 }
