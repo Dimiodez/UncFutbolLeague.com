@@ -22,7 +22,7 @@ const names = [
   'balancedLeagueFixtures', 'makeByotSnapshot', 'allCompetitionMatches',
   'assignCompetitionMatch', 'decideCompetitionMatch', 'recalculateCompetition',
   'eventWinner', 'eventSchedulePath', 'eventSharePath', 'controlRoomBody',
-  'adminControlRoom'
+  'adminControlRoom', 'normalizedScoreInput'
 ];
 const context = {
   console, URLSearchParams,
@@ -78,8 +78,16 @@ const controlRoom = context.adminControlRoom([{
 assert.match(controlRoom, /Tournament Night Control Room/);
 assert.match(controlRoom, /Save live results/);
 assert.match(controlRoom, /Matches completed/);
+assert.equal(context.normalizedScoreInput('12'), 12);
+assert.equal(context.normalizedScoreInput('7 goals'), 7);
+assert.equal(context.normalizedScoreInput(''), '');
 
 assert.equal(context.eventSharePath({ id: 'abc-12345', snapshot: { series: 'byot' } }), '/schedules/byot-tournaments?event=abc-12345');
 assert.equal(context.eventSharePath({ id: 'cup-12345', destination: 'league-cup', snapshot: {} }), '/schedules/league-cup?event=cup-12345');
+
+const styles = fs.readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
+assert.match(styles, /\.event-league-fixtures\{grid-template-columns:minmax\(0,1fr\)\}/);
+assert.match(styles, /\.event-bracket-match\{position:relative;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\)/);
+assert.match(source, /type="text" inputmode="numeric" pattern="\[0-9\]\*"/);
 
 console.log('Tournament presets, advancement, winner, and share-link tests passed.');

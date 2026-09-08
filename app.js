@@ -255,12 +255,17 @@ function editableScore(match, editable, compact=false) {
     ? `<b>${value('home') !== '' ? escapeHtml(String(value('home'))) : '–'}</b><em>–</em><b>${value('away') !== '' ? escapeHtml(String(value('away'))) : '–'}</b>`
     : `<b>${value('home') !== '' ? `${escapeHtml(String(value('home')))}–${escapeHtml(String(value('away')))}` : 'TBD'}</b>`;
   const disabled=!match.home||!match.away||match.home==='TBD'||match.away==='TBD'?' disabled':'';
-  const fields=`<input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="home" type="number" min="0" max="99" inputmode="numeric" aria-label="${escapeHtml(match.home||'Home')} score" value="${escapeHtml(value('home'))}"${disabled}><span>–</span><input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="away" type="number" min="0" max="99" inputmode="numeric" aria-label="${escapeHtml(match.away||'Away')} score" value="${escapeHtml(value('away'))}"${disabled}>`;
+  const fields=`<input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="home" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-label="${escapeHtml(match.home||'Home')} score" value="${escapeHtml(value('home'))}"${disabled}><span>–</span><input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="away" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-label="${escapeHtml(match.away||'Away')} score" value="${escapeHtml(value('away'))}"${disabled}>`;
   return compact ? `<b class="event-inline-score">${fields}</b>` : `<b class="event-bracket-score">${fields}</b>`;
 }
 
+function normalizedScoreInput(value) {
+  const digits=String(value??'').replace(/\D/g,'').slice(0,2);
+  return digits===''?'':Math.max(0,Math.min(99,Number(digits)));
+}
+
 function publicMatch(match, label, editable=false) {
-  return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</span>${editableScore(match,editable)}<span class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</span></div>`;
+  return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}" title="${escapeHtml(match.home || 'TBD')}">${escapeHtml(match.home || 'TBD')}</span>${editableScore(match,editable)}<span class="${match.winner === match.away ? 'winner' : ''}" title="${escapeHtml(match.away || 'TBD')}">${escapeHtml(match.away || 'TBD')}</span></div>`;
 }
 
 function eventBoard(snapshot, editable=false) {
@@ -285,7 +290,7 @@ function eventBoard(snapshot, editable=false) {
   if(snapshot?.qualifyingPlayoffs?.length) columns.push(`<section class="event-stage-column knockout-column qualification-column"><h3>Final qualifiers</h3><div class="event-stage-matches">${snapshot.qualifyingPlayoffs.map(match=>publicMatch(match,'Play-in',editable)).join('')}</div><div class="event-stage-placeholder compact-placeholder"><p>Lowest qualifying seeds play for the remaining bracket places.</p></div></section>`);
   if(snapshot?.format==='league' && snapshot?.leagueSnapshot) {
     const league=snapshot.leagueSnapshot,table=publicLeagueTable(snapshot.names,league.fixtures);
-    leagueColumn=`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span>${escapeHtml(match.home)}</span>${editableScore(match,editable,true)}<span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`;
+    leagueColumn=`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong title="${escapeHtml(row.name)}">${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span title="${escapeHtml(match.home)}">${escapeHtml(match.home)}</span>${editableScore(match,editable,true)}<span title="${escapeHtml(match.away)}">${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`;
     qualificationColumn=`<section class="event-stage-column knockout-column qualification-column"><h3>Qualification playoffs</h3>${league.playoffs?.length?`<div class="event-stage-matches">${league.playoffs.map(match=>publicMatch(match,'Playoff',editable)).join('')}</div>`:`<div class="event-stage-placeholder"><strong>${league.playoffPlaces||0} playoff places</strong><p>Matchups appear when the league phase is complete.</p></div>`}</section>`;
   }
   (snapshot?.rounds || []).forEach((round, index, rounds) => {
@@ -373,7 +378,7 @@ async function hydratePublishedEvents() {
         const item=visibleEvents.find(event=>event.id===input.closest('[data-published-event]')?.dataset.publishedEvent);
         const match=allCompetitionMatches(item?.snapshot).find(candidate=>candidate.id===input.dataset.matchId);
         if(!match)return;
-        match[`${input.dataset.scoreSide}Score`]=input.value===''?'':Math.max(0,Math.min(99,Number(input.value)));
+        match[`${input.dataset.scoreSide}Score`]=normalizedScoreInput(input.value);
         recalculateCompetition(item.snapshot);
         paint();
       }));
@@ -451,7 +456,7 @@ async function hydrateByotPage() {
     const wireCard=(card,item)=>{
       card.querySelectorAll('[data-event-score]').forEach(input=>input.addEventListener('change',()=>{
         const match=allCompetitionMatches(item.snapshot).find(candidate=>candidate.id===input.dataset.matchId);if(!match)return;
-        match[`${input.dataset.scoreSide}Score`]=input.value===''?'':Math.max(0,Math.min(99,Number(input.value)));
+        match[`${input.dataset.scoreSide}Score`]=normalizedScoreInput(input.value);
         recalculateCompetition(item.snapshot);
         const body=card.querySelector('.published-event-body');body.innerHTML=`${eventShareTools(item,Boolean(new URLSearchParams(window.location.search).get('event')))}${eventBoard(item.snapshot,true)}${resultControls(item)}`;wireCard(card,item);
       }));
@@ -675,7 +680,7 @@ async function hydrateAccount() {
     const selectedId=selector?.value,item=events.find(event=>event.id===selectedId);
     panel.querySelectorAll('[data-event-score]').forEach(input=>input.addEventListener('change',()=>{
       const match=allCompetitionMatches(item?.snapshot).find(candidate=>candidate.id===input.dataset.matchId);if(!match)return;
-      match[`${input.dataset.scoreSide}Score`]=input.value===''?'':Math.max(0,Math.min(99,Number(input.value)));
+      match[`${input.dataset.scoreSide}Score`]=normalizedScoreInput(input.value);
       recalculateCompetition(item.snapshot);panel.innerHTML=adminControlRoom(events,item.id);wireControlRoom();
       panel.querySelector('[data-control-message]').textContent='Unsaved result changes. Review the board, then save live results.';
     }));
