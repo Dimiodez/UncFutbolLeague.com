@@ -1,6 +1,6 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', pickems: '/pickems', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
+  standings: '/standings', users: '/users', pickems: '/pickems', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -28,7 +28,7 @@ const scheduleTypes = {
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
   'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
-  byot: ['BYOT Tournaments','Bring your own four-player team and chase the recurring 4v4 crown.']
+  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.']
 };
 
 const locations = [
@@ -160,16 +160,16 @@ function leagueCupPage() {
 }
 
 function byotBuilder() {
-  return `<section class="byot-builder" id="byot-builder" hidden><div class="byot-builder-head"><div><span class="section-kicker">Owner / admin tools</span><h2>Create the next 4v4 BYOT</h2><p>Set the field, groups, bracket and local kickoff time, then publish it directly to this schedule.</p></div><span class="season-chip season-chip-live">Protected</span></div><form id="byot-form"><div class="byot-fields"><label>Tournament name<input name="title" value="4v4 BYOT" maxlength="120" required></label><label>Date and kickoff<input name="startsAt" type="datetime-local" required></label><label>Team count<select name="teamCount"><option>4</option><option selected>8</option><option>12</option><option>16</option></select></label><label>Group count<select name="groupCount"><option>2</option><option>4</option></select></label><label>Format<select name="format"><option value="groups">Groups + knockout</option><option value="knockout">Straight knockout</option></select></label><label>Advance per group<select name="qualifiers"><option selected>2</option><option>1</option><option>4</option></select></label></div><label class="byot-team-label">Team names <small>One per line. The list automatically follows the selected team count.</small><textarea name="teams" rows="8" placeholder="Pistoleros CF&#10;UFL Lyon&#10;Team 3&#10;Team 4" required></textarea></label><div class="button-row"><button class="button button-primary" type="submit">Save + publish BYOT →</button><button class="button button-secondary" type="button" id="byot-preview">Preview format</button></div><p class="byot-message" id="byot-message" aria-live="polite"></p><div id="byot-preview-board"></div></form></section>`;
+  return `<section class="byot-builder" id="byot-builder" hidden><div class="byot-builder-head"><div><span class="section-kicker">Owner / admin tools</span><h2>Create the next BYOT tournament</h2><p>Set the field, groups, bracket and local kickoff time, then publish it directly to this schedule.</p></div><span class="season-chip season-chip-live">Protected</span></div><form id="byot-form"><div class="byot-fields"><label>Tournament name<input name="title" value="BYOT Tournament" maxlength="120" required></label><label>Date and kickoff<input name="startsAt" type="datetime-local" required></label><label>Team count<select name="teamCount"><option>4</option><option>6</option><option selected>8</option><option>9</option><option>12</option><option>15</option><option>16</option></select></label><label>Group count<select name="groupCount"><option>2</option><option>3</option><option>4</option><option>5</option></select></label><label>Format<select name="format"><option value="groups">Groups + knockout</option><option value="knockout">Straight knockout</option></select></label><label>Advance per group<select name="qualifiers"><option>1</option><option selected>2</option></select></label></div><p class="byot-format-help">Supported group layouts include 2×2, 2×3, 2×4, 3×3, 3×4, 4×3, 4×4 and 5×3. When qualifiers do not form a clean bracket, the lowest qualifying seeds play a final play-in round.</p><label class="byot-team-label">Team names <small>One per line. The list automatically follows the selected team count.</small><textarea name="teams" rows="8" placeholder="Pistoleros CF&#10;UFL Lyon&#10;Team 3&#10;Team 4" required></textarea></label><div class="button-row"><button class="button button-primary" type="submit">Save + publish BYOT →</button><button class="button button-secondary" type="button" id="byot-preview">Preview format</button></div><p class="byot-message" id="byot-message" aria-live="polite"></p><div id="byot-preview-board"></div></form></section>`;
 }
 
 function inauguralByot() {
-  return `<details class="published-event byot-inaugural" open><summary class="published-event-head"><div><span class="section-kicker">Inaugural 4v4 BYOT</span><h2>Pistoleros CF lift the first crown</h2><strong class="event-winner">🏆 Champion: Pistoleros CF</strong></div><div><span class="season-chip event-status-completed">completed</span><i aria-hidden="true"></i></div></summary><div class="published-event-body"><div class="byot-champion"><img src="/assets/pistoleros-cf.png" alt="Pistoleros CF crest" loading="lazy" decoding="async"><div><span class="section-kicker">Final</span><h3>Pistoleros CF <b>5–2</b> UFL Lyon</h3><p><strong>Winning team:</strong> Dez · Gucci · Dloww · Luis</p></div></div></div></details>`;
+  return `<details class="published-event byot-inaugural" open><summary class="published-event-head"><div><span class="section-kicker">Inaugural BYOT Tournament</span><h2>Pistoleros CF lift the first crown</h2><strong class="event-winner">🏆 Champion: Pistoleros CF</strong></div><div><span class="season-chip event-status-completed">completed</span><span class="season-chip season-chip-live">Sep 4, 2026</span><i aria-hidden="true"></i></div></summary><div class="published-event-body"><div class="byot-champion"><img src="/assets/pistoleros-cf.png" alt="Pistoleros CF crest" loading="lazy" decoding="async"><div><span class="section-kicker">Final · September 4, 2026</span><h3>Pistoleros CF <b>5–2</b> UFL Lyon</h3><p><strong>Winning team:</strong> Dez · Gucci · Dloww · Luis</p></div></div></div></details>`;
 }
 
 function byotTournamentsPage() {
-  return pageHero('Recurring 4v4 series','BYOT Tournaments','Bring your own team, choose the format, and play from group stage to trophy night.') +
-    `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>One night. Four players. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
+  return pageHero('Recurring tournament series','BYOT Tournaments','Bring your own team, choose the format, and play from group stage to trophy night.') +
+    `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>Your squad. Your format. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
 }
 
 function eventMatches(snapshot) {
@@ -237,6 +237,7 @@ function eventBoard(snapshot) {
     const table = publicGroupTable(group, fixtures);
     columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>GD</span><span>Pts</span></div>${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.difference > 0 ? '+' : ''}${row.difference}</span><span>${row.points}</span></div>`).join('')}</div><h4>Matches</h4><div class="event-group-matches">${fixtures.map(match => `<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore !== '' ? escapeHtml(String(match.homeScore)) : '–'}</b><em>–</em><b>${match.awayScore !== '' ? escapeHtml(String(match.awayScore)) : '–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
   });
+  if(snapshot?.qualifyingPlayoffs?.length) columns.push(`<section class="event-stage-column knockout-column qualification-column"><h3>Final qualifiers</h3><div class="event-stage-matches">${snapshot.qualifyingPlayoffs.map(match=>publicMatch(match,'Play-in')).join('')}</div><div class="event-stage-placeholder compact-placeholder"><p>Lowest qualifying seeds play for the remaining bracket places.</p></div></section>`);
   if(snapshot?.format==='league' && snapshot?.leagueSnapshot) {
     const league=snapshot.leagueSnapshot,table=publicLeagueTable(snapshot.names,league.fixtures);
     columns.push(`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore!==''?escapeHtml(String(match.homeScore)):'–'}</b><em>–</em><b>${match.awayScore!==''?escapeHtml(String(match.awayScore)):'–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
@@ -278,13 +279,18 @@ function makeByotSnapshot(form) {
   const groupSetup = Array.from({length:groupCount},()=>[]);
   names.forEach((name,index)=>groupSetup[index%groupCount].push(name));
   if (format === 'groups' && groupSetup.some(group=>group.length<2)) throw new Error('Each group needs at least two teams. Reduce the group count.');
+  if (format === 'groups' && count % groupCount !== 0) throw new Error('Choose a group count that divides the teams evenly.');
+  if (format === 'groups' && groupSetup.some(group=>group.length>4)) throw new Error('BYOT groups support two to four teams each.');
   if (format === 'knockout' && (count & (count-1))) throw new Error('Straight knockout requires 4, 8, or 16 teams.');
   const fixtures = format === 'groups' ? groupSetup.flatMap((group,index)=>publicGroupFixtures(group,index)) : [];
   const qualifiers = format === 'groups' ? Math.min(Number(form.elements.qualifiers.value), Math.min(...groupSetup.map(group=>group.length))) : count;
-  const bracketSize = format === 'groups' ? groupCount*qualifiers : count;
+  const qualifiedCount = format === 'groups' ? groupCount*qualifiers : count;
+  const bracketSize = 2 ** Math.floor(Math.log2(qualifiedCount));
+  const playInCount = qualifiedCount-bracketSize;
+  const qualifyingPlayoffs = Array.from({length:playInCount},(_,index)=>({id:`byot-play-in-${index}`,home:'Best placed qualifier',away:'Best placed qualifier',homeScore:'',awayScore:'',winner:''}));
   const rounds=[];
   for(let matchCount=Math.floor(bracketSize/2),roundIndex=0;matchCount>=1;matchCount=Math.floor(matchCount/2),roundIndex++) rounds.push(Array.from({length:matchCount},(_,index)=>({id:`byot-ko-${roundIndex}-${index}`,home:roundIndex===0&&format==='knockout'?names[index*2]:'TBD',away:roundIndex===0&&format==='knockout'?names[index*2+1]:'TBD',homeScore:'',awayScore:'',winner:''})));
-  return {series:'byot',kind:'competition',format:format==='groups'?'groups':'knockout',names,groupCount,qualifiers,groupSetup:format==='groups'?groupSetup:[],groupStage:format==='groups'?{groups:groupSetup,fixtures}:undefined,rounds};
+  return {series:'byot',kind:'competition',format:format==='groups'?'groups':'knockout',names,groupCount,qualifiers,groupSetup:format==='groups'?groupSetup:[],groupStage:format==='groups'?{groups:groupSetup,fixtures}:undefined,qualifyingPlayoffs,rounds};
 }
 
 async function hydrateByotPage() {
@@ -293,7 +299,7 @@ async function hydrateByotPage() {
   try {
     const response=await fetch('/api/events?destination=community-events'),data=await response.json();
     const events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
-    const cards=events.map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">4v4 BYOT</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;}).join('');
+    const cards=events.map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;}).join('');
     eventsRoot.innerHTML=`<div class="published-event-list">${cards}${inauguralByot()}</div>`;
   } catch { eventsRoot.innerHTML=`<div class="published-event-list">${inauguralByot()}</div>`; }
 
@@ -301,9 +307,11 @@ async function hydrateByotPage() {
   if(!builder || !state.authenticated || !['owner','admin'].includes(state.user.role)) return;
   builder.hidden=false;
   const form=document.querySelector('#byot-form'),preview=document.querySelector('#byot-preview-board'),message=document.querySelector('#byot-message');
+  const syncGroupOptions=()=>{const count=Number(form.elements.teamCount.value),format=form.elements.format.value;[...form.elements.groupCount.options].forEach(option=>{const groups=Number(option.value),size=count/groups;option.disabled=format!=='groups'||!Number.isInteger(size)||size<2||size>4;});if(format==='groups'&&form.elements.groupCount.selectedOptions[0]?.disabled){const first=[...form.elements.groupCount.options].find(option=>!option.disabled);if(first) form.elements.groupCount.value=first.value;}form.elements.groupCount.disabled=format!=='groups';form.elements.qualifiers.disabled=format!=='groups';};
+  form.elements.teamCount.addEventListener('change',syncGroupOptions);form.elements.format.addEventListener('change',syncGroupOptions);syncGroupOptions();
   const showPreview=()=>{try{preview.innerHTML=eventBoard(makeByotSnapshot(form));message.textContent='';}catch(error){message.textContent=error.message;}};
   document.querySelector('#byot-preview')?.addEventListener('click',showPreview);
-  form.addEventListener('submit',async event=>{event.preventDefault();message.textContent='Publishing…';const button=form.querySelector('[type="submit"]');button.disabled=true;try{const snapshot=makeByotSnapshot(form);const startsAt=new Date(form.elements.startsAt.value).toISOString();const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({title:form.elements.title.value.trim(),destination:'community-events',format:'4v4-byot',startsAt,status:'published',snapshot})});const result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to publish this tournament.');message.textContent='Published. Refreshing the BYOT schedule…';window.setTimeout(()=>hydrateByotPage(),300);}catch(error){message.textContent=error.message;}finally{button.disabled=false;}});
+  form.addEventListener('submit',async event=>{event.preventDefault();message.textContent='Publishing…';const button=form.querySelector('[type="submit"]');button.disabled=true;try{const snapshot=makeByotSnapshot(form);const startsAt=new Date(form.elements.startsAt.value).toISOString();const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({title:form.elements.title.value.trim(),destination:'community-events',format:'byot',startsAt,status:'published',snapshot})});const result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to publish this tournament.');message.textContent='Published. Refreshing the BYOT schedule…';window.setTimeout(()=>hydrateByotPage(),300);}catch(error){message.textContent=error.message;}finally{button.disabled=false;}});
 }
 
 async function hydrateHomeCalendar() {
@@ -327,6 +335,22 @@ function standingsPage(params) {
 
 function utilityPage(kind) {
   return pageHero('Call your shot','UFL Pick’ems','Predict the fixtures, collect points, and earn group-chat immunity for approximately one week.') + `<section class="section"><div class="utility-frame">${emptyState('Touchline connection next','The real Simple and Detailed Pick’ems were located in Touchline. Its server and member data will be connected here in the backend deployment phase.')}</div></section>`;
+}
+
+function usersPage() {
+  return pageHero('The clubhouse','UFL Users','Everyone who has joined the site, with their chosen Discord nickname and any official league title.') +
+    `<section class="section"><div class="users-directory-head"><div><span class="section-kicker">Member directory</span><h2>Meet the Uncs</h2></div><p>Titles are assigned by league staff in the protected Admin clubhouse.</p></div><div id="users-directory" class="users-directory"><p class="admin-empty">Loading the clubhouse roster…</p></div></section>`;
+}
+
+async function hydrateUsersDirectory() {
+  const root=document.querySelector('#users-directory');
+  if(!root) return;
+  try {
+    const response=await fetch('/api/users'),data=await response.json();
+    if(!response.ok) throw new Error();
+    if(!data.users.length) return void(root.innerHTML=emptyState('The clubhouse is quiet','No users have signed up yet.'));
+    root.innerHTML=data.users.map(user=>{const avatar=user.avatarUrl?`<img src="${escapeHtml(user.avatarUrl)}" alt="" loading="lazy">`:'<span class="user-directory-avatar">UFL</span>';const team=user.teamTitle&&user.teamName?`<span class="member-title-badge">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>`:'';return `<article class="user-directory-card">${avatar}<div><small>League nickname</small><h3>${escapeHtml(user.displayName)}</h3><div class="profile-chips"><span class="season-chip ${user.role==='owner'||user.role==='admin'?'season-chip-live':'season-chip-upcoming'}">${escapeHtml(user.role)}</span>${team}</div></div></article>`;}).join('');
+  } catch { root.innerHTML=emptyState('Directory temporarily unavailable','The clubhouse roster could not be loaded. Please try again shortly.'); }
 }
 
 function wheelPage() {
@@ -525,6 +549,7 @@ function render() {
   else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
+  else if (path === routes.users) main.innerHTML = usersPage();
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
@@ -536,6 +561,7 @@ function render() {
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();
+  hydrateUsersDirectory();
   hydrateHomeCalendar();
   window.scrollTo(0,0);
 }
