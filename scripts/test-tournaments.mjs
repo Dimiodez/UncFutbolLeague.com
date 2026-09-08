@@ -71,6 +71,21 @@ league.rounds.forEach(round => {
 });
 assert.notEqual(context.eventWinner(league), null);
 
+const renderContext = { escapeHtml: value => String(value) };
+vm.createContext(renderContext);
+vm.runInContext([
+  'eventWinner', 'publicGroupTable', 'publicLeagueTable', 'publicGroupFixtures',
+  'editableScore', 'publicMatch', 'eventBoard'
+].map(extractFunction).join('\n'), renderContext);
+const leagueBoard = renderContext.eventBoard(league, true);
+assert.match(leagueBoard, /event-knockout-flow/);
+assert.match(leagueBoard, /event-bracket-slot/);
+assert.match(leagueBoard, /event-round-size-4/);
+assert.ok(leagueBoard.indexOf('Quarterfinals') < leagueBoard.indexOf('Qualification playoffs'));
+const groupBoard = renderContext.eventBoard(groups, false);
+assert.match(groupBoard, /event-knockout-flow-wide/);
+assert.match(groupBoard, /event-bracket-slot/);
+
 const controlRoom = context.adminControlRoom([{
   id: 'league-12345', title: 'League Night', status: 'published',
   lifecycleStatus: 'live', destination: 'community-events', snapshot: league
@@ -88,6 +103,7 @@ assert.equal(context.eventSharePath({ id: 'cup-12345', destination: 'league-cup'
 const styles = fs.readFileSync(new URL('../styles.css', import.meta.url), 'utf8');
 assert.match(styles, /\.event-league-fixtures\{grid-template-columns:minmax\(0,1fr\)\}/);
 assert.match(styles, /\.event-bracket-match\{position:relative;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\)/);
+assert.match(styles, /A true knockout tree/);
 assert.match(source, /type="text" inputmode="numeric" pattern="\[0-9\]\*"/);
 assert.match(source, /event-inline-score event-inline-score-readonly/);
 
