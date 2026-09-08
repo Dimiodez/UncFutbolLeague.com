@@ -217,12 +217,21 @@ function publicGroupFixtures(group,index,doubleRound=false) {
   }));
 }
 
-function publicMatch(match, label) {
-  const score = match.homeScore !== '' && match.homeScore != null ? `${escapeHtml(String(match.homeScore))}–${escapeHtml(String(match.awayScore))}` : 'TBD';
-  return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</span><b>${score}</b><span class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</span></div>`;
+function editableScore(match, editable, compact=false) {
+  const value = side => match[`${side}Score`] ?? '';
+  if (!editable) return compact
+    ? `<b>${value('home') !== '' ? escapeHtml(String(value('home'))) : '–'}</b><em>–</em><b>${value('away') !== '' ? escapeHtml(String(value('away'))) : '–'}</b>`
+    : `<b>${value('home') !== '' ? `${escapeHtml(String(value('home')))}–${escapeHtml(String(value('away')))}` : 'TBD'}</b>`;
+  const disabled=!match.home||!match.away||match.home==='TBD'||match.away==='TBD'?' disabled':'';
+  const fields=`<input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="home" type="number" min="0" max="99" inputmode="numeric" aria-label="${escapeHtml(match.home||'Home')} score" value="${escapeHtml(value('home'))}"${disabled}><span>–</span><input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="away" type="number" min="0" max="99" inputmode="numeric" aria-label="${escapeHtml(match.away||'Away')} score" value="${escapeHtml(value('away'))}"${disabled}>`;
+  return compact ? `<b class="event-inline-score">${fields}</b>` : `<b class="event-bracket-score">${fields}</b>`;
 }
 
-function eventBoard(snapshot) {
+function publicMatch(match, label, editable=false) {
+  return `<div class="event-bracket-match"><small>${escapeHtml(label)}</small><span class="${match.winner === match.home ? 'winner' : ''}">${escapeHtml(match.home || 'TBD')}</span>${editableScore(match,editable)}<span class="${match.winner === match.away ? 'winner' : ''}">${escapeHtml(match.away || 'TBD')}</span></div>`;
+}
+
+function eventBoard(snapshot, editable=false) {
   if (snapshot?.kind === 'draw') {
     return `<div class="event-roster-grid">${(snapshot.session?.teams || []).map(team => `<article><h3>${escapeHtml(team.name)}</h3><p>${(team.playerIds || []).map(id => snapshot.session.players.find(player => player.id === id)?.name).filter(Boolean).map(escapeHtml).join(' · ') || 'Roster pending'}</p></article>`).join('')}</div>`;
   }
@@ -239,41 +248,109 @@ function eventBoard(snapshot) {
     const savedFixtures = (snapshot.groupStage?.fixtures || []).filter(match => match.groupIndex === index);
     const fixtures = savedFixtures.length ? savedFixtures : publicGroupFixtures(group,index,Boolean(snapshot.doubleElimination));
     const table = publicGroupTable(group, fixtures);
-    columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>GD</span><span>Pts</span></div>${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.difference > 0 ? '+' : ''}${row.difference}</span><span>${row.points}</span></div>`).join('')}</div><h4>Matches</h4><div class="event-group-matches">${fixtures.map(match => `<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore !== '' ? escapeHtml(String(match.homeScore)) : '–'}</b><em>–</em><b>${match.awayScore !== '' ? escapeHtml(String(match.awayScore)) : '–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
+    columns.push(`<section class="event-stage-column group-column"><h3>Group ${String.fromCharCode(65+index)}</h3><div class="event-group-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>GD</span><span>Pts</span></div>${table.map((row, place) => `<div><b>${place+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.difference > 0 ? '+' : ''}${row.difference}</span><span>${row.points}</span></div>`).join('')}</div><h4>Matches</h4><div class="event-group-matches">${fixtures.map(match => `<div><span>${escapeHtml(match.home)}</span>${editableScore(match,editable,true)}<span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`);
   });
-  if(snapshot?.qualifyingPlayoffs?.length) columns.push(`<section class="event-stage-column knockout-column qualification-column"><h3>Final qualifiers</h3><div class="event-stage-matches">${snapshot.qualifyingPlayoffs.map(match=>publicMatch(match,'Play-in')).join('')}</div><div class="event-stage-placeholder compact-placeholder"><p>Lowest qualifying seeds play for the remaining bracket places.</p></div></section>`);
+  if(snapshot?.qualifyingPlayoffs?.length) columns.push(`<section class="event-stage-column knockout-column qualification-column"><h3>Final qualifiers</h3><div class="event-stage-matches">${snapshot.qualifyingPlayoffs.map(match=>publicMatch(match,'Play-in',editable)).join('')}</div><div class="event-stage-placeholder compact-placeholder"><p>Lowest qualifying seeds play for the remaining bracket places.</p></div></section>`);
   if(snapshot?.format==='league' && snapshot?.leagueSnapshot) {
     const league=snapshot.leagueSnapshot,table=publicLeagueTable(snapshot.names,league.fixtures);
-    leagueColumn=`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span>${escapeHtml(match.home)}</span><b>${match.homeScore!==''?escapeHtml(String(match.homeScore)):'–'}</b><em>–</em><b>${match.awayScore!==''?escapeHtml(String(match.awayScore)):'–'}</b><span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`;
-    qualificationColumn=`<section class="event-stage-column knockout-column qualification-column"><h3>Qualification playoffs</h3>${league.playoffs?.length?`<div class="event-stage-matches">${league.playoffs.map(match=>publicMatch(match,'Playoff')).join('')}</div>`:`<div class="event-stage-placeholder"><strong>${league.playoffPlaces||0} playoff places</strong><p>Matchups appear when the league phase is complete.</p></div>`}</section>`;
+    leagueColumn=`<section class="event-stage-column event-league-column"><h3>League standings</h3><div class="event-league-table"><div class="event-table-head"><b>#</b><strong>Team</strong><span>P</span><span>W</span><span>D</span><span>L</span><span>GD</span><span>Pts</span></div>${table.map((row,index)=>`<div class="${index<league.directPlaces?'direct':index<league.directPlaces+league.playoffPlaces?'playoff':''}"><b>${index+1}</b><strong>${escapeHtml(row.name)}</strong><span>${row.played}</span><span>${row.won}</span><span>${row.drawn}</span><span>${row.lost}</span><span>${row.difference>0?'+':''}${row.difference}</span><b>${row.points}</b></div>`).join('')}</div><div class="qualification-key"><span>Top ${league.directPlaces} direct</span><span>Next ${league.playoffPlaces} to playoff</span></div><h4>League matches</h4><div class="event-league-fixtures">${(league.fixtures||[]).map(match=>`<div><span>${escapeHtml(match.home)}</span>${editableScore(match,editable,true)}<span>${escapeHtml(match.away)}</span></div>`).join('')}</div></section>`;
+    qualificationColumn=`<section class="event-stage-column knockout-column qualification-column"><h3>Qualification playoffs</h3>${league.playoffs?.length?`<div class="event-stage-matches">${league.playoffs.map(match=>publicMatch(match,'Playoff',editable)).join('')}</div>`:`<div class="event-stage-placeholder"><strong>${league.playoffPlaces||0} playoff places</strong><p>Matchups appear when the league phase is complete.</p></div>`}</section>`;
   }
   (snapshot?.rounds || []).forEach((round, index, rounds) => {
     const remaining = rounds.length-index;
     const title = remaining === 1 ? 'Final' : remaining === 2 ? 'Semifinals' : remaining === 3 ? 'Quarterfinals' : `KO round ${index+1}`;
-    const roundColumn=`<section class="event-stage-column knockout-column event-round-${index + 1}"><h3>${title}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, title)).join('')}</div></section>`;
+    const roundColumn=`<section class="event-stage-column knockout-column event-round-${index + 1}"><h3>${title}</h3><div class="event-stage-matches">${round.map(match => publicMatch(match, title, editable)).join('')}</div></section>`;
     if(snapshot?.format==='league') roundColumns.push(roundColumn); else columns.push(roundColumn);
   });
   if((snapshot?.format==='groups'||snapshot?.format==='league') && !(snapshot?.rounds||[]).length) columns.push(`<section class="event-stage-column knockout-column"><h3>Knockout bracket</h3><div class="event-stage-placeholder"><strong>Awaiting qualifiers</strong><p>The bracket will appear here automatically when it is created in the event builder.</p></div></section>`);
   const winner = eventWinner(snapshot);
-  const champion=winner ? `<aside class="event-champion-panel"><small>Match centre</small><h3>Champion</h3><div><span>🏆</span><strong>${escapeHtml(winner)}</strong></div></aside>` : '';
-  if(snapshot?.format==='league') return `<div class="event-tournament-board event-board-league">${leagueColumn}<div class="event-knockout-flow"><div class="event-opening-stack">${roundColumns[0]||''}${qualificationColumn}</div>${roundColumns.slice(1).join('')}${champion}</div></div>`;
+  const champion=(winner||snapshot?.format==='league') ? `<aside class="event-champion-panel"><small>Match centre</small><h3>Winner</h3><div><span>🏆</span><strong>${escapeHtml(winner||'To be decided')}</strong></div></aside>` : '';
+  if(snapshot?.format==='league') return `<div class="event-tournament-board event-board-league">${leagueColumn}<div class="event-knockout-flow"><div class="event-opening-stack">${roundColumns.length>1?roundColumns[0]:''}${qualificationColumn}</div>${roundColumns.length>2?roundColumns.slice(1,-1).join(''):''}<div class="event-final-stack">${roundColumns.at(-1)||''}${champion}</div></div></div>`;
   return `<div class="event-tournament-board">${columns.join('')}${champion}</div>`;
+}
+
+function allCompetitionMatches(snapshot) {
+  return [
+    ...(snapshot?.groupStage?.fixtures||[]),
+    ...(snapshot?.leagueSnapshot?.fixtures||[]),
+    ...(snapshot?.leagueSnapshot?.playoffs||[]),
+    ...(snapshot?.qualifyingPlayoffs||[]),
+    ...(snapshot?.rounds||[]).flat()
+  ];
+}
+
+function assignCompetitionMatch(match,home,away) {
+  if(match.home!==home||match.away!==away) Object.assign(match,{home,away,homeScore:'',awayScore:'',winner:''});
+}
+
+function decideCompetitionMatch(match) {
+  if(match.homeScore===''||match.awayScore===''||Number(match.homeScore)===Number(match.awayScore)) return void (match.winner='');
+  match.winner=Number(match.homeScore)>Number(match.awayScore)?match.home:match.away;
+}
+
+function recalculateCompetition(snapshot) {
+  let qualifiers=null;
+  if(snapshot?.format==='league'&&snapshot.leagueSnapshot) {
+    const league=snapshot.leagueSnapshot,table=publicLeagueTable(snapshot.names,league.fixtures);
+    league.playoffs.forEach((match,index)=>{
+      assignCompetitionMatch(match,table[league.directPlaces+index]?.name||'TBD',table[league.directPlaces+league.playoffPlaces-1-index]?.name||'TBD');
+      decideCompetitionMatch(match);
+    });
+    qualifiers=[...table.slice(0,league.directPlaces).map(row=>row.name),...league.playoffs.map(match=>match.winner||'TBD')];
+  } else if(snapshot?.format==='groups'&&snapshot.groupStage) {
+    const ranked=(snapshot.groupStage.groups||snapshot.groupSetup||[]).flatMap((group,groupIndex)=>publicGroupTable(group,snapshot.groupStage.fixtures.filter(match=>match.groupIndex===groupIndex)).slice(0,snapshot.qualifiers).map((row,rank)=>({...row,rank})));
+    ranked.sort((a,b)=>a.rank-b.rank||b.points-a.points||b.difference-a.difference||a.name.localeCompare(b.name));
+    const bracketSize=snapshot.rounds?.[0]?.length*2||0,playIns=snapshot.qualifyingPlayoffs||[],directCount=Math.max(0,bracketSize-playIns.length);
+    playIns.forEach((match,index)=>{
+      const pool=ranked.slice(directCount);
+      assignCompetitionMatch(match,pool[index]?.name||'TBD',pool[pool.length-1-index]?.name||'TBD');
+      decideCompetitionMatch(match);
+    });
+    qualifiers=[...ranked.slice(0,directCount).map(row=>row.name),...playIns.map(match=>match.winner||'TBD')];
+  }
+  const firstRound=snapshot.rounds?.[0]||[];
+  if(qualifiers) firstRound.forEach((match,index)=>assignCompetitionMatch(match,qualifiers[index]||'TBD',qualifiers[qualifiers.length-1-index]||'TBD'));
+  firstRound.forEach(decideCompetitionMatch);
+  for(let roundIndex=1;roundIndex<(snapshot.rounds||[]).length;roundIndex++) snapshot.rounds[roundIndex].forEach((match,index)=>{
+    const previous=snapshot.rounds[roundIndex-1];
+    assignCompetitionMatch(match,previous[index*2]?.winner||'TBD',previous[index*2+1]?.winner||'TBD');
+    decideCompetitionMatch(match);
+  });
 }
 
 async function hydratePublishedEvents() {
   const root = document.querySelector('#published-events');
   if (!root) return;
   try {
-    const response = await fetch(`/api/events?destination=${root.dataset.destination}`);
-    const data = await response.json();
+    const [response,sessionResponse] = await Promise.all([fetch(`/api/events?destination=${root.dataset.destination}`),fetch('/api/auth/session',{credentials:'same-origin'})]);
+    const data = await response.json(),session=sessionResponse.ok?await sessionResponse.json():{};
     if (!response.ok) throw new Error();
     const visibleEvents = root.dataset.destination === 'community-events' ? data.events.filter(item=>item.snapshot?.series!=='byot') : data.events;
     if (!visibleEvents.length) return void (root.innerHTML = emptyState(root.dataset.destination === 'league-cup' ? 'The bracket is still at the engraver' : 'The cookout calendar is warming up', 'No event has been published here yet.'));
-    root.innerHTML = `<div class="published-event-list">${visibleEvents.map(item => {
-      const winner = eventWinner(item.snapshot);
-      const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
-      return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;
-    }).join('')}</div>`;
+    const mayEdit=session.authenticated&&['owner','admin'].includes(session.user?.role);
+    const paint=()=>{
+      root.innerHTML = `<div class="published-event-list">${visibleEvents.map(item => {
+        const winner = eventWinner(item.snapshot);
+        const date = item.startsAt ? new Date(item.startsAt).toLocaleString([], { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }) : 'Time to be announced';
+        const controls=mayEdit?`<div class="event-results-actions"><button class="button button-primary" type="button" data-save-event-results="${escapeHtml(item.id)}">Save live results</button><span data-event-results-message="${escapeHtml(item.id)}" aria-live="polite">Enter scores above; tables and winners recalculate automatically.</span></div>`:'';
+        return `<details class="published-event" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.format.replaceAll('-', ' '))}</span><h2>${escapeHtml(item.title)}</h2>${winner ? `<strong class="event-winner">🏆 Winner: ${escapeHtml(winner)}</strong>` : ''}</div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot,mayEdit)}${controls}</div></details>`;
+      }).join('')}</div>`;
+      root.querySelectorAll('[data-event-score]').forEach(input=>input.addEventListener('change',()=>{
+        const item=visibleEvents.find(event=>event.id===input.closest('[data-published-event]')?.dataset.publishedEvent);
+        const match=allCompetitionMatches(item?.snapshot).find(candidate=>candidate.id===input.dataset.matchId);
+        if(!match)return;
+        match[`${input.dataset.scoreSide}Score`]=input.value===''?'':Math.max(0,Math.min(99,Number(input.value)));
+        recalculateCompetition(item.snapshot);
+        paint();
+      }));
+      root.querySelectorAll('[data-save-event-results]').forEach(button=>button.addEventListener('click',async()=>{
+        const item=visibleEvents.find(event=>event.id===button.dataset.saveEventResults),message=root.querySelector(`[data-event-results-message="${button.dataset.saveEventResults}"]`);
+        button.disabled=true;if(message)message.textContent='Saving results…';
+        const save=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({id:item.id,title:item.title,destination:item.destination,format:item.format,startsAt:item.startsAt,status:'published',snapshot:item.snapshot})});
+        if(save.ok){if(message)message.textContent='Live results saved.';button.disabled=false;}else{const result=await save.json().catch(()=>({}));if(message)message.textContent=result.error||'Unable to save results.';button.disabled=false;}
+      }));
+    };
+    paint();
   } catch { root.innerHTML = emptyState('Schedule temporarily unavailable','The published event list could not be loaded. Please try again shortly.'); }
 }
 
@@ -326,12 +403,28 @@ async function hydrateByotPage() {
   if(!eventsRoot) return;
   const state=await getAuthState(),mayEdit=state.authenticated&&['owner','admin'].includes(state.user.role);
   let history=inauguralByotDefaults;
+  let events=[];
   try {
     const [response,historyResponse]=await Promise.all([fetch('/api/events?destination=community-events'),fetch('/api/byot-history')]),data=await response.json(),historyData=await historyResponse.json();
-    const events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
+    events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
     if(historyResponse.ok&&historyData.records?.length) history=historyData.records.find(record=>record.id==='inaugural')||historyData.records[0];
-    const cards=events.map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot)}</div></details>`;}).join('');
+    const resultControls=item=>mayEdit?`<div class="event-results-actions"><button class="button button-primary" type="button" data-save-event-results="${escapeHtml(item.id)}">Save live results</button><span data-event-results-message aria-live="polite">Enter scores above; tables and winners recalculate automatically.</span></div>`:'';
+    const cards=events.map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventBoard(item.snapshot,mayEdit)}${resultControls(item)}</div></details>`;}).join('');
     eventsRoot.innerHTML=`<div class="published-event-list">${cards}${inauguralByot(history,mayEdit)}</div>`;
+    const wireCard=(card,item)=>{
+      card.querySelectorAll('[data-event-score]').forEach(input=>input.addEventListener('change',()=>{
+        const match=allCompetitionMatches(item.snapshot).find(candidate=>candidate.id===input.dataset.matchId);if(!match)return;
+        match[`${input.dataset.scoreSide}Score`]=input.value===''?'':Math.max(0,Math.min(99,Number(input.value)));
+        recalculateCompetition(item.snapshot);
+        const body=card.querySelector('.published-event-body');body.innerHTML=`${eventBoard(item.snapshot,true)}${resultControls(item)}`;wireCard(card,item);
+      }));
+      card.querySelector('[data-save-event-results]')?.addEventListener('click',async event=>{
+        const button=event.currentTarget,message=card.querySelector('[data-event-results-message]');button.disabled=true;message.textContent='Saving results…';
+        const save=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({id:item.id,title:item.title,destination:item.destination,format:item.format,startsAt:item.startsAt,status:'published',snapshot:item.snapshot})});
+        if(save.ok)message.textContent='Live results saved.';else{const result=await save.json().catch(()=>({}));message.textContent=result.error||'Unable to save results.';}button.disabled=false;
+      });
+    };
+    events.forEach(item=>{const card=eventsRoot.querySelector(`[data-published-event="${item.id}"]`);if(card)wireCard(card,item);});
   } catch { eventsRoot.innerHTML=`<div class="published-event-list">${inauguralByot(history,mayEdit)}</div>`; }
 
   const historyForm=document.querySelector('[data-byot-history]');

@@ -13,5 +13,5 @@ export async function onRequestGet({ request, env }) {
   const result = calendar
     ? await env.DB.prepare(`${select} WHERE c.status='published' AND COALESCE(l.lifecycle_status,'upcoming') IN ('upcoming','live') ORDER BY CASE WHEN l.lifecycle_status='live' THEN 0 ELSE 1 END,COALESCE(c.starts_at,c.updated_at) LIMIT 6`).all()
     : await env.DB.prepare(`${select} WHERE c.status='published' AND c.destination=? AND COALESCE(l.lifecycle_status,'upcoming')<>'archived' ORDER BY COALESCE(c.starts_at,c.updated_at)`).bind(destination).all();
-  return json({ events: result.results.map(row => ({ ...row, snapshot: JSON.parse(row.snapshotJson), snapshotJson: undefined })) }, 200, { 'cache-control': 'public, max-age=30' });
+  return json({ events: result.results.map(row => ({ ...row, snapshot: JSON.parse(row.snapshotJson), snapshotJson: undefined })) }, 200, { 'cache-control': 'no-store' });
 }
