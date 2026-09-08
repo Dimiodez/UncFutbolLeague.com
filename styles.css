@@ -295,6 +295,7 @@ html[data-theme="vintage"] option { background: #f4ead2; color: #30291f; border-
 .event-league-fixtures{grid-template-columns:minmax(0,1fr)}
 .event-league-fixtures>div{grid-template-columns:minmax(110px,1fr) 76px minmax(110px,1fr);gap:8px}
 .event-league-fixtures>div>span:first-child{grid-column:1;text-align:left}.event-league-fixtures>div>.event-inline-score{grid-column:2}.event-league-fixtures>div>span:last-child{grid-column:3;text-align:right}
+.event-inline-score-readonly span{color:var(--ink);font-weight:900}.event-inline-score-readonly em{color:var(--muted);font-style:normal;text-align:center}
 .event-bracket-match{position:relative;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px 10px;padding:10px 12px;border-radius:2px;border-width:0 0 1px 3px;border-left-color:var(--blue);background:color-mix(in srgb,var(--paper) 92%,var(--blue) 3%)}
 .event-bracket-match small{grid-column:1/-1}.event-bracket-match>span:first-of-type{grid-column:1;grid-row:2}.event-bracket-match>b,.event-bracket-match>.event-bracket-score{grid-column:2;grid-row:2;align-self:center}.event-bracket-match>span:last-child{grid-column:3;grid-row:2;text-align:right}
 .event-bracket-match:after{content:"";position:absolute;right:-12px;top:calc(50% + 8px);width:12px;border-top:1px solid var(--blue)}

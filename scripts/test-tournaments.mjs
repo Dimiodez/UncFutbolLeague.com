@@ -89,5 +89,6 @@ const styles = fs.readFileSync(new URL('../styles.css', import.meta.url), 'utf8'
 assert.match(styles, /\.event-league-fixtures\{grid-template-columns:minmax\(0,1fr\)\}/);
 assert.match(styles, /\.event-bracket-match\{position:relative;grid-template-columns:minmax\(0,1fr\) auto minmax\(0,1fr\)/);
 assert.match(source, /type="text" inputmode="numeric" pattern="\[0-9\]\*"/);
+assert.match(source, /event-inline-score event-inline-score-readonly/);
 
 console.log('Tournament presets, advancement, winner, and share-link tests passed.');

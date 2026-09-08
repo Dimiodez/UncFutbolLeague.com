@@ -252,7 +252,7 @@ function publicGroupFixtures(group,index,doubleRound=false) {
 function editableScore(match, editable, compact=false) {
   const value = side => match[`${side}Score`] ?? '';
   if (!editable) return compact
-    ? `<b>${value('home') !== '' ? escapeHtml(String(value('home'))) : '–'}</b><em>–</em><b>${value('away') !== '' ? escapeHtml(String(value('away'))) : '–'}</b>`
+    ? `<b class="event-inline-score event-inline-score-readonly"><span>${value('home') !== '' ? escapeHtml(String(value('home'))) : '–'}</span><em>–</em><span>${value('away') !== '' ? escapeHtml(String(value('away'))) : '–'}</span></b>`
     : `<b>${value('home') !== '' ? `${escapeHtml(String(value('home')))}–${escapeHtml(String(value('away')))}` : 'TBD'}</b>`;
   const disabled=!match.home||!match.away||match.home==='TBD'||match.away==='TBD'?' disabled':'';
   const fields=`<input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="home" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-label="${escapeHtml(match.home||'Home')} score" value="${escapeHtml(value('home'))}"${disabled}><span>–</span><input data-event-score data-match-id="${escapeHtml(match.id)}" data-score-side="away" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" aria-label="${escapeHtml(match.away||'Away')} score" value="${escapeHtml(value('away'))}"${disabled}>`;
