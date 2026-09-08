@@ -16,7 +16,7 @@ The `_redirects` file provides single-page route fallback on Cloudflare Pages.
 
 Fixtures, results, standings, team crests, and Pick'ems match data are synced only from UNC Futbol League competition `1`, season `1`:
 
-The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts and qualifying play-ins. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
+The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts, a balanced single-table league phase with guaranteed games per team, and qualifying play-ins that always resolve to a valid knockout bracket. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
 
 The public Users directory lists active members by Discord display nickname and shows staff or team titles assigned through the protected Admin clubhouse.
 
