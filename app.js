@@ -449,7 +449,7 @@ async function hydrateByotPage() {
     const [response,historyResponse]=await Promise.all([fetch('/api/events?destination=community-events'),fetch('/api/byot-history')]),data=await response.json(),historyData=await historyResponse.json();
     events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
     if(historyResponse.ok&&historyData.records?.length) history=historyData.records.find(record=>record.id==='inaugural')||historyData.records[0];
-    const resultControls=item=>mayEdit?`<div class="event-results-actions"><button class="button button-primary" type="button" data-save-event-results="${escapeHtml(item.id)}">Save live results</button><span data-event-results-message aria-live="polite">Enter scores above; tables and winners recalculate automatically.</span></div>`:'';
+    const resultControls=item=>mayEdit?`<div class="event-results-actions"><button class="button button-primary" type="button" data-save-event-results="${escapeHtml(item.id)}">Save live results</button><button class="button button-secondary danger-action" type="button" data-delete-byot-event="${escapeHtml(item.id)}">Delete event</button><span data-event-results-message aria-live="polite">Enter scores above; tables and winners recalculate automatically.</span></div>`:'';
     const requested=new URLSearchParams(window.location.search).get('event'),view=requestedEvent(events);
     const showInaugural=!requested||requested==='inaugural';
     const cards=(requested==='inaugural'?[]:view.events).map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventShareTools(item,view.focused)}${eventBoard(item.snapshot,mayEdit)}${resultControls(item)}</div></details>`;}).join('');
@@ -467,6 +467,12 @@ async function hydrateByotPage() {
         const button=event.currentTarget,message=card.querySelector('[data-event-results-message]');button.disabled=true;message.textContent='Saving results…';
         const save=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({id:item.id,title:item.title,destination:item.destination,format:item.format,startsAt:item.startsAt,status:'published',snapshot:item.snapshot})});
         if(save.ok)message.textContent='Live results saved.';else{const result=await save.json().catch(()=>({}));message.textContent=result.error||'Unable to save results.';}button.disabled=false;
+      });
+      card.querySelector('[data-delete-byot-event]')?.addEventListener('click',async event=>{
+        if(!window.confirm(`Delete ${item.title}? This permanently removes the published event and all of its saved results.`))return;
+        const button=event.currentTarget,message=card.querySelector('[data-event-results-message]');button.disabled=true;message.textContent='Deleting event…';
+        const response=await fetch(`/api/admin/events?id=${encodeURIComponent(item.id)}`,{method:'DELETE',credentials:'same-origin'});
+        if(response.ok){history.replaceState({},'',eventSchedulePath(item));render();}else{const result=await response.json().catch(()=>({}));message.textContent=result.error||'Unable to delete this event.';button.disabled=false;}
       });
     };
     events.forEach(item=>{const card=eventsRoot.querySelector(`[data-published-event="${item.id}"]`);if(card)wireCard(card,item);});

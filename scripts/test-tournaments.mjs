@@ -107,5 +107,12 @@ assert.match(styles, /A true knockout tree/);
 assert.match(styles, /justify-content:stretch;overflow:visible/);
 assert.match(source, /type="text" inputmode="numeric" pattern="\[0-9\]\*"/);
 assert.match(source, /event-inline-score event-inline-score-readonly/);
+assert.match(source, /data-delete-byot-event/);
+assert.match(source, /method:'DELETE',credentials:'same-origin'/);
+
+const adminEventsApi = fs.readFileSync(new URL('../functions/api/admin/events.js', import.meta.url), 'utf8');
+assert.match(adminEventsApi, /\['owner', 'admin'\]\.includes\(actor\.role\)/);
+assert.match(adminEventsApi, /export async function onRequestDelete/);
+assert.match(adminEventsApi, /if \(!sameOrigin\(request\)\)/);
 
 console.log('Tournament presets, advancement, winner, and share-link tests passed.');
