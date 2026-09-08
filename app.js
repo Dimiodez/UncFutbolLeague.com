@@ -131,22 +131,19 @@ function teamsPage(params) {
 
 function schedulesPage(params) {
   const requestedType = params.get('type');
-  if (requestedType === '10v10') return tenVTenComingSoon('Schedules and fixtures');
-  const type = ['events','league-cup'].includes(requestedType) ? requestedType : 'events';
+  if (!requestedType) {
+    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
+    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
+  }
+  if (requestedType === '10v10') return pageHero('Match centre','10v10 League Schedule','Full-squad fixtures will appear here when the FC27 10v10 season begins.')+`<section class="section">${scheduleLandingTabs('10v10')}<div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('10v10 schedule coming soon','The complete schedule will remain inside this tab when the division begins.')}</section>`;
+  const type = '6v6';
   const data = scheduleTypes[type];
-  const tabs = ['events','league-cup'].map(key => {
-    const val = scheduleTypes[key];
-    return `<a class="tab ${key===type?'active':''}" href="/schedules/${key==='events'?'community-events':'league-cup'}" data-link>${val[0]}</a>`;
-  }).join('');
-  const rows = leagueSeason?.weeks?.flatMap(week => week.matches.map(([id,home,away,homeScore,awayScore], matchIndex) => {
-    const played = homeScore !== null && awayScore !== null;
-    return `<tr><td><strong>Week ${week.week}</strong><small class="match-number">Match ${matchIndex+1}</small></td><td>${escapeHtml(week.date)}</td><td>${escapeHtml(leagueTeam(home)[0])}</td><td>${escapeHtml(leagueTeam(away)[0])}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;
-  })).join('');
-  return pageHero('Match centre',data[0],data[1]) + `<section class="section"><div class="tabs">${tabs}</div><p class="sync-note">Official fixtures and results · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>Matchweek</th><th>Date</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${rows || '<tr><td colspan="5">League schedule temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
+  const weeks = leagueSeason?.weeks?.map(week => `<section class="schedule-week"><div class="schedule-week-head"><span class="section-kicker">Matchweek</span><h2>Week ${week.week}</h2><p>${escapeHtml(week.date)}</p></div><div class="table-wrap"><table><thead><tr><th>Match</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${week.matches.map(([id,home,away,homeScore,awayScore],matchIndex)=>{const played=homeScore!==null&&awayScore!==null;return `<tr><td><strong>Match ${matchIndex+1}</strong></td><td>${escapeHtml(leagueTeam(home)[0])}</td><td>${escapeHtml(leagueTeam(away)[0])}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;}).join('')}</tbody></table></div></section>`).join('');
+  return pageHero('Match centre',data[0],data[1]) + `<section class="section">${scheduleLandingTabs(type)}<p class="sync-note">Official fixtures and results · synced from Virtual Arena</p><div class="schedule-weeks">${weeks || emptyState('Schedule temporarily unavailable','The official 6v6 fixtures could not be loaded.')}</div></section>`;
 }
 
 function scheduleLandingTabs(active) {
-  return `<div class="tabs"><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
+  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
 }
 
 function communityEventsPage() {
@@ -588,6 +585,7 @@ function render() {
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
   document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
+  document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
   bindDynamicActions();
   hydrateAccount();
   hydratePublishedEvents();
