@@ -54,4 +54,6 @@ The authentication foundation uses Cloudflare Pages Functions and D1. First logi
    - `OWNER_DISCORD_ID`
 5. Redeploy after adding the D1 binding and variables.
 
+FUNC card master layouts use the same `DB` binding and Discord Owner identity. Apply `migrations/0006_func_layout_masters.sql` when provisioning a fresh database. Existing deployments also create these two small tables safely on the first FUNC layout request, so no additional Cloudflare binding, R2 bucket, or environment variable is required.
+
 `OWNER_DISCORD_ID` must be the owner's numeric Discord user ID. The backend derives the owner role from this server-side value on every authenticated request, so another site administrator cannot demote the configured owner. Never commit `.dev.vars`, the Discord client secret, session cookies, or exported member data.

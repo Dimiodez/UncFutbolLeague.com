@@ -549,7 +549,7 @@ function wheelPage() {
 }
 
 function funcPage() {
-  return `<section class="integrated-app func-host" aria-label="FUNC Card Studio"><iframe class="integrated-app-frame" src="/func-app/?v=20260909-func-export2" title="FUNC Card Studio" scrolling="yes"></iframe></section>`;
+  return `<section class="integrated-app func-host" aria-label="FUNC Card Studio"><iframe class="integrated-app-frame" src="/func-app/?v=20260909-func-masters1" title="FUNC Card Studio" scrolling="yes"></iframe></section>`;
 }
 
 function pickemsPage() {
