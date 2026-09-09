@@ -1,6 +1,6 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', users: '/users', pickems: '/pickems', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
+  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -548,6 +548,10 @@ function wheelPage() {
   return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
+function funcPage() {
+  return `<section class="integrated-app func-host" aria-label="FUNC Card Studio"><iframe class="integrated-app-frame" src="/func-app/?v=20260909-func-live1" title="FUNC Card Studio" scrolling="yes"></iframe></section>`;
+}
+
 function pickemsPage() {
   return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260904-result-colors1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
@@ -784,6 +788,7 @@ function render() {
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
   else if (path === routes.users) main.innerHTML = usersPage();
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
+  else if (path === routes.func) main.innerHTML = funcPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
   else if (path === routes.account) main.innerHTML = accountPage();
