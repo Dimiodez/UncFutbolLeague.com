@@ -4,7 +4,7 @@ window.UFL_SEASON = {
   "source": "https://ufl.virtualarena.app/competitions/1/seasons/1/matches",
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/teams",
-  "syncedAt": "2026-09-05T07:00:03.000Z",
+  "syncedAt": "2026-09-09T04:06:51.000Z",
   "teams": {
     "GOTH": [
       "UFL Gotham City",
@@ -56,18 +56,18 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Gotham%20City",
       "rosterSize": 6,
       "stats": {
-        "played": 14,
+        "played": 15,
         "wins": 9,
         "draws": 2,
-        "losses": 3,
-        "goals_for": 42,
-        "goals_against": 30,
-        "goal_difference": 12,
+        "losses": 4,
+        "goals_for": 43,
+        "goals_against": 33,
+        "goal_difference": 10,
         "points": 29,
         "form": [
           "W",
           "W",
-          "W",
+          "L",
           "L",
           "L"
         ]
@@ -81,20 +81,20 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20New%20Legacy",
       "rosterSize": 6,
       "stats": {
-        "played": 14,
+        "played": 15,
         "wins": 4,
         "draws": 2,
-        "losses": 8,
-        "goals_for": 27,
-        "goals_against": 37,
-        "goal_difference": -10,
+        "losses": 9,
+        "goals_for": 29,
+        "goals_against": 41,
+        "goal_difference": -12,
         "points": 14,
         "form": [
           "L",
           "L",
           "L",
-          "L",
-          "W"
+          "W",
+          "L"
         ]
       }
     },
@@ -106,18 +106,18 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Island%20Boys",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
+        "played": 15,
         "wins": 2,
         "draws": 0,
-        "losses": 12,
-        "goals_for": 18,
-        "goals_against": 50,
-        "goal_difference": -32,
+        "losses": 13,
+        "goals_for": 19,
+        "goals_against": 53,
+        "goal_difference": -34,
         "points": 6,
         "form": [
           "L",
-          "L",
           "W",
+          "L",
           "L",
           "L"
         ]
@@ -131,19 +131,19 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
-        "wins": 2,
+        "played": 15,
+        "wins": 3,
         "draws": 0,
         "losses": 12,
-        "goals_for": 23,
-        "goals_against": 71,
-        "goal_difference": -48,
-        "points": 6,
+        "goals_for": 26,
+        "goals_against": 72,
+        "goal_difference": -46,
+        "points": 9,
         "form": [
-          "L",
           "W",
           "L",
           "L",
+          "W",
           "W"
         ]
       }
@@ -156,19 +156,19 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Jagiellonia",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
+        "played": 15,
         "wins": 6,
         "draws": 0,
-        "losses": 8,
-        "goals_for": 39,
-        "goals_against": 40,
-        "goal_difference": -1,
+        "losses": 9,
+        "goals_for": 40,
+        "goals_against": 49,
+        "goal_difference": -9,
         "points": 18,
         "form": [
           "L",
           "L",
-          "L",
           "W",
+          "L",
           "L"
         ]
       }
@@ -181,20 +181,20 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20HamKam",
       "rosterSize": 6,
       "stats": {
-        "played": 14,
-        "wins": 11,
+        "played": 15,
+        "wins": 12,
         "draws": 1,
         "losses": 2,
-        "goals_for": 52,
-        "goals_against": 15,
-        "goal_difference": 37,
-        "points": 34,
+        "goals_for": 56,
+        "goals_against": 16,
+        "goal_difference": 40,
+        "points": 37,
         "form": [
-          "W",
           "D",
           "L",
           "W",
-          "L"
+          "L",
+          "W"
         ]
       }
     },
@@ -206,19 +206,19 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
-        "wins": 10,
+        "played": 15,
+        "wins": 11,
         "draws": 2,
         "losses": 2,
-        "goals_for": 49,
-        "goals_against": 19,
-        "goal_difference": 30,
-        "points": 32,
+        "goals_for": 52,
+        "goals_against": 20,
+        "goal_difference": 32,
+        "points": 35,
         "form": [
           "W",
           "W",
-          "W",
           "L",
+          "W",
           "W"
         ]
       }
@@ -231,20 +231,20 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Como",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
+        "played": 15,
         "wins": 9,
         "draws": 3,
-        "losses": 2,
-        "goals_for": 49,
-        "goals_against": 26,
-        "goal_difference": 23,
+        "losses": 3,
+        "goals_for": 50,
+        "goals_against": 30,
+        "goal_difference": 20,
         "points": 30,
         "form": [
           "W",
-          "W",
           "D",
           "W",
-          "W"
+          "W",
+          "L"
         ]
       }
     },
@@ -256,17 +256,17 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
       "rosterSize": 7,
       "stats": {
-        "played": 14,
-        "wins": 6,
+        "played": 15,
+        "wins": 7,
         "draws": 0,
         "losses": 8,
-        "goals_for": 36,
-        "goals_against": 48,
-        "goal_difference": -12,
-        "points": 18,
+        "goals_for": 40,
+        "goals_against": 50,
+        "goal_difference": -10,
+        "points": 21,
         "form": [
           "L",
-          "L",
+          "W",
           "W",
           "W",
           "W"
@@ -281,20 +281,20 @@ window.UFL_SEASON = {
       "url": "https://ufl.virtualarena.app/teams/UFL%20Palermo",
       "rosterSize": 5,
       "stats": {
-        "played": 14,
-        "wins": 5,
+        "played": 15,
+        "wins": 6,
         "draws": 2,
         "losses": 7,
-        "goals_for": 40,
-        "goals_against": 39,
-        "goal_difference": 1,
-        "points": 17,
+        "goals_for": 49,
+        "goals_against": 40,
+        "goal_difference": 9,
+        "points": 20,
         "form": [
-          "W",
           "D",
           "D",
           "W",
-          "L"
+          "L",
+          "W"
         ]
       }
     }
@@ -302,112 +302,112 @@ window.UFL_SEASON = {
   "standings": [
     [
       "HAM",
-      14,
-      11,
+      15,
+      12,
       1,
       2,
-      52,
-      15,
-      37,
-      34
+      56,
+      16,
+      40,
+      37
     ],
     [
       "PUM",
-      14,
-      10,
+      15,
+      11,
       2,
       2,
-      49,
-      19,
-      30,
-      32
+      52,
+      20,
+      32,
+      35
     ],
     [
       "COM",
-      14,
+      15,
       9,
       3,
-      2,
-      49,
-      26,
-      23,
+      3,
+      50,
+      30,
+      20,
       30
     ],
     [
       "GOTH",
-      14,
+      15,
       9,
       2,
-      3,
-      42,
-      30,
-      12,
+      4,
+      43,
+      33,
+      10,
       29
     ],
     [
-      "JAG",
-      14,
-      6,
-      0,
-      8,
-      39,
-      40,
-      -1,
-      18
-    ],
-    [
       "BAY",
-      14,
-      6,
+      15,
+      7,
       0,
       8,
-      36,
-      48,
-      -12,
-      18
+      40,
+      50,
+      -10,
+      21
     ],
     [
       "PAL",
-      14,
-      5,
+      15,
+      6,
       2,
       7,
+      49,
       40,
-      39,
-      1,
-      17
+      9,
+      20
+    ],
+    [
+      "JAG",
+      15,
+      6,
+      0,
+      9,
+      40,
+      49,
+      -9,
+      18
     ],
     [
       "NL",
-      14,
+      15,
       4,
       2,
-      8,
-      27,
-      37,
-      -10,
+      9,
+      29,
+      41,
+      -12,
       14
     ],
     [
-      "IB",
-      14,
-      2,
+      "TAB",
+      15,
+      3,
       0,
       12,
-      18,
-      50,
-      -32,
-      6
+      26,
+      72,
+      -46,
+      9
     ],
     [
-      "TAB",
-      14,
+      "IB",
+      15,
       2,
       0,
-      12,
-      23,
-      71,
-      -48,
+      13,
+      19,
+      53,
+      -34,
       6
     ]
   ],
@@ -1009,36 +1009,36 @@ window.UFL_SEASON = {
           82,
           "BAY",
           "NL",
-          null,
-          null
+          4,
+          2
         ],
         [
           83,
           "COM",
           "HAM",
-          null,
-          null
+          1,
+          4
         ],
         [
           84,
           "PAL",
           "JAG",
-          null,
-          null
+          9,
+          1
         ],
         [
           85,
           "TAB",
           "IB",
-          null,
-          null
+          3,
+          1
         ],
         [
           86,
           "GOTH",
           "PUM",
-          null,
-          null
+          1,
+          3
         ]
       ]
     },
