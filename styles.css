@@ -26,9 +26,10 @@ a { color: inherit; }
 .brand { display: flex; gap: .75rem; align-items: center; text-decoration: none; font: 800 1.15rem/1 "Barlow Condensed", sans-serif; letter-spacing: .055em; white-space: nowrap; }
 .brand img { width: 52px; height: 58px; object-fit: contain; }
 .brand strong { color: var(--red); }
-.main-nav { display: flex; align-items: center; gap: clamp(.25rem, 1vw, 1rem); font: 700 .96rem "Barlow Condensed", sans-serif; letter-spacing: .035em; text-transform: uppercase; }
+.main-nav { display: flex; align-items: center; gap: clamp(.2rem, .7vw, .75rem); font: 700 .96rem "Barlow Condensed", sans-serif; letter-spacing: .035em; text-transform: uppercase; }
 .main-nav > a, .nav-group > button { padding: .7rem .3rem; border: 0; background: transparent; color: inherit; text-decoration: none; cursor: pointer; white-space: nowrap; }
 .main-nav > a:hover, .main-nav > a.active, .nav-group > button:hover { color: var(--sky); }
+.nav-divider { width: 1px; height: 28px; margin: 0 .25rem; flex: 0 0 1px; background: rgba(255,255,255,.34); }
 .main-nav .nav-cta { padding: .7rem 1rem; background: var(--red); color: white; clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px); }
 .main-nav .nav-cta:hover { color: white; background: #ff3150; }
 .nav-group { position: relative; }
@@ -165,6 +166,7 @@ td strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.1rem; }
   .main-nav { display: none; position: fixed; inset: 82px 0 0; padding: 1.5rem; align-items: stretch; overflow-y: auto; background: var(--navy); }
   .main-nav.open { display: grid; align-content: start; }
   .main-nav > a, .nav-group > button { display: block; width: 100%; text-align: left; padding: .9rem; font-size: 1.2rem; }
+  .nav-divider { width: auto; height: 1px; margin: .45rem .9rem; background: rgba(255,255,255,.28); }
   .nav-split-group{display:grid;grid-template-columns:1fr auto}.nav-split-group .nav-group-link{padding:.9rem;font-size:1.2rem}.nav-split-group .nav-group-caret{width:auto}.nav-split-group .nav-menu{grid-column:1/-1}
   .theme-switcher { width: max-content; margin: .75rem; }
   .theme-switcher button { width: 34px; height: 34px; }
