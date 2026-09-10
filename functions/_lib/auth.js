@@ -9,7 +9,10 @@ export function readCookie(request, name) {
   const cookies = request.headers.get('cookie') || '';
   for (const item of cookies.split(';')) {
     const [key, ...parts] = item.trim().split('=');
-    if (key === name) return decodeURIComponent(parts.join('='));
+    if (key === name) {
+      try { return decodeURIComponent(parts.join('=')); }
+      catch { return ''; }
+    }
   }
   return '';
 }

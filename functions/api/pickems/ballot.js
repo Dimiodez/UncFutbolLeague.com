@@ -1,5 +1,6 @@
 import { getSession, json, sameOrigin } from '../../_lib/auth.js';
 import { ensurePickemCompetitionSchema, validPickemCompetition } from '../../_lib/pickems.js';
+import { consumeRateLimit } from '../../_lib/rate-limit.js';
 
 const validWeek = value => {
   const week = Number(value);
@@ -28,6 +29,8 @@ export async function onRequestPost({ request, env }) {
   if (!sameOrigin(request)) return json({ error: 'Invalid request origin.' }, 403);
   const user = await getSession(request, env);
   if (!user) return json({ error: 'Discord login required.' }, 401);
+  const rate = await consumeRateLimit(env, { scope: 'pickems-ballot', subject: String(user.discord_id), limit: 20 });
+  if (!rate.success) return json({ error: 'Too many ballot updates. Please wait a minute and try again.' }, 429, { 'retry-after': String(rate.retryAfter) });
   let body;
   try { body = await request.json(); } catch { return json({ error: 'Invalid ballot.' }, 400); }
   const week = validWeek(body.week);

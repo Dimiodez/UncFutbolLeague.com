@@ -17,5 +17,8 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-/wheel-app/assets/uwu-wheel-logo.png
+/wheel-app/assets/uwu-wheel-logo.webp
+  Cache-Control: public, max-age=31536000, immutable
+
+/func-app/assets/uwu-wheel-logo.webp
   Cache-Control: public, max-age=31536000, immutable

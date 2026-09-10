@@ -1,6 +1,6 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', wheel: '/wheel', contact: '/contact', account: '/account', admin: '/admin'
+  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -56,7 +56,7 @@ function pageHero(kicker, title, copy) {
 }
 
 function emptyState(title, copy, action = '') {
-  return `<div class="empty-state"><img src="/assets/ufl-mark.png" alt=""><h2>${title}</h2><p>${copy}</p>${action}</div>`;
+  return `<div class="empty-state"><img src="/assets/ufl-mark.webp" alt=""><h2>${title}</h2><p>${copy}</p>${action}</div>`;
 }
 
 function tenVTenComingSoon(area) {
@@ -74,7 +74,7 @@ function homePage() {
   <section class="section home-calendar" id="home-calendar"><span class="section-kicker">Coming up</span><h2>From the clubhouse calendar</h2><div class="home-calendar-grid"><p>Checking the schedule…</p></div></section>
   <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC26 Season 1 · In Progress</span><span class="season-chip season-chip-upcoming">FC27 Season 2 · Late October</span></div><h3>6v6 League</h3><p>Quick matches, tight spaces, and nowhere to hide.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div><h3>10v10 League</h3><p>The full tactical experience for organized clubs.</p><a href="/teams?division=10v10" data-link>Coming in FC27 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
-  <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.gif" alt="Animated UNC Futbol League crest"></div></div></section>`;
+  <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.webp" alt="Animated UNC Futbol League crest" decoding="async"></div></div></section>`;
 }
 
 function rulesPage() {
@@ -564,6 +564,11 @@ function contactPage() {
   return pageHero('Get in the game','Contact & Discord','UFL lives online. The Discord is our clubhouse, match lobby, transfer desk, and questionable pundit studio.') + `<section class="section contact-grid"><div class="contact-panel"><span class="section-kicker">The clubhouse</span><h2>JOIN THE DISCORD</h2><p>Find a team, register for competition, report results, and meet the Uncs.</p><div class="discord-invite-contact"><span>For a Discord invite, message</span><div><strong>Dimio11</strong><i>or</i><strong>luuuiiisss7</strong></div><small>Invites are subject to approval while the community grows.</small></div><span class="button button-primary" aria-disabled="true">Permanent invite link coming soon</span><div class="vibes-note"><span>Community standard</span><strong>Vibes come first.</strong><p>Competitive football is the point, but good people and a welcoming clubhouse are the priority as UFL grows.</p></div></div><div class="card"><span class="num">?</span><h3>Need league help?</h3><p>Message <strong>Dimio11</strong> or <strong>luuuiiisss7</strong> on Discord for invite approval, league questions, or support.</p><p><strong>League location:</strong><br><span id="contact-location">Wherever the Wi-Fi reaches.</span></p><button class="tab" id="contact-reroll">Relocate Unc</button></div></section>`;
 }
 
+function privacyPage() {
+  return pageHero('Member data', 'Privacy & account information', 'A plain-language summary of what UFL stores, why it is needed, and how to request removal.') +
+    `<section class="section privacy-grid"><article class="card"><span class="section-kicker">Discord sign-in</span><h2>What we store</h2><p>When you sign in, UFL stores your Discord user ID, username, display name, avatar URL, account role, and login timestamps. We do not request your email, Discord messages, server list, password, or Discord access token.</p></article><article class="card"><span class="section-kicker">Pick’ems</span><h2>Competition data</h2><p>Your submitted picks, tiebreakers, scores, and leaderboard placement are stored so the competition works across devices. Your display name and avatar may appear publicly in the member directory or leaderboard.</p></article><article class="card"><span class="section-kicker">Local tools</span><h2>On your device</h2><p>Wheel settings and saved FUNC creations may use your browser’s local storage or IndexedDB. Uploaded FUNC portraits remain on your device unless you download the finished card; UFL does not upload those portraits to its server.</p></article><article class="card"><span class="section-kicker">Your choice</span><h2>Removal requests</h2><p>To request account removal or correction, message <strong>Dimio11</strong> on the UFL Discord. UFL will delete or anonymize your member information where reasonably possible while retaining limited integrity or security records when necessary.</p><a href="/contact" data-link>Contact the league →</a></article></section>`;
+}
+
 function accountPage() {
   return pageHero('Member access','Discord account','Sign in with Discord to create your UFL member profile and prepare for account-based Pick’ems.') +
     `<section class="section auth-section"><div class="auth-card" id="account-root"><p>Checking your UFL session…</p></div></section>`;
@@ -656,7 +661,7 @@ async function hydrateAccount() {
   const accountRoot = document.querySelector('#account-root');
   if (accountRoot) {
     if (!state.configured) accountRoot.innerHTML = `<h2>Discord login setup</h2><p>The secure login code is ready. Connect the Cloudflare database and Discord application secrets to activate registration.</p>`;
-    else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages. If you enter Pick’ems, your display name and avatar may appear on the public leaderboard.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
+    else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages. If you enter Pick’ems, your display name and avatar may appear on the public leaderboard.</p><p class="privacy-note">By continuing, you acknowledge the <a href="/privacy" data-link>UFL privacy notice</a>.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
     else accountRoot.innerHTML = `${userCard(state.user)}<div class="button-row">${['owner','admin'].includes(state.user.role)?'<a class="button button-primary" href="/admin" data-link>Open admin clubhouse →</a>':''}<button class="button button-secondary" id="logout-button" type="button">Sign out</button></div>`;
   }
   document.querySelector('#logout-button')?.addEventListener('click', async () => {
@@ -783,6 +788,8 @@ function render() {
   const path = window.location.pathname.replace(/\/$/, '') || '/';
   const params = new URLSearchParams(window.location.search);
   const main = document.querySelector('main');
+  const canonicalPath = path === '/' ? '/' : path;
+  document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.rules) main.innerHTML = rulesPage();
   else if (path === routes.teams) main.innerHTML = teamsPage(params);
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
@@ -795,6 +802,7 @@ function render() {
   else if (path === routes.func) main.innerHTML = funcPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
+  else if (path === routes.privacy) main.innerHTML = privacyPage();
   else if (path === routes.account) main.innerHTML = accountPage();
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
@@ -829,6 +837,7 @@ function bindDynamicActions() {
         syncAppTheme();
         const height = Math.max(doc.documentElement.scrollHeight, doc.body.scrollHeight);
         appFrame.style.height = `${height}px`;
+        appFrame.closest('.integrated-app')?.style.setProperty('height', `${height}px`);
         doc.documentElement.style.overflow = 'hidden';
         doc.body.style.overflow = 'hidden';
       } catch { /* Same-origin production build; retain fallback height if unavailable. */ }

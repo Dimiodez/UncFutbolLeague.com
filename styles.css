@@ -154,6 +154,11 @@ td strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.1rem; }
 .footer-brand strong { font: 800 1.25rem "Barlow Condensed", sans-serif; }
 .footer-brand span, .site-footer > p { color: #8295ac; font-size: .8rem; }
 .site-footer > p { grid-column: 1/-1; margin: 0; }
+.footer-links { display: flex; flex-wrap: wrap; gap: 1rem; }
+.footer-links a { color: var(--sky); font-size: .82rem; font-weight: 700; }
+.privacy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; }
+.privacy-grid .card { min-height: 260px; }
+.privacy-grid .card p { line-height: 1.65; }
 .unc-location { display: grid; justify-items: end; }
 .unc-location span { color: var(--red); font: 800 .7rem "Barlow Condensed",sans-serif; letter-spacing: .12em; }
 .unc-location strong { font: 800 1.1rem "Barlow Condensed",sans-serif; }
@@ -178,7 +183,7 @@ td strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.1rem; }
   .hero { min-height: 720px; }
   .hero::before { background: linear-gradient(0deg, rgba(3,17,37,.98), rgba(3,17,37,.55)), url('/assets/ufl-banner.jpg') center/cover; }
   .hero h1 { font-size: clamp(4rem, 20vw, 6rem); }
-  .cards, .feature-grid, .contact-grid, .site-footer, .house-team-grid { grid-template-columns: 1fr; }
+  .cards, .feature-grid, .contact-grid, .site-footer, .house-team-grid, .privacy-grid { grid-template-columns: 1fr; }
   .page-hero h1 { font-size: clamp(2.8rem, 14vw, 4.2rem); overflow-wrap: anywhere; }
   .page-hero p { max-width: 100%; overflow-wrap: anywhere; }
   .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }

@@ -10,7 +10,7 @@ Run the included zero-dependency development server:
 node dev-server.mjs
 ```
 
-The `_redirects` file provides single-page route fallback on Cloudflare Pages.
+The `_redirects` file provides single-page route fallback on Cloudflare Pages. Production traffic is canonicalized to `https://www.uncfutbolleague.com` by a Cloudflare Redirect Rule so Discord OAuth host-only cookies remain on one origin.
 
 ## Virtual Arena league data
 
@@ -53,6 +53,8 @@ The authentication foundation uses Cloudflare Pages Functions and D1. First logi
    - `DISCORD_CLIENT_SECRET`
    - `OWNER_DISCORD_ID`
 5. Redeploy after adding the D1 binding and variables.
+
+Apply `migrations/0008_rate_limits.sql` when provisioning the database. The Function also creates this small table safely on the first limited request if the migration has not been applied yet. Discord login attempts are limited by a one-way hash of the connecting address; Pick’ems ballot updates are limited by authenticated Discord account. Raw connecting addresses are not stored by the application.
 
 FUNC card master layouts use the same `DB` binding and Discord Owner identity. Apply `migrations/0006_func_layout_masters.sql` when provisioning a fresh database. Existing deployments also create these two small tables safely on the first FUNC layout request, so no additional Cloudflare binding, R2 bucket, or environment variable is required.
 
