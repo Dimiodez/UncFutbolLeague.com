@@ -1,11 +1,16 @@
 import { json } from '../../_lib/auth.js';
+import { ensurePickemCompetitionSchema, validPickemCompetition } from '../../_lib/pickems.js';
 
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const requestedWeek = Number(url.searchParams.get('week'));
   const weekly = Number.isInteger(requestedWeek) && requestedWeek > 0;
+  const competition = validPickemCompetition(url.searchParams.get('competition'));
+  if (!competition) return json({ error: 'Invalid Pick’em competition.' }, 400);
+  await ensurePickemCompetitionSchema(env);
 
-  const seasonResponse = await env.ASSETS.fetch(new URL('/pickems-app/season-data.json', request.url));
+  const seasonAsset = competition === 's1-6v6' ? '/pickems-app/season-data.json' : `/pickems-app/seasons/${competition}.json`;
+  const seasonResponse = await env.ASSETS.fetch(new URL(seasonAsset, request.url));
   if (!seasonResponse.ok) return json({ error: 'Official UFL results are temporarily unavailable.' }, 503);
   const season = await seasonResponse.json();
   const officialResults = new Map();
@@ -28,11 +33,11 @@ export async function onRequestGet({ request, env }) {
     FROM picks p
     JOIN users u ON u.discord_id = p.discord_id AND u.status = 'active'
     JOIN pickem_matches m ON m.id = p.match_id
-    LEFT JOIN pickem_tiebreakers t ON t.discord_id = p.discord_id AND t.week = m.week
-    WHERE unixepoch(p.created_at) < m.scheduled_at ${where}
+    LEFT JOIN pickem_tiebreakers_v2 t ON t.discord_id = p.discord_id AND t.competition_key = m.competition_key AND t.week = m.week
+    WHERE unixepoch(p.created_at) < m.scheduled_at AND m.competition_key = ? ${where}
     ORDER BY u.display_name COLLATE NOCASE ASC
   `);
-  const result = weekly ? await statement.bind(requestedWeek).all() : await statement.all();
+  const result = weekly ? await statement.bind(competition, requestedWeek).all() : await statement.bind(competition).all();
   const members = new Map();
   for (const row of result.results) {
     if (!members.has(row.discordId)) members.set(row.discordId, {
@@ -51,5 +56,5 @@ export async function onRequestGet({ request, env }) {
   const entries = [...members.values()]
     .sort((a, b) => b.score - a.score || (weekly ? (a.tiebreakerDiff ?? Infinity) - (b.tiebreakerDiff ?? Infinity) : 0) || b.picksMade - a.picksMade || a.displayName.localeCompare(b.displayName))
     .slice(0, 100);
-  return json({ scope: weekly ? 'weekly' : 'season', week: weekly ? requestedWeek : null, entries });
+  return json({ competition, scope: weekly ? 'weekly' : 'season', week: weekly ? requestedWeek : null, entries });
 }

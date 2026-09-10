@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20260904-result-colors1">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20260909-season-tabs1">
 </head>
 <body>
   <main class="pickems-shell">
@@ -18,17 +18,23 @@
       <span class="live-badge" id="live-badge"><i></i> LOADING SEASON</span>
     </header>
 
+    <nav class="competition-switch" aria-label="Pick’ems season and division">
+      <button class="active" data-competition="s1-6v6"><span>Current</span><strong>Season 1</strong><small>6v6 · FC26</small></button>
+      <button data-competition="s2-6v6"><span>Future</span><strong>Season 2</strong><small>6v6 · FC27</small></button>
+      <button data-competition="s2-10v10"><span>Future</span><strong>Season 2</strong><small>10v10 · FC27</small></button>
+    </nav>
+
     <nav class="mode-switch" aria-label="Pick’ems format" hidden>
       <button class="active" data-mode="simple"><span>✓</span><strong>Simple Pick’ems</strong><small>Win, draw, or loss</small></button>
       <button data-mode="detailed"><span>◎</span><strong>Detailed Pick’ems</strong><small>Scores, scorers, and assists</small></button>
     </nav>
 
-    <section class="mode-pane active" data-pane="simple">
+    <section class="mode-pane active" data-pane="simple" data-competition-pane="s1-6v6">
       <div class="week-browser"><div><p class="eyebrow">FC26 · Season 1</p><h2>Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small></div><div class="week-tabs" id="simple-weeks"></div></div>
       <div class="pick-layout">
         <section class="panel">
           <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Gameweek 10</h2></div><span class="status open" id="simple-status">Voting open</span></header>
-          <p class="helper">Choose the home team, draw, or away team. Each correct result earns one point.</p>
+          <p class="helper">Choose the home team, draw, or away team. Each correct result earns one point.</p><p class="account-state" id="account-state">Checking your Discord account…</p>
           <div id="simple-fixtures" class="simple-fixtures"></div>
           <div class="tiebreaker"><span>TB</span><div><strong id="tb-question"></strong><small id="tb-lock"></small></div><input id="tiebreaker" type="number" min="0" max="30" placeholder="Goals" aria-label="Total goals tiebreaker"></div>
           <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer>
@@ -38,6 +44,10 @@
           <section class="panel activity"><header class="panel-heading"><div><p class="eyebrow">Community</p><h2 id="pickem-leader-title">Weekly leaders</h2></div><div class="period-toggle"><button class="active" data-leader-scope="weekly">Weekly</button><button data-leader-scope="season">Season</button></div></header><div id="activity"></div></section>
         </aside>
       </div>
+    </section>
+
+    <section class="competition-future" id="future-competition" hidden>
+      <div class="future-mark">S2</div><p class="eyebrow">FC27 · Ready for linking</p><h2 id="future-title">Season 2 · 6v6 Pick’ems</h2><p id="future-copy">This tab is prepared for the next 6v6 season. Its teams, fixtures, ballots, and leaderboard will remain separate from Season 1 when the new Virtual Arena season is linked.</p><div class="future-checklist"><span>Season history preserved</span><span>Separate weekly ballots</span><span>Separate leaderboard</span></div>
     </section>
 
     <section class="mode-pane" data-pane="detailed" hidden>
@@ -51,6 +61,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20260904-va-sync1"></script>
-  <script src="/pickems-app/app.js?v=20260904-result-colors1"></script>
+  <script src="/pickems-app/app.js?v=20260909-season-tabs1"></script>
 </body>
 </html>

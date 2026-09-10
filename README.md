@@ -27,7 +27,7 @@ Run `node scripts/sync-virtual-arena.mjs` to refresh the local snapshot. The Git
 ## Before launch
 
 - Add the permanent Discord invitation URL in `app.js`.
-- Connect shared Pick'ems identity, ballots, and scoring before production launch.
+- Link the FC27 Season 2 Virtual Arena feeds when the new 6v6 and 10v10 competitions are created.
 - Deploy to Cloudflare Pages, verify the preview, then update the GoDaddy `@` and `www` records.
 - The production UWU build is bundled under `wheel-app/` and integrated beneath the UFL navigation at `/wheel`. The same-origin frame automatically expands to the application's full content height so the page uses one natural scrollbar.
 
@@ -38,7 +38,7 @@ Run `node scripts/sync-virtual-arena.mjs` to refresh the local snapshot. The Git
 
 `wheel-app/` currently contains the verified production build from Unc Wheel United commit `6ecbcdc`. Rebuild it when the upstream Wheel changes. Touchline requires a persistent Python service and database, so its Pick'em deployment is tracked separately from this static shell.
 
-`pickems-app/` is a focused extraction of Touchline's Pick'em modes from commit `9bbf3fe`. Only Simple Pick'ems is currently visible; Detailed Pick'ems remains bundled but hidden for future use. The prototype keeps ballots on the current device and excludes Touchline's unrelated league-admin workspaces. Production Discord identity, shared ballots, scoring, and leaderboards still require the planned backend/database deployment.
+`pickems-app/` is a focused extraction of Touchline's Pick'em modes from commit `9bbf3fe`. Simple Pick'ems uses production Discord identity and D1-backed shared ballots, scoring, and leaderboards. Season 1 6v6 remains the current competition, with isolated Season 2 6v6 and 10v10 tabs prepared for their future Virtual Arena feeds. Detailed Pick'ems remains bundled but hidden for future use.
 
 ## Discord authentication setup
 

@@ -553,7 +553,7 @@ function funcPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260904-result-colors1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260909-season-tabs1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
