@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Cleat Arcade · UNC Futbol League</title>
-  <meta name="description" content="A soccer breakout prototype. Twelve levels, one cleat, keep the ball alive.">
+  <meta name="description" content="A soccer breakout prototype. Thirteen levels, one cleat, keep the ball alive.">
   <link rel="icon" href="/assets/ufl-mark.png"><script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="style.css?v=aim2">
+  <link rel="stylesheet" href="style.css?v=level13">
 </head>
 <body>
   <main>
     <header class="masthead"><div class="wordmark"><img class="ufl-logo" src="/assets/ufl-mark.webp" alt="UNC Futbol League"><div><span class="eyebrow">THE CLUBHOUSE ARCADE</span><h1>CLEAT <em>ARCADE</em></h1></div></div><a class="back-link" href="/arcade" target="_top">← Arcade</a></header>
     <div class="layout">
       <section class="arena" aria-label="Soccer breakout game">
-        <div class="scoreboard"><div><span>LEVEL</span><strong id="level">01 / 12</strong></div><div><span>SCORE</span><strong id="score">00000</strong></div><div><span>LIVES</span><strong id="lives">3</strong></div><button id="pause" class="quiet" disabled>Pause</button></div>
+        <div class="scoreboard"><div><span>LEVEL</span><strong id="level">01 / 13</strong></div><div><span>SCORE</span><strong id="score">00000</strong></div><div><span>LIVES</span><strong id="lives">3</strong></div><button id="pause" class="quiet" disabled>Pause</button></div>
         <div id="aim-controls" class="aim-controls" hidden><span>Move to aim · Touch and drag, then release · Arrows / WASD to aim, Space to shoot</span><button id="shoot" class="primary">Shoot ↑</button></div>
         <div class="pitch-wrap">
           <canvas id="pitch" width="640" height="700" tabindex="0" aria-label="Game pitch. Move with left and right arrows or A and D. Space to launch, P to pause. Mouse and touch supported."></canvas>
@@ -25,12 +25,12 @@
       <aside>
         <section class="panel palette-panel"><span class="eyebrow">REP YOUR CLUB</span><h2>Pick your colors.</h2><label for="team">Team-inspired palette</label><select id="team"><option value="gotham">Gotham City · Electric lime</option><option value="bayern">Bayern · Stadium red</option><option value="como">Como · Lake blue</option><option value="palermo">Palermo · Pink & black</option><option value="jagiellonia">Jagiellonia · Gold & red</option><option value="hamkam">HamKam · Green & white</option></select><div class="swatches" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p class="small">Choose your cleat colors. Your club is locked for the run.</p></section>
         <section class="panel"><h2>Members leaderboard</h2><p id="rank-status" class="small" role="status">Checking your site login…</p><ol id="leaderboard"></ol><button id="refresh-board" class="quiet">Refresh scores</button></section><section class="panel"><div class="panel-title"><h2>Device best</h2><span class="tag">THIS DEVICE</span></div><div id="best" class="best">—</div><p id="best-detail" class="small">Finish a run to set your first best.</p><p id="storage-status" class="small">Saved in this browser. Signed-in runs also compete on the members leaderboard.</p></section>
-        <section class="panel levels-panel"><span class="eyebrow">THE RUN</span><ol id="level-list"><li class="current"><span>01</span>First touch <b>2 goals</b></li><li><span>02</span>Back four <b>2 goals</b></li><li><span>03</span>Brick by brick <b>3 goals</b></li><li><span>04</span>Park the bus <b>3 goals</b></li><li><span>05</span>Last whistle <b>4 goals</b></li></ol></section>
+        <section class="panel"><h2>Achievements</h2><p id="achievement-detail">Locked: Not so Unc after all — Double netter. Score through both overlapping nets in level 13.</p><p class="small">Saved only in this browser. Clearing browser data removes achievements.</p></section><section class="panel levels-panel"><span class="eyebrow">THE RUN</span><ol id="level-list"><li class="current"><span>01</span>First touch <b>2 goals</b></li><li><span>02</span>Back four <b>2 goals</b></li><li><span>03</span>Brick by brick <b>3 goals</b></li><li><span>04</span>Park the bus <b>3 goals</b></li><li><span>05</span>Last whistle <b>4 goals</b></li></ol></section>
         <details class="panel instructions" open><summary>How to play</summary><p>Slide the cleat with your mouse, finger, or arrow keys. Hit near its edges to angle your shot.</p><p>Defenders and walls lose health on impact. A goal moves you toward the next level. Miss the cleat and lose a life.</p><p>Catch <b class="pickup-label">W</b> for a wider cleat or <b class="pickup-label">C</b> for curve. With curve active, hit off-center or sweep the cleat to bend the ball. Follow the blue trail.</p><p>A rare invader appears at 2,000 points earned within each block of five levels. Hit them for <b>+1 life</b> before six crossings. One chance per block; no bonus goal or falling life pickup.</p><p>From level 8, the keeper cannot be defeated. Every save speeds up the ball until you score or lose a life.</p><p>Goals <b>+500</b> · Defenders <b>+100</b> · Walls <b>+150</b> · Bus <b>+300</b></p></details>
       </aside>
     </div>
-    <footer><span>TWELVE LEVELS. THREE LIVES. ONE MORE TRY.</span><span></span></footer>
+    <footer><span>THIRTEEN LEVELS. THREE LIVES. ONE MORE TRY.</span><span></span></footer>
   </main>
-  <script type="module" src="game.js?v=aim2"></script>
+  <script type="module" src="game.js?v=level13"></script>
 </body>
 </html>

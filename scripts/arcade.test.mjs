@@ -34,3 +34,22 @@ test('authenticated endpoint verifies runs, enforces identity and keeps one best
  for(const reset of [g=>{},resetBall,awardGoal,g=>{g.level=7;loadLevel(g);}]){const g=initialGame('como',13);reset(g);for(const angle of [-60,0,60]){resetBall(g);const copy=JSON.parse(JSON.stringify(g));launch(g,angle);const verified=replay(copy,[['launch',angle]]).game;assert.equal(verified.ball.vx,g.ball.vx);assert.equal(Math.sign(g.ball.vx),Math.sign(angle));assert.ok(g.ball.vy<0);assert.ok(Math.abs(Math.hypot(g.ball.vx,g.ball.vy)-ballSpeed(g))<.001);}}
  for(const angle of [-61,61,null,'30'])assert.throws(()=>replay(initialGame('como',1),[['launch',angle]]));
  });
+
+test('level 13 overlaps award two goals and double-netter; a single net awards one',async()=>{
+ const {loadLevel,goalCenters,LEVELS,awardGoal}=await import('../arcade-app/engine.mjs');
+ assert.equal(LEVELS.length,13);
+ const g=initialGame('como',71);g.level=12;loadLevel(g);
+ const defenders=g.blocks.filter(b=>b.type==='defender'),buses=g.blocks.filter(b=>b.type==='bus');
+ assert.ok(defenders.every(d=>buses.every(b=>d.y>b.y+b.h)));
+ for(const overlap of [true,false]){
+   let time=0,centers;
+   for(;time<20;time+=.01){g.time=time;centers=goalCenters(g);if((Math.abs(centers[0]-centers[1])<20)===overlap)break;}
+   g.phase='playing';g.score=0;g.goals=0;g.events=[];g.ball={x:overlap?(centers[0]+centers[1])/2:centers[0],y:48,vx:0,vy:-620,spin:0};
+   const server=replay(JSON.parse(JSON.stringify(g)),[[320,1]]).game;
+   update(g,1/120,320);
+   assert.equal(g.goals,overlap?2:1);assert.equal(g.score,overlap?1000:500);
+   assert.equal(g.events.includes('double-netter'),overlap);assert.equal(server.score,g.score);
+ }
+ g.level=11;g.goals=LEVELS[11].goals-1;awardGoal(g);assert.equal(g.phase,'levelup');
+ advance(g);assert.equal(g.level,12);g.goals=6;awardGoal(g,2);assert.equal(g.phase,'won');
+});
