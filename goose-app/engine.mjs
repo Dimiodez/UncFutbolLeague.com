@@ -1,6 +1,6 @@
 export const VERSION='goose-v1',DT=1/120,GROUND=392,X=150;
 export const pace=g=>(265+g.time*3)/265;
-export function createGame(seed){return {rng:seed>>>0,time:0,distance:0,score:0,cans:0,mode:0,y:364,vy:0,jumps:0,objects:[],spawn:1.3,honks:0,drinks:0,rushAt:3,groups:0,over:false};}
+export function createGame(seed){return {rng:seed>>>0,time:0,distance:0,score:0,cans:0,mode:0,y:364,vy:0,jumps:0,objects:[],spawn:1.3,honks:0,drinks:0,rushAt:3,groups:0,safeRush:true,over:false};}
 function random(g){g.rng=(Math.imul(g.rng,1664525)+1013904223)>>>0;return g.rng/4294967296;}
 function add(g,type,x,y,w,h,extra={}){g.objects.push({type,x,y,w,h,...extra});}
 function spawnGroup(g){
@@ -22,17 +22,18 @@ export function step(g,input){
   o.x-=(speed+(o.type==='frisbee'?65:o.type==='duck'?35:0))*DT;
   if(o.baseY!==undefined)o.y=o.baseY+Math.sin(g.time*(o.type==='duck'?4:2)+o.phase)*(o.type==='duck'?12:8);
   const hit=X+24>o.x&&X-19<o.x+o.w&&g.y+25>o.y&&g.y-22<o.y+o.h;
-  if(!hit)continue;
+  if(!hit||(o.rush&&g.mode<=0))continue;
   if(o.type==='ball'){g.score+=50;o.gone=true;events.push({type:'ball',x:o.x,y:o.y});}
   else if(o.type==='can'){
    g.cans++;g.drinks++;g.score+=100;o.gone=true;
-   if(g.drinks>=g.rushAt){g.drinks=0;g.rushAt=g.rushAt===3?4:3;rush=true;}
+   if(!g.safeRush&&g.drinks>=g.rushAt){g.drinks=0;g.rushAt=g.rushAt===3?4:3;rush=true;}
    if(g.cans>=3){g.cans=0;g.mode=6;events.push({type:'mode'});}else events.push({type:'can'});
   }else if(g.mode>0){if(o.type!=='lake'){g.honks++;g.score+=200;events.push({type:'honk',x:o.x,y:o.y});}o.gone=true;}
   else{g.over=true;events.push({type:'over'});break;}
  }
- g.objects=g.objects.filter(o=>o.x+o.w>-40&&!o.gone&&(!rush||o.type!=='ball'||o.x<X-30));
- if(rush){for(let i=0;i<4;i++)add(g,'defender',X+speed*(.55+i*.5),GROUND-58,34,58);g.spawn=2.8;}
+ if(g.safeRush&&g.drinks>=g.rushAt&&g.mode>0&&!g.over){g.drinks=0;g.rushAt=g.rushAt===3?4:3;rush=true;}
+ g.objects=g.objects.filter(o=>(!o.rush||g.mode>0)&&o.x+o.w>-40&&!o.gone&&(!rush||o.type!=='ball'||o.x<X-30));
+ if(rush){for(let i=0;i<4;i++)add(g,'defender',X+speed*(.55+i*.5),GROUND-58,34,58,g.safeRush?{rush:true}:{});g.spawn=2.8;}
  return events;
 }
 export function replay(g,steps){

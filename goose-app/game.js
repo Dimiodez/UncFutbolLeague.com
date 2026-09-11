@@ -1,4 +1,4 @@
-import {createGame,step,DT} from './engine.mjs?v=live1';
+import {createGame,step,DT} from './engine.mjs?v=rush2';
 import {beginRun,record,flush,loadLeaderboard} from './ranked.mjs?v=live1';
 let simulation=null,pendingJump=false,accumulator=0,starting=false;
 const $=s=>document.querySelector(s),c=$('#game'),ctx=c.getContext('2d');

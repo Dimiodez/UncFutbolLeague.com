@@ -38,3 +38,13 @@ test('authenticated runs save one best with all four verified stats and reject f
  }
  db.close();
 });
+
+test('bonus line waits for power and disappears safely when power expires',()=>{
+ const g=createGame(5);g.spawn=999;g.drinks=3;g.rushAt=4;
+ g.objects=[{x:X,y:g.y,w:20,h:30,type:'can'}];step(g,0);
+ assert.equal(g.mode,0);assert.equal(g.objects.filter(o=>o.rush).length,0);assert.equal(g.drinks,4);
+ g.cans=2;g.objects=[{x:X,y:g.y,w:20,h:30,type:'can'}];step(g,0);
+ assert.equal(g.mode,6);assert.equal(g.objects.filter(o=>o.rush).length,4);
+ g.mode=DT/2;g.objects=[{x:X,y:g.y,w:34,h:58,type:'defender',rush:true}];step(g,0);
+ assert.equal(g.over,false);assert.equal(g.objects.length,0);assert.equal(g.honks,0);
+});
