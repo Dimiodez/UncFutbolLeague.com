@@ -5,7 +5,7 @@
   <title>Cleat Arcade · UNC Futbol League</title>
   <meta name="description" content="A soccer breakout prototype. Twelve levels, one cleat, keep the ball alive.">
   <link rel="icon" href="/assets/ufl-mark.png"><script src="/theme-init.js"></script>
-  <link rel="stylesheet" href="style.css?v=aim1">
+  <link rel="stylesheet" href="style.css?v=aim2">
 </head>
 <body>
   <main>
@@ -13,7 +13,7 @@
     <div class="layout">
       <section class="arena" aria-label="Soccer breakout game">
         <div class="scoreboard"><div><span>LEVEL</span><strong id="level">01 / 12</strong></div><div><span>SCORE</span><strong id="score">00000</strong></div><div><span>LIVES</span><strong id="lives">3</strong></div><button id="pause" class="quiet" disabled>Pause</button></div>
-        <div id="aim-controls" class="aim-controls" hidden><label for="launch-angle">Launch angle <output id="angle-value">0° · Straight</output></label><input id="launch-angle" type="range" min="-60" max="60" step="1" value="0"><button id="shoot" class="primary">Shoot ↑</button></div>
+        <div id="aim-controls" class="aim-controls" hidden><span>Move to aim · Touch and drag, then release · Arrows / WASD to aim, Space to shoot</span><button id="shoot" class="primary">Shoot ↑</button></div>
         <div class="pitch-wrap">
           <canvas id="pitch" width="640" height="700" tabindex="0" aria-label="Game pitch. Move with left and right arrows or A and D. Space to launch, P to pause. Mouse and touch supported."></canvas>
           <div id="overlay" class="overlay"><span id="overlay-kicker" class="eyebrow">01 · FIRST TOUCH</span><h2 id="overlay-title">KEEP IT<br>IN PLAY.</h2><p id="overlay-copy">Bounce off your cleat. Break through the defenders. Find the moving goal.</p><button id="action" class="primary">Kick off <span>↗</span></button></div>
@@ -31,6 +31,6 @@
     </div>
     <footer><span>TWELVE LEVELS. THREE LIVES. ONE MORE TRY.</span><span></span></footer>
   </main>
-  <script type="module" src="game.js?v=aim1"></script>
+  <script type="module" src="game.js?v=aim2"></script>
 </body>
 </html>
