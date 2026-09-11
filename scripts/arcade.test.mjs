@@ -28,3 +28,9 @@ test('authenticated endpoint verifies runs, enforces identity and keeps one best
  const upsert=db.prepare("INSERT INTO arcade_bests(discord_id,version,team,score,level,achieved_at) VALUES ('test-user','cleat-v1',?,?,1,1) ON CONFLICT(discord_id,version) DO UPDATE SET score=excluded.score,team=excluded.team WHERE excluded.score>arcade_bests.score");
  upsert.run('PAL',client.score+100);upsert.run('GC',0);assert.equal(db.prepare('SELECT COUNT(*) AS n FROM arcade_bests').get().n,1);assert.equal(db.prepare('SELECT team FROM arcade_bests').get().team,'PAL');db.close();
 });
+
+ test('chosen trajectory is replayed and available after every reset',async()=>{
+ const {resetBall,awardGoal,loadLevel,ballSpeed}=await import('../arcade-app/engine.mjs');
+ for(const reset of [g=>{},resetBall,awardGoal,g=>{g.level=7;loadLevel(g);}]){const g=initialGame('como',13);reset(g);for(const angle of [-60,0,60]){resetBall(g);const copy=JSON.parse(JSON.stringify(g));launch(g,angle);const verified=replay(copy,[['launch',angle]]).game;assert.equal(verified.ball.vx,g.ball.vx);assert.equal(Math.sign(g.ball.vx),Math.sign(angle));assert.ok(g.ball.vy<0);assert.ok(Math.abs(Math.hypot(g.ball.vx,g.ball.vy)-ballSpeed(g))<.001);}}
+ for(const angle of [-61,61,null,'30'])assert.throws(()=>replay(initialGame('como',1),[['launch',angle]]));
+ });

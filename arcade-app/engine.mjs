@@ -21,7 +21,7 @@ export function paddleWidth(g){return g.wide>0?156:108;}
 export function goalX(g){const l=LEVELS[g.level];return 320+Math.sin(g.time*l.goalSpeed)*(240-l.goalWidth/2);}
 export function resetBall(g){g.saveBoost=0;g.phase='ready';g.ball={x:g.paddleX,y:PADDLE_Y-BALL_R-4,vx:0,vy:0,spin:0};}
 export function ballSpeed(g){return LEVELS[g.level].speed+g.goals*8+g.saveBoost;}
-export function launch(g){if(g.phase!=='ready')return;g.phase='playing';const speed=ballSpeed(g);g.ball.vx=speed*.32;g.ball.vy=-speed*Math.sqrt(1-.32**2);g.ball.spin=g.curve>0?190:0;}
+export function launch(g,degrees=null){if(g.phase!=='ready')return;if(degrees!==null&&(!Number.isFinite(degrees)||degrees<-60||degrees>60))throw new Error('Invalid launch angle.');g.phase='playing';const speed=ballSpeed(g),angle=degrees===null?Math.asin(.32):degrees*Math.PI/180;g.ball.vx=speed*Math.sin(angle);g.ball.vy=-speed*Math.cos(angle);g.ball.spin=g.curve>0?190:0;}
 export function advance(g){if(g.phase!=='levelup')return;g.level++;loadLevel(g);}
 export function awardGoal(g){g.saveBoost=0;g.score+=500;g.goals++;g.events.push('goal');if(g.goals>=LEVELS[g.level].goals){g.score+=250;g.phase=g.level===LEVELS.length-1?'won':'levelup';g.events.push(g.phase);}else resetBall(g);}
 export function checkChallenges(g){const segment=Math.floor(g.level/5);if(!g.lifeOffered[segment]&&g.score-g.segmentScore>=2000){g.lifeOffered[segment]=true;g.invader={x:24,y:530,direction:1,passes:0,time:0};g.events.push('Rare pitch invader! Hit for +1 life.');}}

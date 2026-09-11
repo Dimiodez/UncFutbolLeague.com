@@ -7,7 +7,7 @@ export function replay(g,steps){
  for(const step of steps){if(!Array.isArray(step))throw new Error('Invalid action.');if(typeof step[0]==='number'){
    const [x,n]=step;if(step.length!==2||!Number.isInteger(x)||x<0||x>640||!Number.isInteger(n)||n<1||n>1200||ticks+n>1200)throw new Error('Invalid movement.');
    for(let i=0;i<n;i++){if(!['ready','playing'].includes(g.phase))throw new Error('Run is not playing.');update(g,1/120,x);g.events=[];}ticks+=n;
- }else if(step[0]==='launch'&&step.length===1&&g.phase==='ready')launch(g);
+ }else if(step[0]==='launch'&&(step.length===1||(step.length===2&&Number.isInteger(step[1])&&step[1]>=-60&&step[1]<=60))&&g.phase==='ready')launch(g,step.length===2?step[1]:null);
  else if(step[0]==='advance'&&step.length===1&&g.phase==='levelup')advance(g);
  else if(step[0]==='aim'&&step.length===2&&g.phase==='ready'&&Number.isInteger(step[1])&&step[1]>=0&&step[1]<=640)update(g,0,step[1]);
  else throw new Error('Invalid game transition.');}
