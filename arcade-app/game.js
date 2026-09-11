@@ -1,4 +1,4 @@
-import {loadLevel,keeperX,ballSpeed,createGame,LEVELS,WIDTH,HEIGHT,PADDLE_Y,BALL_R,goalX,paddleWidth,launch,advance,update,clamp} from './engine.mjs';
+import {loadLevel,keeperX,ballSpeed,createGame,LEVELS,WIDTH,HEIGHT,PADDLE_Y,BALL_R,goalX,paddleWidth,launch,advance,update,clamp} from './engine.mjs?v=aim1';
 const $=s=>document.querySelector(s),canvas=$('#pitch'),ctx=canvas.getContext('2d');
 import {TEAM_NAMES,THEMES} from './teams.mjs';
 import {beginRun,record,flush,loadLeaderboard} from './ranked.mjs';
