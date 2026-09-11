@@ -1,15 +1,16 @@
 import {loadLevel,keeperX,ballSpeed,createGame,LEVELS,WIDTH,HEIGHT,PADDLE_Y,BALL_R,goalX,goalCenters,paddleWidth,launch,advance,update,clamp} from './engine.mjs?v=level13';
 const $=s=>document.querySelector(s),canvas=$('#pitch'),ctx=canvas.getContext('2d');
 import {TEAM_NAMES,THEMES} from './teams.mjs';
-import {beginRun,record,flush,loadLeaderboard} from './ranked.mjs';
+import {beginRun,record,flush,loadLeaderboard,discardRun,ownerSession} from './ranked.mjs?v=owner-test1';
 $('#team').replaceChildren(...Object.entries(TEAM_NAMES).map(([key,[name,short]])=>{const o=document.createElement('option');o.value=key;o.textContent=`${name} · ${short}`;return o;}));
+let testing=false,testLevel=0;
 let aimAngle=0,aimPointer=null,padShootHeld=false;
 let runTeam='gotham',trail=[];
 let theme=THEMES.gotham,g=createGame(),target=320,keys=new Set(),last=0,accumulator=0,saved=false,best=null,saveAvailable=true;
 try{const record=JSON.parse(localStorage.getItem('ufl-cleat-best-v1')||'null');if(record&&Number.isInteger(record.score)&&record.score>=0&&Number.isInteger(record.level)&&record.level>=1&&record.level<=LEVELS.length)best=record;const choice=localStorage.getItem('ufl-cleat-theme-v1');if(THEMES[choice])$('#team').value=choice;}catch{saveAvailable=false;}
 function applyTheme(){theme=THEMES[$('#team').value];['--accent','--dark','--mid','--pale'].forEach((k,i)=>document.documentElement.style.setProperty(k,theme[i]));try{localStorage.setItem('ufl-cleat-theme-v1',$('#team').value);}catch{saveAvailable=false;}}
 function renderBest(){if(best){$('#best').textContent=best.score.toLocaleString();$('#best-detail').textContent=`${best.won?'All '+best.level+' levels cleared':'Reached level '+best.level} · ${TEAM_NAMES[best.team]?.[1]||'Team not recorded'}`;}if(!saveAvailable)$('#storage-status').textContent='Browser storage is unavailable. Your best lasts only while this page is open.';}
-function saveBest(){if(saved)return;flush(true);saved=true;if(!best||g.score>best.score){best={score:g.score,level:g.level+1,won:g.phase==='won',team:runTeam};try{localStorage.setItem('ufl-cleat-best-v1',JSON.stringify(best));}catch{saveAvailable=false;}renderBest();}}
+function saveBest(){if(testing||saved)return;flush(true);saved=true;if(!best||g.score>best.score){best={score:g.score,level:g.level+1,won:g.phase==='won',team:runTeam};try{localStorage.setItem('ufl-cleat-best-v1',JSON.stringify(best));}catch{saveAvailable=false;}renderBest();}}
 function overlay(kicker,title,copy,action){$('#overlay').hidden=false;$('#overlay-kicker').textContent=kicker;$('#overlay-title').textContent=title;$('#overlay-copy').textContent=copy;$('#action').textContent=action;}
 function sync(){if(g.phase==='ready'){target=WIDTH/2;record(['aim',target]);update(g,0,target);}$('#aim-controls').hidden=g.phase!=='ready';const l=LEVELS[g.level];$('#opposition').textContent=`${TEAM_NAMES[$('#team').value][1]} vs ${TEAM_NAMES[g.opponent]?.[1]||'—'} · Opposition changes each level`;$('#level').textContent=`${String(g.level+1).padStart(2,"0")} / ${LEVELS.length}`;$('#score').textContent=String(g.score).padStart(5,'0');$('#lives').textContent=String(g.lives);$('#objective').textContent=`${g.goals} / ${l.goals} goals · ${l.name} · ${Math.round(ballSpeed(g)/330*100)}% speed`;$('#pause').disabled=!['playing','ready','paused'].includes(g.phase);$('#pause').textContent=g.phase==='paused'?'Resume':'Pause';$('#level-list').querySelectorAll('li').forEach((li,i)=>{li.classList.toggle('current',i===g.level);li.classList.toggle('cleared',i<g.level);});
 $('#team').disabled=starting||!['intro','over','won'].includes(g.phase);
@@ -23,9 +24,9 @@ function shoot(){if(g.phase!=='ready')return;const angle=Math.round(aimAngle);re
 $('#shoot').addEventListener('click',shoot);
 let beforePause='ready';
 function pause(){if(g.phase==='paused')g.phase=beforePause;else if(['ready','playing'].includes(g.phase)){beforePause=g.phase;g.phase='paused';keys.clear();}sync();}
-function action(){if(g.phase==='intro'||['over','won'].includes(g.phase)){void startRun();}else if(g.phase==='levelup'){record(['advance']);advance(g);}else if(g.phase==='paused')pause();else {if(g.phase==='ready')shoot();}sync();canvas.focus({preventScroll:true});}
+function action(){if(g.phase==='intro'||['over','won'].includes(g.phase)){void startRun(testing?testLevel:null);}else if(g.phase==='levelup'){record(['advance']);advance(g);}else if(g.phase==='paused')pause();else {if(g.phase==='ready')shoot();}sync();canvas.focus({preventScroll:true});}
 let starting=false;
-async function startRun(){if(starting)return;starting=true;const chosenTeam=$('#team').value;$('#team').disabled=true;$('#action').disabled=true;try{const seed=await beginRun(chosenTeam);g=createGame(chosenTeam,Object.keys(TEAM_NAMES),seed);g.phase='ready';target=320;saved=false;runTeam=$('#team').value;trail=[];keys.clear();accumulator=0;beforePause='ready';sync();canvas.focus({preventScroll:true});}finally{starting=false;$('#action').disabled=false;}}
+async function startRun(level=null){if(starting)return;starting=true;const chosenTeam=$('#team').value;$('#team').disabled=true;$('#action').disabled=true;try{if(level!==null&&(!Number.isInteger(level)||level<0||level>=LEVELS.length||!await ownerSession())){document.querySelector('#test-status').textContent='Owner login required.';return;}testing=level!==null;testLevel=level??0;if(testing)discardRun();const seed=testing?crypto.getRandomValues(new Uint32Array(1))[0]:await beginRun(chosenTeam);g=createGame(chosenTeam,Object.keys(TEAM_NAMES),seed);if(testing){g.level=testLevel;loadLevel(g);document.querySelector('#rank-status').textContent='OWNER TEST · No scores or achievements saved.';}document.querySelector('#test-status').textContent=testing?'Testing level '+(testLevel+1)+' · Scores and achievements disabled.':'';g.phase='ready';target=320;saved=false;runTeam=$('#team').value;trail=[];keys.clear();accumulator=0;beforePause='ready';sync();canvas.focus({preventScroll:true});}finally{starting=false;$('#action').disabled=false;}}
 $('#action').addEventListener('click',action);$('#pause').addEventListener('click',()=>{pause();canvas.focus({preventScroll:true});});$('#team').addEventListener('change',()=>{applyTheme();if(g.phase==='intro')g=createGame($('#team').value,Object.keys(TEAM_NAMES));sync();});
 function point(e){const r=canvas.getBoundingClientRect();const x=(e.clientX-r.left)*WIDTH/r.width,y=(e.clientY-r.top)*HEIGHT/r.height;if(g.phase==='ready'){aimAngle=clamp(Math.atan2(x-WIDTH/2,Math.max(30,PADDLE_Y-BALL_R-4-y))*180/Math.PI,-60,60);target=WIDTH/2;}else target=clamp(x,0,WIDTH);}
 canvas.addEventListener('pointermove',point);
@@ -66,5 +67,10 @@ applyTheme();g=createGame($('#team').value,Object.keys(TEAM_NAMES));renderBest()
 
 loadLeaderboard();
 
-function unlockDoubleNetter(){const panel=document.querySelector('#achievement-detail');panel.textContent='Unlocked: Not so Unc after all — Double netter. One shot, two nets. Pure gaming prowess!';try{localStorage.setItem('ufl-cleat-achievement-double-netter','unlocked');}catch{panel.textContent+=' Browser storage unavailable; this unlock lasts for this visit.';}}
+function unlockDoubleNetter(){if(testing)return;const panel=document.querySelector('#achievement-detail');panel.textContent='Unlocked: Not so Unc after all — Double netter. One shot, two nets. Pure gaming prowess!';try{localStorage.setItem('ufl-cleat-achievement-double-netter','unlocked');}catch{panel.textContent+=' Browser storage unavailable; this unlock lasts for this visit.';}}
 try{if(localStorage.getItem('ufl-cleat-achievement-double-netter')==='unlocked')unlockDoubleNetter();}catch{}
+
+document.querySelector('#test-level').replaceChildren(...LEVELS.map((level,i)=>{const option=document.createElement('option');option.value=i;option.textContent=(i+1)+' · '+level.name;return option;}));
+ownerSession().then(owner=>{document.querySelector('#owner-testing').hidden=!owner;});
+document.querySelector('#test-start').addEventListener('click',()=>startRun(Number(document.querySelector('#test-level').value)));
+document.querySelector('#test-exit').addEventListener('click',()=>startRun(null));

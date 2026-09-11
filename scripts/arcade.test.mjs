@@ -53,3 +53,13 @@ test('level 13 overlaps award two goals and double-netter; a single net awards o
  g.level=11;g.goals=LEVELS[11].goals-1;awardGoal(g);assert.equal(g.phase,'levelup');
  advance(g);assert.equal(g.level,12);g.goals=6;awardGoal(g,2);assert.equal(g.phase,'won');
 });
+
+test('owner test mode disconnects score recording and checks the owner role',async()=>{
+ const source=readFileSync(new URL('../arcade-app/ranked.mjs',import.meta.url),'utf8');
+ const harness=`const calls=[];let role='owner';const document={querySelector:()=>({addEventListener(){},textContent:''})};const fetch=async(path,options)=>{calls.push(path);return {ok:true,json:async()=>path.includes('session')?{authenticated:true,user:{role,displayName:'Tester'}}:{id:'test',seed:5}};};export {calls};export function setRole(value){role=value;}`;
+ const ranked=await import('data:text/javascript;base64,'+Buffer.from(harness+source).toString('base64'));
+ assert.equal(await ranked.ownerSession(),true);ranked.setRole('admin');assert.equal(await ranked.ownerSession(),false);
+ await ranked.beginRun('como');ranked.discardRun();const before=ranked.calls.length;
+ ranked.record(['launch',20]);ranked.record([320,600]);ranked.flush(true);
+ await Promise.resolve();assert.equal(ranked.calls.length,before);
+});

@@ -24,3 +24,6 @@ export function flush(final=false){
 }
 document.querySelector('#refresh-board').addEventListener('click',loadLeaderboard);
 status('Sign in on the site to save your best to the members leaderboard. Guests can practice.');
+
+export function discardRun(){if(run){run.failed=true;run.steps=[];}run=null;}
+export async function ownerSession(){try{const session=await api('/api/auth/session');return session.authenticated&&session.user?.role==='owner';}catch{return false;}}
