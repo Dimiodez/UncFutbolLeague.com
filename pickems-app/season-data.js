@@ -4,7 +4,7 @@ window.UFL_SEASON = {
   "source": "https://ufl.virtualarena.app/competitions/1/seasons/1/matches",
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/teams",
-  "syncedAt": "2026-09-11T07:00:03.000Z",
+  "syncedAt": "2026-09-11T13:50:28.000Z",
   "teams": {
     "GOTH": [
       "UFL Gotham City",
