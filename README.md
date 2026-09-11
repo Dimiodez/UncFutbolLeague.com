@@ -59,3 +59,8 @@ Apply `migrations/0008_rate_limits.sql` when provisioning the database. The Func
 FUNC card master layouts use the same `DB` binding and Discord Owner identity. Apply `migrations/0006_func_layout_masters.sql` when provisioning a fresh database. Existing deployments also create these two small tables safely on the first FUNC layout request, so no additional Cloudflare binding, R2 bucket, or environment variable is required.
 
 `OWNER_DISCORD_ID` must be the owner's numeric Discord user ID. The backend derives the owner role from this server-side value on every authenticated request, so another site administrator cannot demote the configured owner. Never commit `.dev.vars`, the Discord client secret, session cookies, or exported member data.
+
+## Arcade
+The /arcade hub opens Cleat Arcade at /arcade/cleat. The production game is in arcade-app and follows the site themes with the official UFL logo. The standalone prototype remains separate. Test-level controls are not shipped.
+Authenticated runs use same-origin session cookies and a server-generated seed. Small ordered input packets are replayed on the server; no submitted score is trusted. A completed run updates one best per member and game version, with its club abbreviation. Guests can practice and save a device best. This validates game rules but is not bot detection. In-progress runs expire after two hours; interrupted verification falls back to local-only scoring.
+Apply migrations/0009_arcade.sql for a fresh database; the endpoint also provisions these tables idempotently. Run node --test scripts/arcade.test.mjs for replay, authorization, and SQL checks.
