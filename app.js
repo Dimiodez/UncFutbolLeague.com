@@ -548,7 +548,7 @@ async function hydrateUsersDirectory() {
   } catch { root.innerHTML=emptyState('Directory temporarily unavailable','The clubhouse roster could not be loaded. Please try again shortly.'); }
 }
 
-function arcadePage(){return '<section class="section arcade-hub"><span class="section-kicker">The clubhouse</span><h2>Arcade</h2><p class="section-intro">Pick a game. Rep your club. Beat your best.</p><div class="arcade-grid"><a class="card arcade-game-card" href="/arcade/cleat" data-link><img src="/assets/ufl-mark.webp" alt="UNC Futbol League"><span class="season-chip season-chip-live">13 levels · Soccer breakout</span><h3>Cleat Arcade</h3><p>Break through defenders, dodge the buses, and beat the keeper. One cleat. Three lives.</p><strong>Play Cleat Arcade →</strong></a></div></section>';}
+function arcadePage(){return '<section class="section arcade-hub"><span class="section-kicker">The clubhouse</span><h2>Arcade</h2><p class="section-intro">Pick a game. Rep your club. Beat your best.</p><div class="arcade-grid"><a class="card arcade-game-card" href="/arcade/cleat" data-link><img src="/assets/ufl-mark.webp" alt="UNC Futbol League"><span class="season-chip season-chip-live">13 levels · Soccer breakout</span><h3>Cleat Arcade</h3><p>Break through defenders, dodge the buses, and beat the keeper. One cleat. Three lives.</p><strong>Play Cleat Arcade →</strong></a><a class="card arcade-game-card" href="/arcade/loosey-goosey" data-link><img src="/goose-app/goose-mode-logo.png" alt="Goose Mode"><span class="season-chip season-chip-live">Endless runner · Goose Mode</span><h3>Loosey Goosey</h3><p>Jump, glide, and honk your way to kickoff. Fuel up on Goose Mode and leave the opposition behind.</p><strong>Play Loosey Goosey →</strong></a></div></section>';}
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
 function wheelPage() {
   return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
@@ -793,6 +793,7 @@ function render() {
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = arcadePage();
+  else if (path === '/arcade/loosey-goosey') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Loosey Goosey"><iframe class="integrated-app-frame" src="/goose-app/" title="Loosey Goosey soccer runner" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
   else if (path === routes.teams) main.innerHTML = teamsPage(params);
