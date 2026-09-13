@@ -28,7 +28,8 @@ const scheduleTypes = {
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
   'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
-  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.']
+  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.'],
+  'aggregate-byot': ['Aggregate BYOT','Four games, one aggregate score, and golden goal when level.']
 };
 
 const locations = [
@@ -133,8 +134,8 @@ function teamsPage(params) {
 function schedulesPage(params) {
   const requestedType = params.get('type');
   if (!requestedType) {
-    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
-    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
+    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments'],['aggregate-byot','Aggregate BYOT','1v1, 3v3, 6v6 and 10v10 combined into one knockout score.','/schedules/aggregate-byot']];
+    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':key==='aggregate-byot'?'AB':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
   }
   if (requestedType === '10v10') return pageHero('Match centre','10v10 League Schedule','Full-squad fixtures will appear here when the FC27 10v10 season begins.')+`<section class="section">${scheduleLandingTabs('10v10')}<div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('10v10 schedule coming soon','The complete schedule will remain inside this tab when the division begins.')}</section>`;
   const type = '6v6';
@@ -144,7 +145,7 @@ function schedulesPage(params) {
 }
 
 function scheduleLandingTabs(active) {
-  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
+  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a><a class="tab ${active==='aggregate-byot'?'active':''}" href="/schedules/aggregate-byot" data-link>Aggregate BYOT</a></div>`;
 }
 
 function communityEventsPage() {
@@ -172,6 +173,52 @@ function inauguralByot(record=inauguralByotDefaults, editable=false) {
 function byotTournamentsPage() {
   return pageHero('Recurring tournament series','BYOT Tournaments','Bring your own team, choose the format, and play from group stage to trophy night.') +
     `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>Your squad. Your format. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
+}
+
+const aggregateByotTeams = ['Carolina Comets','Chapel Hill FC','Tar Heel City','Piedmont Union'];
+const aggregatePlayerNames = ['Alex','Blake','Casey','Devon','Emery','Finley','Gray','Harper','Indy','Jordan'];
+const makeAggregateSeries = (id,home,away) => ({id,home,away,sideWinners:{one:'',three:'',six:''},tenHome:'',tenAway:'',goldenWinner:''});
+let aggregateByotState = {semis:[makeAggregateSeries('semi-1',aggregateByotTeams[0],aggregateByotTeams[3]),makeAggregateSeries('semi-2',aggregateByotTeams[1],aggregateByotTeams[2])],final:null};
+
+function aggregateSeriesScore(series) {
+  return {home:Object.values(series.sideWinners).filter(value=>value==='home').length+(Number(series.tenHome)||0),away:Object.values(series.sideWinners).filter(value=>value==='away').length+(Number(series.tenAway)||0)};
+}
+
+function aggregateSeriesComplete(series) {
+  return Object.values(series.sideWinners).every(Boolean)&&series.tenHome!==''&&series.tenAway!=='';
+}
+
+function aggregateSeriesWinner(series) {
+  const score=aggregateSeriesScore(series);
+  if(!aggregateSeriesComplete(series)) return '';
+  if(score.home===score.away) return series.goldenWinner==='home'?series.home:series.goldenWinner==='away'?series.away:'';
+  return score.home>score.away?series.home:series.away;
+}
+
+function aggregateSeriesCard(series,title) {
+  const score=aggregateSeriesScore(series),advancing=aggregateSeriesWinner(series),tie=aggregateSeriesComplete(series)&&score.home===score.away;
+  const sideLabels={one:'1v1',three:'3v3',six:'6v6'};
+  return `<article class="aggregate-series-card" data-aggregate-series="${escapeHtml(series.id)}"><header><div><span class="section-kicker">${escapeHtml(title)}</span><h3>${escapeHtml(series.home)} <i>vs</i> ${escapeHtml(series.away)}</h3></div><strong class="${advancing?'aggregate-complete':'aggregate-pending'}">${advancing?`${escapeHtml(advancing)} advances`:tie?'Golden goal required':'In progress'}</strong></header><div class="aggregate-side-events">${Object.entries(sideLabels).map(([side,label])=>`<div><b>${label}</b><button class="${series.sideWinners[side]==='home'?'selected':''}" type="button" data-aggregate-side="${side}" data-winner="home">${escapeHtml(series.home)}</button><button class="${series.sideWinners[side]==='away'?'selected':''}" type="button" data-aggregate-side="${side}" data-winner="away">${escapeHtml(series.away)}</button><small>Winner +1</small></div>`).join('')}</div><div class="aggregate-ten-score"><b>10v10 final</b><label>${escapeHtml(series.home)}<input aria-label="${escapeHtml(series.home)} 10v10 score" inputmode="numeric" maxlength="2" value="${escapeHtml(series.tenHome)}" data-aggregate-score="home"></label><i>–</i><label><input aria-label="${escapeHtml(series.away)} 10v10 score" inputmode="numeric" maxlength="2" value="${escapeHtml(series.tenAway)}" data-aggregate-score="away">${escapeHtml(series.away)}</label></div><div class="aggregate-total"><span>Aggregate</span><strong>${escapeHtml(series.home)} ${score.home}–${score.away} ${escapeHtml(series.away)}</strong>${tie?`<div class="aggregate-golden"><span>Golden goal winner</span><button class="${series.goldenWinner==='home'?'selected':''}" type="button" data-aggregate-golden="home">${escapeHtml(series.home)}</button><button class="${series.goldenWinner==='away'?'selected':''}" type="button" data-aggregate-golden="away">${escapeHtml(series.away)}</button></div>`:''}</div></article>`;
+}
+
+function aggregateByotPage() {
+  const rosters=aggregateByotTeams.map((team,teamIndex)=>`<article><h3>${escapeHtml(team)}</h3><p>${aggregatePlayerNames.map((name,index)=>`<span>${escapeHtml(name)} ${teamIndex*10+index+1}</span>`).join('')}</p><small>1 to 1v1 · 3 to 3v3 · 6 to 6v6 · all return for 10v10</small></article>`).join('');
+  return pageHero('Four-match knockout format','Aggregate BYOT','Side-event wins and the 10v10 score combine to decide who advances.')+`<section class="section schedule-landing aggregate-byot-page">${scheduleLandingTabs('aggregate-byot')}<div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
+}
+
+function findAggregateSeries(id) {
+  return [...aggregateByotState.semis,aggregateByotState.final].find(series=>series?.id===id);
+}
+
+function renderAggregateByotBoard() {
+  const root=document.querySelector('#aggregate-byot-board');
+  if(!root) return;
+  const finalists=aggregateByotState.semis.map(aggregateSeriesWinner);
+  root.innerHTML=`<div class="aggregate-bracket"><div class="aggregate-round"><h3>Semifinals</h3>${aggregateByotState.semis.map((series,index)=>aggregateSeriesCard(series,`Semifinal ${index+1}`)).join('')}</div><div class="aggregate-round aggregate-final"><h3>Final</h3>${aggregateByotState.final?aggregateSeriesCard(aggregateByotState.final,'Aggregate BYOT Final'):`<div class="aggregate-final-placeholder"><p>Complete both semifinal aggregates to reveal the final.</p><button class="button button-primary" type="button" id="aggregate-create-final" ${finalists.every(Boolean)?'':'disabled'}>Create final</button></div>`}</div></div>`;
+  root.querySelectorAll('[data-aggregate-side]').forEach(button=>button.addEventListener('click',()=>{const series=findAggregateSeries(button.closest('[data-aggregate-series]').dataset.aggregateSeries);series.sideWinners[button.dataset.aggregateSide]=button.dataset.winner;renderAggregateByotBoard();}));
+  root.querySelectorAll('[data-aggregate-score]').forEach(input=>input.addEventListener('input',()=>{const series=findAggregateSeries(input.closest('[data-aggregate-series]').dataset.aggregateSeries);series[input.dataset.aggregateScore==='home'?'tenHome':'tenAway']=input.value.replace(/\D/g,'');renderAggregateByotBoard();}));
+  root.querySelectorAll('[data-aggregate-golden]').forEach(button=>button.addEventListener('click',()=>{const series=findAggregateSeries(button.closest('[data-aggregate-series]').dataset.aggregateSeries);series.goldenWinner=button.dataset.aggregateGolden;renderAggregateByotBoard();}));
+  root.querySelector('#aggregate-create-final')?.addEventListener('click',()=>{if(finalists.every(Boolean)){aggregateByotState.final=makeAggregateSeries('final',finalists[0],finalists[1]);renderAggregateByotBoard();}});
 }
 
 function eventMatches(snapshot) {
@@ -800,6 +847,7 @@ function render() {
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
   else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
   else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
+  else if (path === '/schedules/aggregate-byot') main.innerHTML = aggregateByotPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
   else if (path === routes.users) main.innerHTML = usersPage();
@@ -818,6 +866,7 @@ function render() {
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();
+  renderAggregateByotBoard();
   hydrateUsersDirectory();
   hydrateHomeCalendar();
   window.scrollTo(0,0);
@@ -832,6 +881,7 @@ function setLocation() {
   if (contact) contact.textContent = `Currently ${location}.`;
 }
 function bindDynamicActions() {
+  document.querySelector('#aggregate-reset')?.addEventListener('click',()=>{aggregateByotState={semis:[makeAggregateSeries('semi-1',aggregateByotTeams[0],aggregateByotTeams[3]),makeAggregateSeries('semi-2',aggregateByotTeams[1],aggregateByotTeams[2])],final:null};renderAggregateByotBoard();});
   document.querySelectorAll('.integrated-app-frame').forEach(appFrame => {
     const syncAppTheme = () => {
       try { appFrame.contentDocument.documentElement.dataset.theme = document.documentElement.dataset.theme; }
