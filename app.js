@@ -175,10 +175,12 @@ function byotTournamentsPage() {
     `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>Your squad. Your format. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
 }
 
-const aggregateByotTeams = ['Carolina Comets','Chapel Hill FC','Tar Heel City','Piedmont Union'];
-const aggregatePlayerNames = ['Alex','Blake','Casey','Devon','Emery','Finley','Gray','Harper','Indy','Jordan'];
 const makeAggregateSeries = (id,home,away) => ({id,home,away,sideWinners:{one:'',three:'',six:''},tenHome:'',tenAway:'',goldenWinner:''});
-let aggregateByotState = {semis:[makeAggregateSeries('semi-1',aggregateByotTeams[0],aggregateByotTeams[3]),makeAggregateSeries('semi-2',aggregateByotTeams[1],aggregateByotTeams[2])],final:null};
+const makeDefaultAggregateByotState = () => {
+  const teams=Array.from({length:4},(_,index)=>`Team ${index+1}`);
+  return {teams,rosters:Array.from({length:4},(_,teamIndex)=>Array.from({length:10},(_,playerIndex)=>`Player ${teamIndex*10+playerIndex+1}`)),semis:[makeAggregateSeries('semi-1',teams[0],teams[3]),makeAggregateSeries('semi-2',teams[1],teams[2])],final:null};
+};
+let aggregateByotState = makeDefaultAggregateByotState();
 
 function aggregateSeriesScore(series) {
   return {home:Object.values(series.sideWinners).filter(value=>value==='home').length+(Number(series.tenHome)||0),away:Object.values(series.sideWinners).filter(value=>value==='away').length+(Number(series.tenAway)||0)};
@@ -202,12 +204,18 @@ function aggregateSeriesCard(series,title) {
 }
 
 function aggregateByotPage() {
-  const rosters=aggregateByotTeams.map((team,teamIndex)=>`<article><h3>${escapeHtml(team)}</h3><p>${aggregatePlayerNames.map((name,index)=>`<span>${escapeHtml(name)} ${teamIndex*10+index+1}</span>`).join('')}</p><small>1 to 1v1 · 3 to 3v3 · 6 to 6v6 · all return for 10v10</small></article>`).join('');
+  const rosters=aggregateByotState.teams.map((team,teamIndex)=>`<article><label class="aggregate-team-name"><span>Team name</span><input aria-label="Team ${teamIndex+1} name" value="${escapeHtml(team)}" data-aggregate-team="${teamIndex}"></label><div class="aggregate-player-list">${aggregateByotState.rosters[teamIndex].map((name,index)=>`<label><span>${String(index+1).padStart(2,'0')}</span><input aria-label="Team ${teamIndex+1} player ${index+1}" value="${escapeHtml(name)}" data-aggregate-player="${teamIndex}:${index}"></label>`).join('')}</div><small>1 to 1v1 · 3 to 3v3 · 6 to 6v6 · all return for 10v10</small></article>`).join('');
   return pageHero('Four-match knockout format','Aggregate BYOT','Side-event wins and the 10v10 score combine to decide who advances.')+`<section class="section schedule-landing aggregate-byot-page">${scheduleLandingTabs('aggregate-byot')}<div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
 }
 
 function findAggregateSeries(id) {
   return [...aggregateByotState.semis,aggregateByotState.final].find(series=>series?.id===id);
+}
+
+function renameAggregateTeam(index,name) {
+  const previous=aggregateByotState.teams[index];
+  aggregateByotState.teams[index]=name;
+  [...aggregateByotState.semis,aggregateByotState.final].filter(Boolean).forEach(series=>{if(series.home===previous) series.home=name;if(series.away===previous) series.away=name;});
 }
 
 function renderAggregateByotBoard() {
@@ -881,7 +889,9 @@ function setLocation() {
   if (contact) contact.textContent = `Currently ${location}.`;
 }
 function bindDynamicActions() {
-  document.querySelector('#aggregate-reset')?.addEventListener('click',()=>{aggregateByotState={semis:[makeAggregateSeries('semi-1',aggregateByotTeams[0],aggregateByotTeams[3]),makeAggregateSeries('semi-2',aggregateByotTeams[1],aggregateByotTeams[2])],final:null};renderAggregateByotBoard();});
+  document.querySelector('#aggregate-reset')?.addEventListener('click',()=>{aggregateByotState=makeDefaultAggregateByotState();render();});
+  document.querySelectorAll('[data-aggregate-team]').forEach(input=>input.addEventListener('input',()=>{renameAggregateTeam(Number(input.dataset.aggregateTeam),input.value);renderAggregateByotBoard();}));
+  document.querySelectorAll('[data-aggregate-player]').forEach(input=>input.addEventListener('input',()=>{const [teamIndex,playerIndex]=input.dataset.aggregatePlayer.split(':').map(Number);aggregateByotState.rosters[teamIndex][playerIndex]=input.value;}));
   document.querySelectorAll('.integrated-app-frame').forEach(appFrame => {
     const syncAppTheme = () => {
       try { appFrame.contentDocument.documentElement.dataset.theme = document.documentElement.dataset.theme; }
