@@ -4,7 +4,7 @@
   "source": "https://ufl.virtualarena.app/competitions/1/seasons/1/matches",
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/1/teams",
-  "syncedAt": "2026-09-12T07:00:03.000Z",
+  "syncedAt": "2026-09-16T04:06:03.000Z",
   "teams": {
     "GOTH": [
       "UFL Gotham City",
@@ -56,19 +56,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Gotham%20City",
       "rosterSize": 6,
       "stats": {
-        "played": 16,
-        "wins": 10,
+        "played": 18,
+        "wins": 12,
         "draws": 2,
         "losses": 4,
-        "goals_for": 47,
-        "goals_against": 34,
-        "goal_difference": 13,
-        "points": 32,
+        "goals_for": 57,
+        "goals_against": 37,
+        "goal_difference": 20,
+        "points": 38,
         "form": [
+          "L",
+          "L",
           "W",
-          "L",
-          "L",
-          "L",
+          "W",
           "W"
         ]
       }
@@ -81,19 +81,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20New%20Legacy",
       "rosterSize": 6,
       "stats": {
-        "played": 16,
-        "wins": 4,
+        "played": 18,
+        "wins": 5,
         "draws": 2,
-        "losses": 10,
-        "goals_for": 30,
-        "goals_against": 43,
-        "goal_difference": -13,
-        "points": 14,
+        "losses": 11,
+        "goals_for": 40,
+        "goals_against": 50,
+        "goal_difference": -10,
+        "points": 17,
         "form": [
+          "W",
           "L",
           "L",
           "W",
-          "L",
           "L"
         ]
       }
@@ -106,16 +106,16 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Island%20Boys",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
+        "played": 18,
         "wins": 2,
         "draws": 0,
-        "losses": 14,
-        "goals_for": 20,
-        "goals_against": 56,
-        "goal_difference": -36,
+        "losses": 16,
+        "goals_for": 24,
+        "goals_against": 63,
+        "goal_difference": -39,
         "points": 6,
         "form": [
-          "W",
+          "L",
           "L",
           "L",
           "L",
@@ -131,20 +131,20 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
-        "wins": 3,
+        "played": 18,
+        "wins": 4,
         "draws": 0,
-        "losses": 13,
-        "goals_for": 26,
-        "goals_against": 79,
-        "goal_difference": -53,
-        "points": 9,
+        "losses": 14,
+        "goals_for": 33,
+        "goals_against": 87,
+        "goal_difference": -54,
+        "points": 12,
         "form": [
-          "L",
-          "L",
           "W",
           "W",
-          "L"
+          "L",
+          "L",
+          "W"
         ]
       }
     },
@@ -156,19 +156,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Jagiellonia",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
-        "wins": 6,
+        "played": 18,
+        "wins": 7,
         "draws": 0,
-        "losses": 10,
-        "goals_for": 41,
-        "goals_against": 53,
-        "goal_difference": -12,
-        "points": 18,
+        "losses": 11,
+        "goals_for": 46,
+        "goals_against": 59,
+        "goal_difference": -13,
+        "points": 21,
         "form": [
           "L",
+          "L",
+          "L",
           "W",
-          "L",
-          "L",
           "L"
         ]
       }
@@ -181,19 +181,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20HamKam",
       "rosterSize": 6,
       "stats": {
-        "played": 16,
-        "wins": 13,
+        "played": 18,
+        "wins": 14,
         "draws": 1,
-        "losses": 2,
-        "goals_for": 63,
-        "goals_against": 16,
-        "goal_difference": 47,
-        "points": 40,
+        "losses": 3,
+        "goals_for": 69,
+        "goals_against": 20,
+        "goal_difference": 49,
+        "points": 43,
         "form": [
           "L",
           "W",
-          "L",
           "W",
+          "L",
           "W"
         ]
       }
@@ -206,20 +206,20 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
-        "wins": 12,
+        "played": 18,
+        "wins": 13,
         "draws": 2,
-        "losses": 2,
-        "goals_for": 55,
-        "goals_against": 21,
-        "goal_difference": 34,
-        "points": 38,
+        "losses": 3,
+        "goals_for": 58,
+        "goals_against": 25,
+        "goal_difference": 33,
+        "points": 41,
         "form": [
           "W",
-          "L",
           "W",
           "W",
-          "W"
+          "W",
+          "L"
         ]
       }
     },
@@ -231,19 +231,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Como",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
-        "wins": 10,
+        "played": 18,
+        "wins": 12,
         "draws": 3,
         "losses": 3,
-        "goals_for": 52,
-        "goals_against": 31,
-        "goal_difference": 21,
-        "points": 33,
+        "goals_for": 61,
+        "goals_against": 34,
+        "goal_difference": 27,
+        "points": 39,
         "form": [
-          "D",
-          "W",
           "W",
           "L",
+          "W",
+          "W",
           "W"
         ]
       }
@@ -256,20 +256,20 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
       "rosterSize": 7,
       "stats": {
-        "played": 16,
-        "wins": 7,
+        "played": 18,
+        "wins": 8,
         "draws": 1,
-        "losses": 8,
-        "goals_for": 45,
-        "goals_against": 55,
-        "goal_difference": -10,
-        "points": 22,
+        "losses": 9,
+        "goals_for": 51,
+        "goals_against": 63,
+        "goal_difference": -12,
+        "points": 25,
         "form": [
           "W",
           "W",
-          "W",
-          "W",
-          "D"
+          "D",
+          "L",
+          "W"
         ]
       }
     },
@@ -281,20 +281,20 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Palermo",
       "rosterSize": 5,
       "stats": {
-        "played": 16,
+        "played": 18,
         "wins": 6,
         "draws": 3,
-        "losses": 7,
-        "goals_for": 54,
-        "goals_against": 45,
-        "goal_difference": 9,
+        "losses": 9,
+        "goals_for": 57,
+        "goals_against": 58,
+        "goal_difference": -1,
         "points": 21,
         "form": [
-          "D",
-          "W",
           "L",
           "W",
-          "D"
+          "D",
+          "L",
+          "L"
         ]
       }
     }
@@ -302,112 +302,112 @@
   "standings": [
     [
       "HAM",
-      16,
-      13,
+      18,
+      14,
       1,
-      2,
-      63,
-      16,
-      47,
-      40
+      3,
+      69,
+      20,
+      49,
+      43
     ],
     [
       "PUM",
-      16,
-      12,
+      18,
+      13,
       2,
-      2,
-      55,
-      21,
-      34,
-      38
+      3,
+      58,
+      25,
+      33,
+      41
     ],
     [
       "COM",
-      16,
-      10,
+      18,
+      12,
       3,
       3,
-      52,
-      31,
-      21,
-      33
+      61,
+      34,
+      27,
+      39
     ],
     [
       "GOTH",
-      16,
-      10,
+      18,
+      12,
       2,
       4,
-      47,
-      34,
-      13,
-      32
+      57,
+      37,
+      20,
+      38
     ],
     [
       "BAY",
-      16,
-      7,
-      1,
+      18,
       8,
-      45,
-      55,
-      -10,
-      22
+      1,
+      9,
+      51,
+      63,
+      -12,
+      25
     ],
     [
       "PAL",
-      16,
+      18,
       6,
       3,
-      7,
-      54,
-      45,
       9,
+      57,
+      58,
+      -1,
       21
     ],
     [
       "JAG",
-      16,
-      6,
+      18,
+      7,
       0,
-      10,
-      41,
-      53,
-      -12,
-      18
+      11,
+      46,
+      59,
+      -13,
+      21
     ],
     [
       "NL",
-      16,
-      4,
+      18,
+      5,
       2,
-      10,
-      30,
-      43,
-      -13,
-      14
+      11,
+      40,
+      50,
+      -10,
+      17
     ],
     [
       "TAB",
-      16,
-      3,
+      18,
+      4,
       0,
-      13,
-      26,
-      79,
-      -53,
-      9
+      14,
+      33,
+      87,
+      -54,
+      12
     ],
     [
       "IB",
-      16,
+      18,
       2,
       0,
-      14,
-      20,
-      56,
-      -36,
+      16,
+      24,
+      63,
+      -39,
       6
     ]
   ],
@@ -1093,36 +1093,36 @@
           92,
           "PAL",
           "NL",
-          null,
-          null
+          2,
+          8
         ],
         [
           93,
           "TAB",
           "COM",
-          null,
-          null
+          2,
+          6
         ],
         [
           94,
           "GOTH",
           "BAY",
-          null,
-          null
+          5,
+          2
         ],
         [
           95,
           "PUM",
           "HAM",
-          null,
-          null
+          2,
+          1
         ],
         [
           96,
           "IB",
           "JAG",
-          null,
-          null
+          1,
+          3
         ]
       ]
     },
@@ -1135,36 +1135,36 @@
           97,
           "NL",
           "TAB",
-          null,
-          null
+          2,
+          5
         ],
         [
           98,
           "PAL",
           "GOTH",
-          null,
-          null
+          1,
+          5
         ],
         [
           99,
           "COM",
           "PUM",
-          null,
-          null
+          3,
+          1
         ],
         [
           100,
           "BAY",
           "IB",
-          null,
-          null
+          4,
+          3
         ],
         [
           101,
           "HAM",
           "JAG",
-          null,
-          null
+          5,
+          2
         ]
       ]
     }
