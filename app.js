@@ -1,6 +1,6 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin'
+  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -636,6 +636,19 @@ function adminPage() {
     `<section class="section auth-section"><div class="auth-card admin-card" id="admin-root"><p>Verifying administrator access…</p></div></section>`;
 }
 
+function ufbPage() {
+  const examples=command=>command.examples?.length?`<section class="ufb-examples" aria-label="Usage examples for ${escapeHtml(command.name)}"><h4>${command.status==='Planned'?'Reserved syntax — not available yet':'Usage examples'}</h4>${command.examples.map(example=>`<pre><code>${escapeHtml(example)}</code></pre>`).join('')}</section>`:'';
+  const preview=command=>command.preview?.src?`<figure class="ufb-preview"><a href="${escapeHtml(command.preview.src)}" target="_blank" rel="noopener"><img src="${escapeHtml(command.preview.src)}" alt="${escapeHtml(command.preview.alt||'Example command output')}" loading="lazy" decoding="async"></a>${command.preview.caption?`<figcaption>${escapeHtml(command.preview.caption)} <span>Open full size ↗</span></figcaption>`:''}</figure>`:'';
+  const hiddenTitles=new Set(['Draft nights','Cups & BYOT']);
+  const visibleDocs=(window.UFB_DOCS||[]).filter(group=>!hiddenTitles.has(group.title)).map(group=>group.title==='Upcoming features'?{...group,commands:[
+    {name:'Draft nights',status:'Workshop',description:'Draft pools, captain controls, exclusive player selection and squad recaps are preserved for continued development but are not currently published in Discord.',examples:[],options:[]},
+    {name:'Cups & BYOT',status:'Workshop',description:'Cup registration, brackets, delegated organizers, result confirmation and BYOT formats are preserved for continued development but are not currently published on the bot or website.',examples:[],options:[]},
+    ...group.commands
+  ]}:group);
+  const groups=visibleDocs.map(group=>`<details class="ufb-category"><summary>${escapeHtml(group.title)}</summary><p>${escapeHtml(group.description)}</p>${group.commands.map(command=>`<article class="ufb-command"><div><code>${escapeHtml(command.name)}</code><span class="season-chip">${escapeHtml(command.status||'Available')}</span></div><p>${escapeHtml(command.description)}</p>${command.options?.length?`<small>Options: ${command.options.map(o=>escapeHtml(o.name)+(o.required?' (required)':' (optional)')).join(' · ')}</small>`:''}${examples(command)}${preview(command)}</article>`).join('')}</details>`).join('');
+  return pageHero('UFL · Discord operations','Unc Futból Bot','The official command guide for league teams, players, recruiting and FC27 match reporting.')+`<section class="section ufb-reference"><div class="card"><h2>Command reference</h2><p>Use these slash commands in Discord. The examples are templates: replace names, contacts and channels with your own. Select leagues and teams from Discord’s suggestions; select @players and #channels with Discord’s picker. Required options must be filled in; optional ones can be left out.</p><p>Team actions belong to the registered manager. Use /setup panel for owner/administrator settings. Free-agent channel assignments require Discord server owner or administrator permission.</p><p>For multi-league free-agent signup, choose league_1 and optionally league_2, then enter your pitch_availability with days, times and timezone. All active leagues must be selected by itself. Listings expire after seven days. /recruit renew bumps your post and restarts the timer; /recruit edit updates it. A successful /recruit sign removes availability for that league only. Players cannot join two teams in the same league, but can play separately in 6v6 and 10v10. Open /ufb for private button-based navigation.</p><p class="sync-note">EA FC 27 club search, recent matches, separate two-team game sheets and automatic match monitoring are connected for testing. Cups, BYOT competitions and draft nights are retained in the workshop for later development. Guide updated September 23, 2026.</p></div>${groups}</section>`;
+}
+
 async function getAuthState() {
   try {
     const response = await fetch('/api/auth/session', { credentials: 'same-origin', headers: { accept: 'application/json' } });
@@ -866,6 +879,7 @@ function render() {
   else if (path === routes.contact) main.innerHTML = contactPage();
   else if (path === routes.privacy) main.innerHTML = privacyPage();
   else if (path === routes.account) main.innerHTML = accountPage();
+  else if (path === routes.ufb) main.innerHTML = ufbPage();
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
   document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path || (new URL(a.href).pathname === '/arcade' && path.startsWith('/arcade/'))));

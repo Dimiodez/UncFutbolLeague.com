@@ -60,7 +60,12 @@ FUNC card master layouts use the same `DB` binding and Discord Owner identity. A
 
 `OWNER_DISCORD_ID` must be the owner's numeric Discord user ID. The backend derives the owner role from this server-side value on every authenticated request, so another site administrator cannot demote the configured owner. Never commit `.dev.vars`, the Discord client secret, session cookies, or exported member data.
 
+## UFB Discord bot guide
+
+The permanent bot guide lives at `/ufb` (without a trailing slash). Its content is committed in `ufb-docs.js`, rendered by the shared `app.js` router, and linked from `index.html`. Keep these files, `functions/ufb.js`, the UFB images in `assets/`, and `_redirects` together in every website publish, including arcade releases from another computer. Update `ufb-docs.js` when bot commands change, then run `node scripts/check-ufb.mjs` before publishing. The GitHub UFB workflow also checks every push and pull request to `master` for accidental removal.
+
 ## Arcade
+
 The /arcade hub opens Cleat Arcade at /arcade/cleat. The production game is in arcade-app and follows the site themes with the official UFL logo. The standalone prototype remains separate. Test-level controls are not shipped.
 Authenticated runs use same-origin session cookies and a server-generated seed. Small ordered input packets are replayed on the server; no submitted score is trusted. A completed run updates one best per member and game version, with its club abbreviation. Guests can practice and save a device best. This validates game rules but is not bot detection. In-progress runs expire after two hours; interrupted verification falls back to local-only scoring.
 Apply migrations/0009_arcade.sql for a fresh database; the endpoint also provisions these tables idempotently. Run node --test scripts/arcade.test.mjs for replay, authorization, and SQL checks.
