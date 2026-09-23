@@ -20,9 +20,18 @@ node --test tests/*.test.mjs
 
 Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runtime network dependency.
 
+## Chase structure
+
+The planned game is a ten-level referee chase. Schwein escapes at the summit
+of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
+Level 1 exists in this prototype. The later layouts are intentionally not
+implemented while the current art and game feel are being tuned.
+
 ## Character animation assets
 
 The runtime-ready transparent frames live in `assets/sprites/player/`,
-`assets/sprites/schwein/`, and `assets/sprites/schwein-salmon/`. The `raw/`,
-`source/`, and preview PNGs are retained in this standalone prototype so art
-iteration can continue without touching the production website.
+`assets/sprites/schwein/`, `assets/sprites/schwein-salmon/`,
+`assets/sprites/schwein-run/`, and `assets/sprites/ball/`. The painted Level 1
+backdrop is in `assets/environment/`. The `raw/`, `source/`, and preview PNGs
+are retained in this standalone prototype so art iteration can continue
+without touching the production website.

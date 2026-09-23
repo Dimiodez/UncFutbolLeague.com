@@ -55,3 +55,12 @@ test('puddle recovery includes enough time to leave its trigger area', () => {
   const escapeDistance = TUNING.moveSpeed * (TUNING.puddleEscapeGraceMs / 1000);
   assert.ok(escapeDistance > 48, 'escape grace must cover the full puddle width');
 });
+
+test('the chase reserves the red card for level ten', () => {
+  const state = new GameState();
+  assert.equal(state.totalLevels, 10);
+  assert.equal(state.level, 1);
+  assert.equal(state.summitOutcome(), 'escaped');
+  state.level = 10;
+  assert.equal(state.summitOutcome(), 'red-card');
+});

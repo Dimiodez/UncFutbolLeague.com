@@ -11,12 +11,15 @@ export class MountainScene extends Phaser.Scene {
   constructor() { super('mountain'); }
 
   preload() {
+    this.load.image(ASSETS.background.key, ASSETS.background.url);
     this.load.image(ASSETS.climber.key, ASSETS.climber.url);
     this.load.image(ASSETS.schwein.key, ASSETS.schwein.url);
     this.load.image(ASSETS.salmon.key, ASSETS.salmon.url);
     ASSETS.playerFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.schweinFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.schweinSalmonFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.schweinRunFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.ballFrames.forEach((asset) => this.load.image(asset.key, asset.url));
   }
 
   create() {
@@ -33,24 +36,11 @@ export class MountainScene extends Phaser.Scene {
   }
 
   drawMountain() {
-    const g = this.add.graphics();
-    g.fillGradientStyle(0x2e87cf, 0x5da8dc, 0xc6dfe2, 0xeaf1df, 1);
-    g.fillRect(0, 0, WORLD.width, WORLD.height);
-    g.fillStyle(0xfff4bd, 0.9).fillCircle(102, 79, 39);
-    g.fillStyle(0xffffff, 0.22).fillCircle(91, 68, 26);
-    for (let i = 0; i < 7; i += 1) {
-      const x = 80 + i * 155;
-      g.fillStyle(0xf4fbfa, 0.78).fillEllipse(x, 95 + (i % 2) * 25, 130, 28);
-    }
-    g.fillGradientStyle(0x5c86a3, 0x426d8b, 0x244d68, 0x183c55, 1).fillTriangle(20, 720, 470, 40, 920, 720);
-    g.fillGradientStyle(0x7595a9, 0x567d98, 0x315874, 0x25475f, 1).fillTriangle(260, 720, 655, 105, 960, 720);
-    g.fillStyle(0xf5fbfa).fillTriangle(332, 250, 470, 40, 585, 220);
-    g.fillStyle(0xd5e9e8).fillTriangle(535, 292, 655, 105, 742, 260);
-    g.fillStyle(0x1d4057, 0.9).fillTriangle(20, 720, 240, 360, 315, 720);
-    for (let y = 250; y < 700; y += 75) {
-      g.fillStyle(0x183b50, 0.4).fillTriangle(250, y, 300, y - 50, 345, y);
-      g.fillTriangle(640, y + 20, 700, y - 35, 750, y + 20);
-    }
+    this.add.image(WORLD.width / 2, WORLD.height / 2, ASSETS.background.key)
+      .setDisplaySize(WORLD.width, WORLD.height)
+      .setDepth(-10);
+    this.add.rectangle(WORLD.width / 2, WORLD.height / 2, WORLD.width, WORLD.height, 0x0e3855, 0.16)
+      .setDepth(-9);
   }
 
   createCourse() {
@@ -133,6 +123,10 @@ export class MountainScene extends Phaser.Scene {
     this.anims.create({ key: 'schwein-throw', frames: pigKeys, frameRate: 7, repeat: 0 });
     const salmonKeys = ASSETS.schweinSalmonFrames.map((asset) => ({ key: asset.key }));
     this.anims.create({ key: 'schwein-salmon-throw', frames: salmonKeys, frameRate: 7, repeat: 0 });
+    const runKeys = ASSETS.schweinRunFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'schwein-run', frames: runKeys, frameRate: 9, repeat: -1 });
+    const ballKeys = ASSETS.ballFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'soccer-roll', frames: ballKeys, frameRate: 10, repeat: -1 });
   }
 
   createPhysics() {
@@ -162,9 +156,21 @@ export class MountainScene extends Phaser.Scene {
     this.state.start();
     this.inputController.clear();
     this.resetPlayer();
+    this.resetSchwein();
     this.hazards.reset(this.time.now);
     this.say('GET OFF MY MOUNTAIN!');
     this.events.emit('state-change');
+  }
+
+  resetSchwein() {
+    this.tweens.killTweensOf(this.schwein);
+    this.schwein
+      .setPosition(744, 105)
+      .setVisible(true)
+      .setAlpha(1)
+      .setFlipX(false)
+      .setDisplaySize(210, 210)
+      .play('schwein-idle', true);
   }
 
   resetPlayer() {
@@ -297,9 +303,18 @@ export class MountainScene extends Phaser.Scene {
     if (!this.state.isPlaying()) return;
     this.state.phase = 'won';
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
-    this.say('THIS IS RIGGED!');
+    this.hazards.clear();
+    this.say(this.state.summitOutcome() === 'red-card' ? 'NOT THE RED CARD!' : 'YOU HAVE NOT CAUGHT ME YET!');
     this.events.emit('state-change');
-    this.events.emit('game-won');
+    this.schwein.setDisplaySize(190, 190).play('schwein-run', true);
+    this.tweens.add({
+      targets: this.schwein,
+      x: WORLD.width + 125,
+      y: 112,
+      duration: 1250,
+      ease: 'Linear',
+      onComplete: () => this.events.emit(this.state.summitOutcome() === 'red-card' ? 'red-card-won' : 'game-won'),
+    });
   }
 
   say(line) { this.events.emit('speech', line); }

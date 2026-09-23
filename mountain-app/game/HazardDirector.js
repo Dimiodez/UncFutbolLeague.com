@@ -1,3 +1,4 @@
+import { ASSETS } from './AssetManifest.js';
 import { PLATFORMS, TUNING, WORLD } from './level.js';
 
 export class HazardDirector {
@@ -14,6 +15,11 @@ export class HazardDirector {
     this.salmon.clear(true, true);
     this.nextBallAt = now + 900;
     this.nextSalmonAt = now + 4800;
+  }
+
+  clear() {
+    this.balls.clear(true, true);
+    this.salmon.clear(true, true);
   }
 
   update(now) {
@@ -41,9 +47,10 @@ export class HazardDirector {
     this.scene.animateSchwein();
     this.scene.time.delayedCall(430, () => {
       if (!this.scene.state.isPlaying()) return;
-      const ball = this.balls.create(665, 95, 'soccer-ball');
-      ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(24, 4, 4).setBounce(0.05).setDepth(8)
-        .setVelocity(-TUNING.ballSpeed, -35).setAngularVelocity(-430);
+      const ball = this.balls.create(665, 95, ASSETS.ballFrames[0].key);
+      ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(112, 16, 16).setBounce(0.05).setDepth(8)
+        .setVelocity(-TUNING.ballSpeed, -35);
+      ball.playReverse('soccer-roll');
       ball.body.setMaxVelocity(180, 520);
       ball.platformIndex = -1;
     });
@@ -101,7 +108,9 @@ export class HazardDirector {
     if (!Number.isInteger(index)) return;
     ball.platformIndex = index;
     const direction = PLATFORMS[index].direction;
-    ball.setVelocityX(direction * TUNING.ballSpeed).setAngularVelocity(direction * 430);
+    ball.setVelocityX(direction * TUNING.ballSpeed);
+    if (direction < 0) ball.playReverse('soccer-roll', true);
+    else ball.play('soccer-roll', true);
   }
 
   salmonLanded(fish) {

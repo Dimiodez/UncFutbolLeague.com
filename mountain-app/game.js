@@ -102,7 +102,18 @@ function bindScene(activeScene) {
     speechTimer = window.setTimeout(() => { bubble.hidden = true; }, 1900);
   });
   scene.events.on('game-over', () => showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'Three hits. One angry pig. Take another run at the summit.', 'Climb again ↗'));
-  scene.events.on('game-won', () => showOverlay('SUMMIT REACHED', 'FC MOUNTAINS<br>FOREVER.', 'You beat Schwein to the peak. Prototype stage cleared.', 'Play again ↗'));
+  scene.events.on('game-won', () => showOverlay(
+    `LEVEL ${scene.state.level} OF ${scene.state.totalLevels} CLEARED`,
+    'SCHWEIN<br>ESCAPES!',
+    'The referee reached the summit, but Schwein ran for the next mountain. The red card waits at Level 10. Only Level 1 is built in this prototype.',
+    'Run Level 1 again ↗',
+  ));
+  scene.events.on('red-card-won', () => showOverlay(
+    'LEVEL 10 CLEARED',
+    'RED CARD<br>SCHWEIN!',
+    'The referee finally caught the pig captain. Ten mountains. One long-overdue red card.',
+    'Play again ↗',
+  ));
   syncHud();
 }
 
