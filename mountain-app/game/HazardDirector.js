@@ -27,7 +27,10 @@ export class HazardDirector {
     }
     this.balls.children.each((ball) => {
       if (!ball?.active || !ball.body) return;
-      if (ball.y > WORLD.height + 40) ball.destroy();
+      if (ball.y > WORLD.height + 40) {
+        ball.destroy();
+        return;
+      }
       ball.angle += ball.body.velocity.x * 0.018;
     });
     this.salmon.children.each((fish) => {
@@ -37,17 +40,16 @@ export class HazardDirector {
   }
 
   spawnBall() {
-    const ball = this.balls.create(720, 126, 'soccer-ball');
-    ball.setCircle(12).setBounce(0.05).setDepth(8).setVelocity(-TUNING.ballSpeed, -35);
+    const ball = this.balls.create(675, 90, 'soccer-ball');
+    ball.setDisplaySize(28, 28).setCircle(24, 4, 4).setBounce(0.05).setDepth(8).setVelocity(-TUNING.ballSpeed, -35);
     ball.body.setMaxVelocity(180, 520);
     ball.platformIndex = -1;
     this.scene.events.emit('schwein-line');
   }
 
   spawnSalmon() {
-    const fish = this.salmon.create(710, 120, 'salmon');
-    fish.setDepth(7).setVelocity(Phaser.Math.Between(-145, -75), -120).setAngularVelocity(-170);
-    fish.body.setSize(28, 14).setOffset(2, 5);
+    const fish = this.salmon.create(790, 95, 'salmon');
+    fish.setDisplaySize(58, 29).setDepth(10).setVelocity(Phaser.Math.Between(-240, -190), -190).setAngularVelocity(-170);
     fish.expiresAt = this.scene.time.now + TUNING.salmonLifetime;
     fish.landed = false;
     this.scene.events.emit('schwein-line', 'FRESH CATCH!');

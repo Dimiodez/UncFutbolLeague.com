@@ -14,7 +14,10 @@ createServer(async (request, response) => {
   try { if ((await stat(target)).isDirectory()) target = join(target, 'index.html'); } catch {}
   try {
     const body = await readFile(target);
-    response.writeHead(200, { 'Content-Type': types[extname(target)] || 'application/octet-stream' });
+    response.writeHead(200, {
+      'Content-Type': types[extname(target)] || 'application/octet-stream',
+      'Cache-Control': 'no-store, max-age=0',
+    });
     response.end(body);
   } catch {
     response.writeHead(404);

@@ -67,8 +67,9 @@ const game = new Phaser.Game({
   width: WORLD.width,
   height: WORLD.height,
   backgroundColor: '#75a8b9',
-  pixelArt: true,
-  roundPixels: true,
+  pixelArt: false,
+  antialias: true,
+  roundPixels: false,
   physics: { default: 'arcade', arcade: { gravity: { y: 780 }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [MountainScene],
@@ -82,11 +83,11 @@ const game = new Phaser.Game({
 
 window.addEventListener('load', () => {
   const activeScene = game.scene.getScene('mountain');
-  if (activeScene) bindScene(activeScene);
+  if (activeScene?.state) bindScene(activeScene);
 });
 
 function bindScene(activeScene) {
-  if (scene) return;
+  if (scene || !activeScene?.state) return;
   scene = activeScene;
   scene.events.on('state-change', syncHud);
   scene.events.on('notice', (line) => {

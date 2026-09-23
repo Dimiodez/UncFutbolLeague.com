@@ -6,44 +6,45 @@ function texture(scene, key, width, height, draw) {
 }
 
 export function createTextures(scene) {
-  texture(scene, 'player', 28, 40, (g) => {
-    g.fillStyle(0x12283b).fillRect(8, 0, 14, 5).fillRect(5, 5, 20, 5);
-    g.fillStyle(0xd59a72).fillRect(8, 10, 14, 9);
-    g.fillStyle(0xf2bd55).fillRect(5, 19, 20, 13);
-    g.fillStyle(0x2b6383).fillRect(4, 32, 9, 8).fillRect(17, 32, 9, 8);
-    g.fillStyle(0xffffff).fillRect(18, 12, 3, 3);
+  texture(scene, 'player', 56, 80, (g) => {
+    g.fillStyle(0x0d2132).fillRoundedRect(15, 1, 27, 14, 6);
+    g.fillStyle(0xe7eef0).fillRoundedRect(10, 10, 37, 11, 5);
+    g.fillStyle(0xd99b76).fillCircle(28, 27, 14);
+    g.fillStyle(0xf7f2df).fillCircle(35, 25, 3);
+    g.fillStyle(0x12283b).fillCircle(36, 25, 1.5);
+    g.fillStyle(0xd8493f).fillRoundedRect(9, 38, 38, 27, 9);
+    g.fillStyle(0xf2bd55).fillTriangle(28, 40, 39, 58, 17, 58);
+    g.fillStyle(0x234d70).fillRoundedRect(8, 62, 18, 16, 5).fillRoundedRect(30, 62, 18, 16, 5);
+    g.fillStyle(0x182431).fillRoundedRect(4, 73, 23, 7, 3).fillRoundedRect(29, 73, 23, 7, 3);
+    g.lineStyle(2, 0x7f2c2b, 1).strokeRoundedRect(9, 38, 38, 27, 9);
   });
-  texture(scene, 'player-slip', 40, 28, (g) => {
-    g.fillStyle(0x2b6383).fillRect(0, 18, 14, 8);
-    g.fillStyle(0xf2bd55).fillRect(11, 11, 22, 13);
-    g.fillStyle(0xd59a72).fillRect(28, 5, 10, 10);
-    g.fillStyle(0x12283b).fillRect(27, 1, 13, 5);
+  texture(scene, 'player-slip', 80, 56, (g) => {
+    g.fillStyle(0x182431).fillRoundedRect(2, 35, 27, 14, 5);
+    g.fillStyle(0x234d70).fillRoundedRect(12, 31, 24, 17, 6);
+    g.fillStyle(0xd8493f).fillRoundedRect(25, 20, 36, 24, 9);
+    g.fillStyle(0xf2bd55).fillTriangle(39, 22, 51, 38, 30, 38);
+    g.fillStyle(0xd99b76).fillCircle(65, 22, 12);
+    g.fillStyle(0x0d2132).fillRoundedRect(57, 4, 22, 10, 5);
+    g.fillStyle(0xe7eef0).fillRoundedRect(53, 11, 25, 8, 4);
   });
-  texture(scene, 'soccer-ball', 28, 28, (g) => {
-    g.fillStyle(0x17202b).fillCircle(14, 14, 14);
-    g.fillStyle(0xf8f7e9).fillCircle(14, 14, 12);
-    g.fillStyle(0x17202b).fillRect(10, 9, 8, 8).fillRect(3, 6, 5, 5).fillRect(20, 17, 5, 5).fillRect(5, 21, 5, 4);
+  texture(scene, 'soccer-ball', 56, 56, (g) => {
+    g.fillStyle(0x111c26).fillCircle(28, 28, 28);
+    g.fillStyle(0xfffbef).fillCircle(28, 28, 25);
+    g.fillGradientStyle(0xffffff, 0xe8edf0, 0xffffff, 0xd4dce2, 0.55).fillCircle(24, 22, 19);
+    g.fillStyle(0x17202b).fillPoints([{x:28,y:18},{x:37,y:24},{x:34,y:35},{x:22,y:35},{x:19,y:24}], true);
+    g.lineStyle(3, 0x17202b, 1)
+      .lineBetween(28, 18, 28, 5).lineBetween(37, 24, 48, 19)
+      .lineBetween(34, 35, 40, 47).lineBetween(22, 35, 15, 47).lineBetween(19, 24, 8, 18);
   });
-  texture(scene, 'salmon', 34, 22, (g) => {
-    g.fillStyle(0xef765f).fillRect(5, 4, 22, 14).fillTriangle(5, 11, 0, 2, 0, 20);
-    g.fillStyle(0xf2b29f).fillRect(10, 7, 13, 3).fillRect(12, 13, 10, 2);
-    g.fillStyle(0x17202b).fillRect(24, 7, 3, 3);
+  texture(scene, 'puddle', 96, 28, (g) => {
+    g.fillStyle(0x164f70, 0.68).fillEllipse(48, 16, 94, 22);
+    g.fillGradientStyle(0x9ae8ed, 0x5cb8c7, 0x3e8ca3, 0x285e79, 0.85).fillEllipse(43, 13, 72, 14);
+    g.fillStyle(0xe9ffff, 0.72).fillEllipse(28, 10, 27, 5);
   });
-  texture(scene, 'puddle', 48, 14, (g) => {
-    g.fillStyle(0x164f70, 0.75).fillEllipse(24, 8, 48, 12);
-    g.fillStyle(0x8de0e6, 0.75).fillEllipse(18, 5, 25, 5);
-  });
-  texture(scene, 'platform', 32, 24, (g) => {
-    g.fillStyle(0xe8f2e8).fillRect(0, 0, 32, 7);
-    g.fillStyle(0x526f70).fillRect(0, 7, 32, 17);
-    g.fillStyle(0x37545b).fillRect(3, 10, 11, 5).fillRect(18, 17, 12, 5);
-  });
-  texture(scene, 'schwein', 72, 76, (g) => {
-    g.fillStyle(0xf0f3e9).fillRect(10, 0, 49, 10).fillRect(3, 7, 30, 8).fillRect(49, 7, 19, 15);
-    g.fillStyle(0xd87983).fillRect(10, 16, 52, 45).fillRect(3, 22, 10, 20).fillRect(59, 22, 10, 20);
-    g.fillStyle(0xf2a1a5).fillRect(20, 36, 32, 18);
-    g.fillStyle(0x17202b).fillRect(20, 25, 8, 7).fillRect(45, 25, 8, 7).fillRect(27, 43, 5, 5).fillRect(42, 43, 5, 5).fillRect(27, 55, 20, 5);
-    g.fillStyle(0xffffff).fillRect(22, 25, 3, 3).fillRect(47, 25, 3, 3);
-    g.fillStyle(0xa33c48).fillRect(10, 61, 18, 15).fillRect(44, 61, 18, 15);
+  texture(scene, 'platform', 64, 24, (g) => {
+    g.fillGradientStyle(0xf8fcf5, 0xdcece9, 0xf0f8f2, 0xc4dbd9, 1).fillRoundedRect(0, 0, 64, 10, 4);
+    g.fillGradientStyle(0x607c84, 0x4d6973, 0x3e5965, 0x294550, 1).fillRect(0, 8, 64, 16);
+    g.fillStyle(0x263f49, 0.7).fillTriangle(4, 24, 20, 10, 29, 24).fillTriangle(32, 24, 50, 9, 64, 24);
+    g.lineStyle(2, 0xffffff, 0.45).lineBetween(4, 5, 26, 3).lineBetween(35, 4, 57, 6);
   });
 }
