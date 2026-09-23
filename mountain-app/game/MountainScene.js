@@ -79,7 +79,7 @@ export class MountainScene extends Phaser.Scene {
     this.puddles = this.physics.add.staticGroup();
     [[390, 476], [620, 576]].forEach(([x, y]) => {
       const puddle = this.puddles.create(x, y, 'puddle').setDisplaySize(48, 14).setDepth(6);
-      puddle.refreshBody();
+      puddle.refreshBody().setData('safeUntil', 0);
     });
     this.add.text(345, 449, 'BRUCE WAS HERE', { fontFamily: 'monospace', fontSize: '10px', color: '#9fd8df' }).setDepth(6);
   }
@@ -150,7 +150,12 @@ export class MountainScene extends Phaser.Scene {
       this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
       this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip('SALMON SLIP!', fish));
     });
-    this.physics.add.overlap(this.player, this.puddles, () => this.slip('BRUCE SWEAT SLIDE!'));
+    this.physics.add.overlap(
+      this.player,
+      this.puddles,
+      (_player, puddle) => this.slip('BRUCE SWEAT SLIDE!', puddle, false),
+      (player, puddle) => this.canTriggerPuddle(player, puddle),
+    );
   }
 
   startRun() {
@@ -244,15 +249,26 @@ export class MountainScene extends Phaser.Scene {
     this.player.body.setAllowGravity(true);
   }
 
-  slip(label, hazard) {
+  canTriggerPuddle(player, puddle) {
+    return player.body.blocked.down
+      && !this.state.isStunned(this.time.now)
+      && this.time.now >= (puddle.getData('safeUntil') || 0);
+  }
+
+  slip(label, hazard, consumeHazard = true) {
     if (!this.state.isPlaying() || this.state.isStunned(this.time.now)) return;
     this.state.stun(this.time.now, TUNING.stunMs);
     this.stopClimbing();
     this.player.setVelocity(0, 0);
-    if (hazard?.active) hazard.destroy();
+    if (hazard?.active && consumeHazard) {
+      hazard.destroy();
+    } else if (hazard?.active) {
+      hazard.setData('safeUntil', this.time.now + TUNING.stunMs + TUNING.puddleEscapeGraceMs);
+    }
     this.cameras.main.shake(120, 0.006);
     this.events.emit('notice', label);
     this.events.emit('state-change');
+    this.time.delayedCall(TUNING.stunMs, () => this.events.emit('state-change'));
   }
 
   hitByBall() {

@@ -50,3 +50,8 @@ test('slips last approximately two seconds', () => {
   assert.equal(state.isStunned(2499), true);
   assert.equal(state.isStunned(2500), false);
 });
+
+test('puddle recovery includes enough time to leave its trigger area', () => {
+  const escapeDistance = TUNING.moveSpeed * (TUNING.puddleEscapeGraceMs / 1000);
+  assert.ok(escapeDistance > 48, 'escape grace must cover the full puddle width');
+});

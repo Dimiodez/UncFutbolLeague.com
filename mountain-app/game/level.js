@@ -28,6 +28,7 @@ export const TUNING = Object.freeze({
   jumpSpeed: 230,
   ballDiameter: 30,
   stunMs: 2000,
+  puddleEscapeGraceMs: 1200,
   ballSpeed: 125,
   ballInterval: 2850,
   salmonInterval: 8300,
