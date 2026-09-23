@@ -14,6 +14,9 @@ export class MountainScene extends Phaser.Scene {
     this.load.image(ASSETS.climber.key, ASSETS.climber.url);
     this.load.image(ASSETS.schwein.key, ASSETS.schwein.url);
     this.load.image(ASSETS.salmon.key, ASSETS.salmon.url);
+    ASSETS.playerFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.schweinFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.schweinSalmonFrames.forEach((asset) => this.load.image(asset.key, asset.url));
   }
 
   create() {
@@ -103,13 +106,30 @@ export class MountainScene extends Phaser.Scene {
   }
 
   createActors() {
-    this.schwein = this.add.image(744, 104, ASSETS.schwein.key).setDisplaySize(206, 172).setDepth(9);
+    this.createCharacterAnimations();
+    this.schwein = this.add.sprite(744, 105, ASSETS.schweinFrames[0].key).setDisplaySize(210, 210).setDepth(9);
+    this.schwein.play('schwein-idle');
     this.player = this.physics.add.sprite(PLAYER_START.x, PLAYER_START.y, 'player').setScale(0.5).setVisible(false).setDepth(10);
     this.player.body.setSize(42, 74).setOffset(7, 3).setMaxVelocity(220, 520);
     this.player.setCollideWorldBounds(true);
     this.player.climbing = false;
-    this.playerArt = this.add.image(PLAYER_START.x, PLAYER_START.y, ASSETS.climber.key).setDisplaySize(46, 58).setDepth(10);
-    this.playerArtBaseScale = { x: this.playerArt.scaleX, y: this.playerArt.scaleY };
+    this.playerArt = this.add.sprite(PLAYER_START.x, PLAYER_START.y, ASSETS.playerFrames[0].key).setDisplaySize(80, 80).setDepth(10);
+    this.playerArt.play('player-idle');
+  }
+
+  createCharacterAnimations() {
+    const keys = ASSETS.playerFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'player-idle', frames: [keys[0]], frameRate: 1, repeat: -1 });
+    this.anims.create({ key: 'player-run', frames: keys.slice(1, 3), frameRate: 9, repeat: -1 });
+    this.anims.create({ key: 'player-climb', frames: keys.slice(3, 5), frameRate: 7, repeat: -1 });
+    this.anims.create({ key: 'player-jump', frames: [keys[5]], frameRate: 1 });
+    this.anims.create({ key: 'player-slip', frames: [keys[6]], frameRate: 1 });
+    this.anims.create({ key: 'player-hurt', frames: [keys[7]], frameRate: 1 });
+    const pigKeys = ASSETS.schweinFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'schwein-idle', frames: [pigKeys[0]], frameRate: 1, repeat: -1 });
+    this.anims.create({ key: 'schwein-throw', frames: pigKeys, frameRate: 7, repeat: 0 });
+    const salmonKeys = ASSETS.schweinSalmonFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'schwein-salmon-throw', frames: salmonKeys, frameRate: 7, repeat: 0 });
   }
 
   createPhysics() {
@@ -118,7 +138,12 @@ export class MountainScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height + 80);
     this.time.delayedCall(0, () => {
       this.physics.add.collider(this.hazards.balls, this.platforms, (ball, platform) => this.hazards.ballLanded(ball, platform));
-      this.physics.add.collider(this.hazards.salmon, this.platforms, (fish) => this.hazards.salmonLanded(fish));
+      this.physics.add.collider(
+        this.hazards.salmon,
+        this.platforms,
+        (fish) => this.hazards.salmonLanded(fish),
+        (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
+      );
       this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
       this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip('SALMON SLIP!', fish));
     });
@@ -139,8 +164,7 @@ export class MountainScene extends Phaser.Scene {
     this.player.setTexture('player').setScale(0.5).setVisible(false).setAngle(0).setAlpha(1).setVelocity(0, 0);
     this.player.body.setAllowGravity(true);
     this.player.climbing = false;
-    this.playerArt.setVisible(true).setAngle(0).setAlpha(1).setDisplaySize(46, 58);
-    this.playerArtBaseScale = { x: this.playerArt.scaleX, y: this.playerArt.scaleY };
+    this.playerArt.setVisible(true).setAngle(0).setAlpha(1).setDisplaySize(80, 80).play('player-idle');
   }
 
   nearestLadder() {
@@ -183,37 +207,25 @@ export class MountainScene extends Phaser.Scene {
 
   updatePlayerArt(time, horizontal = 0, vertical = 0) {
     if (!this.playerArt.visible) return;
-    const pulse = time * 0.018;
-    let bob = 0;
-    let angle = 0;
-    let stretchX = 1;
-    let stretchY = 1;
+    let animation = 'player-idle';
     if (this.state.isStunned(time)) {
-      angle = 78;
-      bob = 10;
-      stretchX = 1.08;
-      stretchY = 0.88;
+      animation = 'player-slip';
     } else if (this.player.climbing) {
-      bob = Math.sin(pulse * 1.4) * 2.5;
-      angle = Math.sin(pulse * 1.4) * 3.5;
+      animation = 'player-climb';
     } else if (!this.player.body.blocked.down) {
-      angle = horizontal * 7;
-      stretchX = 0.94;
-      stretchY = 1.08;
+      animation = 'player-jump';
     } else if (horizontal !== 0) {
-      bob = -Math.abs(Math.sin(pulse * 1.8)) * 2.5;
-      angle = Math.sin(pulse * 1.8) * 3.5;
-      stretchX = 1.02;
-      stretchY = 0.98;
-    } else {
-      bob = Math.sin(pulse * 0.55) * 0.8;
-      angle = Math.sin(pulse * 0.55) * 0.6;
+      animation = 'player-run';
     }
-    this.playerArt
-      .setPosition(this.player.x, this.player.y + 1 + bob)
-      .setFlipX(horizontal < 0)
-      .setAngle(angle)
-      .setScale(this.playerArtBaseScale.x * stretchX, this.playerArtBaseScale.y * stretchY);
+    this.playerArt.setPosition(this.player.x, this.player.y).play(animation, true);
+    if (horizontal !== 0) this.playerArt.setFlipX(horizontal < 0);
+  }
+
+  animateSchwein(hazard = 'ball') {
+    this.schwein.play(hazard === 'salmon' ? 'schwein-salmon-throw' : 'schwein-throw', true);
+    this.time.delayedCall(650, () => {
+      if (this.schwein?.active) this.schwein.play('schwein-idle', true);
+    });
   }
 
   stopClimbing() {
@@ -240,12 +252,13 @@ export class MountainScene extends Phaser.Scene {
     this.events.emit('state-change');
     if (this.state.phase === 'over') {
       this.player.disableBody(true, false);
-      this.playerArt.setAngle(78).setAlpha(0.72);
+      this.playerArt.play('player-hurt', true).setAlpha(0.72);
       this.events.emit('game-over');
       return;
     }
     this.player.disableBody(true, true);
-    this.playerArt.setVisible(false);
+    this.playerArt.play('player-hurt', true);
+    this.time.delayedCall(220, () => this.playerArt.setVisible(false));
     this.time.delayedCall(850, () => {
       this.state.phase = 'playing';
       this.resetPlayer();

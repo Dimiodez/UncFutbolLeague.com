@@ -29,9 +29,7 @@ export class HazardDirector {
       if (!ball?.active || !ball.body) return;
       if (ball.y > WORLD.height + 40) {
         ball.destroy();
-        return;
       }
-      ball.angle += ball.body.velocity.x * 0.018;
     });
     this.salmon.children.each((fish) => {
       if (!fish?.active || !fish.body) return;
@@ -40,26 +38,70 @@ export class HazardDirector {
   }
 
   spawnBall() {
-    const ball = this.balls.create(675, 90, 'soccer-ball');
-    ball.setDisplaySize(28, 28).setCircle(24, 4, 4).setBounce(0.05).setDepth(8).setVelocity(-TUNING.ballSpeed, -35);
-    ball.body.setMaxVelocity(180, 520);
-    ball.platformIndex = -1;
+    this.scene.animateSchwein();
+    this.scene.time.delayedCall(430, () => {
+      if (!this.scene.state.isPlaying()) return;
+      const ball = this.balls.create(665, 95, 'soccer-ball');
+      ball.setDisplaySize(30, 30).setCircle(24, 4, 4).setBounce(0.05).setDepth(8)
+        .setVelocity(-TUNING.ballSpeed, -35).setAngularVelocity(-430);
+      ball.body.setMaxVelocity(180, 520);
+      ball.platformIndex = -1;
+    });
     this.scene.events.emit('schwein-line');
   }
 
   spawnSalmon() {
-    const fish = this.salmon.create(790, 95, 'salmon');
-    fish.setDisplaySize(58, 29).setDepth(10).setVelocity(Phaser.Math.Between(-240, -190), -190).setAngularVelocity(-170);
-    fish.expiresAt = this.scene.time.now + TUNING.salmonLifetime;
-    fish.landed = false;
+    this.scene.animateSchwein('salmon');
+    this.scene.time.delayedCall(430, () => {
+      if (!this.scene.state.isPlaying()) return;
+      const start = { x: 780, y: 92 };
+      const targetIndex = this.platformIndexForPlayer();
+      const targetPlatform = PLATFORMS[targetIndex];
+      const halfWidth = targetPlatform.width / 2 - 34;
+      const targetX = Phaser.Math.Clamp(
+        this.scene.player.x + Phaser.Math.Between(-45, 45),
+        targetPlatform.x - halfWidth,
+        targetPlatform.x + halfWidth,
+      );
+      const targetY = targetPlatform.y - 18;
+      const flightSeconds = 1.25;
+      const gravity = this.scene.physics.world.gravity.y;
+      const velocityX = (targetX - start.x) / flightSeconds;
+      const velocityY = (targetY - start.y - 0.5 * gravity * flightSeconds ** 2) / flightSeconds;
+      const fish = this.salmon.create(start.x, start.y, 'salmon');
+      fish.setDisplaySize(58, 29).setDepth(10)
+        .setVelocity(velocityX, velocityY).setAngularVelocity(velocityX < 0 ? -240 : 240);
+      fish.expiresAt = this.scene.time.now + TUNING.salmonLifetime;
+      fish.landed = false;
+      fish.targetPlatformIndex = targetIndex;
+    });
     this.scene.events.emit('schwein-line', 'FRESH CATCH!');
+  }
+
+  platformIndexForPlayer() {
+    const feetY = this.scene.player.y + 35;
+    let bestIndex = 0;
+    let bestDistance = Number.POSITIVE_INFINITY;
+    PLATFORMS.forEach((platform, index) => {
+      const distance = Math.abs(platform.y - feetY);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestIndex = index;
+      }
+    });
+    return bestIndex;
+  }
+
+  shouldSalmonLand(fish, platform) {
+    return fish.targetPlatformIndex === platform.getData('platformIndex') && fish.body.velocity.y > 0;
   }
 
   ballLanded(ball, platform) {
     const index = platform.getData('platformIndex');
     if (!Number.isInteger(index)) return;
     ball.platformIndex = index;
-    ball.setVelocityX(PLATFORMS[index].direction * TUNING.ballSpeed);
+    const direction = PLATFORMS[index].direction;
+    ball.setVelocityX(direction * TUNING.ballSpeed).setAngularVelocity(direction * 430);
   }
 
   salmonLanded(fish) {

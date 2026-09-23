@@ -19,3 +19,10 @@ node --test tests/*.test.mjs
 ```
 
 Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runtime network dependency.
+
+## Character animation assets
+
+The runtime-ready transparent frames live in `assets/sprites/player/`,
+`assets/sprites/schwein/`, and `assets/sprites/schwein-salmon/`. The `raw/`,
+`source/`, and preview PNGs are retained in this standalone prototype so art
+iteration can continue without touching the production website.

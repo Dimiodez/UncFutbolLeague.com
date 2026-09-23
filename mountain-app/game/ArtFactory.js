@@ -30,11 +30,14 @@ export function createTextures(scene) {
   texture(scene, 'soccer-ball', 56, 56, (g) => {
     g.fillStyle(0x111c26).fillCircle(28, 28, 28);
     g.fillStyle(0xfffbef).fillCircle(28, 28, 25);
-    g.fillGradientStyle(0xffffff, 0xe8edf0, 0xffffff, 0xd4dce2, 0.55).fillCircle(24, 22, 19);
-    g.fillStyle(0x17202b).fillPoints([{x:28,y:18},{x:37,y:24},{x:34,y:35},{x:22,y:35},{x:19,y:24}], true);
+    g.fillGradientStyle(0xffffff, 0xe8edf0, 0xffffff, 0xd4dce2, 0.55).fillCircle(23, 20, 18);
+    g.fillStyle(0x17202b).fillPoints([{x:25,y:17},{x:34,y:22},{x:32,y:33},{x:20,y:34},{x:16,y:24}], true);
     g.lineStyle(3, 0x17202b, 1)
-      .lineBetween(28, 18, 28, 5).lineBetween(37, 24, 48, 19)
-      .lineBetween(34, 35, 40, 47).lineBetween(22, 35, 15, 47).lineBetween(19, 24, 8, 18);
+      .lineBetween(25, 17, 23, 5).lineBetween(34, 22, 47, 16)
+      .lineBetween(32, 33, 42, 45).lineBetween(20, 34, 13, 47).lineBetween(16, 24, 7, 20);
+    // The red UFL panel and off-centre highlight make rotation readable at game scale.
+    g.fillStyle(0xc93435).fillPoints([{x:42,y:9},{x:49,y:12},{x:48,y:20},{x:40,y:21},{x:37,y:14}], true);
+    g.fillStyle(0xffffff, 0.92).fillEllipse(17, 12, 8, 5);
   });
   texture(scene, 'puddle', 96, 28, (g) => {
     g.fillStyle(0x164f70, 0.68).fillEllipse(48, 16, 94, 22);
