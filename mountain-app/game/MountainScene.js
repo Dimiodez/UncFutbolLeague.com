@@ -113,7 +113,10 @@ export class MountainScene extends Phaser.Scene {
     this.player.body.setSize(42, 74).setOffset(7, 3).setMaxVelocity(220, 520);
     this.player.setCollideWorldBounds(true);
     this.player.climbing = false;
-    this.playerArt = this.add.sprite(PLAYER_START.x, PLAYER_START.y, ASSETS.playerFrames[0].key).setDisplaySize(80, 80).setDepth(10);
+    this.playerArt = this.add.sprite(PLAYER_START.x, this.player.body.bottom, ASSETS.playerFrames[0].key)
+      .setOrigin(0.5, 1)
+      .setDisplaySize(80, 80)
+      .setDepth(10);
     this.playerArt.play('player-idle');
   }
 
@@ -164,7 +167,13 @@ export class MountainScene extends Phaser.Scene {
     this.player.setTexture('player').setScale(0.5).setVisible(false).setAngle(0).setAlpha(1).setVelocity(0, 0);
     this.player.body.setAllowGravity(true);
     this.player.climbing = false;
-    this.playerArt.setVisible(true).setAngle(0).setAlpha(1).setDisplaySize(80, 80).play('player-idle');
+    this.playerArt
+      .setVisible(true)
+      .setPosition(this.player.x, this.player.body.bottom)
+      .setAngle(0)
+      .setAlpha(1)
+      .setDisplaySize(80, 80)
+      .play('player-idle');
   }
 
   nearestLadder() {
@@ -217,7 +226,9 @@ export class MountainScene extends Phaser.Scene {
     } else if (horizontal !== 0) {
       animation = 'player-run';
     }
-    this.playerArt.setPosition(this.player.x, this.player.y).play(animation, true);
+    // The animation frames are bottom-centre normalized. Anchor their feet to
+    // the physics body's bottom instead of centering them on the body.
+    this.playerArt.setPosition(this.player.x, this.player.body.bottom).play(animation, true);
     if (horizontal !== 0) this.playerArt.setFlipX(horizontal < 0);
   }
 
