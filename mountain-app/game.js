@@ -1,5 +1,5 @@
 import { MountainScene } from './game/MountainScene.js';
-import { WORLD } from './game/level.js';
+import { TUNING, WORLD } from './game/level.js';
 
 const $ = (selector) => document.querySelector(selector);
 let scene;
@@ -70,7 +70,7 @@ const game = new Phaser.Game({
   pixelArt: false,
   antialias: true,
   roundPixels: false,
-  physics: { default: 'arcade', arcade: { gravity: { y: 780 }, debug: false } },
+  physics: { default: 'arcade', arcade: { gravity: { y: TUNING.gravity }, debug: false } },
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
   scene: [MountainScene],
   callbacks: {

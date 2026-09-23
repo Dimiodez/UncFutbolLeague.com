@@ -20,6 +20,15 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
+test('jump clears a soccer ball without reaching the next platform row', () => {
+  const jumpApex = TUNING.jumpSpeed ** 2 / (2 * TUNING.gravity);
+  const smallestPlatformGap = Math.min(
+    ...PLATFORMS.slice(1).map((platform, index) => PLATFORMS[index].y - platform.y),
+  );
+  assert.ok(jumpApex > TUNING.ballDiameter, 'jump must clear a rolling soccer ball');
+  assert.ok(jumpApex < smallestPlatformGap * 0.4, 'jump must not reach the platform above');
+});
+
 test('life state ignores hits during invulnerability and ends after three hits', () => {
   const state = new GameState();
   state.start();

@@ -21,9 +21,12 @@ export const PLAYER_START = Object.freeze({ x: 820, y: 650 });
 export const SUMMIT = Object.freeze({ x: 820, y: 150 });
 
 export const TUNING = Object.freeze({
+  gravity: 780,
   moveSpeed: 175,
   climbSpeed: 125,
-  jumpSpeed: 360,
+  // A compact hop clears a rolling ball without reaching the platform above.
+  jumpSpeed: 230,
+  ballDiameter: 30,
   stunMs: 2000,
   ballSpeed: 125,
   ballInterval: 2850,

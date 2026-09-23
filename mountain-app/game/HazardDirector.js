@@ -42,7 +42,7 @@ export class HazardDirector {
     this.scene.time.delayedCall(430, () => {
       if (!this.scene.state.isPlaying()) return;
       const ball = this.balls.create(665, 95, 'soccer-ball');
-      ball.setDisplaySize(30, 30).setCircle(24, 4, 4).setBounce(0.05).setDepth(8)
+      ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(24, 4, 4).setBounce(0.05).setDepth(8)
         .setVelocity(-TUNING.ballSpeed, -35).setAngularVelocity(-430);
       ball.body.setMaxVelocity(180, 520);
       ball.platformIndex = -1;
