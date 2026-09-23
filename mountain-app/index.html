@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mountain Mayhem · UFL Arcade</title>
+  <meta name="description" content="Climb FC Mountains, dodge Schwein's soccer balls, and survive the salmon in this retro UFL arcade game.">
+  <link rel="icon" href="assets/fc-mountains.png">
+  <link rel="stylesheet" href="style.css?v=prototype1">
+</head>
+<body>
+  <main>
+    <header class="masthead">
+      <div class="wordmark">
+        <img src="assets/fc-mountains.png" alt="FC Mountains">
+        <div><span class="eyebrow">THE CLUBHOUSE ARCADE</span><h1>MOUNTAIN <em>MAYHEM</em></h1></div>
+      </div>
+      <span class="prototype-badge">LOCAL PROTOTYPE</span>
+    </header>
+
+    <section class="game-shell" aria-label="Mountain Mayhem game">
+      <div class="scoreboard" aria-live="polite">
+        <div><span>ALTITUDE</span><strong id="altitude">0000 FT</strong></div>
+        <div><span>LIVES</span><strong id="lives">♥ ♥ ♥</strong></div>
+        <div><span>STATUS</span><strong id="status">READY</strong></div>
+        <button id="pause" type="button" disabled>Pause</button>
+      </div>
+
+      <div id="game-wrap" class="game-wrap">
+        <div id="game" aria-label="Climb the mountain with arrow keys or WASD. Jump with Space."></div>
+        <div id="speech-bubble" class="speech-bubble" hidden>WELCOME TO MY MOUNTAIN</div>
+        <div id="overlay" class="overlay">
+          <span id="overlay-kicker" class="eyebrow">FC MOUNTAINS PRESENTS</span>
+          <h2 id="overlay-title">CLIMB.<br>DODGE.<br>SURVIVE.</h2>
+          <p id="overlay-copy">Reach the summit. Jump Schwein's soccer balls. Don't step on the fish.</p>
+          <button id="action" type="button">Start climbing ↗</button>
+        </div>
+      </div>
+
+      <div class="mobile-controls" aria-label="Touch controls">
+        <div class="dpad">
+          <button data-control="up" aria-label="Climb up">▲</button>
+          <button data-control="left" aria-label="Move left">◀</button>
+          <button data-control="down" aria-label="Climb down">▼</button>
+          <button data-control="right" aria-label="Move right">▶</button>
+        </div>
+        <button class="jump-button" data-control="jump">JUMP</button>
+      </div>
+
+      <footer class="game-footer">
+        <span>MOVE <kbd>←</kbd> <kbd>→</kbd> / <kbd>A</kbd> <kbd>D</kbd> · CLIMB <kbd>↑</kbd> <kbd>↓</kbd> / <kbd>W</kbd> <kbd>S</kbd> · JUMP <kbd>SPACE</kbd></span>
+        <span>REACH THE FC MOUNTAINS FLAG</span>
+      </footer>
+    </section>
+  </main>
+
+  <script src="vendor/phaser.min.js"></script>
+  <script type="module" src="game.js?v=prototype1"></script>
+</body>
+</html>
