@@ -1,10 +1,12 @@
+import { CAMPAIGN } from './campaign.js';
+
 export class GameState {
   constructor() { this.reset(); }
 
   reset() {
     this.phase = 'intro';
     this.level = 1;
-    this.totalLevels = 10;
+    this.totalLevels = CAMPAIGN.totalLevels;
     this.lives = 3;
     this.altitude = 0;
     this.stunnedUntil = 0;

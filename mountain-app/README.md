@@ -27,11 +27,19 @@ of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
 Level 1 exists in this prototype. The later layouts are intentionally not
 implemented while the current art and game feel are being tuned.
 
+Levels 3, 6, and 9 are reserved for future Schwein tantrum events. A tantrum
+may drop an authored platform segment or break a ladder only after the pure
+`CourseSafety` graph check proves another complete physical route from the
+player start to the summit. Level 1 has one route, so every disruption is
+correctly rejected and the mechanic remains inactive here.
+
 ## Character animation assets
 
 The runtime-ready transparent frames live in `assets/sprites/player/`,
 `assets/sprites/schwein/`, `assets/sprites/schwein-salmon/`,
-`assets/sprites/schwein-run/`, and `assets/sprites/ball/`. The painted Level 1
-backdrop is in `assets/environment/`. The `raw/`, `source/`, and preview PNGs
+`assets/sprites/schwein-run/`, and `assets/sprites/ball/`. The tantrum frames
+are retained in `assets/sprites/schwein-tantrum/` for those future route-safe
+stages. The painted Level 1 backdrop is in `assets/environment/`. The `raw/`,
+`source/`, and preview PNGs
 are retained in this standalone prototype so art iteration can continue
 without touching the production website.

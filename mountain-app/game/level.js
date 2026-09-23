@@ -17,6 +17,26 @@ export const LADDERS = Object.freeze([
   { x: 700, top: 190, bottom: 290 },
 ]);
 
+// Runtime disruption data is authored as graph edges. Visual pieces may only
+// break when CourseSafety confirms another complete physical route remains.
+export const LEVEL_ONE_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LADDERS.map((_ladder, index) => Object.freeze({
+    id: `ladder-${index}`,
+    from: `platform-${index}`,
+    to: `platform-${index + 1}`,
+    type: 'ladder',
+  }))),
+});
+
+export const LEVEL_ONE_DISRUPTIONS = Object.freeze(LADDERS.map((_ladder, index) => Object.freeze({
+  id: `break-ladder-${index}`,
+  kind: 'ladder-break',
+  disableEdgeIds: Object.freeze([`ladder-${index}`]),
+})));
+
 export const PLAYER_START = Object.freeze({ x: 820, y: 650 });
 export const SUMMIT = Object.freeze({ x: 820, y: 150 });
 

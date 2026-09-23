@@ -19,6 +19,7 @@ export class MountainScene extends Phaser.Scene {
     ASSETS.schweinFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.schweinSalmonFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.schweinRunFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.schweinTantrumFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.ballFrames.forEach((asset) => this.load.image(asset.key, asset.url));
   }
 
@@ -125,6 +126,8 @@ export class MountainScene extends Phaser.Scene {
     this.anims.create({ key: 'schwein-salmon-throw', frames: salmonKeys, frameRate: 7, repeat: 0 });
     const runKeys = ASSETS.schweinRunFrames.map((asset) => ({ key: asset.key }));
     this.anims.create({ key: 'schwein-run', frames: runKeys, frameRate: 9, repeat: -1 });
+    const tantrumKeys = ASSETS.schweinTantrumFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'schwein-tantrum', frames: tantrumKeys, frameRate: 7, repeat: 0 });
     const ballKeys = ASSETS.ballFrames.map((asset) => ({ key: asset.key }));
     this.anims.create({ key: 'soccer-roll', frames: ballKeys, frameRate: 10, repeat: -1 });
   }
@@ -247,6 +250,17 @@ export class MountainScene extends Phaser.Scene {
     this.schwein.play(hazard === 'salmon' ? 'schwein-salmon-throw' : 'schwein-throw', true);
     this.time.delayedCall(650, () => {
       if (this.schwein?.active) this.schwein.play('schwein-idle', true);
+    });
+  }
+
+  playSchweinTantrum(onImpact) {
+    this.schwein.play('schwein-tantrum', true);
+    this.time.delayedCall(430, () => {
+      this.cameras.main.shake(220, 0.01);
+      onImpact?.();
+    });
+    this.time.delayedCall(820, () => {
+      if (this.schwein?.active && this.state.isPlaying()) this.schwein.play('schwein-idle', true);
     });
   }
 

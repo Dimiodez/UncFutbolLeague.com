@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
-import { LADDERS, PLATFORMS, TUNING, WORLD } from '../game/level.js';
+import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
+import { CAMPAIGN, isTantrumLevel } from '../game/campaign.js';
+import { LADDERS, LEVEL_ONE_DISRUPTIONS, LEVEL_ONE_ROUTE, PLATFORMS, TUNING, WORLD } from '../game/level.js';
 
 test('course is a complete alternating climb', () => {
   assert.equal(PLATFORMS.length, 6);
@@ -63,4 +65,42 @@ test('the chase reserves the red card for level ten', () => {
   assert.equal(state.summitOutcome(), 'escaped');
   state.level = 10;
   assert.equal(state.summitOutcome(), 'red-card');
+});
+
+test('tantrums are reserved for spaced future levels', () => {
+  assert.equal(CAMPAIGN.totalLevels, 10);
+  assert.deepEqual(
+    Array.from({ length: CAMPAIGN.totalLevels }, (_value, index) => index + 1).filter(isTantrumLevel),
+    [3, 6, 9],
+  );
+});
+
+test('Level 1 refuses every break because it has only one physical route', () => {
+  assert.equal(hasPhysicalRoute(LEVEL_ONE_ROUTE), true);
+  assert.deepEqual(safeDisruptions(LEVEL_ONE_ROUTE, LEVEL_ONE_DISRUPTIONS), []);
+  assert.equal(chooseSafeDisruption(LEVEL_ONE_ROUTE, LEVEL_ONE_DISRUPTIONS), null);
+});
+
+test('future disruptions may break a ladder or platform half only when a fallback remains', () => {
+  const redundantCourse = {
+    start: 'start',
+    summit: 'summit',
+    nodes: ['start', 'left', 'right', 'summit'],
+    edges: [
+      { id: 'lower-left', from: 'start', to: 'left' },
+      { id: 'lower-right', from: 'start', to: 'right' },
+      { id: 'ladder-left', from: 'left', to: 'summit' },
+      { id: 'ladder-right', from: 'right', to: 'summit' },
+    ],
+  };
+  const candidates = [
+    { id: 'drop-left-half', disableEdgeIds: ['lower-left'] },
+    { id: 'break-right-ladder', disableEdgeIds: ['ladder-right'] },
+    { id: 'destroy-both-routes', disableEdgeIds: ['ladder-left', 'ladder-right'] },
+  ];
+  assert.deepEqual(safeDisruptions(redundantCourse, candidates).map(({ id }) => id), [
+    'drop-left-half',
+    'break-right-ladder',
+  ]);
+  assert.equal(chooseSafeDisruption(redundantCourse, candidates, () => 0.99).id, 'break-right-ladder');
 });

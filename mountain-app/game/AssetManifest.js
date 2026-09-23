@@ -19,6 +19,10 @@ export const ASSETS = Object.freeze({
     key: `schwein-run-frame-${index + 1}`,
     url: `assets/sprites/schwein-run/${String(index + 1).padStart(2, '0')}.png`,
   }))),
+  schweinTantrumFrames: Object.freeze(Array.from({ length: 5 }, (_, index) => Object.freeze({
+    key: `schwein-tantrum-frame-${index + 1}`,
+    url: `assets/sprites/schwein-tantrum/${String(index + 1).padStart(2, '0')}.png`,
+  }))),
   ballFrames: Object.freeze(Array.from({ length: 4 }, (_, index) => Object.freeze({
     key: `soccer-ball-frame-${index + 1}`,
     url: `assets/sprites/ball/${String(index + 1).padStart(2, '0')}.png`,
