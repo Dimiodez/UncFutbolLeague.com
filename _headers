@@ -12,7 +12,7 @@
   Cache-Control: public, max-age=0, must-revalidate
 
 /app.js
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: no-store, max-age=0
 
 /pickems-app/
   Cache-Control: no-cache, max-age=0, must-revalidate
@@ -21,7 +21,7 @@
   Cache-Control: no-cache, max-age=0, must-revalidate
 
 /pickems-app/app.js
-  Cache-Control: no-cache, max-age=0, must-revalidate
+  Cache-Control: no-store, max-age=0
 
 /pickems-app/season-data.js
   Cache-Control: no-store, max-age=0
