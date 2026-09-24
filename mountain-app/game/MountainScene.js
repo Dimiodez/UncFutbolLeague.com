@@ -2,7 +2,7 @@ import { createTextures } from './ArtFactory.js';
 import { ASSETS } from './AssetManifest.js';
 import { BruceDirector } from './BruceDirector.js';
 import { isTantrumLevel } from './campaign.js';
-import { chooseSafeDisruption } from './CourseSafety.js';
+import { hasPhysicalRoute } from './CourseSafety.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
@@ -61,6 +61,7 @@ export class MountainScene extends Phaser.Scene {
     this.courseVisuals = [];
     this.platformBodies = [];
     this.platformArts = [];
+    this.ballDropGap = null;
     this.stage.platforms.forEach((spec, index) => {
       const art = this.drawPlatformArt(spec, index);
       this.courseVisuals.push(art);
@@ -295,15 +296,25 @@ export class MountainScene extends Phaser.Scene {
   playSchweinTantrum(onImpact) {
     this.tantrumActive = true;
     this.schwein.play('schwein-tantrum', true);
-    this.time.delayedCall(430, () => {
+    this.tweens.add({
+      targets: this.schwein,
+      y: 48,
+      duration: 180,
+      yoyo: true,
+      repeat: 1,
+      ease: 'Quad.Out',
+    });
+    this.time.delayedCall(650, () => {
       this.cameras.main.shake(520, 0.022);
       this.cameras.main.flash(150, 245, 235, 215, false);
       this.knockPlayerFromTantrum();
       onImpact?.();
     });
-    this.time.delayedCall(820, () => {
+    this.time.delayedCall(930, () => {
       this.tantrumActive = false;
-      if (this.schwein?.active && this.state.isPlaying()) this.schwein.play('schwein-idle', true);
+      if (this.schwein?.active && this.state.isPlaying()) {
+        this.schwein.setY(105).play('schwein-idle', true);
+      }
     });
   }
 
@@ -311,56 +322,57 @@ export class MountainScene extends Phaser.Scene {
     this.tantrumTimer?.remove(false);
     this.tantrumTimer = null;
     if (!isTantrumLevel(this.state.level) || !this.stage.route || !this.stage.disruptions?.length) return;
-    this.tantrumTimer = this.time.delayedCall(Phaser.Math.Between(10500, 15500), () => this.triggerTantrum());
+    this.tantrumTimer = this.time.delayedCall(this.stage.tantrumDelay ?? 12000, () => this.triggerTantrum());
   }
 
   triggerTantrum() {
     if (!this.state.isPlaying()) return;
-    const disruption = chooseSafeDisruption(this.stage.route, this.stage.disruptions);
-    if (!disruption) return;
+    const disruption = this.stage.disruptions[0];
+    if (!disruption || !hasPhysicalRoute(this.stage.route, disruption.disableEdgeIds)) return;
     this.say('I WILL BREAK THIS MOUNTAIN!');
     this.playSchweinTantrum(() => this.applyDisruption(disruption));
   }
 
   applyDisruption(disruption) {
-    if (disruption.kind !== 'platform-collapse') return;
+    if (disruption.kind !== 'summit-gap') return;
     const platformSpec = this.stage.platforms[disruption.platformIndex];
     const platformBody = this.platformBodies[disruption.platformIndex];
     const platformArt = this.platformArts[disruption.platformIndex];
     if (!platformSpec || !platformBody || !platformArt) return;
-    const removedWidth = Math.round(platformSpec.width * disruption.fraction);
-    const remainingWidth = platformSpec.width - removedWidth;
     const left = platformSpec.x - platformSpec.width / 2;
-    const remainingX = disruption.side === 'right'
-      ? left + remainingWidth / 2
-      : left + removedWidth + remainingWidth / 2;
-    const fallingX = disruption.side === 'right'
-      ? left + remainingWidth + removedWidth / 2
-      : left + removedWidth / 2;
+    const right = left + platformSpec.width;
+    const gapLeft = disruption.gapX - disruption.gapWidth / 2;
+    const gapRight = disruption.gapX + disruption.gapWidth / 2;
+    const leftSpec = { ...platformSpec, x: left + (gapLeft - left) / 2, width: gapLeft - left };
+    const rightSpec = { ...platformSpec, x: gapRight + (right - gapRight) / 2, width: right - gapRight };
+    const fallingSpec = { ...platformSpec, x: disruption.gapX, width: disruption.gapWidth };
 
     platformArt.destroy();
-    const remainingSpec = { ...platformSpec, x: remainingX, width: remainingWidth };
-    const fallingSpec = { ...platformSpec, x: fallingX, width: removedWidth };
-    const remainingArt = this.drawPlatformArt(remainingSpec, disruption.platformIndex);
+    platformBody.destroy();
+    const leftArt = this.drawPlatformArt(leftSpec, disruption.platformIndex);
+    const rightArt = this.drawPlatformArt(rightSpec, disruption.platformIndex);
     const fallingArt = this.drawPlatformArt(fallingSpec, disruption.platformIndex).setDepth(6);
-    this.platformArts[disruption.platformIndex] = remainingArt;
-    this.courseVisuals.push(remainingArt, fallingArt);
-    platformBody.setPosition(remainingX, platformSpec.y).setDisplaySize(remainingWidth, 24).refreshBody();
-
-    const ladder = this.ladders.find((candidate) => candidate.id === disruption.ladderId);
-    if (ladder) {
-      this.ladders = this.ladders.filter((candidate) => candidate !== ladder);
-      this.tweens.add({ targets: ladder.graphic, y: ladder.graphic.y + 34, alpha: 0.48, duration: 520, ease: 'Bounce.Out' });
-    }
+    this.platformArts[disruption.platformIndex] = [leftArt, rightArt];
+    this.courseVisuals.push(leftArt, rightArt, fallingArt);
+    const createSegmentBody = (spec) => {
+      const body = this.platforms.create(spec.x, spec.y, 'platform');
+      body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', disruption.platformIndex);
+      body.body.checkCollision.down = false;
+      body.body.checkCollision.left = false;
+      body.body.checkCollision.right = false;
+      return body;
+    };
+    this.platformBodies[disruption.platformIndex] = [createSegmentBody(leftSpec), createSegmentBody(rightSpec)];
+    this.ballDropGap = disruption;
     this.tweens.add({
       targets: fallingArt,
       y: fallingArt.y + 230,
-      x: fallingArt.x + (disruption.side === 'right' ? 18 : -18),
+      angle: 8,
       alpha: 0.18,
       duration: 850,
       ease: 'Quad.In',
     });
-    this.events.emit('notice', 'SCHWEIN DROPPED PART OF THE MOUNTAIN — FIND THE OTHER WAY!');
+    this.events.emit('notice', 'SCHWEIN SMASHED OPEN A BALL CHUTE — WATCH BOTH DIRECTIONS!');
   }
 
   knockPlayerFromTantrum() {

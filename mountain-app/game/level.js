@@ -52,6 +52,7 @@ export const TUNING = Object.freeze({
   puddleEscapeGraceMs: 1200,
   ballSpeed: 125,
   ballInterval: 2850,
+  initialBallDelay: 900,
   salmonInterval: 8300,
   salmonLifetime: 9000,
 });
@@ -123,9 +124,15 @@ export const LEVEL_THREE_ROUTE = Object.freeze({
 });
 
 export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
-  Object.freeze({ id: 'collapse-l3-p1-right', kind: 'platform-collapse', platformIndex: 1, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-0a', disableEdgeIds: Object.freeze(['l3-ladder-0a']) }),
-  Object.freeze({ id: 'collapse-l3-p2-right', kind: 'platform-collapse', platformIndex: 2, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-2a', disableEdgeIds: Object.freeze(['l3-ladder-2a']) }),
-  Object.freeze({ id: 'collapse-l3-p4-right', kind: 'platform-collapse', platformIndex: 4, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-4a', disableEdgeIds: Object.freeze(['l3-ladder-4a']) }),
+  Object.freeze({
+    id: 'open-l3-summit-chute',
+    kind: 'summit-gap',
+    platformIndex: 5,
+    gapX: 560,
+    gapWidth: 96,
+    branchPlatformIndex: 4,
+    disableEdgeIds: Object.freeze([]),
+  }),
 ]);
 
 const freezeStage = (stage) => Object.freeze({
@@ -171,8 +178,10 @@ export const STAGES = Object.freeze([
     puddles: [{ x: 560, y: 576 }, { x: 430, y: 376 }],
     route: LEVEL_THREE_ROUTE,
     disruptions: LEVEL_THREE_DISRUPTIONS,
+    tantrumDelay: 3600,
     tuning: {
       ...ballTuningForLevel(3),
+      initialBallDelay: 4700,
       salmonInterval: 7400,
     },
   }),

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
+import { ballDropTargetX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import { bruceSpeedForLevel, CAMPAIGN, isBruceLevel, isTantrumLevel } from '../game/campaign.js';
 import {
@@ -171,15 +172,35 @@ test('Bruce route climbs every platform row before reaching the summit', () => {
   });
 });
 
-test('every Level 3 tantrum leaves a complete physical route', () => {
+test('Level 3 uses one early deterministic summit gap and preserves both summit ladders', () => {
   assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE), true);
   assert.equal(safeDisruptions(LEVEL_THREE_ROUTE, LEVEL_THREE_DISRUPTIONS).length, LEVEL_THREE_DISRUPTIONS.length);
-  LEVEL_THREE_DISRUPTIONS.forEach((disruption) => {
-    assert.equal(disruption.kind, 'platform-collapse');
-    assert.equal(disruption.side, 'right');
-    assert.ok(disruption.fraction > 0.25 && disruption.fraction < 0.5);
-    assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE, disruption.disableEdgeIds), true);
-  });
+  assert.equal(LEVEL_THREE_DISRUPTIONS.length, 1);
+  const disruption = LEVEL_THREE_DISRUPTIONS[0];
+  assert.equal(disruption.kind, 'summit-gap');
+  assert.equal(disruption.platformIndex, 5);
+  assert.deepEqual(disruption.disableEdgeIds, []);
+  assert.ok(disruption.gapX - disruption.gapWidth / 2 > 350 + 20);
+  assert.ok(disruption.gapX + disruption.gapWidth / 2 < 650 - 20);
+  assert.equal(getStage(3).tantrumDelay, 3600);
+  assert.ok(getStage(3).tuning.initialBallDelay > getStage(3).tantrumDelay + 650);
+});
+
+test('every routed ball drop lands inside the next platform from either direction', () => {
+  const stage = getStage(3);
+  for (let currentIndex = stage.platforms.length - 1; currentIndex > 0; currentIndex -= 1) {
+    for (const direction of [-1, 1]) {
+      const targetX = ballDropTargetX(stage, currentIndex, direction);
+      const target = stage.platforms[currentIndex - 1];
+      const safeInset = TUNING.ballDiameter / 2;
+      assert.ok(targetX >= target.x - target.width / 2 + safeInset);
+      assert.ok(targetX <= target.x + target.width / 2 - safeInset);
+    }
+  }
+  assert.equal(
+    ballDropTargetX(stage, 5, -1, LEVEL_THREE_DISRUPTIONS[0].gapX),
+    LEVEL_THREE_DISRUPTIONS[0].gapX,
+  );
 });
 
 test('Level 1 refuses every break because it has only one physical route', () => {
