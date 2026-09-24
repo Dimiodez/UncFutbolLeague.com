@@ -61,7 +61,6 @@ export class MountainScene extends Phaser.Scene {
     this.courseVisuals = [];
     this.platformBodies = [];
     this.platformArts = [];
-    this.ballDropGap = null;
     this.stage.platforms.forEach((spec, index) => {
       const art = this.drawPlatformArt(spec, index);
       this.courseVisuals.push(art);
@@ -334,36 +333,40 @@ export class MountainScene extends Phaser.Scene {
   }
 
   applyDisruption(disruption) {
-    if (disruption.kind !== 'summit-gap') return;
-    const platformSpec = this.stage.platforms[disruption.platformIndex];
-    const platformBody = this.platformBodies[disruption.platformIndex];
-    const platformArt = this.platformArts[disruption.platformIndex];
+    if (disruption.kind !== 'platform-gaps') return;
+    disruption.gaps.forEach((gap) => this.breakPlatformGap(gap));
+    this.events.emit('notice', 'SCHWEIN SHATTERED A BALL ROUTE THROUGH THE MOUNTAIN!');
+  }
+
+  breakPlatformGap(gap) {
+    const platformSpec = this.stage.platforms[gap.platformIndex];
+    const platformBody = this.platformBodies[gap.platformIndex];
+    const platformArt = this.platformArts[gap.platformIndex];
     if (!platformSpec || !platformBody || !platformArt) return;
     const left = platformSpec.x - platformSpec.width / 2;
     const right = left + platformSpec.width;
-    const gapLeft = disruption.gapX - disruption.gapWidth / 2;
-    const gapRight = disruption.gapX + disruption.gapWidth / 2;
+    const gapLeft = gap.gapX - gap.gapWidth / 2;
+    const gapRight = gap.gapX + gap.gapWidth / 2;
     const leftSpec = { ...platformSpec, x: left + (gapLeft - left) / 2, width: gapLeft - left };
     const rightSpec = { ...platformSpec, x: gapRight + (right - gapRight) / 2, width: right - gapRight };
-    const fallingSpec = { ...platformSpec, x: disruption.gapX, width: disruption.gapWidth };
+    const fallingSpec = { ...platformSpec, x: gap.gapX, width: gap.gapWidth };
 
     platformArt.destroy();
     platformBody.destroy();
-    const leftArt = this.drawPlatformArt(leftSpec, disruption.platformIndex);
-    const rightArt = this.drawPlatformArt(rightSpec, disruption.platformIndex);
-    const fallingArt = this.drawPlatformArt(fallingSpec, disruption.platformIndex).setDepth(6);
-    this.platformArts[disruption.platformIndex] = [leftArt, rightArt];
+    const leftArt = this.drawPlatformArt(leftSpec, gap.platformIndex);
+    const rightArt = this.drawPlatformArt(rightSpec, gap.platformIndex);
+    const fallingArt = this.drawPlatformArt(fallingSpec, gap.platformIndex).setDepth(6);
+    this.platformArts[gap.platformIndex] = [leftArt, rightArt];
     this.courseVisuals.push(leftArt, rightArt, fallingArt);
     const createSegmentBody = (spec) => {
       const body = this.platforms.create(spec.x, spec.y, 'platform');
-      body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', disruption.platformIndex);
+      body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', gap.platformIndex);
       body.body.checkCollision.down = false;
       body.body.checkCollision.left = false;
       body.body.checkCollision.right = false;
       return body;
     };
-    this.platformBodies[disruption.platformIndex] = [createSegmentBody(leftSpec), createSegmentBody(rightSpec)];
-    this.ballDropGap = disruption;
+    this.platformBodies[gap.platformIndex] = [createSegmentBody(leftSpec), createSegmentBody(rightSpec)];
     this.tweens.add({
       targets: fallingArt,
       y: fallingArt.y + 230,
@@ -372,7 +375,6 @@ export class MountainScene extends Phaser.Scene {
       duration: 850,
       ease: 'Quad.In',
     });
-    this.events.emit('notice', 'SCHWEIN SMASHED OPEN A BALL CHUTE — WATCH BOTH DIRECTIONS!');
   }
 
   knockPlayerFromTantrum() {

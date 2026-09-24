@@ -90,11 +90,11 @@ const LEVEL_TWO_LADDERS = Object.freeze([
 ]);
 
 const LEVEL_THREE_PLATFORMS = Object.freeze([
-  { x: 480, y: 690, width: 880, direction: -1 },
-  { x: 490, y: 590, width: 720, direction: -1 },
-  { x: 455, y: 490, width: 700, direction: 1 },
-  { x: 505, y: 390, width: 700, direction: -1 },
-  { x: 455, y: 290, width: 680, direction: 1 },
+  { x: 480, y: 690, width: 920, direction: -1 },
+  { x: 520, y: 590, width: 840, direction: -1 },
+  { x: 410, y: 490, width: 780, direction: 1 },
+  { x: 540, y: 390, width: 800, direction: -1 },
+  { x: 420, y: 290, width: 760, direction: 1 },
   { x: 500, y: 190, width: 650, direction: -1 },
 ]);
 
@@ -125,12 +125,13 @@ export const LEVEL_THREE_ROUTE = Object.freeze({
 
 export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
   Object.freeze({
-    id: 'open-l3-summit-chute',
-    kind: 'summit-gap',
-    platformIndex: 5,
-    gapX: 560,
-    gapWidth: 96,
-    branchPlatformIndex: 4,
+    id: 'open-l3-ball-route',
+    kind: 'platform-gaps',
+    gaps: Object.freeze([
+      Object.freeze({ platformIndex: 5, gapX: 560, gapWidth: 96 }),
+      Object.freeze({ platformIndex: 3, gapX: 520, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 1, gapX: 520, gapWidth: 78 }),
+    ]),
     disableEdgeIds: Object.freeze([]),
   }),
 ]);

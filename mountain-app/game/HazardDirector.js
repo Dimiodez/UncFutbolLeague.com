@@ -1,17 +1,16 @@
 import { ASSETS } from './AssetManifest.js';
 import { TUNING, WORLD } from './level.js';
 
-export function ballDropTargetX(stage, currentPlatformIndex, direction, preferredX = null, radius = TUNING.ballDiameter / 2) {
-  const nextPlatform = stage?.platforms?.[currentPlatformIndex - 1];
-  if (!nextPlatform) return null;
-  const padding = radius + 8;
-  const minimum = nextPlatform.x - nextPlatform.width / 2 + padding;
-  const maximum = nextPlatform.x + nextPlatform.width / 2 - padding;
-  const currentPlatform = stage.platforms[currentPlatformIndex];
-  const exitX = direction < 0
-    ? currentPlatform.x - currentPlatform.width / 2
-    : currentPlatform.x + currentPlatform.width / 2;
-  return Math.max(minimum, Math.min(maximum, preferredX ?? exitX));
+export function projectedBallLandingX(stage, currentPlatformIndex, direction, speed, gravity, startX = null) {
+  const current = stage?.platforms?.[currentPlatformIndex];
+  const next = stage?.platforms?.[currentPlatformIndex - 1];
+  if (!current || !next) return null;
+  const dropHeight = next.y - current.y;
+  const fallSeconds = Math.sqrt((2 * dropHeight) / gravity);
+  const edgeX = direction < 0
+    ? current.x - current.width / 2 - TUNING.ballDiameter / 2
+    : current.x + current.width / 2 + TUNING.ballDiameter / 2;
+  return (startX ?? edgeX) + direction * speed * fallSeconds;
 }
 
 export class HazardDirector {
@@ -50,7 +49,6 @@ export class HazardDirector {
     }
     this.balls.children.each((ball) => {
       if (!ball?.active || !ball.body) return;
-      this.routeBallDrop(ball);
       if (ball.y > WORLD.height + 40) {
         ball.destroy();
       }
@@ -71,8 +69,6 @@ export class HazardDirector {
       ball.playReverse('soccer-roll');
       ball.body.setMaxVelocity(180, 520);
       ball.platformIndex = -1;
-      ball.dropTargetIndex = null;
-      ball.branchPlatformIndex = this.scene.ballDropGap?.branchPlatformIndex ?? null;
     });
     this.scene.events.emit('schwein-line');
   }
@@ -126,58 +122,12 @@ export class HazardDirector {
   ballLanded(ball, platform) {
     const index = platform.getData('platformIndex');
     if (!Number.isInteger(index)) return;
-    if (ball.dropTargetIndex !== null && index !== ball.dropTargetIndex) return;
     if (ball.platformIndex === index) return;
     ball.platformIndex = index;
-    ball.dropTargetIndex = null;
-    ball.dropTargetX = null;
-    const direction = index === ball.branchPlatformIndex
-      ? (Phaser.Math.Between(0, 1) ? 1 : -1)
-      : this.scene.stage.platforms[index].direction;
-    ball.travelDirection = direction;
+    const direction = this.scene.stage.platforms[index].direction;
     ball.setVelocityX(direction * this.tuning('ballSpeed'));
     if (direction < 0) ball.playReverse('soccer-roll', true);
     else ball.play('soccer-roll', true);
-  }
-
-  routeBallDrop(ball) {
-    if (ball.dropTargetIndex !== null) {
-      if (ball.y <= ball.dropStartY + 6) {
-        ball.setVelocityX(ball.dropExitDirection * this.tuning('ballSpeed'));
-        return;
-      }
-      const difference = ball.dropTargetX - ball.x;
-      ball.setVelocityX(Phaser.Math.Clamp(difference * 5, -this.tuning('ballSpeed'), this.tuning('ballSpeed')));
-      return;
-    }
-    if (!Number.isInteger(ball.platformIndex) || ball.platformIndex <= 0) return;
-    const platform = this.scene.stage.platforms[ball.platformIndex];
-    const direction = ball.travelDirection ?? platform.direction;
-    const radius = TUNING.ballDiameter / 2;
-    const gap = this.scene.ballDropGap;
-    if (gap && ball.platformIndex === gap.platformIndex) {
-      const gapEdge = direction < 0 ? gap.gapX + gap.gapWidth / 2 : gap.gapX - gap.gapWidth / 2;
-      const reachedGap = direction < 0 ? ball.x <= gapEdge + radius : ball.x >= gapEdge - radius;
-      if (reachedGap) this.beginBallDrop(ball, direction, gap.gapX);
-      return;
-    }
-    const edge = direction < 0
-      ? platform.x - platform.width / 2 + radius
-      : platform.x + platform.width / 2 - radius;
-    const reachedEdge = direction < 0 ? ball.x <= edge : ball.x >= edge;
-    if (reachedEdge) this.beginBallDrop(ball, direction);
-  }
-
-  beginBallDrop(ball, direction, preferredX = null) {
-    const targetIndex = ball.platformIndex - 1;
-    const targetX = ballDropTargetX(this.scene.stage, ball.platformIndex, direction, preferredX);
-    if (targetX === null) return;
-    ball.platformIndex = -1;
-    ball.dropTargetIndex = targetIndex;
-    ball.dropTargetX = targetX;
-    ball.dropStartY = ball.y;
-    ball.dropExitDirection = direction;
-    ball.setVelocityX(direction * this.tuning('ballSpeed'));
   }
 
   salmonLanded(fish) {
