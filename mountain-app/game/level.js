@@ -2,11 +2,11 @@ export const WORLD = Object.freeze({ width: 960, height: 720 });
 export const FALL_DEATH_Y = WORLD.height + 26;
 
 export const PLATFORMS = Object.freeze([
-  { x: 480, y: 690, width: 880, direction: -1 },
-  { x: 520, y: 590, width: 720, direction: -1 },
-  { x: 440, y: 490, width: 720, direction: 1 },
-  { x: 520, y: 390, width: 720, direction: -1 },
-  { x: 440, y: 290, width: 720, direction: 1 },
+  { x: 480, y: 690, width: 920, direction: -1 },
+  { x: 550, y: 590, width: 780, direction: -1 },
+  { x: 430, y: 490, width: 780, direction: 1 },
+  { x: 550, y: 390, width: 780, direction: -1 },
+  { x: 430, y: 290, width: 780, direction: 1 },
   { x: 520, y: 190, width: 720, direction: -1 },
 ]);
 
@@ -73,11 +73,11 @@ export const ballTuningForLevel = (level) => {
 };
 
 const LEVEL_TWO_PLATFORMS = Object.freeze([
-  { x: 480, y: 690, width: 880, direction: -1 },
-  { x: 500, y: 590, width: 700, direction: -1 },
-  { x: 430, y: 490, width: 690, direction: 1 },
-  { x: 520, y: 390, width: 690, direction: -1 },
-  { x: 440, y: 290, width: 680, direction: 1 },
+  { x: 480, y: 690, width: 920, direction: -1 },
+  { x: 540, y: 590, width: 780, direction: -1 },
+  { x: 420, y: 490, width: 780, direction: 1 },
+  { x: 540, y: 390, width: 780, direction: -1 },
+  { x: 420, y: 290, width: 780, direction: 1 },
   { x: 510, y: 190, width: 660, direction: -1 },
 ]);
 
@@ -327,6 +327,12 @@ export const STAGES = Object.freeze([
     playerStart: PLAYER_START,
     summit: SUMMIT,
     puddles: [{ x: 390, y: 476 }, { x: 620, y: 576 }],
+    ballBumpers: [
+      { platformIndex: 4, x: 90, direction: 1 },
+      { platformIndex: 3, x: 895, direction: -1 },
+      { platformIndex: 2, x: 90, direction: 1 },
+      { platformIndex: 1, x: 895, direction: -1 },
+    ],
     tuning: {
       ...ballTuningForLevel(1),
       salmonInterval: TUNING.salmonInterval,
@@ -340,6 +346,12 @@ export const STAGES = Object.freeze([
     playerStart: Object.freeze({ x: 820, y: 650 }),
     summit: Object.freeze({ x: 790, y: 150 }),
     puddles: [{ x: 330, y: 476 }, { x: 650, y: 576 }],
+    ballBumpers: [
+      { platformIndex: 4, x: 105, direction: 1 },
+      { platformIndex: 3, x: 885, direction: -1 },
+      { platformIndex: 2, x: 75, direction: 1 },
+      { platformIndex: 1, x: 885, direction: -1 },
+    ],
     tuning: {
       ...ballTuningForLevel(2),
       salmonInterval: 7800,

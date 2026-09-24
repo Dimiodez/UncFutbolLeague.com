@@ -31,6 +31,11 @@ Soccer-ball pressure follows one predictable campaign curve: each level adds
 10 to rolling speed and removes 200 ms from the throw interval, matching the
 original Level 1 to Level 2 increase all the way through Level 10.
 
+Levels 1 and 2 use alternating shelf widths and visible edge blocks to keep
+every soccer ball on the mountain. Each physical fall lands beside the next
+block, reverses direction, and crosses the player's route before descending
+again; the tutorial climb itself remains gap-free.
+
 Levels 3, 6, and 9 trigger Schwein tantrum events. Level 3 uses a deterministic
 early tantrum: Schwein jumps twice, shakes the screen, and punches five fixed
 openings through the summit and lower platforms before the first ball arrives.

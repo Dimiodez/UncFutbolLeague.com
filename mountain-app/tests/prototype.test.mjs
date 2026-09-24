@@ -88,6 +88,27 @@ test('Level 2 is only a modest hazard increase', () => {
   assert.ok(levelTwo.salmonInterval < levelOne.salmonInterval);
 });
 
+test('Levels 1 and 2 catch each physical ball fall and reverse it across the next row', () => {
+  [getStage(1), getStage(2)].forEach((stage) => {
+    let direction = -1;
+    for (let from = stage.platforms.length - 1; from > 0; from -= 1) {
+      const targetIndex = from - 1;
+      const target = stage.platforms[targetIndex];
+      const landing = projectedBallLandingX(stage, from, direction, stage.tuning.ballSpeed, TUNING.gravity);
+      const safeInset = TUNING.ballDiameter / 2;
+      assert.ok(landing >= target.x - target.width / 2 + safeInset, `Level ${stage.level} row ${from} misses left`);
+      assert.ok(landing <= target.x + target.width / 2 - safeInset, `Level ${stage.level} row ${from} misses right`);
+      if (targetIndex > 0) {
+        const bumper = stage.ballBumpers.find(({ platformIndex }) => platformIndex === targetIndex);
+        assert.ok(bumper, `Level ${stage.level} row ${targetIndex} needs a visible turn block`);
+        assert.ok(Math.abs(landing - bumper.x) < TUNING.ballDiameter / 2, `Level ${stage.level} row ${targetIndex} misses its turn block`);
+        direction = bumper.direction;
+      }
+    }
+    assert.deepEqual(stage.ballBumpers.map(({ direction: next }) => next), [1, -1, 1, -1]);
+  });
+});
+
 test('soccer-ball difficulty uses the same increment through Level 10', () => {
   const levels = Array.from({ length: 10 }, (_value, index) => ballTuningForLevel(index + 1));
   levels.slice(1).forEach((tuning, index) => {
