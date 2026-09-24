@@ -3,12 +3,24 @@ import { ASSETS } from './AssetManifest.js';
 import { BruceDirector } from './BruceDirector.js';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
+import {
+  ballHitLine,
+  GAMEPLAY_NOTICES,
+  LEVEL_SIX_CUTSCENE,
+  openingLineForLevel,
+  pickLine,
+  SCHWEIN_BALL_LINES,
+  SCHWEIN_BRUCE_SWEAT_LINE,
+  SCHWEIN_FALL_LINES,
+  SCHWEIN_RED_CARD_LINES,
+  SCHWEIN_SALMON_LINES,
+  SCHWEIN_SUMMIT_LINES,
+  SCHWEIN_TANTRUM_LINES,
+} from './Dialogue.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
 import { FALL_DEATH_Y, getStage, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
-
-const SPEECH = ['NOT TODAY, UNC!', 'BALL INCOMING!', 'CLIMB FASTER!', 'WELCOME TO THE PIG PEN!', 'THE SUMMIT IS MINE!'];
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -52,7 +64,8 @@ export class MountainScene extends Phaser.Scene {
     this.hazards = new HazardDirector(this);
     this.bruce = new BruceDirector(this);
     this.createPhysics();
-    this.events.on('schwein-line', (line) => this.say(line || Phaser.Utils.Array.GetRandom(SPEECH)));
+    this.events.on('schwein-ball-line', () => this.say(pickLine(SCHWEIN_BALL_LINES)));
+    this.events.on('schwein-salmon-line', () => this.say(pickLine(SCHWEIN_SALMON_LINES)));
     this.events.emit('game-ready', this);
   }
 
@@ -221,12 +234,12 @@ export class MountainScene extends Phaser.Scene {
       (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
     );
     this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
-    this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip('SALMON SLIP!', fish));
-    this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip('BRUCE BODY CHECK!', null, false));
+    this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip(GAMEPLAY_NOTICES.salmonSlip, fish));
+    this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip(GAMEPLAY_NOTICES.bruceCollision, null, false));
     this.physics.add.overlap(
       this.player,
       this.puddles,
-      (_player, puddle) => this.slip('BRUCE SWEAT SLIDE!', puddle, false),
+      (_player, puddle) => this.slip(GAMEPLAY_NOTICES.brucePuddle, puddle, false, SCHWEIN_BRUCE_SWEAT_LINE),
       (player, puddle) => this.canTriggerPuddle(player, puddle),
     );
   }
@@ -245,7 +258,7 @@ export class MountainScene extends Phaser.Scene {
     this.bruce.reset(this.time.now);
     this.bruceBonusLives = 0;
     this.resetStageEvents();
-    this.say(nextStage.level === 1 ? 'GET OFF MY MOUNTAIN!' : 'YOU AGAIN? KEEP CLIMBING!');
+    this.say(openingLineForLevel(nextStage.level));
     this.events.emit('state-change');
   }
 
@@ -325,7 +338,7 @@ export class MountainScene extends Phaser.Scene {
           this.player.iceDirection = Math.sign(this.player.body.velocity.x) || Math.sign(horizontal);
           if (!this.iceNoticeShown) {
             this.iceNoticeShown = true;
-            this.events.emit('notice', 'BLACK ICE — COMMIT TO YOUR LINE!');
+            this.events.emit('notice', GAMEPLAY_NOTICES.blackIce);
           }
         } else if (!this.player.iceDirection && horizontal) {
           this.player.iceDirection = Math.sign(horizontal);
@@ -406,7 +419,7 @@ export class MountainScene extends Phaser.Scene {
     if (!this.state.isPlaying()) return;
     const disruption = this.stage.disruptions[0];
     if (!disruption || !hasPhysicalRoute(this.stage.route, disruption.disableEdgeIds)) return;
-    this.say('I WILL BREAK THIS MOUNTAIN!');
+    this.say(pickLine(SCHWEIN_TANTRUM_LINES));
     this.playSchweinTantrum(() => this.applyDisruption(disruption));
   }
 
@@ -414,9 +427,7 @@ export class MountainScene extends Phaser.Scene {
     if (disruption.kind !== 'platform-gaps') return;
     gapsByPlatform(disruption.gaps).forEach((gaps) => this.breakPlatformGaps(gaps));
     disruption.spikeDeflectors?.forEach((spike) => this.createSpikeDeflector(spike));
-    this.events.emit('notice', disruption.spikeDeflectors?.length
-      ? 'SCHWEIN MADE A SPIKE — THE BALL CAN BREAK EITHER WAY!'
-      : 'SCHWEIN SHATTERED A BALL ROUTE THROUGH THE MOUNTAIN!');
+    this.events.emit('notice', GAMEPLAY_NOTICES.sabotage);
   }
 
   breakPlatformGap(gap, animateFall = true) {
@@ -493,7 +504,7 @@ export class MountainScene extends Phaser.Scene {
     const shove = this.player.x < WORLD.width / 2 ? -95 : 95;
     this.player.setVelocity(shove, -145);
     this.playerArt.play('player-slip', true);
-    this.events.emit('notice', 'THE MOUNTAIN BUCKED YOU OFF YOUR FEET!');
+    this.events.emit('notice', GAMEPLAY_NOTICES.tantrumKnockdown);
     this.events.emit('state-change');
   }
 
@@ -508,7 +519,7 @@ export class MountainScene extends Phaser.Scene {
       && this.time.now >= (puddle.getData('safeUntil') || 0);
   }
 
-  slip(label, hazard, consumeHazard = true) {
+  slip(label, hazard, consumeHazard = true, spokenLine = null) {
     if (!this.state.isPlaying() || this.state.isStunned(this.time.now)) return;
     this.state.stun(this.time.now, TUNING.stunMs);
     this.stopClimbing();
@@ -519,6 +530,7 @@ export class MountainScene extends Phaser.Scene {
       hazard.setData('safeUntil', this.time.now + TUNING.stunMs + TUNING.puddleEscapeGraceMs);
     }
     this.cameras.main.shake(120, 0.006);
+    if (spokenLine) this.say(spokenLine);
     this.events.emit('notice', label);
     this.events.emit('state-change');
     this.time.delayedCall(TUNING.stunMs, () => this.events.emit('state-change'));
@@ -535,9 +547,7 @@ export class MountainScene extends Phaser.Scene {
     }
     this.cameras.main.flash(180, 210, 50, 45);
     this.cameras.main.shake(250, 0.012);
-    this.say(source === 'fall'
-      ? 'LONG WAY DOWN, REF!'
-      : Math.random() < 0.82 ? 'SUCK MY ASS' : 'BACK TO BASE CAMP!');
+    this.say(source === 'fall' ? pickLine(SCHWEIN_FALL_LINES) : ballHitLine());
     this.events.emit('state-change');
     if (this.state.phase === 'over') {
       this.bruce.clear();
@@ -571,7 +581,7 @@ export class MountainScene extends Phaser.Scene {
       this.playYellowCardCutscene(outcome);
       return;
     }
-    this.say(outcome === 'red-card' ? 'NOT THE RED CARD!' : 'YOU HAVE NOT CAUGHT ME YET!');
+    this.say(pickLine(outcome === 'red-card' ? SCHWEIN_RED_CARD_LINES : SCHWEIN_SUMMIT_LINES));
     this.runSchweinOff(outcome);
   }
 
@@ -610,7 +620,7 @@ export class MountainScene extends Phaser.Scene {
     refBubble.lineStyle(5, 0x17202b, 1).strokeRoundedRect(104, 190, 390, 94, 14);
     refBubble.fillStyle(0xffffff, 1).fillTriangle(258, 281, 310, 281, 282, 315);
     refBubble.lineStyle(5, 0x17202b, 1).lineBetween(258, 281, 282, 315).lineBetween(282, 315, 310, 281);
-    const refLine = this.add.text(299, 237, '“Stop telling me to suck my ass!”', {
+    const refLine = this.add.text(299, 237, `“${LEVEL_SIX_CUTSCENE.referee}”`, {
       fontFamily: 'Courier New, monospace', fontSize: '20px', color: '#17202b', align: 'center',
       wordWrap: { width: 350 },
     }).setOrigin(0.5);
@@ -619,7 +629,7 @@ export class MountainScene extends Phaser.Scene {
     pigBubble.lineStyle(5, 0x17202b, 1).strokeRoundedRect(458, 185, 410, 108, 14);
     pigBubble.fillStyle(0xffffff, 1).fillTriangle(640, 290, 700, 290, 674, 323);
     pigBubble.lineStyle(5, 0x17202b, 1).lineBetween(640, 290, 674, 323).lineBetween(674, 323, 700, 290);
-    const pigLine = this.add.text(663, 239, "“Mama Mia, suck a big'a fat cock'a”", {
+    const pigLine = this.add.text(663, 239, `“${LEVEL_SIX_CUTSCENE.schwein}”`, {
       fontFamily: 'Courier New, monospace', fontSize: '19px', color: '#17202b', align: 'center',
       wordWrap: { width: 370 },
     }).setOrigin(0.5).setVisible(false);

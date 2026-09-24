@@ -1,12 +1,7 @@
 import { ASSETS } from './AssetManifest.js';
 import { bruceSpeedForLevel, isBruceLevel } from './campaign.js';
+import { BRUCE_SUMMIT_LINES, GAMEPLAY_NOTICES, pickLine } from './Dialogue.js';
 import { WORLD } from './level.js';
-
-const BRUCE_LINES = [
-  'WAIT... WHERE AM I? HOW DID I GET HERE?',
-  "THIS ISN'T THE KITCHEN... WHERE DID MY SANDWICH GO?",
-  'WHO MOVED THE LAUNDRY ROOM?',
-];
 
 function ladderFromIndex(stage, ladder) {
   if (Number.isInteger(ladder.fromIndex)) return ladder.fromIndex;
@@ -171,7 +166,7 @@ export class BruceDirector {
       .setAlpha(1)
       .setFlipX(true)
       .play('bruce-run', true);
-    this.scene.events.emit('notice', 'BRUCE IS LOOSE!');
+    this.scene.events.emit('notice', GAMEPLAY_NOTICES.bruceEntry);
   }
 
   maybeLeavePuddle(now, platformIndex) {
@@ -200,7 +195,7 @@ export class BruceDirector {
     this.running = false;
     this.reachedSummit = true;
     this.sprite.setVelocity(0, 0).play('bruce-run', true);
-    this.scene.say(Phaser.Utils.Array.GetRandom(BRUCE_LINES));
+    this.scene.say(pickLine(BRUCE_SUMMIT_LINES));
     this.scene.time.delayedCall(1550, () => {
       if (!this.sprite.active || !this.scene.state.isPlaying()) return;
       this.sprite.setFlipX(false).play('bruce-run', true);

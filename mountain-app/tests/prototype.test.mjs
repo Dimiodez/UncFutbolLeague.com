@@ -5,6 +5,22 @@ import { buildBruceRoute } from '../game/BruceDirector.js';
 import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
+  ballHitLine,
+  BRUCE_SUMMIT_LINES,
+  GAMEPLAY_NOTICES,
+  LEVEL_TEN_CUTSCENE,
+  openingLineForLevel,
+  SCHWEIN_BALL_HIT_LINES,
+  SCHWEIN_BALL_LINES,
+  SCHWEIN_BRUCE_SWEAT_LINE,
+  SCHWEIN_FALL_LINES,
+  SCHWEIN_OPENINGS,
+  SCHWEIN_RED_CARD_LINES,
+  SCHWEIN_SALMON_LINES,
+  SCHWEIN_SUMMIT_LINES,
+  SCHWEIN_TANTRUM_LINES,
+} from '../game/Dialogue.js';
+import {
   bruceSpeedForLevel,
   CAMPAIGN,
   iceRuleForLevel,
@@ -519,4 +535,54 @@ test('future disruptions may break a ladder or platform half only when a fallbac
     'break-right-ladder',
   ]);
   assert.equal(chooseSafeDisruption(redundantCourse, candidates, () => 0.99).id, 'break-right-ladder');
+});
+
+test('Schwein has one authored opening for each planned level', () => {
+  assert.deepEqual(Object.keys(SCHWEIN_OPENINGS).map(Number), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+  assert.equal(openingLineForLevel(1), 'MAMA MIA... YOU’RE BACK?');
+  assert.equal(openingLineForLevel(6), 'MAMA MIA, THIS REF DOESN’T FUCKING QUIT.');
+  assert.equal(openingLineForLevel(10), 'COME ON THEN, REF. BRING THAT LITTLE RED CARD UP HERE.');
+});
+
+test('dialogue pools retain the complete authored line counts', () => {
+  assert.equal(SCHWEIN_BALL_LINES.length, 15);
+  assert.equal(SCHWEIN_SALMON_LINES.length, 8);
+  assert.equal(SCHWEIN_TANTRUM_LINES.length, 7);
+  assert.equal(SCHWEIN_FALL_LINES.length, 6);
+  assert.equal(SCHWEIN_SUMMIT_LINES.length, 9);
+  assert.equal(SCHWEIN_RED_CARD_LINES.length, 2);
+  assert.equal(BRUCE_SUMMIT_LINES.length, 5);
+  assert.equal(SCHWEIN_BRUCE_SWEAT_LINE, 'MAN, I BET YOU HOPE THAT’S SWEAT, HUH?... IT’S NOT.');
+});
+
+test('soccer-ball hit dialogue uses the requested 70/15/15 weighting', () => {
+  assert.deepEqual(SCHWEIN_BALL_HIT_LINES.map(({ chance }) => chance), [0.70, 0.15, 0.15]);
+  assert.equal(ballHitLine(() => 0), 'SUCK MY ASS');
+  assert.equal(ballHitLine(() => 0.699), 'SUCK MY ASS');
+  assert.equal(ballHitLine(() => 0.70), 'THAT’S WHY I’M THE MVP!');
+  assert.equal(ballHitLine(() => 0.849), 'THAT’S WHY I’M THE MVP!');
+  assert.equal(ballHitLine(() => 0.85), 'LONG BALL RIGHT ON TARGET, DICKHEAD!');
+});
+
+test('gameplay notices remain status text rather than character dialogue', () => {
+  assert.deepEqual(Object.values(GAMEPLAY_NOTICES), [
+    'BRUCE HAS ENTERED THE PREMISES!',
+    'BLACK ICE — GOOD LUCK STOPPING!',
+    'YOU STEPPED ON A FUCKING SALMON!',
+    'BRUCE FORGOT YOU WERE STANDING THERE!',
+    'BRUCE RESIDUE DETECTED!',
+    'YOU HAVE LOST AN ARGUMENT WITH THE MOUNTAIN!',
+    'SCHWEIN ADDED CHAOS TO THE MOUNTAIN!',
+  ]);
+});
+
+test('the complete Level 10 red-card exchange is stored in speaking order', () => {
+  assert.equal(LEVEL_TEN_CUTSCENE.length, 11);
+  assert.deepEqual(LEVEL_TEN_CUTSCENE.map(({ speaker }) => speaker), [
+    'schwein', 'referee', 'schwein', 'referee', 'schwein', 'referee',
+    'schwein', 'referee', 'schwein', 'referee', 'schwein',
+  ]);
+  assert.equal(LEVEL_TEN_CUTSCENE[0].line, 'MAMA MIA... YOU ACTUALLY MADE IT.');
+  assert.equal(LEVEL_TEN_CUTSCENE[8].line, 'MAMA MIA... WHY’S THAT CARD RED?');
+  assert.equal(LEVEL_TEN_CUTSCENE.at(-1).line, 'ALRIGHT, DICKHEAD.');
 });

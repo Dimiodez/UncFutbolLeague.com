@@ -72,7 +72,7 @@ export class HazardDirector {
       ball.body.setMaxVelocity(180, 520);
       ball.platformIndex = -1;
     });
-    this.scene.events.emit('schwein-line');
+    this.scene.events.emit('schwein-ball-line');
   }
 
   spawnSalmon() {
@@ -100,7 +100,7 @@ export class HazardDirector {
       fish.landed = false;
       fish.targetPlatformIndex = targetIndex;
     });
-    this.scene.events.emit('schwein-line', 'FRESH CATCH!');
+    this.scene.events.emit('schwein-salmon-line');
   }
 
   platformIndexForPlayer() {

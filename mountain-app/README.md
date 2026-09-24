@@ -97,3 +97,10 @@ stages. The stage-specific painted mountain backdrops are in `assets/environment
 `source/`, and preview PNGs
 are retained in this standalone prototype so art iteration can continue
 without touching the production website.
+
+## Dialogue copy
+
+All current Schwein, Bruce, referee, and gameplay-notice copy is centralized in
+`game/Dialogue.js` so future script passes do not require editing gameplay code.
+The complete Level 10 red-card exchange is stored there now, but remains inactive
+until Level 10 itself is built.
