@@ -1,6 +1,8 @@
 import { ASSETS } from './AssetManifest.js';
 import { TUNING, WORLD } from './level.js';
 
+export const chooseBallDeflection = (random = Math.random) => (random() < 0.5 ? -1 : 1);
+
 export function projectedBallLandingX(stage, currentPlatformIndex, direction, speed, gravity, startX = null) {
   const current = stage?.platforms?.[currentPlatformIndex];
   const next = stage?.platforms?.[currentPlatformIndex - 1];
@@ -133,7 +135,17 @@ export class HazardDirector {
   }
 
   ballHitBumper(ball, bumper) {
-    const direction = bumper.getData('direction');
+    const randomDirection = bumper.getData('randomDirection');
+    let direction = bumper.getData('direction');
+    if (randomDirection) {
+      const now = this.scene.time.now;
+      if (now < (ball.getData('deflectLockUntil') || 0)) return;
+      direction = chooseBallDeflection();
+      const clearance = bumper.body.width / 2 + ball.body.width / 2 + 5;
+      ball.setData('deflectLockUntil', now + 650)
+        .setPosition(bumper.x + direction * clearance, Math.min(ball.y, bumper.y - 24))
+        .setVelocityY(-65);
+    }
     if (!direction) return;
     ball.setVelocityX(direction * this.tuning('ballSpeed'));
     if (direction < 0) ball.playReverse('soccer-roll', true);

@@ -4,11 +4,12 @@ import { TUNING, WORLD } from './game/level.js';
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
 const previewLevel = Number(previewParams.get('level'));
+const previewCutscene = previewParams.get('cutscene') === '1';
 let scene;
 let speechTimer;
 let speechQueue = [];
 let speechActive = false;
-let queuedLevel = [1, 2, 3, 4, 5].includes(previewLevel) ? previewLevel : 1;
+let queuedLevel = [1, 2, 3, 4, 5, 6].includes(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {
@@ -64,6 +65,11 @@ function start() {
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
   scene.startRun(level, !carryLives);
+  if (previewCutscene && level === 6) {
+    window.setTimeout(() => {
+      if (scene?.state.isPlaying()) scene.win();
+    }, 350);
+  }
   queuedLevel = null;
   carryLives = false;
   $('#game canvas')?.focus({ preventScroll: true });
@@ -133,20 +139,30 @@ function bindScene(activeScene) {
   scene.events.on('speech', (line) => {
     queueSpeech(line);
   });
+  scene.events.on('cutscene-start', clearSpeech);
   scene.events.on('game-over', () => {
     queuedLevel = scene.state.level;
     carryLives = false;
     showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'Three hits. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
   });
-  scene.events.on('game-won', ({ level, totalLevels, nextLevel }) => {
+  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards }) => {
     queuedLevel = nextLevel || level;
     carryLives = Boolean(nextLevel);
+    if (outcome === 'yellow-card') {
+      showOverlay(
+        `LEVEL ${level} OF ${totalLevels} CLEARED`,
+        'FIRST<br>YELLOW!',
+        `Schwein now has ${yellowCards} yellow card. Catch him again for a second yellow — and the automatic red card.`,
+        nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
+      );
+      return;
+    }
     showOverlay(
       `LEVEL ${level} OF ${totalLevels} CLEARED`,
       'SCHWEIN<br>ESCAPES!',
       nextLevel
         ? `Schwein fled to Level ${nextLevel}. The referee keeps the remaining lives and continues the chase.`
-        : 'Level 4 complete. Schwein escaped toward the unfinished mountains; Bruce returns on Level 5 and the red card still waits at Level 10.',
+        : `Level ${level} complete. Schwein escaped toward the unfinished mountains; the red card still waits at Level 10.`,
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });

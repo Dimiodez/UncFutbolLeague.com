@@ -24,7 +24,7 @@ Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runt
 
 The planned game is a ten-level referee chase. Schwein escapes at the summit
 of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
-Levels 1 through 5 exist in this prototype. The later layouts are intentionally not
+Levels 1 through 6 exist in this prototype. The later layouts are intentionally not
 implemented while the current art and game feel are being tuned.
 
 Soccer-ball pressure follows one predictable campaign curve: each level adds
@@ -62,6 +62,19 @@ the normal campaign schedule on Level 5; Bruce cannot appear on Level 3.
 Levels 7 and 9 reserve the ice mechanic. Jumping remains available, but steering
 locks to the entry direction while sliding. Level 7 will use partial ice patches;
 Level 9 will include exactly one fully iced platform. Those stages are not built yet.
+
+Level 6 returns to Schwein's tantrum sabotage in a cold dawn cirque. The impact
+breaks seven small, jumpable openings across five ledges. The first falling chunk
+becomes a low mountain spike at the ball's natural landing point. Each ball that
+hits it is independently kicked left or right, then follows one of two complete
+physics-driven chutes. Edge blocks only turn the ball inward toward the next gap;
+there is no midair steering, and every ladder remains clear of every break.
+
+Reaching the Level 6 summit triggers the first discipline payoff. Gameplay and
+hazards stop for a short referee-versus-Schwein cutscene: the referee raises a
+yellow card, the two exchange their authored lines, and Schwein runs off. The
+campaign state records that yellow; Level 10 is reserved for the second yellow
+and therefore the automatic red card.
 
 ## Character animation assets
 

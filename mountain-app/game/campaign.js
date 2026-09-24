@@ -2,6 +2,7 @@ export const CAMPAIGN = Object.freeze({
   totalLevels: 10,
   tantrumEvery: 3,
   bruceEvery: 5,
+  yellowCardLevels: Object.freeze([6, 10]),
 });
 
 // Authored ahead of the later stages so the movement contract stays explicit:

@@ -10,6 +10,14 @@ import { FALL_DEATH_Y, getStage, hasStage, TUNING, WORLD } from './level.js';
 
 const SPEECH = ['NOT TODAY, UNC!', 'BALL INCOMING!', 'CLIMB FASTER!', 'WELCOME TO THE PIG PEN!', 'THE SUMMIT IS MINE!'];
 
+function gapsByPlatform(gaps = []) {
+  return gaps.reduce((groups, gap) => {
+    if (!groups.has(gap.platformIndex)) groups.set(gap.platformIndex, []);
+    groups.get(gap.platformIndex).push(gap);
+    return groups;
+  }, new Map());
+}
+
 export class MountainScene extends Phaser.Scene {
   constructor() { super('mountain'); }
 
@@ -38,6 +46,7 @@ export class MountainScene extends Phaser.Scene {
     this.platforms = this.physics.add.staticGroup();
     this.puddles = this.physics.add.staticGroup();
     this.ballBumpers = this.physics.add.staticGroup();
+    this.spikeDeflectors = this.physics.add.staticGroup();
     this.createCourse();
     this.createActors();
     this.hazards = new HazardDirector(this);
@@ -59,6 +68,7 @@ export class MountainScene extends Phaser.Scene {
     this.platforms.clear(true, true);
     this.puddles.clear(true, true);
     this.ballBumpers.clear(true, true);
+    this.spikeDeflectors.clear(true, true);
     this.courseVisuals.forEach((visual) => visual.destroy());
     this.courseVisuals = [];
     this.platformBodies = [];
@@ -74,7 +84,7 @@ export class MountainScene extends Phaser.Scene {
       platform.body.checkCollision.right = false;
       this.platformBodies[index] = platform;
     });
-    this.stage.gaps.forEach((gap) => this.breakPlatformGap(gap, false));
+    gapsByPlatform(this.stage.gaps).forEach((gaps) => this.breakPlatformGaps(gaps, false));
     this.ladders = this.stage.ladders.map((ladder, index) => {
       const top = ladder.top + 8;
       const bottom = ladder.bottom - 8;
@@ -184,6 +194,8 @@ export class MountainScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height + 80);
     this.physics.add.collider(this.hazards.balls, this.platforms, (ball, platform) => this.hazards.ballLanded(ball, platform));
     this.physics.add.collider(this.hazards.balls, this.ballBumpers, (ball, bumper) => this.hazards.ballHitBumper(ball, bumper));
+    this.physics.add.overlap(this.hazards.balls, this.spikeDeflectors, (ball, spike) => this.hazards.ballHitBumper(ball, spike));
+    this.physics.add.collider(this.player, this.spikeDeflectors);
     this.physics.add.collider(
       this.hazards.salmon,
       this.platforms,
@@ -202,6 +214,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   startRun(level = 1, resetLives = true) {
+    this.clearSummitCutscene();
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
@@ -356,49 +369,78 @@ export class MountainScene extends Phaser.Scene {
 
   applyDisruption(disruption) {
     if (disruption.kind !== 'platform-gaps') return;
-    disruption.gaps.forEach((gap) => this.breakPlatformGap(gap));
-    this.events.emit('notice', 'SCHWEIN SHATTERED A BALL ROUTE THROUGH THE MOUNTAIN!');
+    gapsByPlatform(disruption.gaps).forEach((gaps) => this.breakPlatformGaps(gaps));
+    disruption.spikeDeflectors?.forEach((spike) => this.createSpikeDeflector(spike));
+    this.events.emit('notice', disruption.spikeDeflectors?.length
+      ? 'SCHWEIN MADE A SPIKE — THE BALL CAN BREAK EITHER WAY!'
+      : 'SCHWEIN SHATTERED A BALL ROUTE THROUGH THE MOUNTAIN!');
   }
 
   breakPlatformGap(gap, animateFall = true) {
-    const platformSpec = this.stage.platforms[gap.platformIndex];
-    const platformBody = this.platformBodies[gap.platformIndex];
-    const platformArt = this.platformArts[gap.platformIndex];
+    this.breakPlatformGaps([gap], animateFall);
+  }
+
+  breakPlatformGaps(gaps, animateFall = true) {
+    const platformIndex = gaps[0]?.platformIndex;
+    const platformSpec = this.stage.platforms[platformIndex];
+    const platformBody = this.platformBodies[platformIndex];
+    const platformArt = this.platformArts[platformIndex];
     if (!platformSpec || !platformBody || !platformArt) return;
     const left = platformSpec.x - platformSpec.width / 2;
     const right = left + platformSpec.width;
-    const gapLeft = gap.gapX - gap.gapWidth / 2;
-    const gapRight = gap.gapX + gap.gapWidth / 2;
-    const leftSpec = { ...platformSpec, x: left + (gapLeft - left) / 2, width: gapLeft - left };
-    const rightSpec = { ...platformSpec, x: gapRight + (right - gapRight) / 2, width: right - gapRight };
-    const fallingSpec = { ...platformSpec, x: gap.gapX, width: gap.gapWidth };
+    const ordered = [...gaps].sort((a, b) => a.gapX - b.gapX);
+    const segmentSpecs = [];
+    let cursor = left;
+    ordered.forEach((gap) => {
+      const gapLeft = gap.gapX - gap.gapWidth / 2;
+      const width = gapLeft - cursor;
+      if (width > 0) segmentSpecs.push({ ...platformSpec, x: cursor + width / 2, width });
+      cursor = gap.gapX + gap.gapWidth / 2;
+    });
+    if (cursor < right) segmentSpecs.push({ ...platformSpec, x: cursor + (right - cursor) / 2, width: right - cursor });
 
     platformArt.destroy();
     platformBody.destroy();
-    const leftArt = this.drawPlatformArt(leftSpec, gap.platformIndex);
-    const rightArt = this.drawPlatformArt(rightSpec, gap.platformIndex);
-    this.platformArts[gap.platformIndex] = [leftArt, rightArt];
-    this.courseVisuals.push(leftArt, rightArt);
+    const segmentArts = segmentSpecs.map((spec) => this.drawPlatformArt(spec, platformIndex));
+    this.platformArts[platformIndex] = segmentArts;
+    this.courseVisuals.push(...segmentArts);
     const createSegmentBody = (spec) => {
       const body = this.platforms.create(spec.x, spec.y, 'platform');
-      body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', gap.platformIndex);
+      body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', platformIndex);
       body.body.checkCollision.down = false;
       body.body.checkCollision.left = false;
       body.body.checkCollision.right = false;
       return body;
     };
-    this.platformBodies[gap.platformIndex] = [createSegmentBody(leftSpec), createSegmentBody(rightSpec)];
+    this.platformBodies[platformIndex] = segmentSpecs.map(createSegmentBody);
     if (!animateFall) return;
-    const fallingArt = this.drawPlatformArt(fallingSpec, gap.platformIndex).setDepth(6);
-    this.courseVisuals.push(fallingArt);
-    this.tweens.add({
-      targets: fallingArt,
-      y: fallingArt.y + 230,
-      angle: 8,
-      alpha: 0.18,
-      duration: 850,
-      ease: 'Quad.In',
+    ordered.forEach((gap, index) => {
+      const fallingSpec = { ...platformSpec, x: gap.gapX, width: gap.gapWidth };
+      const fallingArt = this.drawPlatformArt(fallingSpec, platformIndex).setDepth(6);
+      this.courseVisuals.push(fallingArt);
+      this.tweens.add({
+        targets: fallingArt,
+        y: fallingArt.y + 230,
+        angle: index % 2 ? -8 : 8,
+        alpha: 0.18,
+        duration: 850,
+        ease: 'Quad.In',
+      });
     });
+  }
+
+  createSpikeDeflector(spec) {
+    const platform = this.stage.platforms[spec.platformIndex];
+    if (!platform) return;
+    const baseY = platform.y - 12;
+    const art = this.add.graphics().setDepth(8);
+    art.fillStyle(0x111c27, 0.38).fillEllipse(spec.x + 3, baseY + 3, 46, 11);
+    art.fillStyle(0x342f35, 1).fillTriangle(spec.x - 19, baseY, spec.x, baseY - 34, spec.x + 19, baseY);
+    art.fillStyle(0x655763, 1).fillTriangle(spec.x - 13, baseY, spec.x - 2, baseY - 22, spec.x + 5, baseY);
+    art.fillStyle(0xeaf5f3, 0.95).fillTriangle(spec.x - 5, baseY - 25, spec.x, baseY - 34, spec.x + 6, baseY - 24);
+    this.courseVisuals.push(art);
+    const spike = this.spikeDeflectors.create(spec.x, baseY - 14, 'platform');
+    spike.setDisplaySize(34, 28).refreshBody().setVisible(false).setData('randomDirection', true);
   }
 
   knockPlayerFromTantrum() {
@@ -474,12 +516,22 @@ export class MountainScene extends Phaser.Scene {
   win() {
     if (!this.state.isPlaying()) return;
     this.state.phase = 'won';
+    this.state.issueYellowCard();
+    const outcome = this.state.summitOutcome();
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
     this.hazards.clear();
     this.bruce.clear();
     this.tantrumTimer?.remove(false);
-    this.say(this.state.summitOutcome() === 'red-card' ? 'NOT THE RED CARD!' : 'YOU HAVE NOT CAUGHT ME YET!');
     this.events.emit('state-change');
+    if (outcome === 'yellow-card') {
+      this.playYellowCardCutscene(outcome);
+      return;
+    }
+    this.say(outcome === 'red-card' ? 'NOT THE RED CARD!' : 'YOU HAVE NOT CAUGHT ME YET!');
+    this.runSchweinOff(outcome);
+  }
+
+  runSchweinOff(outcome) {
     this.schwein.setDisplaySize(190, 190).play('schwein-run', true);
     this.tweens.add({
       targets: this.schwein,
@@ -487,14 +539,91 @@ export class MountainScene extends Phaser.Scene {
       y: 112,
       duration: 1250,
       ease: 'Linear',
-      onComplete: () => {
-        const event = this.state.summitOutcome() === 'red-card' ? 'red-card-won' : 'game-won';
-        this.events.emit(event, {
-          level: this.state.level,
-          totalLevels: this.state.totalLevels,
-          nextLevel: hasStage(this.state.level + 1) ? this.state.level + 1 : null,
+      onComplete: () => this.emitWinOutcome(outcome),
+    });
+  }
+
+  playYellowCardCutscene(outcome) {
+    this.events.emit('cutscene-start');
+    this.schwein.setVisible(false);
+    this.playerArt.setVisible(false);
+    const shade = this.add.rectangle(WORLD.width / 2, WORLD.height / 2, WORLD.width, WORLD.height, 0x071421, 0.82);
+    const panel = this.add.rectangle(WORLD.width / 2, 360, 790, 520, 0xe8eee4, 1)
+      .setStrokeStyle(8, 0x142f45);
+    const heading = this.add.text(WORLD.width / 2, 136, 'FIRST YELLOW', {
+      fontFamily: 'Impact, Arial Black, sans-serif', fontSize: '48px', color: '#15344d',
+    }).setOrigin(0.5);
+    const referee = this.add.sprite(295, 560, ASSETS.playerFrames[0].key).setOrigin(0.5, 1).setDisplaySize(230, 230);
+    const pig = this.add.sprite(675, 570, ASSETS.schweinFrames[0].key).setOrigin(0.5, 1).setDisplaySize(270, 270);
+    const versus = this.add.text(482, 430, 'VS', {
+      fontFamily: 'Impact, Arial Black, sans-serif', fontSize: '50px', color: '#d64d3d',
+    }).setOrigin(0.5);
+    const card = this.add.rectangle(405, 415, 58, 82, 0xffdb26, 1)
+      .setStrokeStyle(5, 0x17202b)
+      .setAngle(-9);
+    const refBubble = this.add.graphics();
+    refBubble.fillStyle(0xffffff, 1).fillRoundedRect(104, 190, 390, 94, 14);
+    refBubble.lineStyle(5, 0x17202b, 1).strokeRoundedRect(104, 190, 390, 94, 14);
+    refBubble.fillStyle(0xffffff, 1).fillTriangle(258, 281, 310, 281, 282, 315);
+    refBubble.lineStyle(5, 0x17202b, 1).lineBetween(258, 281, 282, 315).lineBetween(282, 315, 310, 281);
+    const refLine = this.add.text(299, 237, '“Stop telling me to suck my ass!”', {
+      fontFamily: 'Courier New, monospace', fontSize: '20px', color: '#17202b', align: 'center',
+      wordWrap: { width: 350 },
+    }).setOrigin(0.5);
+    const pigBubble = this.add.graphics().setVisible(false);
+    pigBubble.fillStyle(0xffffff, 1).fillRoundedRect(458, 185, 410, 108, 14);
+    pigBubble.lineStyle(5, 0x17202b, 1).strokeRoundedRect(458, 185, 410, 108, 14);
+    pigBubble.fillStyle(0xffffff, 1).fillTriangle(640, 290, 700, 290, 674, 323);
+    pigBubble.lineStyle(5, 0x17202b, 1).lineBetween(640, 290, 674, 323).lineBetween(674, 323, 700, 290);
+    const pigLine = this.add.text(663, 239, "“Mama Mia, suck a big'a fat cock'a”", {
+      fontFamily: 'Courier New, monospace', fontSize: '19px', color: '#17202b', align: 'center',
+      wordWrap: { width: 370 },
+    }).setOrigin(0.5).setVisible(false);
+    this.summitCutscene = this.add.container(0, 0, [
+      shade, panel, heading, referee, pig, versus, card, refBubble, refLine, pigBubble, pigLine,
+    ])
+      .setDepth(50);
+    this.tweens.add({ targets: [referee, card], y: '-=28', duration: 180, yoyo: true, repeat: 1, ease: 'Quad.Out' });
+
+    this.yellowCardTimers = [
+      this.time.delayedCall(2550, () => {
+        refBubble.setVisible(false);
+        refLine.setVisible(false);
+        pigBubble.setVisible(true);
+        pigLine.setVisible(true);
+        this.tweens.add({ targets: pig, y: '-=28', duration: 170, yoyo: true, repeat: 1, ease: 'Quad.Out' });
+      }),
+      this.time.delayedCall(5050, () => {
+        pig.setTexture(ASSETS.schweinRunFrames[0].key).setFlipX(false);
+        this.tweens.add({
+          targets: pig,
+          x: WORLD.width + 170,
+          duration: 950,
+          ease: 'Linear',
+          onComplete: () => {
+            this.clearSummitCutscene();
+            this.emitWinOutcome(outcome);
+          },
         });
-      },
+      }),
+    ];
+  }
+
+  clearSummitCutscene() {
+    this.yellowCardTimers?.forEach((timer) => timer?.remove(false));
+    this.yellowCardTimers = [];
+    this.summitCutscene?.destroy(true);
+    this.summitCutscene = null;
+  }
+
+  emitWinOutcome(outcome) {
+    const event = outcome === 'red-card' ? 'red-card-won' : 'game-won';
+    this.events.emit(event, {
+      level: this.state.level,
+      totalLevels: this.state.totalLevels,
+      nextLevel: hasStage(this.state.level + 1) ? this.state.level + 1 : null,
+      outcome,
+      yellowCards: this.state.yellowCards,
     });
   }
 

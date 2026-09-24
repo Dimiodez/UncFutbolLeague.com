@@ -11,6 +11,8 @@ export class GameState {
     this.altitude = 0;
     this.stunnedUntil = 0;
     this.invulnerableUntil = 0;
+    this.yellowCards = 0;
+    this.cardedLevels = [];
   }
 
   start() {
@@ -26,7 +28,18 @@ export class GameState {
     this.invulnerableUntil = 0;
   }
 
-  summitOutcome() { return this.level >= this.totalLevels ? 'red-card' : 'escaped'; }
+  issueYellowCard() {
+    if (!CAMPAIGN.yellowCardLevels.includes(this.level) || this.cardedLevels.includes(this.level)) return false;
+    this.cardedLevels.push(this.level);
+    this.yellowCards += 1;
+    return true;
+  }
+
+  summitOutcome() {
+    if (this.yellowCards >= 2) return 'red-card';
+    if (this.cardedLevels.includes(this.level)) return 'yellow-card';
+    return 'escaped';
+  }
 
   isPlaying() { return this.phase === 'playing'; }
   isStunned(now) { return now < this.stunnedUntil; }

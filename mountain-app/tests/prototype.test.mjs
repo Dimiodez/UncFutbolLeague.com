@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
-import { projectedBallLandingX } from '../game/HazardDirector.js';
+import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
   bruceSpeedForLevel,
@@ -22,6 +22,8 @@ import {
   LEVEL_ONE_ROUTE,
   LEVEL_FOUR_ROUTE,
   LEVEL_FIVE_ROUTE,
+  LEVEL_SIX_DISRUPTIONS,
+  LEVEL_SIX_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -62,13 +64,14 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains five stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5]);
+test('prototype contains six stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
   assert.equal(getStage(5)?.name, 'Bruce Basin Pursuit');
-  assert.equal(hasStage(6), false);
+  assert.equal(getStage(6)?.name, 'Splitter Spike Cirque');
+  assert.equal(hasStage(7), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -134,12 +137,19 @@ test('puddle recovery includes enough time to leave its trigger area', () => {
   assert.ok(escapeDistance > 48, 'escape grace must cover the full puddle width');
 });
 
-test('the chase reserves the red card for level ten', () => {
+test('two yellow cards produce the Level 10 red card', () => {
   const state = new GameState();
   assert.equal(state.totalLevels, 10);
   assert.equal(state.level, 1);
   assert.equal(state.summitOutcome(), 'escaped');
-  state.level = 10;
+  state.startLevel(6);
+  assert.equal(state.issueYellowCard(), true);
+  assert.equal(state.issueYellowCard(), false, 'the same summit cannot award two cards');
+  assert.equal(state.yellowCards, 1);
+  assert.equal(state.summitOutcome(), 'yellow-card');
+  state.startLevel(10);
+  assert.equal(state.issueYellowCard(), true);
+  assert.equal(state.yellowCards, 2);
   assert.equal(state.summitOutcome(), 'red-card');
 });
 
@@ -156,6 +166,7 @@ test('remaining lives carry into Level 2 but reset on a fresh run', () => {
 
 test('tantrums occur every three levels before the final chase', () => {
   assert.equal(CAMPAIGN.totalLevels, 10);
+  assert.deepEqual(CAMPAIGN.yellowCardLevels, [6, 10]);
   assert.deepEqual(
     Array.from({ length: CAMPAIGN.totalLevels }, (_value, index) => index + 1).filter(isTantrumLevel),
     [3, 6, 9],
@@ -315,6 +326,61 @@ test('Level 5 gaps create a deterministic physical ball route down every row', (
     assert.ok(landingX <= target.x + target.width / 2 - radius, `row ${from} lands past the right edge`);
     const targetGap = gapByPlatform.get(from - 1);
     if (targetGap) assert.ok(Math.abs(landingX - targetGap.gapX) > targetGap.gapWidth / 2 + radius);
+  });
+  assert.deepEqual(stage.ballBumpers.map(({ direction }) => direction), [1, -1, 1, -1]);
+});
+
+test('Level 6 tantrum creates jumpable gaps and a route-safe random splitter', () => {
+  const stage = getStage(6);
+  const disruption = LEVEL_SIX_DISRUPTIONS[0];
+  assert.equal(hasPhysicalRoute(LEVEL_SIX_ROUTE, disruption.disableEdgeIds), true);
+  assert.equal(stage.backgroundKey, 'mountain-cirque-dawn');
+  assert.equal(isTantrumLevel(stage.level), true);
+  assert.equal(isBruceLevel(stage.level), false);
+  assert.equal(disruption.spikeDeflectors.length, 1);
+  assert.equal(chooseBallDeflection(() => 0.1), -1);
+  assert.equal(chooseBallDeflection(() => 0.9), 1);
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  disruption.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    const touchingLadders = stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    ));
+    touchingLadders.forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+  });
+  assert.ok(stage.tuning.initialBallDelay > stage.tantrumDelay + 650);
+});
+
+test('Level 6 spike sits on the first natural landing and both branches stay on course', () => {
+  const stage = getStage(6);
+  const disruption = LEVEL_SIX_DISRUPTIONS[0];
+  const spike = disruption.spikeDeflectors[0];
+  const firstGap = disruption.gaps.find(({ platformIndex }) => platformIndex === spike.sourcePlatformIndex);
+  const firstLanding = projectedBallLandingX(
+    stage,
+    spike.sourcePlatformIndex,
+    -1,
+    stage.tuning.ballSpeed,
+    TUNING.gravity,
+    firstGap.gapX,
+  );
+  assert.ok(Math.abs(firstLanding - spike.x) < 2);
+
+  const falls = [
+    { from: 4, direction: -1, startX: 300 },
+    { from: 4, direction: 1, startX: 700 },
+    { from: 3, direction: -1, startX: 500 },
+    { from: 3, direction: 1, startX: 500 },
+    { from: 2, direction: -1, startX: 250 },
+    { from: 2, direction: 1, startX: 730 },
+    { from: 1, direction: -1, startX: 500 },
+    { from: 1, direction: 1, startX: 500 },
+  ];
+  falls.forEach(({ from, direction, startX }) => {
+    const target = stage.platforms[from - 1];
+    const landing = projectedBallLandingX(stage, from, direction, stage.tuning.ballSpeed, TUNING.gravity, startX);
+    assert.ok(landing > target.x - target.width / 2 + TUNING.ballDiameter / 2);
+    assert.ok(landing < target.x + target.width / 2 - TUNING.ballDiameter / 2);
   });
   assert.deepEqual(stage.ballBumpers.map(({ direction }) => direction), [1, -1, 1, -1]);
 });

@@ -214,6 +214,56 @@ export const LEVEL_FIVE_ROUTE = Object.freeze({
   }))),
 });
 
+const LEVEL_SIX_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 920, direction: -1, style: 'rock' },
+  { x: 480, y: 590, width: 840, direction: 1, style: 'snow' },
+  { x: 480, y: 490, width: 880, direction: -1, style: 'rock' },
+  { x: 480, y: 390, width: 860, direction: 1, style: 'rock' },
+  { x: 480, y: 290, width: 820, direction: -1, style: 'snow' },
+  { x: 520, y: 190, width: 720, direction: -1, style: 'rock' },
+]);
+
+const LEVEL_SIX_LADDERS = Object.freeze([
+  { id: 'l6-ladder-0a', x: 230, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l6-ladder-0b', x: 780, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l6-ladder-1', x: 330, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l6-ladder-2', x: 620, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l6-ladder-3', x: 200, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l6-ladder-4', x: 800, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+export const LEVEL_SIX_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_SIX_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_SIX_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
+export const LEVEL_SIX_DISRUPTIONS = Object.freeze([
+  Object.freeze({
+    id: 'l6-splitter-chute',
+    kind: 'platform-gaps',
+    gaps: Object.freeze([
+      Object.freeze({ platformIndex: 5, gapX: 600, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 4, gapX: 300, gapWidth: 72 }),
+      Object.freeze({ platformIndex: 4, gapX: 700, gapWidth: 72 }),
+      Object.freeze({ platformIndex: 3, gapX: 500, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 2, gapX: 250, gapWidth: 72 }),
+      Object.freeze({ platformIndex: 2, gapX: 730, gapWidth: 72 }),
+      Object.freeze({ platformIndex: 1, gapX: 500, gapWidth: 78 }),
+    ]),
+    spikeDeflectors: Object.freeze([
+      Object.freeze({ sourcePlatformIndex: 5, platformIndex: 4, x: 511 }),
+    ]),
+    disableEdgeIds: Object.freeze([]),
+  }),
+]);
+
 const freezeStage = (stage) => Object.freeze({
   ...stage,
   puddles: Object.freeze(stage.puddles.map((puddle) => Object.freeze(puddle))),
@@ -311,6 +361,30 @@ export const STAGES = Object.freeze([
     tuning: {
       ...ballTuningForLevel(5),
       salmonInterval: 6600,
+    },
+  }),
+  freezeStage({
+    level: 6,
+    name: 'Splitter Spike Cirque',
+    backgroundKey: 'mountain-cirque-dawn',
+    platforms: LEVEL_SIX_PLATFORMS,
+    ladders: LEVEL_SIX_LADDERS,
+    playerStart: Object.freeze({ x: 820, y: 650 }),
+    summit: Object.freeze({ x: 790, y: 150 }),
+    puddles: [{ x: 400, y: 676 }],
+    route: LEVEL_SIX_ROUTE,
+    disruptions: LEVEL_SIX_DISRUPTIONS,
+    ballBumpers: [
+      { platformIndex: 3, x: 70, direction: 1 },
+      { platformIndex: 3, x: 890, direction: -1 },
+      { platformIndex: 1, x: 80, direction: 1 },
+      { platformIndex: 1, x: 880, direction: -1 },
+    ],
+    tantrumDelay: 3200,
+    tuning: {
+      ...ballTuningForLevel(6),
+      initialBallDelay: 4500,
+      salmonInterval: 6300,
     },
   }),
 ]);
