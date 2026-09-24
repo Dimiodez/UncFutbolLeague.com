@@ -5,6 +5,7 @@ export const ASSETS = Object.freeze({
     Object.freeze({ key: 'mountain-pass-sunset', url: 'assets/environment/mountain-pass-sunset.png' }),
     Object.freeze({ key: 'mountain-basin-storm', url: 'assets/environment/mountain-basin-storm.png' }),
     Object.freeze({ key: 'mountain-cirque-dawn', url: 'assets/environment/mountain-cirque-dawn.png' }),
+    Object.freeze({ key: 'mountain-glacier-day', url: 'assets/environment/mountain-glacier-day.png' }),
   ]),
   climber: Object.freeze({ key: 'climber', url: 'assets/characters/climber.png' }),
   schwein: Object.freeze({ key: 'schwein-summit', url: 'assets/sprites/schwein-green/01.png' }),

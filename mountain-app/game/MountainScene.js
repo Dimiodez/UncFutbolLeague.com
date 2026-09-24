@@ -6,7 +6,7 @@ import { hasPhysicalRoute } from './CourseSafety.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
-import { FALL_DEATH_Y, getStage, hasStage, TUNING, WORLD } from './level.js';
+import { FALL_DEATH_Y, getStage, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
 
 const SPEECH = ['NOT TODAY, UNC!', 'BALL INCOMING!', 'CLIMB FASTER!', 'WELCOME TO THE PIG PEN!', 'THE SUMMIT IS MINE!'];
 
@@ -84,6 +84,7 @@ export class MountainScene extends Phaser.Scene {
       platform.body.checkCollision.right = false;
       this.platformBodies[index] = platform;
     });
+    this.stage.icePatches.forEach((patch) => this.drawIcePatch(patch));
     gapsByPlatform(this.stage.gaps).forEach((gaps) => this.breakPlatformGaps(gaps, false));
     this.ladders = this.stage.ladders.map((ladder, index) => {
       const top = ladder.top + 8;
@@ -145,6 +146,23 @@ export class MountainScene extends Phaser.Scene {
       if (!rocky) g.fillStyle(0xd8f0f2, 0.95).fillTriangle(x, top + 10, x + 9, top + 10, x + 4, top + 10 + length);
     }
     return g;
+  }
+
+  drawIcePatch(patch) {
+    const platform = this.stage.platforms[patch.platformIndex];
+    const left = patch.x - patch.width / 2;
+    const y = platform.y - 17;
+    const g = this.add.graphics().setDepth(6);
+    g.fillStyle(0x071d2b, 0.72).fillRoundedRect(left - 4, y - 1, patch.width + 8, 15, 5);
+    g.fillGradientStyle(0xeaffff, 0xa8f7ff, 0x43c8e8, 0x1385b2, 1).fillRoundedRect(left, y, patch.width, 11, 4);
+    g.lineStyle(2, 0xffffff, 0.96).lineBetween(left + 7, y + 2, left + patch.width * 0.42, y + 1);
+    g.lineStyle(2, 0x1f8db7, 0.9)
+      .lineBetween(left + patch.width * 0.5, y + 3, left + patch.width * 0.56, y + 8)
+      .lineBetween(left + patch.width * 0.56, y + 8, left + patch.width * 0.62, y + 3);
+    g.fillStyle(0xd8fbff, 0.9)
+      .fillTriangle(left - 2, y + 8, left + 8, y - 2, left + 15, y + 8)
+      .fillTriangle(left + patch.width - 14, y + 8, left + patch.width - 6, y - 2, left + patch.width + 2, y + 8);
+    this.courseVisuals.push(g);
   }
 
   createActors() {
@@ -248,6 +266,9 @@ export class MountainScene extends Phaser.Scene {
     this.player.setTexture('player').setScale(0.5).setVisible(false).setAngle(0).setAlpha(1).setVelocity(0, 0);
     this.player.body.setAllowGravity(true);
     this.player.climbing = false;
+    this.player.iceDirection = 0;
+    this.player.onIce = false;
+    this.iceNoticeShown = false;
     this.playerArt
       .setVisible(true)
       .setPosition(this.player.x, this.player.body.bottom)
@@ -288,12 +309,33 @@ export class MountainScene extends Phaser.Scene {
       this.player.x = Phaser.Math.Linear(this.player.x, ladder.x, 0.35);
     }
     if (this.player.climbing) {
+      this.player.onIce = false;
+      this.player.iceDirection = 0;
       this.player.body.setAllowGravity(false);
       this.player.setVelocity(horizontal * TUNING.moveSpeed * 0.45, vertical * TUNING.climbSpeed);
       if (!ladder || horizontal !== 0 && vertical === 0 || this.player.y < ladder?.top - 18 || this.player.y > ladder?.bottom + 20) this.stopClimbing();
     } else {
       this.player.body.setAllowGravity(true);
-      this.player.setVelocityX(horizontal * TUNING.moveSpeed);
+      const icePatch = this.player.body.blocked.down
+        ? icePatchAt(this.stage, this.player.x, this.player.body.bottom)
+        : null;
+      if (icePatch) {
+        if (!this.player.onIce) {
+          this.player.iceDirection = Math.sign(this.player.body.velocity.x) || Math.sign(horizontal);
+          if (!this.iceNoticeShown) {
+            this.iceNoticeShown = true;
+            this.events.emit('notice', 'BLACK ICE — COMMIT TO YOUR LINE!');
+          }
+        } else if (!this.player.iceDirection && horizontal) {
+          this.player.iceDirection = Math.sign(horizontal);
+        }
+        this.player.onIce = true;
+        this.player.setVelocityX(this.player.iceDirection * TUNING.moveSpeed * 1.08);
+      } else {
+        this.player.onIce = false;
+        this.player.iceDirection = 0;
+        this.player.setVelocityX(horizontal * TUNING.moveSpeed);
+      }
       if (this.inputController.consumeJump() && this.player.body.blocked.down) this.player.setVelocityY(-TUNING.jumpSpeed);
     }
     this.player.setFlipX(horizontal < 0);

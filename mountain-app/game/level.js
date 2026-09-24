@@ -264,10 +264,56 @@ export const LEVEL_SIX_DISRUPTIONS = Object.freeze([
   }),
 ]);
 
+const LEVEL_SEVEN_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 920, direction: -1, style: 'rock' },
+  { x: 520, y: 590, width: 820, direction: -1, style: 'snow' },
+  { x: 450, y: 490, width: 820, direction: 1, style: 'rock' },
+  { x: 520, y: 390, width: 840, direction: -1, style: 'snow' },
+  { x: 440, y: 290, width: 800, direction: -1, style: 'rock' },
+  { x: 550, y: 190, width: 700, direction: -1, style: 'snow' },
+]);
+
+const LEVEL_SEVEN_LADDERS = Object.freeze([
+  { id: 'l7-ladder-0', x: 170, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l7-ladder-1', x: 760, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l7-ladder-2', x: 210, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l7-ladder-3', x: 720, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l7-ladder-4', x: 260, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+const LEVEL_SEVEN_GAPS = Object.freeze([
+  Object.freeze({ platformIndex: 5, gapX: 600, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 4, gapX: 330, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 2, gapX: 670, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 1, gapX: 650, gapWidth: 76 }),
+]);
+
+export const LEVEL_SEVEN_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_SEVEN_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_SEVEN_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
+export function icePatchAt(stage, x, feetY, tolerance = 10) {
+  return stage?.icePatches?.find((patch) => {
+    const platform = stage.platforms[patch.platformIndex];
+    const surfaceY = platform.y - 12;
+    return Math.abs(feetY - surfaceY) <= tolerance && Math.abs(x - patch.x) <= patch.width / 2;
+  }) || null;
+}
+
 const freezeStage = (stage) => Object.freeze({
   ...stage,
   puddles: Object.freeze(stage.puddles.map((puddle) => Object.freeze(puddle))),
   gaps: Object.freeze((stage.gaps || []).map((gap) => Object.freeze(gap))),
+  icePatches: Object.freeze((stage.icePatches || []).map((patch) => Object.freeze(patch))),
   ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
   tuning: Object.freeze(stage.tuning),
 });
@@ -385,6 +431,33 @@ export const STAGES = Object.freeze([
       ...ballTuningForLevel(6),
       initialBallDelay: 4500,
       salmonInterval: 6300,
+    },
+  }),
+  freezeStage({
+    level: 7,
+    name: 'Glacier Lock Run',
+    backgroundKey: 'mountain-glacier-day',
+    platforms: LEVEL_SEVEN_PLATFORMS,
+    ladders: LEVEL_SEVEN_LADDERS,
+    playerStart: Object.freeze({ x: 820, y: 650 }),
+    summit: Object.freeze({ x: 790, y: 150 }),
+    puddles: [{ x: 845, y: 376 }],
+    icePatches: [
+      { platformIndex: 0, x: 500, width: 170 },
+      { platformIndex: 2, x: 450, width: 165 },
+      { platformIndex: 4, x: 500, width: 170 },
+    ],
+    route: LEVEL_SEVEN_ROUTE,
+    gaps: LEVEL_SEVEN_GAPS,
+    ballBumpers: [
+      { platformIndex: 2, x: 70, direction: 1 },
+      { platformIndex: 1, x: 860, direction: -1 },
+      { platformIndex: 0, x: 80, direction: 1 },
+    ],
+    tuning: {
+      ...ballTuningForLevel(7),
+      initialBallDelay: 4300,
+      salmonInterval: 6000,
     },
   }),
 ]);

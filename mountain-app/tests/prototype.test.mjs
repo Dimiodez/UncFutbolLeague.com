@@ -16,6 +16,7 @@ import {
   ballTuningForLevel,
   getStage,
   hasStage,
+  icePatchAt,
   FALL_DEATH_Y,
   LADDERS,
   LEVEL_ONE_DISRUPTIONS,
@@ -24,6 +25,7 @@ import {
   LEVEL_FIVE_ROUTE,
   LEVEL_SIX_DISRUPTIONS,
   LEVEL_SIX_ROUTE,
+  LEVEL_SEVEN_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -64,14 +66,16 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains six stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6]);
+test('prototype contains seven stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
   assert.equal(getStage(5)?.name, 'Bruce Basin Pursuit');
   assert.equal(getStage(6)?.name, 'Splitter Spike Cirque');
-  assert.equal(hasStage(7), false);
+  assert.equal(getStage(7)?.name, 'Glacier Lock Run');
+  assert.equal(hasStage(7), true);
+  assert.equal(hasStage(8), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -383,6 +387,52 @@ test('Level 6 spike sits on the first natural landing and both branches stay on 
     assert.ok(landing < target.x + target.width / 2 - TUNING.ballDiameter / 2);
   });
   assert.deepEqual(stage.ballBumpers.map(({ direction }) => direction), [1, -1, 1, -1]);
+});
+
+test('Level 7 introduces partial ice without removing jump or steering recovery', () => {
+  const stage = getStage(7);
+  assert.equal(hasPhysicalRoute(LEVEL_SEVEN_ROUTE), true);
+  assert.equal(stage.backgroundKey, 'mountain-glacier-day');
+  assert.equal(isTantrumLevel(stage.level), false);
+  assert.equal(isBruceLevel(stage.level), false);
+  assert.deepEqual(iceRuleForLevel(stage.level), { coverage: 'partial', jumpAllowed: true, steeringLocked: true });
+  assert.equal(stage.icePatches.length, 3);
+  stage.icePatches.forEach((patch) => {
+    const platform = stage.platforms[patch.platformIndex];
+    assert.ok(patch.width < platform.width / 2, 'Level 7 ice must cover only a portion of a platform');
+    assert.equal(icePatchAt(stage, patch.x, platform.y - 12), patch);
+    assert.equal(icePatchAt(stage, patch.x + patch.width, platform.y - 12), null);
+  });
+  assert.ok(stage.tuning.ballSpeed > getStage(6).tuning.ballSpeed);
+  assert.ok(stage.tuning.ballInterval < getStage(6).tuning.ballInterval);
+});
+
+test('Level 7 keeps its ice, gaps, and ladders readable while balls descend every row', () => {
+  const stage = getStage(7);
+  const radius = TUNING.ballDiameter / 2;
+  const falls = [
+    { from: 5, direction: -1, startX: 600 },
+    { from: 4, direction: -1, startX: 330 },
+    { from: 3, direction: -1, startX: 300 },
+    { from: 2, direction: 1, startX: 670 },
+    { from: 1, direction: -1, startX: 650 },
+  ];
+  falls.forEach(({ from, direction, startX }) => {
+    const target = stage.platforms[from - 1];
+    const landing = projectedBallLandingX(stage, from, direction, stage.tuning.ballSpeed, TUNING.gravity, startX);
+    assert.ok(landing > target.x - target.width / 2 + radius);
+    assert.ok(landing < target.x + target.width / 2 - radius);
+  });
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+    stage.icePatches.filter((patch) => patch.platformIndex === platformIndex).forEach((patch) => {
+      assert.ok(Math.abs(patch.x - gapX) > patch.width / 2 + gapWidth / 2);
+    });
+  });
 });
 
 test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {

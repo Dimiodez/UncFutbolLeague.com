@@ -1,5 +1,5 @@
 import { MountainScene } from './game/MountainScene.js';
-import { TUNING, WORLD } from './game/level.js';
+import { hasStage, TUNING, WORLD } from './game/level.js';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
@@ -9,7 +9,7 @@ let scene;
 let speechTimer;
 let speechQueue = [];
 let speechActive = false;
-let queuedLevel = [1, 2, 3, 4, 5, 6].includes(previewLevel) ? previewLevel : 1;
+let queuedLevel = hasStage(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {
