@@ -5,6 +5,8 @@ import { buildBruceRoute } from '../game/BruceDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import { bruceSpeedForLevel, CAMPAIGN, isBruceLevel, isTantrumLevel } from '../game/campaign.js';
 import {
+  BALL_PROGRESSION,
+  ballTuningForLevel,
   getStage,
   hasStage,
   FALL_DEATH_Y,
@@ -66,6 +68,18 @@ test('Level 2 is only a modest hazard increase', () => {
   assert.ok(levelTwo.ballInterval < levelOne.ballInterval);
   assert.ok(levelTwo.ballInterval >= levelOne.ballInterval * 0.9);
   assert.ok(levelTwo.salmonInterval < levelOne.salmonInterval);
+});
+
+test('soccer-ball difficulty uses the same increment through Level 10', () => {
+  const levels = Array.from({ length: 10 }, (_value, index) => ballTuningForLevel(index + 1));
+  levels.slice(1).forEach((tuning, index) => {
+    const previous = levels[index];
+    assert.equal(tuning.ballSpeed - previous.ballSpeed, BALL_PROGRESSION.speedPerLevel);
+    assert.equal(previous.ballInterval - tuning.ballInterval, BALL_PROGRESSION.intervalReductionPerLevel);
+  });
+
+  assert.deepEqual(getStage(3).tuning.ballSpeed, ballTuningForLevel(3).ballSpeed);
+  assert.deepEqual(getStage(3).tuning.ballInterval, ballTuningForLevel(3).ballInterval);
 });
 
 test('jump clears a soccer ball without reaching the next platform row', () => {

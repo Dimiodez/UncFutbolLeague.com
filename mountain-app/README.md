@@ -27,6 +27,10 @@ of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
 Levels 1 through 3 exist in this prototype. The later layouts are intentionally not
 implemented while the current art and game feel are being tuned.
 
+Soccer-ball pressure follows one predictable campaign curve: each level adds
+10 to rolling speed and removes 200 ms from the throw interval, matching the
+original Level 1 to Level 2 increase all the way through Level 10.
+
 Levels 3, 6, and 9 trigger Schwein tantrum events. A tantrum
 may drop an authored platform segment or break a ladder only after the pure
 `CourseSafety` graph check proves another complete physical route from the
@@ -41,10 +45,10 @@ the normal campaign schedule once Level 5 exists; Bruce cannot appear on Level 3
 ## Character animation assets
 
 The runtime-ready transparent frames live in `assets/sprites/player/`,
-`assets/sprites/schwein/`, `assets/sprites/schwein-salmon/`,
-`assets/sprites/schwein-run/`, `assets/sprites/ball/`, `assets/sprites/bruce-run/`,
+`assets/sprites/schwein-green/`, `assets/sprites/schwein-salmon-green/`,
+`assets/sprites/schwein-run-green/`, `assets/sprites/ball/`, `assets/sprites/bruce-run/`,
 and `assets/sprites/bruce-climb/`. The tantrum frames live in
-`assets/sprites/schwein-tantrum/` for route-safe
+`assets/sprites/schwein-tantrum-green/` for route-safe
 stages. The painted mountain backdrop is in `assets/environment/`. The `raw/`,
 `source/`, and preview PNGs
 are retained in this standalone prototype so art iteration can continue

@@ -56,6 +56,21 @@ export const TUNING = Object.freeze({
   salmonLifetime: 9000,
 });
 
+// Level 1 -> 2 established the campaign's ball difficulty step. Keep that
+// exact linear step for every later level instead of hand-tuning each stage.
+export const BALL_PROGRESSION = Object.freeze({
+  speedPerLevel: 10,
+  intervalReductionPerLevel: 200,
+});
+
+export const ballTuningForLevel = (level) => {
+  const levelIndex = Math.max(0, Math.floor(level) - 1);
+  return {
+    ballSpeed: TUNING.ballSpeed + BALL_PROGRESSION.speedPerLevel * levelIndex,
+    ballInterval: TUNING.ballInterval - BALL_PROGRESSION.intervalReductionPerLevel * levelIndex,
+  };
+};
+
 const LEVEL_TWO_PLATFORMS = Object.freeze([
   { x: 480, y: 690, width: 880, direction: -1 },
   { x: 500, y: 590, width: 700, direction: -1 },
@@ -129,8 +144,7 @@ export const STAGES = Object.freeze([
     summit: SUMMIT,
     puddles: [{ x: 390, y: 476 }, { x: 620, y: 576 }],
     tuning: {
-      ballSpeed: TUNING.ballSpeed,
-      ballInterval: TUNING.ballInterval,
+      ...ballTuningForLevel(1),
       salmonInterval: TUNING.salmonInterval,
     },
   }),
@@ -143,8 +157,7 @@ export const STAGES = Object.freeze([
     summit: Object.freeze({ x: 790, y: 150 }),
     puddles: [{ x: 330, y: 476 }, { x: 650, y: 576 }],
     tuning: {
-      ballSpeed: 135,
-      ballInterval: 2650,
+      ...ballTuningForLevel(2),
       salmonInterval: 7800,
     },
   }),
@@ -159,8 +172,7 @@ export const STAGES = Object.freeze([
     route: LEVEL_THREE_ROUTE,
     disruptions: LEVEL_THREE_DISRUPTIONS,
     tuning: {
-      ballSpeed: 142,
-      ballInterval: 2500,
+      ...ballTuningForLevel(3),
       salmonInterval: 7400,
     },
   }),
