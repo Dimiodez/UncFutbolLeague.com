@@ -28,9 +28,11 @@ export function createTextures(scene) {
     g.fillStyle(0xe7eef0).fillRoundedRect(53, 11, 25, 8, 4);
   });
   texture(scene, 'puddle', 96, 28, (g) => {
-    g.fillStyle(0x164f70, 0.68).fillEllipse(48, 16, 94, 22);
-    g.fillGradientStyle(0x9ae8ed, 0x5cb8c7, 0x3e8ca3, 0x285e79, 0.85).fillEllipse(43, 13, 72, 14);
-    g.fillStyle(0xe9ffff, 0.72).fillEllipse(28, 10, 27, 5);
+    g.fillStyle(0x071d2b, 0.92).fillEllipse(48, 16, 96, 24);
+    g.lineStyle(3, 0xc9ffff, 0.98).strokeEllipse(48, 15, 88, 19);
+    g.fillGradientStyle(0x91fbff, 0x31d9e8, 0x159bb8, 0x0d587a, 0.96).fillEllipse(46, 14, 82, 17);
+    g.fillStyle(0xffffff, 0.94).fillEllipse(29, 10, 30, 6);
+    g.fillStyle(0x9ffcff, 0.9).fillCircle(73, 12, 4).fillCircle(80, 16, 2);
   });
   texture(scene, 'platform', 64, 24, (g) => {
     g.fillGradientStyle(0xf8fcf5, 0xdcece9, 0xf0f8f2, 0xc4dbd9, 1).fillRoundedRect(0, 0, 64, 10, 4);

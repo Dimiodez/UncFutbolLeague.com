@@ -34,7 +34,7 @@ test('course is a complete alternating climb', () => {
 
 test('course geometry remains within the fixed arcade viewport', () => {
   for (const stage of STAGES) {
-    assert.ok(stage.ladders.length >= stage.platforms.length - 1);
+    assert.ok(stage.route ? hasPhysicalRoute(stage.route) : stage.ladders.length >= stage.platforms.length - 1);
     for (const platform of stage.platforms) {
       assert.ok(platform.x - platform.width / 2 >= 0);
       assert.ok(platform.x + platform.width / 2 <= WORLD.width);
@@ -236,6 +236,8 @@ test('Level 4 adds a recoverable false route and distinct mountain materials', (
   assert.equal(stage.backgroundKey, 'mountain-pass-sunset');
   assert.deepEqual(new Set(stage.platforms.map(({ style }) => style)), new Set(['rock', 'snow', 'ice']));
   assert.ok(LEVEL_FOUR_ROUTE.edges.some(({ id, type }) => id === 'l4-decoy-recovery-hop' && type === 'jump'));
+  assert.equal(stage.ladders.some(({ id }) => id === 'l4-ladder-left-start'), false);
+  assert.equal(stage.ladders.some(({ id }) => id === 'l4-ladder-route-high'), false);
   const jumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
   const bridgeGap = stage.platforms[4].x - stage.platforms[4].width / 2
     - (stage.platforms[3].x + stage.platforms[3].width / 2);
@@ -245,6 +247,25 @@ test('Level 4 adds a recoverable false route and distinct mountain materials', (
   assert.ok(recoveryGap > 0 && recoveryGap < jumpTravel);
   assert.ok(stage.tuning.ballSpeed > getStage(3).tuning.ballSpeed);
   assert.ok(stage.tuning.ballInterval < getStage(3).tuning.ballInterval);
+});
+
+test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {
+  const stage = getStage(4);
+  const speed = stage.tuning.ballSpeed;
+  const radius = TUNING.ballDiameter / 2;
+  const project = (startX, direction, fromY, toY) => (
+    startX + direction * speed * Math.sqrt((2 * (toY - fromY)) / TUNING.gravity)
+  );
+  const top = stage.platforms[9];
+  const upperLeft = stage.platforms[7];
+  const lowerRight = stage.platforms[2];
+  const base = stage.platforms[0];
+  const upperLanding = project(top.x - top.width / 2 - radius, -1, top.y, upperLeft.y);
+  assert.ok(upperLanding > upperLeft.x - upperLeft.width / 2 && upperLanding < upperLeft.x + upperLeft.width / 2);
+  const lowerLanding = project(upperLeft.x + upperLeft.width / 2 + radius, 1, upperLeft.y, lowerRight.y);
+  assert.ok(lowerLanding > lowerRight.x - lowerRight.width / 2 && lowerLanding < lowerRight.x + lowerRight.width / 2);
+  const baseLanding = project(lowerRight.x - lowerRight.width / 2 - radius, -1, lowerRight.y, base.y);
+  assert.ok(baseLanding > base.x - base.width / 2 && baseLanding < base.x + base.width / 2);
 });
 
 test('Level 1 refuses every break because it has only one physical route', () => {

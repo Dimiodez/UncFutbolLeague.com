@@ -92,7 +92,7 @@ export class MountainScene extends Phaser.Scene {
       this.add.text(summit.x - 42, summit.y + 4, 'SUMMIT', { fontFamily: 'monospace', fontSize: '12px', color: '#ffffff', backgroundColor: '#15344d', padding: { x: 5, y: 3 } }).setDepth(7),
     );
     this.stage.puddles.forEach(({ x, y }) => {
-      const puddle = this.puddles.create(x, y, 'puddle').setDisplaySize(48, 14).setDepth(6);
+      const puddle = this.puddles.create(x, y, 'puddle').setDisplaySize(64, 19).setDepth(7);
       puddle.refreshBody().setData('safeUntil', 0);
     });
     this.stage.ballBumpers.forEach((spec) => {

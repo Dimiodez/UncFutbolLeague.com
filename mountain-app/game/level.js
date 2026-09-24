@@ -141,9 +141,9 @@ export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
 const LEVEL_FOUR_PLATFORMS = Object.freeze([
   { x: 480, y: 690, width: 900, direction: -1, style: 'rock' },
   { x: 250, y: 590, width: 400, direction: 1, style: 'rock' },
-  { x: 710, y: 590, width: 400, direction: -1, style: 'snow' },
-  { x: 280, y: 490, width: 420, direction: 1, style: 'ice' },
-  { x: 700, y: 490, width: 380, direction: -1, style: 'rock' },
+  { x: 705, y: 590, width: 410, direction: -1, style: 'snow' },
+  { x: 260, y: 490, width: 380, direction: 1, style: 'ice' },
+  { x: 710, y: 490, width: 360, direction: -1, style: 'rock' },
   { x: 210, y: 390, width: 300, direction: 1, style: 'rock' },
   { x: 690, y: 390, width: 430, direction: -1, style: 'ice' },
   { x: 210, y: 290, width: 280, direction: 1, style: 'rock' },
@@ -152,14 +152,12 @@ const LEVEL_FOUR_PLATFORMS = Object.freeze([
 ]);
 
 const LEVEL_FOUR_LADDERS = Object.freeze([
-  { id: 'l4-ladder-left-start', x: 180, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l4-ladder-right-start', x: 750, top: 590, bottom: 690, fromIndex: 0, toIndex: 2 },
   { id: 'l4-ladder-left-bridge', x: 330, top: 490, bottom: 590, fromIndex: 1, toIndex: 3 },
   { id: 'l4-ladder-right-bridge', x: 650, top: 490, bottom: 590, fromIndex: 2, toIndex: 4 },
   { id: 'l4-ladder-decoy', x: 200, top: 390, bottom: 490, fromIndex: 3, toIndex: 5 },
   { id: 'l4-ladder-route', x: 700, top: 390, bottom: 490, fromIndex: 4, toIndex: 6 },
   { id: 'l4-ladder-decoy-high', x: 200, top: 290, bottom: 390, fromIndex: 5, toIndex: 7 },
-  { id: 'l4-ladder-route-high', x: 650, top: 290, bottom: 390, fromIndex: 6, toIndex: 8 },
   { id: 'l4-ladder-summit', x: 780, top: 190, bottom: 290, fromIndex: 8, toIndex: 9 },
 ]);
 

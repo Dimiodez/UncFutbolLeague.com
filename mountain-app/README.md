@@ -39,9 +39,10 @@ routes remain usable while requiring extra jumps. Balls receive no midair
 steering or random branch direction: staggered platforms catch their momentum,
 then visible edge blocks physically turn them into the next alternating chute.
 
-Level 4 introduces route reading rather than another sabotage. Two believable
-ladder branches lead through split ledges; the left branch climbs into a false
-summit shelf, then offers a short recovery jump into the correct route. Its
+Level 4 introduces route reading rather than another sabotage. The opening
+forces the right-hand climb, then a wider bridge jump leads back toward a false
+summit shelf before a short recovery jump reaches the real route. Two tempting
+shortcut ladders were deliberately removed so the player must cross the layout. Its
 late-afternoon rocky-pass background and mixed rock, ice, and snow ledges are
 stage-owned presentation data, so later mountains can use distinct scenery and
 platform materials without changing collision behavior.
