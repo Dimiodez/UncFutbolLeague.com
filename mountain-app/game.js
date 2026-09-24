@@ -2,10 +2,12 @@ import { MountainScene } from './game/MountainScene.js';
 import { TUNING, WORLD } from './game/level.js';
 
 const $ = (selector) => document.querySelector(selector);
-const previewLevel = Number(new URLSearchParams(window.location.search).get('level'));
+const previewParams = new URLSearchParams(window.location.search);
+const previewLevel = Number(previewParams.get('level'));
+const previewBruce = previewParams.get('bruce') === '1';
 let scene;
 let speechTimer;
-let queuedLevel = [1, 2].includes(previewLevel) ? previewLevel : 1;
+let queuedLevel = [1, 2, 3].includes(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {
@@ -33,7 +35,7 @@ function start() {
   hideOverlay();
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
-  scene.startRun(level, !carryLives);
+  scene.startRun(level, !carryLives, previewBruce);
   queuedLevel = null;
   carryLives = false;
   $('#game canvas')?.focus({ preventScroll: true });
@@ -120,7 +122,7 @@ function bindScene(activeScene) {
       'SCHWEIN<br>ESCAPES!',
       nextLevel
         ? `Schwein fled to Level ${nextLevel}. The referee keeps the remaining lives and continues the chase.`
-        : 'Level 2 complete. Schwein escaped toward the unfinished mountains; the red card still waits at Level 10.',
+        : 'Level 3 complete. Schwein escaped toward the unfinished mountains; Bruce returns on Level 5 and the red card still waits at Level 10.',
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });

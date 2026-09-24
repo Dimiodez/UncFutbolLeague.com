@@ -27,4 +27,12 @@ export const ASSETS = Object.freeze({
     key: `soccer-ball-frame-${index + 1}`,
     url: `assets/sprites/ball/${String(index + 1).padStart(2, '0')}.png`,
   }))),
+  bruceRunFrames: Object.freeze(Array.from({ length: 4 }, (_, index) => Object.freeze({
+    key: `bruce-run-frame-${index + 1}`,
+    url: `assets/sprites/bruce-run/${String(index + 1).padStart(2, '0')}.png`,
+  }))),
+  bruceClimbFrames: Object.freeze(Array.from({ length: 4 }, (_, index) => Object.freeze({
+    key: `bruce-climb-frame-${index + 1}`,
+    url: `assets/sprites/bruce-climb/${String(index + 1).padStart(2, '0')}.png`,
+  }))),
 });

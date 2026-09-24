@@ -1,5 +1,8 @@
 import { createTextures } from './ArtFactory.js';
 import { ASSETS } from './AssetManifest.js';
+import { BruceDirector } from './BruceDirector.js';
+import { isTantrumLevel } from './campaign.js';
+import { chooseSafeDisruption } from './CourseSafety.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
@@ -21,6 +24,8 @@ export class MountainScene extends Phaser.Scene {
     ASSETS.schweinRunFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.schweinTantrumFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.ballFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.bruceRunFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.bruceClimbFrames.forEach((asset) => this.load.image(asset.key, asset.url));
   }
 
   create() {
@@ -34,8 +39,9 @@ export class MountainScene extends Phaser.Scene {
     this.stage = getStage(1);
     this.createCourse();
     this.createActors();
-    this.createPhysics();
     this.hazards = new HazardDirector(this);
+    this.bruce = new BruceDirector(this);
+    this.createPhysics();
     this.events.on('schwein-line', (line) => this.say(line || Phaser.Utils.Array.GetRandom(SPEECH)));
     this.events.emit('game-ready', this);
   }
@@ -61,7 +67,7 @@ export class MountainScene extends Phaser.Scene {
       platform.body.checkCollision.left = false;
       platform.body.checkCollision.right = false;
     });
-    this.ladders = this.stage.ladders.map((ladder) => {
+    this.ladders = this.stage.ladders.map((ladder, index) => {
       const top = ladder.top + 8;
       const bottom = ladder.bottom - 8;
       const height = bottom - top;
@@ -70,7 +76,7 @@ export class MountainScene extends Phaser.Scene {
       g.lineStyle(4, 0xe0aa63);
       for (let y = top + 7; y < bottom; y += 18) g.lineBetween(ladder.x - 16, y, ladder.x + 16, y);
       this.courseVisuals.push(g);
-      return { ...ladder, top, bottom, height };
+      return { ...ladder, id: ladder.id || `ladder-${index}`, top, bottom, height, graphic: g };
     });
     const { summit } = this.stage;
     this.courseVisuals.push(
@@ -141,23 +147,26 @@ export class MountainScene extends Phaser.Scene {
     this.anims.create({ key: 'schwein-tantrum', frames: tantrumKeys, frameRate: 7, repeat: 0 });
     const ballKeys = ASSETS.ballFrames.map((asset) => ({ key: asset.key }));
     this.anims.create({ key: 'soccer-roll', frames: ballKeys, frameRate: 10, repeat: -1 });
+    const bruceRunKeys = ASSETS.bruceRunFrames.map((asset) => ({ key: asset.key }));
+    const bruceClimbKeys = ASSETS.bruceClimbFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'bruce-run', frames: bruceRunKeys, frameRate: 10, repeat: -1 });
+    this.anims.create({ key: 'bruce-climb', frames: bruceClimbKeys, frameRate: 8, repeat: -1 });
   }
 
   createPhysics() {
     const allowPlayerPlatform = () => !this.player.climbing;
     this.physics.add.collider(this.player, this.platforms, null, allowPlayerPlatform);
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height + 80);
-    this.time.delayedCall(0, () => {
-      this.physics.add.collider(this.hazards.balls, this.platforms, (ball, platform) => this.hazards.ballLanded(ball, platform));
-      this.physics.add.collider(
-        this.hazards.salmon,
-        this.platforms,
-        (fish) => this.hazards.salmonLanded(fish),
-        (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
-      );
-      this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
-      this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip('SALMON SLIP!', fish));
-    });
+    this.physics.add.collider(this.hazards.balls, this.platforms, (ball, platform) => this.hazards.ballLanded(ball, platform));
+    this.physics.add.collider(
+      this.hazards.salmon,
+      this.platforms,
+      (fish) => this.hazards.salmonLanded(fish),
+      (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
+    );
+    this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
+    this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip('SALMON SLIP!', fish));
+    this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip('BRUCE BODY CHECK!', null, false));
     this.physics.add.overlap(
       this.player,
       this.puddles,
@@ -166,7 +175,7 @@ export class MountainScene extends Phaser.Scene {
     );
   }
 
-  startRun(level = 1, resetLives = true) {
+  startRun(level = 1, resetLives = true, forceBruce = false) {
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
@@ -175,11 +184,14 @@ export class MountainScene extends Phaser.Scene {
     this.resetPlayer();
     this.resetSchwein();
     this.hazards.reset(this.time.now);
+    this.bruce.reset(this.time.now, forceBruce);
+    this.resetStageEvents();
     this.say(nextStage.level === 1 ? 'GET OFF MY MOUNTAIN!' : 'YOU AGAIN? KEEP CLIMBING!');
     this.events.emit('state-change');
   }
 
   resetSchwein() {
+    this.tantrumActive = false;
     this.tweens.killTweensOf(this.schwein);
     this.schwein
       .setPosition(744, 105)
@@ -209,9 +221,10 @@ export class MountainScene extends Phaser.Scene {
     return this.ladders.find((ladder) => Math.abs(this.player.x - ladder.x) < 28 && this.player.y > ladder.top - 36 && this.player.y < ladder.bottom + 30);
   }
 
-  update(time) {
+  update(time, delta) {
     if (!this.state?.isPlaying()) return;
     this.hazards.update(time);
+    this.bruce.update(time, delta);
     const altitude = Math.max(0, Math.round((WORLD.height - this.player.y) * 18));
     if (altitude !== this.state.altitude) {
       this.state.altitude = altitude;
@@ -262,6 +275,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   animateSchwein(hazard = 'ball') {
+    if (this.tantrumActive) return;
     this.schwein.play(hazard === 'salmon' ? 'schwein-salmon-throw' : 'schwein-throw', true);
     this.time.delayedCall(650, () => {
       if (this.schwein?.active) this.schwein.play('schwein-idle', true);
@@ -269,14 +283,54 @@ export class MountainScene extends Phaser.Scene {
   }
 
   playSchweinTantrum(onImpact) {
+    this.tantrumActive = true;
     this.schwein.play('schwein-tantrum', true);
     this.time.delayedCall(430, () => {
       this.cameras.main.shake(220, 0.01);
       onImpact?.();
     });
     this.time.delayedCall(820, () => {
+      this.tantrumActive = false;
       if (this.schwein?.active && this.state.isPlaying()) this.schwein.play('schwein-idle', true);
     });
+  }
+
+  resetStageEvents() {
+    this.tantrumTimer?.remove(false);
+    this.tantrumTimer = null;
+    if (!isTantrumLevel(this.state.level) || !this.stage.route || !this.stage.disruptions?.length) return;
+    this.tantrumTimer = this.time.delayedCall(Phaser.Math.Between(4600, 7200), () => this.triggerTantrum());
+  }
+
+  triggerTantrum() {
+    if (!this.state.isPlaying()) return;
+    const disruption = chooseSafeDisruption(this.stage.route, this.stage.disruptions);
+    if (!disruption) return;
+    this.say('I WILL BREAK THIS MOUNTAIN!');
+    this.playSchweinTantrum(() => this.applyDisruption(disruption));
+  }
+
+  applyDisruption(disruption) {
+    if (disruption.kind !== 'ladder-break') return;
+    const ladder = this.ladders.find((candidate) => candidate.id === disruption.ladderId);
+    if (!ladder) return;
+    ladder.graphic?.destroy();
+    this.ladders = this.ladders.filter((candidate) => candidate !== ladder);
+    const middle = (ladder.top + ladder.bottom) / 2;
+    const topPiece = this.drawBrokenLadderPiece(ladder.x, ladder.top, middle - ladder.top - 7);
+    const bottomPiece = this.drawBrokenLadderPiece(ladder.x, middle + 7, ladder.bottom - middle - 7);
+    this.courseVisuals.push(topPiece, bottomPiece);
+    this.tweens.add({ targets: topPiece, y: topPiece.y + 14, angle: -9, duration: 360, ease: 'Bounce.Out' });
+    this.tweens.add({ targets: bottomPiece, y: bottomPiece.y + 20, angle: 11, duration: 420, ease: 'Bounce.Out' });
+    this.events.emit('notice', 'SCHWEIN BROKE A LADDER — FIND THE OTHER WAY!');
+  }
+
+  drawBrokenLadderPiece(x, y, height) {
+    const g = this.add.graphics({ x, y }).setDepth(4);
+    g.lineStyle(6, 0xb97843).lineBetween(-16, 0, -16, height).lineBetween(16, 0, 16, height);
+    g.lineStyle(4, 0xe0aa63);
+    for (let rungY = 6; rungY < height; rungY += 18) g.lineBetween(-16, rungY, 16, rungY);
+    return g;
   }
 
   stopClimbing() {
@@ -313,6 +367,7 @@ export class MountainScene extends Phaser.Scene {
     this.say(Math.random() < 0.82 ? 'SUCK MY ASS' : 'BACK TO BASE CAMP!');
     this.events.emit('state-change');
     if (this.state.phase === 'over') {
+      this.bruce.clear();
       this.player.disableBody(true, false);
       this.playerArt.play('player-hurt', true).setAlpha(0.72);
       this.events.emit('game-over');
@@ -333,6 +388,8 @@ export class MountainScene extends Phaser.Scene {
     this.state.phase = 'won';
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
     this.hazards.clear();
+    this.bruce.clear();
+    this.tantrumTimer?.remove(false);
     this.say(this.state.summitOutcome() === 'red-card' ? 'NOT THE RED CARD!' : 'YOU HAVE NOT CAUGHT ME YET!');
     this.events.emit('state-change');
     this.schwein.setDisplaySize(190, 190).play('schwein-run', true);

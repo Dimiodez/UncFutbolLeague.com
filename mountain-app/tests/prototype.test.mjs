@@ -1,14 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
+import { buildBruceRoute } from '../game/BruceDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
-import { CAMPAIGN, isTantrumLevel } from '../game/campaign.js';
+import { bruceSpeedForLevel, CAMPAIGN, isBruceLevel, isTantrumLevel } from '../game/campaign.js';
 import {
   getStage,
   hasStage,
   LADDERS,
   LEVEL_ONE_DISRUPTIONS,
   LEVEL_ONE_ROUTE,
+  LEVEL_THREE_DISRUPTIONS,
+  LEVEL_THREE_ROUTE,
   PLATFORMS,
   STAGES,
   TUNING,
@@ -26,15 +29,19 @@ test('course is a complete alternating climb', () => {
 
 test('course geometry remains within the fixed arcade viewport', () => {
   for (const stage of STAGES) {
-    assert.equal(stage.ladders.length, stage.platforms.length - 1);
+    assert.ok(stage.ladders.length >= stage.platforms.length - 1);
     for (const platform of stage.platforms) {
       assert.ok(platform.x - platform.width / 2 >= 0);
       assert.ok(platform.x + platform.width / 2 <= WORLD.width);
       assert.ok(platform.y > 0 && platform.y < WORLD.height);
     }
-    stage.ladders.forEach((ladder, index) => {
-      const lower = stage.platforms[index];
-      const upper = stage.platforms[index + 1];
+    stage.ladders.forEach((ladder) => {
+      const lowerIndex = Number.isInteger(ladder.fromIndex)
+        ? ladder.fromIndex
+        : stage.platforms.findIndex((platform) => platform.y === ladder.bottom);
+      const upperIndex = Number.isInteger(ladder.toIndex) ? ladder.toIndex : lowerIndex + 1;
+      const lower = stage.platforms[lowerIndex];
+      const upper = stage.platforms[upperIndex];
       assert.equal(ladder.bottom, lower.y);
       assert.equal(ladder.top, upper.y);
       assert.ok(Math.abs(ladder.x - lower.x) < lower.width / 2);
@@ -43,10 +50,11 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains two stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2]);
+test('prototype contains three stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
-  assert.equal(hasStage(3), false);
+  assert.equal(getStage(3)?.name, 'Tantrum Traverse');
+  assert.equal(hasStage(4), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -121,6 +129,34 @@ test('tantrums are reserved for spaced future levels', () => {
     Array.from({ length: CAMPAIGN.totalLevels }, (_value, index) => index + 1).filter(isTantrumLevel),
     [3, 6, 9],
   );
+});
+
+test('Bruce appears every five levels and accelerates for Level 10', () => {
+  assert.deepEqual(
+    Array.from({ length: CAMPAIGN.totalLevels }, (_value, index) => index + 1).filter(isBruceLevel),
+    [5, 10],
+  );
+  assert.equal(bruceSpeedForLevel(4), 0);
+  assert.ok(bruceSpeedForLevel(10) > bruceSpeedForLevel(5));
+});
+
+test('Bruce route climbs every platform row before reaching the summit', () => {
+  const stage = getStage(3);
+  const route = buildBruceRoute(stage);
+  assert.equal(route[0].platformIndex, 0);
+  assert.equal(route.at(-1).platformIndex, stage.platforms.length - 1);
+  assert.equal(route.filter(({ mode }) => mode === 'climb').length, stage.platforms.length - 1);
+  route.filter(({ mode }) => mode === 'climb').forEach((waypoint, index) => {
+    assert.equal(waypoint.y, stage.platforms[index + 1].y - 12);
+  });
+});
+
+test('every Level 3 tantrum leaves a complete physical route', () => {
+  assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE), true);
+  assert.equal(safeDisruptions(LEVEL_THREE_ROUTE, LEVEL_THREE_DISRUPTIONS).length, LEVEL_THREE_DISRUPTIONS.length);
+  LEVEL_THREE_DISRUPTIONS.forEach((disruption) => {
+    assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE, disruption.disableEdgeIds), true);
+  });
 });
 
 test('Level 1 refuses every break because it has only one physical route', () => {
