@@ -91,22 +91,22 @@ const LEVEL_TWO_LADDERS = Object.freeze([
 
 const LEVEL_THREE_PLATFORMS = Object.freeze([
   { x: 480, y: 690, width: 920, direction: -1 },
-  { x: 520, y: 590, width: 840, direction: -1 },
-  { x: 410, y: 490, width: 780, direction: 1 },
-  { x: 540, y: 390, width: 800, direction: -1 },
-  { x: 420, y: 290, width: 760, direction: 1 },
+  { x: 520, y: 590, width: 840, direction: 1 },
+  { x: 450, y: 490, width: 860, direction: -1 },
+  { x: 520, y: 390, width: 840, direction: 1 },
+  { x: 420, y: 290, width: 760, direction: -1 },
   { x: 500, y: 190, width: 650, direction: -1 },
 ]);
 
 // The duplicated ladder links are deliberate: Schwein may destroy one of the
 // marked routes without ever making the summit unreachable.
 const LEVEL_THREE_LADDERS = Object.freeze([
-  { id: 'l3-ladder-0a', x: 720, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l3-ladder-0a', x: 620, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l3-ladder-0b', x: 340, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
-  { id: 'l3-ladder-1', x: 210, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
-  { id: 'l3-ladder-2a', x: 700, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l3-ladder-1', x: 500, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l3-ladder-2a', x: 600, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l3-ladder-2b', x: 350, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
-  { id: 'l3-ladder-3', x: 250, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l3-ladder-3', x: 420, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
   { id: 'l3-ladder-4a', x: 650, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
   { id: 'l3-ladder-4b', x: 350, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
 ]);
@@ -129,8 +129,10 @@ export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
     kind: 'platform-gaps',
     gaps: Object.freeze([
       Object.freeze({ platformIndex: 5, gapX: 560, gapWidth: 96 }),
-      Object.freeze({ platformIndex: 3, gapX: 520, gapWidth: 78 }),
-      Object.freeze({ platformIndex: 1, gapX: 520, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 4, gapX: 220, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 3, gapX: 740, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 2, gapX: 220, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 1, gapX: 740, gapWidth: 76 }),
     ]),
     disableEdgeIds: Object.freeze([]),
   }),
@@ -139,6 +141,7 @@ export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
 const freezeStage = (stage) => Object.freeze({
   ...stage,
   puddles: Object.freeze(stage.puddles.map((puddle) => Object.freeze(puddle))),
+  ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
   tuning: Object.freeze(stage.tuning),
 });
 
@@ -179,6 +182,12 @@ export const STAGES = Object.freeze([
     puddles: [{ x: 560, y: 576 }, { x: 430, y: 376 }],
     route: LEVEL_THREE_ROUTE,
     disruptions: LEVEL_THREE_DISRUPTIONS,
+    ballBumpers: [
+      { platformIndex: 3, x: 124, direction: 1 },
+      { platformIndex: 2, x: 856, direction: -1 },
+      { platformIndex: 1, x: 124, direction: 1 },
+      { platformIndex: 0, x: 916, direction: -1 },
+    ],
     tantrumDelay: 3600,
     tuning: {
       ...ballTuningForLevel(3),

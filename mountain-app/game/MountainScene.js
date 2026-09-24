@@ -36,6 +36,7 @@ export class MountainScene extends Phaser.Scene {
     this.courseVisuals = [];
     this.platforms = this.physics.add.staticGroup();
     this.puddles = this.physics.add.staticGroup();
+    this.ballBumpers = this.physics.add.staticGroup();
     this.stage = getStage(1);
     this.createCourse();
     this.createActors();
@@ -57,6 +58,7 @@ export class MountainScene extends Phaser.Scene {
   createCourse() {
     this.platforms.clear(true, true);
     this.puddles.clear(true, true);
+    this.ballBumpers.clear(true, true);
     this.courseVisuals.forEach((visual) => visual.destroy());
     this.courseVisuals = [];
     this.platformBodies = [];
@@ -92,6 +94,15 @@ export class MountainScene extends Phaser.Scene {
     this.stage.puddles.forEach(({ x, y }) => {
       const puddle = this.puddles.create(x, y, 'puddle').setDisplaySize(48, 14).setDepth(6);
       puddle.refreshBody().setData('safeUntil', 0);
+    });
+    this.stage.ballBumpers.forEach((spec) => {
+      const y = this.stage.platforms[spec.platformIndex].y - 31;
+      const art = this.add.graphics().setDepth(6);
+      art.fillStyle(0x243f54, 1).fillRoundedRect(spec.x - 8, y - 18, 16, 38, 5);
+      art.fillStyle(0xeaf5f3, 1).fillRoundedRect(spec.x - 10, y - 20, 20, 9, 4);
+      this.courseVisuals.push(art);
+      const bumper = this.ballBumpers.create(spec.x, y, 'platform');
+      bumper.setDisplaySize(16, 38).refreshBody().setVisible(false).setData('direction', spec.direction);
     });
   }
 
@@ -163,6 +174,7 @@ export class MountainScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms, null, allowPlayerPlatform);
     this.physics.world.setBounds(0, 0, WORLD.width, WORLD.height + 80);
     this.physics.add.collider(this.hazards.balls, this.platforms, (ball, platform) => this.hazards.ballLanded(ball, platform));
+    this.physics.add.collider(this.hazards.balls, this.ballBumpers, (ball, bumper) => this.hazards.ballHitBumper(ball, bumper));
     this.physics.add.collider(
       this.hazards.salmon,
       this.platforms,

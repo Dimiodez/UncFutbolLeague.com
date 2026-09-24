@@ -124,7 +124,15 @@ export class HazardDirector {
     if (!Number.isInteger(index)) return;
     if (ball.platformIndex === index) return;
     ball.platformIndex = index;
-    const direction = this.scene.stage.platforms[index].direction;
+    const direction = Math.sign(ball.body.velocity.x) || this.scene.stage.platforms[index].direction;
+    ball.setVelocityX(direction * this.tuning('ballSpeed'));
+    if (direction < 0) ball.playReverse('soccer-roll', true);
+    else ball.play('soccer-roll', true);
+  }
+
+  ballHitBumper(ball, bumper) {
+    const direction = bumper.getData('direction');
+    if (!direction) return;
     ball.setVelocityX(direction * this.tuning('ballSpeed'));
     if (direction < 0) ball.playReverse('soccer-roll', true);
     else ball.play('soccer-roll', true);

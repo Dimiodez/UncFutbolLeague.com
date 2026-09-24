@@ -172,13 +172,13 @@ test('Bruce route climbs every platform row before reaching the summit', () => {
   });
 });
 
-test('Level 3 uses an early deterministic three-gap route without breaking ladders', () => {
+test('Level 3 uses an early deterministic alternating gap route without breaking ladders', () => {
   assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE), true);
   assert.equal(safeDisruptions(LEVEL_THREE_ROUTE, LEVEL_THREE_DISRUPTIONS).length, LEVEL_THREE_DISRUPTIONS.length);
   assert.equal(LEVEL_THREE_DISRUPTIONS.length, 1);
   const disruption = LEVEL_THREE_DISRUPTIONS[0];
   assert.equal(disruption.kind, 'platform-gaps');
-  assert.deepEqual(disruption.gaps.map(({ platformIndex }) => platformIndex), [5, 3, 1]);
+  assert.deepEqual(disruption.gaps.map(({ platformIndex }) => platformIndex), [5, 4, 3, 2, 1]);
   assert.deepEqual(disruption.disableEdgeIds, []);
   disruption.gaps.forEach((gap) => {
     const touchingLadders = getStage(3).ladders.filter((ladder) => (
@@ -190,6 +190,7 @@ test('Level 3 uses an early deterministic three-gap route without breaking ladde
   });
   assert.equal(getStage(3).tantrumDelay, 3600);
   assert.ok(getStage(3).tuning.initialBallDelay > getStage(3).tantrumDelay + 650);
+  assert.deepEqual(getStage(3).ballBumpers.map(({ direction }) => direction), [1, -1, 1, -1]);
 });
 
 test('Level 3 geometry catches unassisted physics falls on every row', () => {
@@ -211,6 +212,20 @@ test('Level 3 geometry catches unassisted physics falls on every row', () => {
     assert.ok(landingX >= target.x - target.width / 2 + safeInset, `row ${currentIndex} lands past the left edge`);
     assert.ok(landingX <= target.x + target.width / 2 - safeInset, `row ${currentIndex} lands past the right edge`);
   }
+});
+
+test('each built level adds pressure without making the sabotage gaps unjumpable', () => {
+  const one = getStage(1);
+  const two = getStage(2);
+  const three = getStage(3);
+  assert.ok(two.tuning.ballSpeed > one.tuning.ballSpeed);
+  assert.ok(three.tuning.ballSpeed > two.tuning.ballSpeed);
+  assert.ok(two.tuning.ballInterval < one.tuning.ballInterval);
+  assert.ok(three.tuning.ballInterval < two.tuning.ballInterval);
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  LEVEL_THREE_DISRUPTIONS[0].gaps.forEach(({ gapWidth }) => {
+    assert.ok(gapWidth < maximumJumpTravel, `gap ${gapWidth} exceeds jump travel ${maximumJumpTravel}`);
+  });
 });
 
 test('Level 1 refuses every break because it has only one physical route', () => {

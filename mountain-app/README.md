@@ -32,12 +32,12 @@ Soccer-ball pressure follows one predictable campaign curve: each level adds
 original Level 1 to Level 2 increase all the way through Level 10.
 
 Levels 3, 6, and 9 trigger Schwein tantrum events. Level 3 uses a deterministic
-early tantrum: Schwein jumps twice, shakes the screen, and punches three fixed
-openings through the summit and alternating lower platforms before the first
-ball arrives. The gaps avoid every ladder, so both authored climb routes remain
-usable while requiring extra jumps. Balls receive no midair steering or random
-branch direction: staggered, extended platforms physically catch their existing
-momentum, and each landing resumes the level's deterministic alternating roll.
+early tantrum: Schwein jumps twice, shakes the screen, and punches five fixed
+openings through the summit and lower platforms before the first ball arrives.
+The gaps alternate left and right and avoid every ladder, so both authored climb
+routes remain usable while requiring extra jumps. Balls receive no midair
+steering or random branch direction: staggered platforms catch their momentum,
+then visible edge blocks physically turn them into the next alternating chute.
 
 Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
