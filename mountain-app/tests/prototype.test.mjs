@@ -189,6 +189,23 @@ test('remaining lives carry into Level 2 but reset on a fresh run', () => {
   assert.equal(state.lives, 3);
 });
 
+test('beating Bruce awards at most one extra life on each of Levels 5 and 10', () => {
+  const state = new GameState();
+  state.startLevel(4, { resetLives: true });
+  assert.equal(state.awardBruceBonus(false), false, 'ordinary levels cannot award the bonus');
+  state.startLevel(5);
+  assert.equal(state.awardBruceBonus(true), false, 'Bruce reaching the summit first forfeits the bonus');
+  assert.equal(state.lives, 3);
+  assert.equal(state.awardBruceBonus(false), true);
+  assert.equal(state.lives, 4);
+  assert.equal(state.awardBruceBonus(false), false, 'Level 5 cannot be farmed');
+  state.startLevel(10);
+  assert.equal(state.awardBruceBonus(false), true);
+  assert.equal(state.lives, 5);
+  assert.deepEqual(state.bruceBonusLevels, [5, 10]);
+  assert.equal(state.awardBruceBonus(false), false, 'only two Bruce bonuses exist in one campaign');
+});
+
 test('tantrums occur every three levels before the final chase', () => {
   assert.equal(CAMPAIGN.totalLevels, 10);
   assert.deepEqual(CAMPAIGN.yellowCardLevels, [6, 10]);

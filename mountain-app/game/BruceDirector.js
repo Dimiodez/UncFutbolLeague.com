@@ -72,10 +72,12 @@ export class BruceDirector {
     this.lastPuddleAt = 0;
     this.lastPuddleX = Number.NaN;
     this.jumpState = null;
+    this.reachedSummit = false;
   }
 
   reset(now) {
     this.clear();
+    this.reachedSummit = false;
     this.scheduled = isBruceLevel(this.scene.state.level);
     this.nextStartAt = this.scheduled ? now + 5200 : Number.POSITIVE_INFINITY;
   }
@@ -162,6 +164,7 @@ export class BruceDirector {
     this.lastPuddleAt = 0;
     this.lastPuddleX = Number.NaN;
     this.jumpState = null;
+    this.reachedSummit = false;
     const start = this.route[0];
     this.sprite.enableBody(true, start.x, start.y, true, true)
       .setDisplaySize(88, 88)
@@ -195,6 +198,7 @@ export class BruceDirector {
   arriveAtSummit() {
     if (!this.running) return;
     this.running = false;
+    this.reachedSummit = true;
     this.sprite.setVelocity(0, 0).play('bruce-run', true);
     this.scene.say(Phaser.Utils.Array.GetRandom(BRUCE_LINES));
     this.scene.time.delayedCall(1550, () => {

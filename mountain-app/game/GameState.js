@@ -1,4 +1,4 @@
-import { CAMPAIGN } from './campaign.js';
+import { CAMPAIGN, isBruceLevel } from './campaign.js';
 
 export class GameState {
   constructor() { this.reset(); }
@@ -13,6 +13,7 @@ export class GameState {
     this.invulnerableUntil = 0;
     this.yellowCards = 0;
     this.cardedLevels = [];
+    this.bruceBonusLevels = [];
   }
 
   start() {
@@ -39,6 +40,13 @@ export class GameState {
     if (this.yellowCards >= 2) return 'red-card';
     if (this.cardedLevels.includes(this.level)) return 'yellow-card';
     return 'escaped';
+  }
+
+  awardBruceBonus(bruceReachedSummit) {
+    if (!isBruceLevel(this.level) || bruceReachedSummit || this.bruceBonusLevels.includes(this.level)) return false;
+    this.bruceBonusLevels.push(this.level);
+    this.lives += 1;
+    return true;
   }
 
   isPlaying() { return this.phase === 'playing'; }

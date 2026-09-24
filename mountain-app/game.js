@@ -5,6 +5,7 @@ const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
 const previewLevel = Number(previewParams.get('level'));
 const previewCutscene = previewParams.get('cutscene') === '1';
+const previewWin = previewParams.get('win') === '1';
 let scene;
 let speechTimer;
 let speechQueue = [];
@@ -52,7 +53,7 @@ function syncHud() {
   if (!scene) return;
   const { state } = scene;
   $('#altitude').textContent = `${String(state.altitude).padStart(4, '0')} FT`;
-  $('#lives').textContent = `${'♥ '.repeat(state.lives)}${'♡ '.repeat(3 - state.lives)}`.trim();
+  $('#lives').textContent = `${'♥ '.repeat(state.lives)}${'♡ '.repeat(Math.max(0, 3 - state.lives))}`.trim();
   const status = state.phase === 'playing' && state.isStunned(scene.time.now) ? 'SLIPPED!' : state.phase.toUpperCase();
   $('#status').textContent = status;
   $('#pause').disabled = !['playing', 'paused'].includes(state.phase);
@@ -66,6 +67,11 @@ function start() {
   const level = queuedLevel || scene.state.level || 1;
   scene.startRun(level, !carryLives);
   if (previewCutscene && level === 6) {
+    window.setTimeout(() => {
+      if (scene?.state.isPlaying()) scene.win();
+    }, 350);
+  }
+  if (previewWin && !previewCutscene && level === previewLevel) {
     window.setTimeout(() => {
       if (scene?.state.isPlaying()) scene.win();
     }, 350);
@@ -143,11 +149,20 @@ function bindScene(activeScene) {
   scene.events.on('game-over', () => {
     queuedLevel = scene.state.level;
     carryLives = false;
-    showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'Three hits. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
+    showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'No lives left. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
   });
-  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards }) => {
+  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards, bonusLifeAwarded, lives }) => {
     queuedLevel = nextLevel || level;
     carryLives = Boolean(nextLevel);
+    if (bonusLifeAwarded) {
+      showOverlay(
+        `LEVEL ${level} OF ${totalLevels} CLEARED`,
+        'BRUCE<br>BEATEN!',
+        `You reached the summit before Bruce. +1 LIFE — ${lives} lives carry into Level ${nextLevel}. Schwein got away again.`,
+        nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
+      );
+      return;
+    }
     if (outcome === 'yellow-card') {
       showOverlay(
         `LEVEL ${level} OF ${totalLevels} CLEARED`,
@@ -166,10 +181,10 @@ function bindScene(activeScene) {
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });
-  scene.events.on('red-card-won', () => showOverlay(
+  scene.events.on('red-card-won', ({ bonusLifeAwarded, lives } = {}) => showOverlay(
     'LEVEL 10 CLEARED',
     'RED CARD<br>SCHWEIN!',
-    'The referee finally caught the pig captain. Ten mountains. One long-overdue red card.',
+    `The referee finally caught the pig captain. Ten mountains. One long-overdue red card.${bonusLifeAwarded ? ` You also beat Bruce and earned the second bonus life (${lives} total).` : ''}`,
     'Play again ↗',
   ));
   syncHud();

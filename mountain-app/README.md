@@ -63,6 +63,8 @@ Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
 temporary sweat puddles, mutters at the summit, and exits the screen. Use
 the normal campaign schedule on Level 5; Bruce cannot appear on Level 3.
+Reaching the summit before Bruce awards one extra life, once per Bruce level.
+That makes Levels 5 and 10 the campaign's only two possible bonus lives.
 
 Levels 7 and 9 reserve the ice mechanic. Jumping remains available, but steering
 locks to the entry direction while sliding. Level 7 introduces three bright,
