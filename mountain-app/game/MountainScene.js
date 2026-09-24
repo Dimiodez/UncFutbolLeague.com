@@ -74,6 +74,7 @@ export class MountainScene extends Phaser.Scene {
       platform.body.checkCollision.right = false;
       this.platformBodies[index] = platform;
     });
+    this.stage.gaps.forEach((gap) => this.breakPlatformGap(gap, false));
     this.ladders = this.stage.ladders.map((ladder, index) => {
       const top = ladder.top + 8;
       const bottom = ladder.bottom - 8;
@@ -359,7 +360,7 @@ export class MountainScene extends Phaser.Scene {
     this.events.emit('notice', 'SCHWEIN SHATTERED A BALL ROUTE THROUGH THE MOUNTAIN!');
   }
 
-  breakPlatformGap(gap) {
+  breakPlatformGap(gap, animateFall = true) {
     const platformSpec = this.stage.platforms[gap.platformIndex];
     const platformBody = this.platformBodies[gap.platformIndex];
     const platformArt = this.platformArts[gap.platformIndex];
@@ -376,9 +377,8 @@ export class MountainScene extends Phaser.Scene {
     platformBody.destroy();
     const leftArt = this.drawPlatformArt(leftSpec, gap.platformIndex);
     const rightArt = this.drawPlatformArt(rightSpec, gap.platformIndex);
-    const fallingArt = this.drawPlatformArt(fallingSpec, gap.platformIndex).setDepth(6);
     this.platformArts[gap.platformIndex] = [leftArt, rightArt];
-    this.courseVisuals.push(leftArt, rightArt, fallingArt);
+    this.courseVisuals.push(leftArt, rightArt);
     const createSegmentBody = (spec) => {
       const body = this.platforms.create(spec.x, spec.y, 'platform');
       body.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', gap.platformIndex);
@@ -388,6 +388,9 @@ export class MountainScene extends Phaser.Scene {
       return body;
     };
     this.platformBodies[gap.platformIndex] = [createSegmentBody(leftSpec), createSegmentBody(rightSpec)];
+    if (!animateFall) return;
+    const fallingArt = this.drawPlatformArt(fallingSpec, gap.platformIndex).setDepth(6);
+    this.courseVisuals.push(fallingArt);
     this.tweens.add({
       targets: fallingArt,
       y: fallingArt.y + 230,

@@ -13,6 +13,23 @@ function ladderFromIndex(stage, ladder) {
   return stage.platforms.findIndex((platform) => platform.y === ladder.bottom);
 }
 
+function appendRunAcrossGaps(route, stage, platformIndex, startX, targetX) {
+  const y = stage.platforms[platformIndex].y - 12;
+  const direction = Math.sign(targetX - startX) || 1;
+  const gaps = (stage.gaps || [])
+    .filter((gap) => gap.platformIndex === platformIndex && (
+      direction > 0 ? gap.gapX > startX && gap.gapX < targetX : gap.gapX < startX && gap.gapX > targetX
+    ))
+    .sort((a, b) => direction * (a.gapX - b.gapX));
+
+  gaps.forEach((gap) => {
+    const clearance = gap.gapWidth / 2 + 18;
+    route.push({ x: gap.gapX - direction * clearance, y, mode: 'run', platformIndex });
+    route.push({ x: gap.gapX + direction * clearance, y, mode: 'jump', platformIndex });
+  });
+  route.push({ x: targetX, y, mode: 'run', platformIndex });
+}
+
 export function buildBruceRoute(stage, worldWidth = WORLD.width) {
   const bottom = stage.platforms[0];
   const route = [{ x: worldWidth + 70, y: bottom.y - 12, mode: 'run', platformIndex: 0 }];
@@ -24,12 +41,18 @@ export function buildBruceRoute(stage, worldWidth = WORLD.width) {
     const ladder = ladders.reduce((best, candidate) => (
       Math.abs(candidate.x - currentX) < Math.abs(best.x - currentX) ? candidate : best
     ));
-    route.push({ x: ladder.x, y: stage.platforms[row].y - 12, mode: 'run', platformIndex: row });
+    appendRunAcrossGaps(route, stage, row, currentX, ladder.x);
     route.push({ x: ladder.x, y: stage.platforms[row + 1].y - 12, mode: 'climb', platformIndex: row + 1 });
     currentX = ladder.x;
   }
 
-  route.push({ x: stage.summit.x - 42, y: stage.platforms.at(-1).y - 12, mode: 'run', platformIndex: stage.platforms.length - 1 });
+  appendRunAcrossGaps(
+    route,
+    stage,
+    stage.platforms.length - 1,
+    currentX,
+    stage.summit.x - 42,
+  );
   return route;
 }
 
@@ -48,6 +71,7 @@ export class BruceDirector {
     this.nextStartAt = Number.POSITIVE_INFINITY;
     this.lastPuddleAt = 0;
     this.lastPuddleX = Number.NaN;
+    this.jumpState = null;
   }
 
   reset(now) {
@@ -80,6 +104,12 @@ export class BruceDirector {
     const dy = target.y - this.sprite.y;
     const distance = Math.hypot(dx, dy);
     const baseSpeed = bruceSpeedForLevel(this.scene.state.level) || 165;
+    if (target.mode === 'jump') {
+      this.updateJump(now, target, baseSpeed);
+      return;
+    }
+    this.jumpState = null;
+    this.sprite.setAngle(0);
     const speed = target.mode === 'climb' ? baseSpeed * 0.82 : baseSpeed;
     const step = speed * delta / 1000;
 
@@ -99,6 +129,31 @@ export class BruceDirector {
     }
   }
 
+  updateJump(now, target, baseSpeed) {
+    if (!this.jumpState || this.jumpState.waypointIndex !== this.waypointIndex) {
+      const distance = Math.abs(target.x - this.sprite.x);
+      this.jumpState = {
+        waypointIndex: this.waypointIndex,
+        startX: this.sprite.x,
+        baseY: target.y,
+        startedAt: now,
+        duration: Phaser.Math.Clamp(distance / baseSpeed * 700, 360, 560),
+      };
+      this.sprite.play('bruce-run', true);
+    }
+    const jump = this.jumpState;
+    const progress = Phaser.Math.Clamp((now - jump.startedAt) / jump.duration, 0, 1);
+    this.sprite.setPosition(
+      Phaser.Math.Linear(jump.startX, target.x, progress),
+      jump.baseY - Math.sin(progress * Math.PI) * 44,
+    ).setVelocity(0, 0).setAngle(Math.sin(progress * Math.PI * 2) * 7);
+    if (progress < 1) return;
+    this.sprite.setPosition(target.x, target.y).setAngle(0);
+    this.waypointIndex += 1;
+    this.jumpState = null;
+    this.lastPuddleX = Number.NaN;
+  }
+
   startRun() {
     this.scheduled = false;
     this.running = true;
@@ -106,6 +161,7 @@ export class BruceDirector {
     this.waypointIndex = 1;
     this.lastPuddleAt = 0;
     this.lastPuddleX = Number.NaN;
+    this.jumpState = null;
     const start = this.route[0];
     this.sprite.enableBody(true, start.x, start.y, true, true)
       .setDisplaySize(88, 88)
@@ -120,8 +176,8 @@ export class BruceDirector {
     if (!platform || this.sprite.x < platform.x - platform.width / 2 + 35 || this.sprite.x > platform.x + platform.width / 2 - 35) return;
     if (now - this.lastPuddleAt < 850 || Number.isFinite(this.lastPuddleX) && Math.abs(this.sprite.x - this.lastPuddleX) < 175) return;
     const puddle = this.scene.puddles.create(this.sprite.x, platform.y - 14, 'puddle')
-      .setDisplaySize(42, 12)
-      .setDepth(6)
+      .setDisplaySize(58, 17)
+      .setDepth(7)
       .setData('bruceDynamic', true)
       .setData('expiresAt', now + 8500)
       .setData('safeUntil', now + 300);

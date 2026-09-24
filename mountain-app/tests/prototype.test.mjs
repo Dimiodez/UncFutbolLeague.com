@@ -4,7 +4,13 @@ import { GameState } from '../game/GameState.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
 import { projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
-import { bruceSpeedForLevel, CAMPAIGN, isBruceLevel, isTantrumLevel } from '../game/campaign.js';
+import {
+  bruceSpeedForLevel,
+  CAMPAIGN,
+  iceRuleForLevel,
+  isBruceLevel,
+  isTantrumLevel,
+} from '../game/campaign.js';
 import {
   BALL_PROGRESSION,
   ballTuningForLevel,
@@ -15,6 +21,7 @@ import {
   LEVEL_ONE_DISRUPTIONS,
   LEVEL_ONE_ROUTE,
   LEVEL_FOUR_ROUTE,
+  LEVEL_FIVE_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -55,12 +62,13 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains four stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4]);
+test('prototype contains five stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
-  assert.equal(hasStage(5), false);
+  assert.equal(getStage(5)?.name, 'Bruce Basin Pursuit');
+  assert.equal(hasStage(6), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -163,8 +171,19 @@ test('Bruce appears every five levels and accelerates for Level 10', () => {
   assert.ok(bruceSpeedForLevel(10) > bruceSpeedForLevel(5));
 });
 
+test('future ice keeps jumping but locks steering on Levels 7 and 9', () => {
+  assert.equal(iceRuleForLevel(6), null);
+  assert.deepEqual(iceRuleForLevel(7), { coverage: 'partial', jumpAllowed: true, steeringLocked: true });
+  assert.deepEqual(iceRuleForLevel(9), {
+    coverage: 'full-platform',
+    fullPlatformCount: 1,
+    jumpAllowed: true,
+    steeringLocked: true,
+  });
+});
+
 test('Bruce route climbs every platform row before reaching the summit', () => {
-  const stage = getStage(3);
+  const stage = getStage(5);
   const route = buildBruceRoute(stage);
   assert.equal(route[0].platformIndex, 0);
   assert.equal(route.at(-1).platformIndex, stage.platforms.length - 1);
@@ -172,6 +191,7 @@ test('Bruce route climbs every platform row before reaching the summit', () => {
   route.filter(({ mode }) => mode === 'climb').forEach((waypoint, index) => {
     assert.equal(waypoint.y, stage.platforms[index + 1].y - 12);
   });
+  assert.equal(route.filter(({ mode }) => mode === 'jump').length, stage.gaps.length);
 });
 
 test('Level 3 uses an early deterministic alternating gap route without breaking ladders', () => {
@@ -238,6 +258,7 @@ test('Level 4 adds a recoverable false route and distinct mountain materials', (
   assert.ok(LEVEL_FOUR_ROUTE.edges.some(({ id, type }) => id === 'l4-decoy-recovery-hop' && type === 'jump'));
   assert.equal(stage.ladders.some(({ id }) => id === 'l4-ladder-left-start'), false);
   assert.equal(stage.ladders.some(({ id }) => id === 'l4-ladder-route-high'), false);
+  assert.equal(stage.ladders.find(({ id }) => id === 'l4-ladder-decoy-high').x, 310);
   const jumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
   const bridgeGap = stage.platforms[4].x - stage.platforms[4].width / 2
     - (stage.platforms[3].x + stage.platforms[3].width / 2);
@@ -247,6 +268,55 @@ test('Level 4 adds a recoverable false route and distinct mountain materials', (
   assert.ok(recoveryGap > 0 && recoveryGap < jumpTravel);
   assert.ok(stage.tuning.ballSpeed > getStage(3).tuning.ballSpeed);
   assert.ok(stage.tuning.ballInterval < getStage(3).tuning.ballInterval);
+});
+
+test('Level 5 introduces Bruce on a complete route with an evasive ladder choice', () => {
+  const stage = getStage(5);
+  assert.equal(hasPhysicalRoute(LEVEL_FIVE_ROUTE), true);
+  assert.equal(stage.backgroundKey, 'mountain-basin-storm');
+  assert.equal(isBruceLevel(stage.level), true);
+  assert.equal(isTantrumLevel(stage.level), false);
+  assert.equal(stage.ladders.filter(({ fromIndex }) => fromIndex === 2).length, 2);
+  assert.deepEqual(stage.gaps.map(({ platformIndex }) => platformIndex), [0, 1, 3, 4]);
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    const touchingLadders = stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    ));
+    touchingLadders.forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+  });
+  assert.ok(stage.tuning.ballSpeed > getStage(4).tuning.ballSpeed);
+  assert.ok(stage.tuning.ballInterval < getStage(4).tuning.ballInterval);
+});
+
+test('Level 5 gaps create a deterministic physical ball route down every row', () => {
+  const stage = getStage(5);
+  const radius = TUNING.ballDiameter / 2;
+  const gapByPlatform = new Map(stage.gaps.map((gap) => [gap.platformIndex, gap]));
+  const falls = [
+    { from: 5, direction: -1 },
+    { from: 4, direction: 1, startX: gapByPlatform.get(4).gapX },
+    { from: 3, direction: -1, startX: gapByPlatform.get(3).gapX },
+    { from: 2, direction: 1 },
+    { from: 1, direction: -1, startX: gapByPlatform.get(1).gapX },
+  ];
+  falls.forEach(({ from, direction, startX }) => {
+    const target = stage.platforms[from - 1];
+    const landingX = projectedBallLandingX(
+      stage,
+      from,
+      direction,
+      stage.tuning.ballSpeed,
+      TUNING.gravity,
+      startX,
+    );
+    assert.ok(landingX >= target.x - target.width / 2 + radius, `row ${from} lands past the left edge`);
+    assert.ok(landingX <= target.x + target.width / 2 - radius, `row ${from} lands past the right edge`);
+    const targetGap = gapByPlatform.get(from - 1);
+    if (targetGap) assert.ok(Math.abs(landingX - targetGap.gapX) > targetGap.gapWidth / 2 + radius);
+  });
+  assert.deepEqual(stage.ballBumpers.map(({ direction }) => direction), [1, -1, 1, -1]);
 });
 
 test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {

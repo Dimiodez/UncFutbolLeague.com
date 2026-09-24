@@ -8,7 +8,7 @@ let scene;
 let speechTimer;
 let speechQueue = [];
 let speechActive = false;
-let queuedLevel = [1, 2, 3, 4].includes(previewLevel) ? previewLevel : 1;
+let queuedLevel = [1, 2, 3, 4, 5].includes(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {

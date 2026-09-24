@@ -157,7 +157,7 @@ const LEVEL_FOUR_LADDERS = Object.freeze([
   { id: 'l4-ladder-right-bridge', x: 650, top: 490, bottom: 590, fromIndex: 2, toIndex: 4 },
   { id: 'l4-ladder-decoy', x: 200, top: 390, bottom: 490, fromIndex: 3, toIndex: 5 },
   { id: 'l4-ladder-route', x: 700, top: 390, bottom: 490, fromIndex: 4, toIndex: 6 },
-  { id: 'l4-ladder-decoy-high', x: 200, top: 290, bottom: 390, fromIndex: 5, toIndex: 7 },
+  { id: 'l4-ladder-decoy-high', x: 310, top: 290, bottom: 390, fromIndex: 5, toIndex: 7 },
   { id: 'l4-ladder-summit', x: 780, top: 190, bottom: 290, fromIndex: 8, toIndex: 9 },
 ]);
 
@@ -177,9 +177,47 @@ export const LEVEL_FOUR_ROUTE = Object.freeze({
   ]),
 });
 
+const LEVEL_FIVE_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 920, direction: -1, style: 'rock' },
+  { x: 545, y: 590, width: 790, direction: -1, style: 'snow' },
+  { x: 415, y: 490, width: 770, direction: 1, style: 'rock' },
+  { x: 550, y: 390, width: 780, direction: -1, style: 'snow' },
+  { x: 420, y: 290, width: 760, direction: 1, style: 'rock' },
+  { x: 540, y: 190, width: 720, direction: -1, style: 'snow' },
+]);
+
+const LEVEL_FIVE_LADDERS = Object.freeze([
+  { id: 'l5-ladder-0', x: 260, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l5-ladder-1', x: 740, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l5-ladder-2a', x: 330, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l5-ladder-2b', x: 700, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l5-ladder-3', x: 260, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l5-ladder-4', x: 700, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+const LEVEL_FIVE_GAPS = Object.freeze([
+  Object.freeze({ platformIndex: 0, gapX: 540, gapWidth: 84 }),
+  Object.freeze({ platformIndex: 1, gapX: 500, gapWidth: 86 }),
+  Object.freeze({ platformIndex: 3, gapX: 500, gapWidth: 88 }),
+  Object.freeze({ platformIndex: 4, gapX: 480, gapWidth: 90 }),
+]);
+
+export const LEVEL_FIVE_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_FIVE_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_FIVE_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
 const freezeStage = (stage) => Object.freeze({
   ...stage,
   puddles: Object.freeze(stage.puddles.map((puddle) => Object.freeze(puddle))),
+  gaps: Object.freeze((stage.gaps || []).map((gap) => Object.freeze(gap))),
   ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
   tuning: Object.freeze(stage.tuning),
 });
@@ -251,6 +289,28 @@ export const STAGES = Object.freeze([
     tuning: {
       ...ballTuningForLevel(4),
       salmonInterval: 7000,
+    },
+  }),
+  freezeStage({
+    level: 5,
+    name: 'Bruce Basin Pursuit',
+    backgroundKey: 'mountain-basin-storm',
+    platforms: LEVEL_FIVE_PLATFORMS,
+    ladders: LEVEL_FIVE_LADDERS,
+    playerStart: Object.freeze({ x: 820, y: 650 }),
+    summit: Object.freeze({ x: 790, y: 150 }),
+    puddles: [{ x: 650, y: 376 }],
+    route: LEVEL_FIVE_ROUTE,
+    gaps: LEVEL_FIVE_GAPS,
+    ballBumpers: [
+      { platformIndex: 4, x: 60, direction: 1 },
+      { platformIndex: 3, x: 920, direction: -1 },
+      { platformIndex: 2, x: 50, direction: 1 },
+      { platformIndex: 1, x: 920, direction: -1 },
+    ],
+    tuning: {
+      ...ballTuningForLevel(5),
+      salmonInterval: 6600,
     },
   }),
 ]);

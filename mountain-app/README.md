@@ -24,7 +24,7 @@ Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runt
 
 The planned game is a ten-level referee chase. Schwein escapes at the summit
 of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
-Levels 1 through 4 exist in this prototype. The later layouts are intentionally not
+Levels 1 through 5 exist in this prototype. The later layouts are intentionally not
 implemented while the current art and game feel are being tuned.
 
 Soccer-ball pressure follows one predictable campaign curve: each level adds
@@ -47,10 +47,21 @@ late-afternoon rocky-pass background and mixed rock, ice, and snow ledges are
 stage-owned presentation data, so later mountains can use distinct scenery and
 platform materials without changing collision behavior.
 
+Level 5 moves into a stormy granite basin and introduces Bruce on schedule. Four
+permanent breaks turn the wide ledges into semi-platforms and force short jumps
+along the climb. Bruce follows the same physical route and visibly arcs over each
+break instead of ignoring it. The middle row offers two valid ladders so the
+referee has room to evade him, while alternating physical ball bumpers and the
+authored openings carry Schwein's throws down every platform row.
+
 Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
 temporary sweat puddles, mutters at the summit, and exits the screen. Use
-the normal campaign schedule once Level 5 exists; Bruce cannot appear on Level 3.
+the normal campaign schedule on Level 5; Bruce cannot appear on Level 3.
+
+Levels 7 and 9 reserve the ice mechanic. Jumping remains available, but steering
+locks to the entry direction while sliding. Level 7 will use partial ice patches;
+Level 9 will include exactly one fully iced platform. Those stages are not built yet.
 
 ## Character animation assets
 
