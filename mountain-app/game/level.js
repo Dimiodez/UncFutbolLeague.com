@@ -1,4 +1,5 @@
 export const WORLD = Object.freeze({ width: 960, height: 720 });
+export const FALL_DEATH_Y = WORLD.height + 26;
 
 export const PLATFORMS = Object.freeze([
   { x: 480, y: 690, width: 880, direction: -1 },
@@ -107,9 +108,9 @@ export const LEVEL_THREE_ROUTE = Object.freeze({
 });
 
 export const LEVEL_THREE_DISRUPTIONS = Object.freeze([
-  Object.freeze({ id: 'break-l3-0a', kind: 'ladder-break', ladderId: 'l3-ladder-0a', disableEdgeIds: Object.freeze(['l3-ladder-0a']) }),
-  Object.freeze({ id: 'break-l3-2a', kind: 'ladder-break', ladderId: 'l3-ladder-2a', disableEdgeIds: Object.freeze(['l3-ladder-2a']) }),
-  Object.freeze({ id: 'break-l3-4a', kind: 'ladder-break', ladderId: 'l3-ladder-4a', disableEdgeIds: Object.freeze(['l3-ladder-4a']) }),
+  Object.freeze({ id: 'collapse-l3-p1-right', kind: 'platform-collapse', platformIndex: 1, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-0a', disableEdgeIds: Object.freeze(['l3-ladder-0a']) }),
+  Object.freeze({ id: 'collapse-l3-p2-right', kind: 'platform-collapse', platformIndex: 2, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-2a', disableEdgeIds: Object.freeze(['l3-ladder-2a']) }),
+  Object.freeze({ id: 'collapse-l3-p4-right', kind: 'platform-collapse', platformIndex: 4, side: 'right', fraction: 0.34, ladderId: 'l3-ladder-4a', disableEdgeIds: Object.freeze(['l3-ladder-4a']) }),
 ]);
 
 const freezeStage = (stage) => Object.freeze({

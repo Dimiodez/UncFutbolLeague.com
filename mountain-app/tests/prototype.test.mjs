@@ -7,6 +7,7 @@ import { bruceSpeedForLevel, CAMPAIGN, isBruceLevel, isTantrumLevel } from '../g
 import {
   getStage,
   hasStage,
+  FALL_DEATH_Y,
   LADDERS,
   LEVEL_ONE_DISRUPTIONS,
   LEVEL_ONE_ROUTE,
@@ -76,6 +77,11 @@ test('jump clears a soccer ball without reaching the next platform row', () => {
   assert.ok(jumpApex < smallestPlatformGap * 0.4, 'jump must not reach the platform above');
 });
 
+test('fall-death boundary sits below the screen but before the extended physics floor', () => {
+  assert.ok(FALL_DEATH_Y > WORLD.height);
+  assert.ok(FALL_DEATH_Y < WORLD.height + 80);
+});
+
 test('life state ignores hits during invulnerability and ends after three hits', () => {
   const state = new GameState();
   state.start();
@@ -123,7 +129,7 @@ test('remaining lives carry into Level 2 but reset on a fresh run', () => {
   assert.equal(state.lives, 3);
 });
 
-test('tantrums are reserved for spaced future levels', () => {
+test('tantrums occur every three levels before the final chase', () => {
   assert.equal(CAMPAIGN.totalLevels, 10);
   assert.deepEqual(
     Array.from({ length: CAMPAIGN.totalLevels }, (_value, index) => index + 1).filter(isTantrumLevel),
@@ -155,6 +161,9 @@ test('every Level 3 tantrum leaves a complete physical route', () => {
   assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE), true);
   assert.equal(safeDisruptions(LEVEL_THREE_ROUTE, LEVEL_THREE_DISRUPTIONS).length, LEVEL_THREE_DISRUPTIONS.length);
   LEVEL_THREE_DISRUPTIONS.forEach((disruption) => {
+    assert.equal(disruption.kind, 'platform-collapse');
+    assert.equal(disruption.side, 'right');
+    assert.ok(disruption.fraction > 0.25 && disruption.fraction < 0.5);
     assert.equal(hasPhysicalRoute(LEVEL_THREE_ROUTE, disruption.disableEdgeIds), true);
   });
 });

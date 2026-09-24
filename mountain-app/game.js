@@ -4,9 +4,10 @@ import { TUNING, WORLD } from './game/level.js';
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
 const previewLevel = Number(previewParams.get('level'));
-const previewBruce = previewParams.get('bruce') === '1';
 let scene;
 let speechTimer;
+let speechQueue = [];
+let speechActive = false;
 let queuedLevel = [1, 2, 3].includes(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
@@ -20,6 +21,32 @@ function showOverlay(kicker, title, copy, action) {
 
 function hideOverlay() { $('#overlay').hidden = true; }
 
+function clearSpeech() {
+  window.clearTimeout(speechTimer);
+  speechQueue = [];
+  speechActive = false;
+  $('#speech-bubble').hidden = true;
+}
+
+function showNextSpeech() {
+  if (speechActive || !speechQueue.length) return;
+  speechActive = true;
+  const bubble = $('#speech-bubble');
+  bubble.textContent = speechQueue.shift();
+  bubble.hidden = false;
+  speechTimer = window.setTimeout(() => {
+    bubble.hidden = true;
+    speechActive = false;
+    speechTimer = window.setTimeout(showNextSpeech, 180);
+  }, 2300);
+}
+
+function queueSpeech(line) {
+  if (!line || speechQueue.at(-1) === line) return;
+  speechQueue.push(line);
+  showNextSpeech();
+}
+
 function syncHud() {
   if (!scene) return;
   const { state } = scene;
@@ -32,10 +59,11 @@ function syncHud() {
 }
 
 function start() {
+  clearSpeech();
   hideOverlay();
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
-  scene.startRun(level, !carryLives, previewBruce);
+  scene.startRun(level, !carryLives);
   queuedLevel = null;
   carryLives = false;
   $('#game canvas')?.focus({ preventScroll: true });
@@ -103,11 +131,7 @@ function bindScene(activeScene) {
     window.setTimeout(syncHud, 900);
   });
   scene.events.on('speech', (line) => {
-    const bubble = $('#speech-bubble');
-    bubble.textContent = line;
-    bubble.hidden = false;
-    window.clearTimeout(speechTimer);
-    speechTimer = window.setTimeout(() => { bubble.hidden = true; }, 1900);
+    queueSpeech(line);
   });
   scene.events.on('game-over', () => {
     queuedLevel = scene.state.level;

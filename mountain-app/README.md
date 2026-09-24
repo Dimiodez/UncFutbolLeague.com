@@ -36,7 +36,7 @@ redundant ladders, leaving its alternate climb intact.
 Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
 temporary sweat puddles, mutters at the summit, and exits the screen. Use
-`?level=3&bruce=1` only as a local art/behavior preview before Level 5 exists.
+the normal campaign schedule once Level 5 exists; Bruce cannot appear on Level 3.
 
 ## Character animation assets
 

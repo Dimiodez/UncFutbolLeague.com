@@ -6,7 +6,7 @@ import { chooseSafeDisruption } from './CourseSafety.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
-import { getStage, hasStage, TUNING, WORLD } from './level.js';
+import { FALL_DEATH_Y, getStage, hasStage, TUNING, WORLD } from './level.js';
 
 const SPEECH = ['NOT TODAY, UNC!', 'BALL INCOMING!', 'CLIMB FASTER!', 'WELCOME TO THE PIG PEN!', 'THE SUMMIT IS MINE!'];
 
@@ -59,13 +59,18 @@ export class MountainScene extends Phaser.Scene {
     this.puddles.clear(true, true);
     this.courseVisuals.forEach((visual) => visual.destroy());
     this.courseVisuals = [];
+    this.platformBodies = [];
+    this.platformArts = [];
     this.stage.platforms.forEach((spec, index) => {
-      this.courseVisuals.push(this.drawPlatformArt(spec, index));
+      const art = this.drawPlatformArt(spec, index);
+      this.courseVisuals.push(art);
+      this.platformArts[index] = art;
       const platform = this.platforms.create(spec.x, spec.y, 'platform');
       platform.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', index);
       platform.body.checkCollision.down = false;
       platform.body.checkCollision.left = false;
       platform.body.checkCollision.right = false;
+      this.platformBodies[index] = platform;
     });
     this.ladders = this.stage.ladders.map((ladder, index) => {
       const top = ladder.top + 8;
@@ -175,7 +180,7 @@ export class MountainScene extends Phaser.Scene {
     );
   }
 
-  startRun(level = 1, resetLives = true, forceBruce = false) {
+  startRun(level = 1, resetLives = true) {
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
@@ -184,7 +189,7 @@ export class MountainScene extends Phaser.Scene {
     this.resetPlayer();
     this.resetSchwein();
     this.hazards.reset(this.time.now);
-    this.bruce.reset(this.time.now, forceBruce);
+    this.bruce.reset(this.time.now);
     this.resetStageEvents();
     this.say(nextStage.level === 1 ? 'GET OFF MY MOUNTAIN!' : 'YOU AGAIN? KEEP CLIMBING!');
     this.events.emit('state-change');
@@ -215,6 +220,7 @@ export class MountainScene extends Phaser.Scene {
       .setAlpha(1)
       .setDisplaySize(80, 80)
       .play('player-idle');
+    this.fallResetPending = false;
   }
 
   nearestLadder() {
@@ -223,6 +229,10 @@ export class MountainScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.state?.isPlaying()) return;
+    if (this.player.y > FALL_DEATH_Y) {
+      this.loseLife('fall');
+      return;
+    }
     this.hazards.update(time);
     this.bruce.update(time, delta);
     const altitude = Math.max(0, Math.round((WORLD.height - this.player.y) * 18));
@@ -278,7 +288,7 @@ export class MountainScene extends Phaser.Scene {
     if (this.tantrumActive) return;
     this.schwein.play(hazard === 'salmon' ? 'schwein-salmon-throw' : 'schwein-throw', true);
     this.time.delayedCall(650, () => {
-      if (this.schwein?.active) this.schwein.play('schwein-idle', true);
+      if (this.schwein?.active && !this.tantrumActive) this.schwein.play('schwein-idle', true);
     });
   }
 
@@ -286,7 +296,9 @@ export class MountainScene extends Phaser.Scene {
     this.tantrumActive = true;
     this.schwein.play('schwein-tantrum', true);
     this.time.delayedCall(430, () => {
-      this.cameras.main.shake(220, 0.01);
+      this.cameras.main.shake(520, 0.022);
+      this.cameras.main.flash(150, 245, 235, 215, false);
+      this.knockPlayerFromTantrum();
       onImpact?.();
     });
     this.time.delayedCall(820, () => {
@@ -299,7 +311,7 @@ export class MountainScene extends Phaser.Scene {
     this.tantrumTimer?.remove(false);
     this.tantrumTimer = null;
     if (!isTantrumLevel(this.state.level) || !this.stage.route || !this.stage.disruptions?.length) return;
-    this.tantrumTimer = this.time.delayedCall(Phaser.Math.Between(4600, 7200), () => this.triggerTantrum());
+    this.tantrumTimer = this.time.delayedCall(Phaser.Math.Between(10500, 15500), () => this.triggerTantrum());
   }
 
   triggerTantrum() {
@@ -311,26 +323,55 @@ export class MountainScene extends Phaser.Scene {
   }
 
   applyDisruption(disruption) {
-    if (disruption.kind !== 'ladder-break') return;
+    if (disruption.kind !== 'platform-collapse') return;
+    const platformSpec = this.stage.platforms[disruption.platformIndex];
+    const platformBody = this.platformBodies[disruption.platformIndex];
+    const platformArt = this.platformArts[disruption.platformIndex];
+    if (!platformSpec || !platformBody || !platformArt) return;
+    const removedWidth = Math.round(platformSpec.width * disruption.fraction);
+    const remainingWidth = platformSpec.width - removedWidth;
+    const left = platformSpec.x - platformSpec.width / 2;
+    const remainingX = disruption.side === 'right'
+      ? left + remainingWidth / 2
+      : left + removedWidth + remainingWidth / 2;
+    const fallingX = disruption.side === 'right'
+      ? left + remainingWidth + removedWidth / 2
+      : left + removedWidth / 2;
+
+    platformArt.destroy();
+    const remainingSpec = { ...platformSpec, x: remainingX, width: remainingWidth };
+    const fallingSpec = { ...platformSpec, x: fallingX, width: removedWidth };
+    const remainingArt = this.drawPlatformArt(remainingSpec, disruption.platformIndex);
+    const fallingArt = this.drawPlatformArt(fallingSpec, disruption.platformIndex).setDepth(6);
+    this.platformArts[disruption.platformIndex] = remainingArt;
+    this.courseVisuals.push(remainingArt, fallingArt);
+    platformBody.setPosition(remainingX, platformSpec.y).setDisplaySize(remainingWidth, 24).refreshBody();
+
     const ladder = this.ladders.find((candidate) => candidate.id === disruption.ladderId);
-    if (!ladder) return;
-    ladder.graphic?.destroy();
-    this.ladders = this.ladders.filter((candidate) => candidate !== ladder);
-    const middle = (ladder.top + ladder.bottom) / 2;
-    const topPiece = this.drawBrokenLadderPiece(ladder.x, ladder.top, middle - ladder.top - 7);
-    const bottomPiece = this.drawBrokenLadderPiece(ladder.x, middle + 7, ladder.bottom - middle - 7);
-    this.courseVisuals.push(topPiece, bottomPiece);
-    this.tweens.add({ targets: topPiece, y: topPiece.y + 14, angle: -9, duration: 360, ease: 'Bounce.Out' });
-    this.tweens.add({ targets: bottomPiece, y: bottomPiece.y + 20, angle: 11, duration: 420, ease: 'Bounce.Out' });
-    this.events.emit('notice', 'SCHWEIN BROKE A LADDER — FIND THE OTHER WAY!');
+    if (ladder) {
+      this.ladders = this.ladders.filter((candidate) => candidate !== ladder);
+      this.tweens.add({ targets: ladder.graphic, y: ladder.graphic.y + 34, alpha: 0.48, duration: 520, ease: 'Bounce.Out' });
+    }
+    this.tweens.add({
+      targets: fallingArt,
+      y: fallingArt.y + 230,
+      x: fallingArt.x + (disruption.side === 'right' ? 18 : -18),
+      alpha: 0.18,
+      duration: 850,
+      ease: 'Quad.In',
+    });
+    this.events.emit('notice', 'SCHWEIN DROPPED PART OF THE MOUNTAIN — FIND THE OTHER WAY!');
   }
 
-  drawBrokenLadderPiece(x, y, height) {
-    const g = this.add.graphics({ x, y }).setDepth(4);
-    g.lineStyle(6, 0xb97843).lineBetween(-16, 0, -16, height).lineBetween(16, 0, 16, height);
-    g.lineStyle(4, 0xe0aa63);
-    for (let rungY = 6; rungY < height; rungY += 18) g.lineBetween(-16, rungY, 16, rungY);
-    return g;
+  knockPlayerFromTantrum() {
+    if (!this.state.isPlaying()) return;
+    this.state.stun(this.time.now, 1250);
+    this.stopClimbing();
+    const shove = this.player.x < WORLD.width / 2 ? -95 : 95;
+    this.player.setVelocity(shove, -145);
+    this.playerArt.play('player-slip', true);
+    this.events.emit('notice', 'THE MOUNTAIN BUCKED YOU OFF YOUR FEET!');
+    this.events.emit('state-change');
   }
 
   stopClimbing() {
@@ -360,11 +401,20 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(TUNING.stunMs, () => this.events.emit('state-change'));
   }
 
-  hitByBall() {
-    if (!this.state.takeHit(this.time.now)) return;
+  hitByBall() { this.loseLife('ball'); }
+
+  loseLife(source) {
+    if (source === 'fall' && this.fallResetPending) return;
+    if (source === 'fall') this.fallResetPending = true;
+    if (!this.state.takeHit(this.time.now)) {
+      if (source === 'fall') this.resetPlayer();
+      return;
+    }
     this.cameras.main.flash(180, 210, 50, 45);
     this.cameras.main.shake(250, 0.012);
-    this.say(Math.random() < 0.82 ? 'SUCK MY ASS' : 'BACK TO BASE CAMP!');
+    this.say(source === 'fall'
+      ? 'LONG WAY DOWN, REF!'
+      : Math.random() < 0.82 ? 'SUCK MY ASS' : 'BACK TO BASE CAMP!');
     this.events.emit('state-change');
     if (this.state.phase === 'over') {
       this.bruce.clear();
@@ -376,7 +426,7 @@ export class MountainScene extends Phaser.Scene {
     this.player.disableBody(true, true);
     this.playerArt.play('player-hurt', true);
     this.time.delayedCall(220, () => this.playerArt.setVisible(false));
-    this.time.delayedCall(850, () => {
+    this.time.delayedCall(source === 'fall' ? 650 : 850, () => {
       this.state.phase = 'playing';
       this.resetPlayer();
       this.events.emit('state-change');

@@ -50,10 +50,10 @@ export class BruceDirector {
     this.lastPuddleX = Number.NaN;
   }
 
-  reset(now, force = false) {
+  reset(now) {
     this.clear();
-    this.scheduled = force || isBruceLevel(this.scene.state.level);
-    this.nextStartAt = this.scheduled ? now + (force ? 900 : 5200) : Number.POSITIVE_INFINITY;
+    this.scheduled = isBruceLevel(this.scene.state.level);
+    this.nextStartAt = this.scheduled ? now + 5200 : Number.POSITIVE_INFINITY;
   }
 
   clear() {
