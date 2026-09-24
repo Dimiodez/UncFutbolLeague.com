@@ -43,10 +43,10 @@ export class GameState {
   }
 
   awardBruceBonus(bruceReachedSummit) {
-    if (!isBruceLevel(this.level) || bruceReachedSummit || this.bruceBonusLevels.includes(this.level)) return false;
+    if (this.level !== 5 || !isBruceLevel(this.level) || bruceReachedSummit || this.bruceBonusLevels.includes(this.level)) return 0;
     this.bruceBonusLevels.push(this.level);
-    this.lives += 1;
-    return true;
+    this.lives += 2;
+    return 2;
   }
 
   isPlaying() { return this.phase === 'playing'; }

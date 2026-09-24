@@ -151,14 +151,14 @@ function bindScene(activeScene) {
     carryLives = false;
     showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'No lives left. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
   });
-  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards, bonusLifeAwarded, lives }) => {
+  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards, bonusLivesAwarded, lives }) => {
     queuedLevel = nextLevel || level;
     carryLives = Boolean(nextLevel);
-    if (bonusLifeAwarded) {
+    if (bonusLivesAwarded) {
       showOverlay(
         `LEVEL ${level} OF ${totalLevels} CLEARED`,
         'BRUCE<br>BEATEN!',
-        `You reached the summit before Bruce. +1 LIFE — ${lives} lives carry into Level ${nextLevel}. Schwein got away again.`,
+        `You reached the summit before Bruce. +${bonusLivesAwarded} LIVES — ${lives} lives carry into Level ${nextLevel}. Schwein got away again.`,
         nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
       );
       return;
@@ -181,10 +181,10 @@ function bindScene(activeScene) {
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });
-  scene.events.on('red-card-won', ({ bonusLifeAwarded, lives } = {}) => showOverlay(
+  scene.events.on('red-card-won', () => showOverlay(
     'LEVEL 10 CLEARED',
     'RED CARD<br>SCHWEIN!',
-    `The referee finally caught the pig captain. Ten mountains. One long-overdue red card.${bonusLifeAwarded ? ` You also beat Bruce and earned the second bonus life (${lives} total).` : ''}`,
+    'The referee finally caught the pig captain. Ten mountains. One long-overdue red card.',
     'Play again ↗',
   ));
   syncHud();

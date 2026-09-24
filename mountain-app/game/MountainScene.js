@@ -243,7 +243,7 @@ export class MountainScene extends Phaser.Scene {
     this.resetSchwein();
     this.hazards.reset(this.time.now);
     this.bruce.reset(this.time.now);
-    this.bruceBonusAwarded = false;
+    this.bruceBonusLives = 0;
     this.resetStageEvents();
     this.say(nextStage.level === 1 ? 'GET OFF MY MOUNTAIN!' : 'YOU AGAIN? KEEP CLIMBING!');
     this.events.emit('state-change');
@@ -559,7 +559,7 @@ export class MountainScene extends Phaser.Scene {
   win() {
     if (!this.state.isPlaying()) return;
     this.state.phase = 'won';
-    this.bruceBonusAwarded = this.state.awardBruceBonus(this.bruce.reachedSummit);
+    this.bruceBonusLives = this.state.awardBruceBonus(this.bruce.reachedSummit);
     this.state.issueYellowCard();
     const outcome = this.state.summitOutcome();
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
@@ -668,7 +668,7 @@ export class MountainScene extends Phaser.Scene {
       nextLevel: hasStage(this.state.level + 1) ? this.state.level + 1 : null,
       outcome,
       yellowCards: this.state.yellowCards,
-      bonusLifeAwarded: this.bruceBonusAwarded,
+      bonusLivesAwarded: this.bruceBonusLives,
       lives: this.state.lives,
     });
   }
