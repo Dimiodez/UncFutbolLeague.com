@@ -24,7 +24,7 @@ Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runt
 
 The planned game is a ten-level referee chase. Schwein escapes at the summit
 of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
-Levels 1 through 3 exist in this prototype. The later layouts are intentionally not
+Levels 1 through 4 exist in this prototype. The later layouts are intentionally not
 implemented while the current art and game feel are being tuned.
 
 Soccer-ball pressure follows one predictable campaign curve: each level adds
@@ -39,6 +39,13 @@ routes remain usable while requiring extra jumps. Balls receive no midair
 steering or random branch direction: staggered platforms catch their momentum,
 then visible edge blocks physically turn them into the next alternating chute.
 
+Level 4 introduces route reading rather than another sabotage. Two believable
+ladder branches lead through split ledges; the left branch climbs into a false
+summit shelf, then offers a short recovery jump into the correct route. Its
+late-afternoon rocky-pass background and mixed rock, ice, and snow ledges are
+stage-owned presentation data, so later mountains can use distinct scenery and
+platform materials without changing collision behavior.
+
 Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
 temporary sweat puddles, mutters at the summit, and exits the screen. Use
@@ -51,7 +58,7 @@ The runtime-ready transparent frames live in `assets/sprites/player/`,
 `assets/sprites/schwein-run-green/`, `assets/sprites/ball/`, `assets/sprites/bruce-run/`,
 and `assets/sprites/bruce-climb/`. The tantrum frames live in
 `assets/sprites/schwein-tantrum-green/` for route-safe
-stages. The painted mountain backdrop is in `assets/environment/`. The `raw/`,
+stages. The stage-specific painted mountain backdrops are in `assets/environment/`. The `raw/`,
 `source/`, and preview PNGs
 are retained in this standalone prototype so art iteration can continue
 without touching the production website.

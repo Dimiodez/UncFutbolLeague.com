@@ -106,7 +106,9 @@ export class HazardDirector {
     let bestIndex = 0;
     let bestDistance = Number.POSITIVE_INFINITY;
     this.scene.stage.platforms.forEach((platform, index) => {
-      const distance = Math.abs(platform.y - feetY);
+      const halfWidth = platform.width / 2;
+      const horizontalMiss = Math.max(0, Math.abs(this.scene.player.x - platform.x) - halfWidth);
+      const distance = Math.abs(platform.y - feetY) + horizontalMiss * 3;
       if (distance < bestDistance) {
         bestDistance = distance;
         bestIndex = index;

@@ -8,7 +8,7 @@ let scene;
 let speechTimer;
 let speechQueue = [];
 let speechActive = false;
-let queuedLevel = [1, 2, 3].includes(previewLevel) ? previewLevel : 1;
+let queuedLevel = [1, 2, 3, 4].includes(previewLevel) ? previewLevel : 1;
 let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {
@@ -146,7 +146,7 @@ function bindScene(activeScene) {
       'SCHWEIN<br>ESCAPES!',
       nextLevel
         ? `Schwein fled to Level ${nextLevel}. The referee keeps the remaining lives and continues the chase.`
-        : 'Level 3 complete. Schwein escaped toward the unfinished mountains; Bruce returns on Level 5 and the red card still waits at Level 10.',
+        : 'Level 4 complete. Schwein escaped toward the unfinished mountains; Bruce returns on Level 5 and the red card still waits at Level 10.',
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });

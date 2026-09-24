@@ -14,7 +14,7 @@ export class MountainScene extends Phaser.Scene {
   constructor() { super('mountain'); }
 
   preload() {
-    this.load.image(ASSETS.background.key, ASSETS.background.url);
+    ASSETS.backgrounds.forEach((asset) => this.load.image(asset.key, asset.url));
     this.load.image(ASSETS.climber.key, ASSETS.climber.url);
     this.load.image(ASSETS.schwein.key, ASSETS.schwein.url);
     this.load.image(ASSETS.salmon.key, ASSETS.salmon.url);
@@ -32,12 +32,12 @@ export class MountainScene extends Phaser.Scene {
     createTextures(this);
     this.state = new GameState();
     this.inputController = new InputController(this);
+    this.stage = getStage(1);
     this.drawMountain();
     this.courseVisuals = [];
     this.platforms = this.physics.add.staticGroup();
     this.puddles = this.physics.add.staticGroup();
     this.ballBumpers = this.physics.add.staticGroup();
-    this.stage = getStage(1);
     this.createCourse();
     this.createActors();
     this.hazards = new HazardDirector(this);
@@ -48,7 +48,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   drawMountain() {
-    this.add.image(WORLD.width / 2, WORLD.height / 2, ASSETS.background.key)
+    this.backgroundArt = this.add.image(WORLD.width / 2, WORLD.height / 2, this.stage.backgroundKey || ASSETS.background.key)
       .setDisplaySize(WORLD.width, WORLD.height)
       .setDepth(-10);
     this.add.rectangle(WORLD.width / 2, WORLD.height / 2, WORLD.width, WORLD.height, 0x0e3855, 0.16)
@@ -110,20 +110,28 @@ export class MountainScene extends Phaser.Scene {
     const left = spec.x - spec.width / 2;
     const top = spec.y - 12;
     const g = this.add.graphics().setDepth(5);
-    g.fillStyle(0x102b3d, 0.42).fillRoundedRect(left + 7, top + 15, spec.width, 25, 8);
-    g.fillGradientStyle(0x536d7d, 0x3f596b, 0x243f54, 0x172f43, 1).fillRoundedRect(left, top + 5, spec.width, 28, 7);
+    const style = spec.style || 'snow';
+    const rocky = style === 'rock';
+    const icy = style === 'ice';
+    g.fillStyle(rocky ? 0x1c1a1c : 0x102b3d, 0.48).fillRoundedRect(left + 7, top + 15, spec.width, 25, 8);
+    if (rocky) g.fillGradientStyle(0x67594f, 0x51463f, 0x342f31, 0x201f25, 1).fillRoundedRect(left, top + 5, spec.width, 28, 7);
+    else if (icy) g.fillGradientStyle(0x6f96a8, 0x557b91, 0x31576d, 0x203e52, 1).fillRoundedRect(left, top + 5, spec.width, 28, 7);
+    else g.fillGradientStyle(0x536d7d, 0x3f596b, 0x243f54, 0x172f43, 1).fillRoundedRect(left, top + 5, spec.width, 28, 7);
     const facets = Math.max(5, Math.floor(spec.width / 115));
     for (let i = 0; i < facets; i += 1) {
       const x = left + 18 + i * (spec.width - 36) / facets;
       const w = 54 + (i % 3) * 13;
-      g.fillStyle(i % 2 ? 0x678293 : 0x2d4a5e, 0.6).fillTriangle(x, top + 31, x + w * 0.45, top + 9, x + w, top + 31);
+      const facetColor = rocky ? (i % 2 ? 0x7a6658 : 0x3e3736) : (i % 2 ? 0x678293 : 0x2d4a5e);
+      g.fillStyle(facetColor, 0.68).fillTriangle(x, top + 31, x + w * 0.45, top + 9, x + w, top + 31);
     }
-    g.fillGradientStyle(0xffffff, 0xeaf5f3, 0xd8ecec, 0xbfdcde, 1).fillRoundedRect(left - 3, top - 3, spec.width + 6, 15, 7);
+    const capHeight = rocky ? 7 : 15;
+    g.fillGradientStyle(icy ? 0xd9f7ff : 0xffffff, 0xeaf5f3, 0xd8ecec, rocky ? 0xc7d1cf : 0xbfdcde, 1)
+      .fillRoundedRect(left - 3, top + (15 - capHeight) - 3, spec.width + 6, capHeight, rocky ? 3 : 7);
     g.lineStyle(2, 0xffffff, 0.72).lineBetween(left + 7, top + 2, left + spec.width * 0.42, top).lineBetween(left + spec.width * 0.58, top + 2, left + spec.width - 9, top + 1);
-    const icicleSpacing = 92;
+    const icicleSpacing = rocky ? 150 : 92;
     for (let x = left + 38 + index * 11; x < left + spec.width - 22; x += icicleSpacing) {
       const length = 9 + ((Math.round(x) + index * 7) % 15);
-      g.fillStyle(0xd8f0f2, 0.95).fillTriangle(x, top + 10, x + 9, top + 10, x + 4, top + 10 + length);
+      if (!rocky) g.fillStyle(0xd8f0f2, 0.95).fillTriangle(x, top + 10, x + 9, top + 10, x + 4, top + 10 + length);
     }
     return g;
   }
@@ -196,6 +204,7 @@ export class MountainScene extends Phaser.Scene {
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
+    this.backgroundArt.setTexture(nextStage.backgroundKey || ASSETS.background.key);
     this.createCourse();
     this.inputController.clear();
     this.resetPlayer();

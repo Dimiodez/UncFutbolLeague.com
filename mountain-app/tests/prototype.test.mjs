@@ -14,6 +14,7 @@ import {
   LADDERS,
   LEVEL_ONE_DISRUPTIONS,
   LEVEL_ONE_ROUTE,
+  LEVEL_FOUR_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -54,11 +55,12 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains three stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3]);
+test('prototype contains four stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
-  assert.equal(hasStage(4), false);
+  assert.equal(getStage(4)?.name, 'False Summit Pass');
+  assert.equal(hasStage(5), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -226,6 +228,23 @@ test('each built level adds pressure without making the sabotage gaps unjumpable
   LEVEL_THREE_DISRUPTIONS[0].gaps.forEach(({ gapWidth }) => {
     assert.ok(gapWidth < maximumJumpTravel, `gap ${gapWidth} exceeds jump travel ${maximumJumpTravel}`);
   });
+});
+
+test('Level 4 adds a recoverable false route and distinct mountain materials', () => {
+  const stage = getStage(4);
+  assert.equal(hasPhysicalRoute(LEVEL_FOUR_ROUTE), true);
+  assert.equal(stage.backgroundKey, 'mountain-pass-sunset');
+  assert.deepEqual(new Set(stage.platforms.map(({ style }) => style)), new Set(['rock', 'snow', 'ice']));
+  assert.ok(LEVEL_FOUR_ROUTE.edges.some(({ id, type }) => id === 'l4-decoy-recovery-hop' && type === 'jump'));
+  const jumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  const bridgeGap = stage.platforms[4].x - stage.platforms[4].width / 2
+    - (stage.platforms[3].x + stage.platforms[3].width / 2);
+  const recoveryGap = stage.platforms[8].x - stage.platforms[8].width / 2
+    - (stage.platforms[7].x + stage.platforms[7].width / 2);
+  assert.ok(bridgeGap > 0 && bridgeGap < jumpTravel);
+  assert.ok(recoveryGap > 0 && recoveryGap < jumpTravel);
+  assert.ok(stage.tuning.ballSpeed > getStage(3).tuning.ballSpeed);
+  assert.ok(stage.tuning.ballInterval < getStage(3).tuning.ballInterval);
 });
 
 test('Level 1 refuses every break because it has only one physical route', () => {
