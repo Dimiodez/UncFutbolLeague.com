@@ -141,10 +141,13 @@ export class HazardDirector {
       const now = this.scene.time.now;
       if (now < (ball.getData('deflectLockUntil') || 0)) return;
       direction = chooseBallDeflection();
-      const clearance = bumper.body.width / 2 + ball.body.width / 2 + 5;
+      // Clear the illustrated tip before handing the ball back to gravity. The
+      // collider is intentionally shorter than the art so a shallow release
+      // could otherwise look like the ball was clipping through the peak.
+      const clearance = bumper.body.width / 2 + ball.body.width / 2 + 10;
       ball.setData('deflectLockUntil', now + 650)
-        .setPosition(bumper.x + direction * clearance, Math.min(ball.y, bumper.y - 24))
-        .setVelocityY(-65);
+        .setPosition(bumper.x + direction * clearance, Math.min(ball.y, bumper.y - 39))
+        .setVelocityY(30);
     }
     if (!direction) return;
     ball.setVelocityX(direction * this.tuning('ballSpeed'));
