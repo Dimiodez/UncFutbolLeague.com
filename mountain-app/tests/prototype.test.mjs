@@ -3,7 +3,17 @@ import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import { CAMPAIGN, isTantrumLevel } from '../game/campaign.js';
-import { LADDERS, LEVEL_ONE_DISRUPTIONS, LEVEL_ONE_ROUTE, PLATFORMS, TUNING, WORLD } from '../game/level.js';
+import {
+  getStage,
+  hasStage,
+  LADDERS,
+  LEVEL_ONE_DISRUPTIONS,
+  LEVEL_ONE_ROUTE,
+  PLATFORMS,
+  STAGES,
+  TUNING,
+  WORLD,
+} from '../game/level.js';
 
 test('course is a complete alternating climb', () => {
   assert.equal(PLATFORMS.length, 6);
@@ -15,11 +25,38 @@ test('course is a complete alternating climb', () => {
 });
 
 test('course geometry remains within the fixed arcade viewport', () => {
-  for (const platform of PLATFORMS) {
-    assert.ok(platform.x - platform.width / 2 >= 0);
-    assert.ok(platform.x + platform.width / 2 <= WORLD.width);
-    assert.ok(platform.y > 0 && platform.y < WORLD.height);
+  for (const stage of STAGES) {
+    assert.equal(stage.ladders.length, stage.platforms.length - 1);
+    for (const platform of stage.platforms) {
+      assert.ok(platform.x - platform.width / 2 >= 0);
+      assert.ok(platform.x + platform.width / 2 <= WORLD.width);
+      assert.ok(platform.y > 0 && platform.y < WORLD.height);
+    }
+    stage.ladders.forEach((ladder, index) => {
+      const lower = stage.platforms[index];
+      const upper = stage.platforms[index + 1];
+      assert.equal(ladder.bottom, lower.y);
+      assert.equal(ladder.top, upper.y);
+      assert.ok(Math.abs(ladder.x - lower.x) < lower.width / 2);
+      assert.ok(Math.abs(ladder.x - upper.x) < upper.width / 2);
+    });
   }
+});
+
+test('prototype contains two stages and leaves later mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2]);
+  assert.equal(getStage(2)?.name, 'Switchback Scramble');
+  assert.equal(hasStage(3), false);
+});
+
+test('Level 2 is only a modest hazard increase', () => {
+  const levelOne = getStage(1).tuning;
+  const levelTwo = getStage(2).tuning;
+  assert.ok(levelTwo.ballSpeed > levelOne.ballSpeed);
+  assert.ok(levelTwo.ballSpeed <= levelOne.ballSpeed * 1.1);
+  assert.ok(levelTwo.ballInterval < levelOne.ballInterval);
+  assert.ok(levelTwo.ballInterval >= levelOne.ballInterval * 0.9);
+  assert.ok(levelTwo.salmonInterval < levelOne.salmonInterval);
 });
 
 test('jump clears a soccer ball without reaching the next platform row', () => {
@@ -65,6 +102,17 @@ test('the chase reserves the red card for level ten', () => {
   assert.equal(state.summitOutcome(), 'escaped');
   state.level = 10;
   assert.equal(state.summitOutcome(), 'red-card');
+});
+
+test('remaining lives carry into Level 2 but reset on a fresh run', () => {
+  const state = new GameState();
+  state.start();
+  state.lives = 2;
+  state.startLevel(2);
+  assert.equal(state.level, 2);
+  assert.equal(state.lives, 2);
+  state.startLevel(2, { resetLives: true });
+  assert.equal(state.lives, 3);
 });
 
 test('tantrums are reserved for spaced future levels', () => {

@@ -1,5 +1,5 @@
 import { ASSETS } from './AssetManifest.js';
-import { PLATFORMS, TUNING, WORLD } from './level.js';
+import { TUNING, WORLD } from './level.js';
 
 export class HazardDirector {
   constructor(scene) {
@@ -22,14 +22,18 @@ export class HazardDirector {
     this.salmon.clear(true, true);
   }
 
+  tuning(key) {
+    return this.scene.stage?.tuning?.[key] ?? TUNING[key];
+  }
+
   update(now) {
     if (now >= this.nextBallAt) {
       this.spawnBall();
-      this.nextBallAt = now + TUNING.ballInterval + Phaser.Math.Between(-350, 500);
+      this.nextBallAt = now + this.tuning('ballInterval') + Phaser.Math.Between(-350, 500);
     }
     if (now >= this.nextSalmonAt) {
       this.spawnSalmon();
-      this.nextSalmonAt = now + TUNING.salmonInterval + Phaser.Math.Between(-900, 1600);
+      this.nextSalmonAt = now + this.tuning('salmonInterval') + Phaser.Math.Between(-900, 1600);
     }
     this.balls.children.each((ball) => {
       if (!ball?.active || !ball.body) return;
@@ -49,7 +53,7 @@ export class HazardDirector {
       if (!this.scene.state.isPlaying()) return;
       const ball = this.balls.create(665, 95, ASSETS.ballFrames[0].key);
       ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(112, 16, 16).setBounce(0.05).setDepth(8)
-        .setVelocity(-TUNING.ballSpeed, -35);
+        .setVelocity(-this.tuning('ballSpeed'), -35);
       ball.playReverse('soccer-roll');
       ball.body.setMaxVelocity(180, 520);
       ball.platformIndex = -1;
@@ -63,7 +67,7 @@ export class HazardDirector {
       if (!this.scene.state.isPlaying()) return;
       const start = { x: 780, y: 92 };
       const targetIndex = this.platformIndexForPlayer();
-      const targetPlatform = PLATFORMS[targetIndex];
+      const targetPlatform = this.scene.stage.platforms[targetIndex];
       const halfWidth = targetPlatform.width / 2 - 34;
       const targetX = Phaser.Math.Clamp(
         this.scene.player.x + Phaser.Math.Between(-45, 45),
@@ -89,7 +93,7 @@ export class HazardDirector {
     const feetY = this.scene.player.y + 35;
     let bestIndex = 0;
     let bestDistance = Number.POSITIVE_INFINITY;
-    PLATFORMS.forEach((platform, index) => {
+    this.scene.stage.platforms.forEach((platform, index) => {
       const distance = Math.abs(platform.y - feetY);
       if (distance < bestDistance) {
         bestDistance = distance;
@@ -107,8 +111,8 @@ export class HazardDirector {
     const index = platform.getData('platformIndex');
     if (!Number.isInteger(index)) return;
     ball.platformIndex = index;
-    const direction = PLATFORMS[index].direction;
-    ball.setVelocityX(direction * TUNING.ballSpeed);
+    const direction = this.scene.stage.platforms[index].direction;
+    ball.setVelocityX(direction * this.tuning('ballSpeed'));
     if (direction < 0) ball.playReverse('soccer-roll', true);
     else ball.play('soccer-roll', true);
   }

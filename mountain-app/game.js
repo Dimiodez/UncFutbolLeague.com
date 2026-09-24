@@ -2,8 +2,11 @@ import { MountainScene } from './game/MountainScene.js';
 import { TUNING, WORLD } from './game/level.js';
 
 const $ = (selector) => document.querySelector(selector);
+const previewLevel = Number(new URLSearchParams(window.location.search).get('level'));
 let scene;
 let speechTimer;
+let queuedLevel = [1, 2].includes(previewLevel) ? previewLevel : 1;
+let carryLives = false;
 
 function showOverlay(kicker, title, copy, action) {
   $('#overlay').hidden = false;
@@ -29,7 +32,10 @@ function syncHud() {
 function start() {
   hideOverlay();
   scene.scene.resume();
-  scene.startRun();
+  const level = queuedLevel || scene.state.level || 1;
+  scene.startRun(level, !carryLives);
+  queuedLevel = null;
+  carryLives = false;
   $('#game canvas')?.focus({ preventScroll: true });
 }
 
@@ -101,13 +107,23 @@ function bindScene(activeScene) {
     window.clearTimeout(speechTimer);
     speechTimer = window.setTimeout(() => { bubble.hidden = true; }, 1900);
   });
-  scene.events.on('game-over', () => showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'Three hits. One angry pig. Take another run at the summit.', 'Climb again ↗'));
-  scene.events.on('game-won', () => showOverlay(
-    `LEVEL ${scene.state.level} OF ${scene.state.totalLevels} CLEARED`,
-    'SCHWEIN<br>ESCAPES!',
-    'The referee reached the summit, but Schwein ran for the next mountain. The red card waits at Level 10. Only Level 1 is built in this prototype.',
-    'Run Level 1 again ↗',
-  ));
+  scene.events.on('game-over', () => {
+    queuedLevel = scene.state.level;
+    carryLives = false;
+    showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'Three hits. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
+  });
+  scene.events.on('game-won', ({ level, totalLevels, nextLevel }) => {
+    queuedLevel = nextLevel || level;
+    carryLives = Boolean(nextLevel);
+    showOverlay(
+      `LEVEL ${level} OF ${totalLevels} CLEARED`,
+      'SCHWEIN<br>ESCAPES!',
+      nextLevel
+        ? `Schwein fled to Level ${nextLevel}. The referee keeps the remaining lives and continues the chase.`
+        : 'Level 2 complete. Schwein escaped toward the unfinished mountains; the red card still waits at Level 10.',
+      nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
+    );
+  });
   scene.events.on('red-card-won', () => showOverlay(
     'LEVEL 10 CLEARED',
     'RED CARD<br>SCHWEIN!',

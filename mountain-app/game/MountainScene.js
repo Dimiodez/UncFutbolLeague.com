@@ -3,7 +3,7 @@ import { ASSETS } from './AssetManifest.js';
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
-import { LADDERS, PLATFORMS, PLAYER_START, SUMMIT, TUNING, WORLD } from './level.js';
+import { getStage, hasStage, TUNING, WORLD } from './level.js';
 
 const SPEECH = ['NOT TODAY, UNC!', 'BALL INCOMING!', 'CLIMB FASTER!', 'WELCOME TO THE PIG PEN!', 'THE SUMMIT IS MINE!'];
 
@@ -28,6 +28,10 @@ export class MountainScene extends Phaser.Scene {
     this.state = new GameState();
     this.inputController = new InputController(this);
     this.drawMountain();
+    this.courseVisuals = [];
+    this.platforms = this.physics.add.staticGroup();
+    this.puddles = this.physics.add.staticGroup();
+    this.stage = getStage(1);
     this.createCourse();
     this.createActors();
     this.createPhysics();
@@ -45,16 +49,19 @@ export class MountainScene extends Phaser.Scene {
   }
 
   createCourse() {
-    this.platforms = this.physics.add.staticGroup();
-    PLATFORMS.forEach((spec, index) => {
-      this.drawPlatformArt(spec, index);
+    this.platforms.clear(true, true);
+    this.puddles.clear(true, true);
+    this.courseVisuals.forEach((visual) => visual.destroy());
+    this.courseVisuals = [];
+    this.stage.platforms.forEach((spec, index) => {
+      this.courseVisuals.push(this.drawPlatformArt(spec, index));
       const platform = this.platforms.create(spec.x, spec.y, 'platform');
       platform.setDisplaySize(spec.width, 24).refreshBody().setVisible(false).setDepth(5).setData('platformIndex', index);
       platform.body.checkCollision.down = false;
       platform.body.checkCollision.left = false;
       platform.body.checkCollision.right = false;
     });
-    this.ladders = LADDERS.map((ladder) => {
+    this.ladders = this.stage.ladders.map((ladder) => {
       const top = ladder.top + 8;
       const bottom = ladder.bottom - 8;
       const height = bottom - top;
@@ -62,17 +69,19 @@ export class MountainScene extends Phaser.Scene {
       g.lineStyle(6, 0xb97843).lineBetween(ladder.x - 16, top, ladder.x - 16, bottom).lineBetween(ladder.x + 16, top, ladder.x + 16, bottom);
       g.lineStyle(4, 0xe0aa63);
       for (let y = top + 7; y < bottom; y += 18) g.lineBetween(ladder.x - 16, y, ladder.x + 16, y);
+      this.courseVisuals.push(g);
       return { ...ladder, top, bottom, height };
     });
-    this.add.rectangle(SUMMIT.x, SUMMIT.y - 23, 5, 58, 0xf7f5df).setDepth(6);
-    this.add.triangle(SUMMIT.x + 20, SUMMIT.y - 45, 0, 0, 42, 12, 0, 24, 0xd64d3d).setDepth(6);
-    this.add.text(SUMMIT.x - 42, SUMMIT.y + 4, 'SUMMIT', { fontFamily: 'monospace', fontSize: '12px', color: '#ffffff', backgroundColor: '#15344d', padding: { x: 5, y: 3 } }).setDepth(7);
-    this.puddles = this.physics.add.staticGroup();
-    [[390, 476], [620, 576]].forEach(([x, y]) => {
+    const { summit } = this.stage;
+    this.courseVisuals.push(
+      this.add.rectangle(summit.x, summit.y - 23, 5, 58, 0xf7f5df).setDepth(6),
+      this.add.triangle(summit.x + 20, summit.y - 45, 0, 0, 42, 12, 0, 24, 0xd64d3d).setDepth(6),
+      this.add.text(summit.x - 42, summit.y + 4, 'SUMMIT', { fontFamily: 'monospace', fontSize: '12px', color: '#ffffff', backgroundColor: '#15344d', padding: { x: 5, y: 3 } }).setDepth(7),
+    );
+    this.stage.puddles.forEach(({ x, y }) => {
       const puddle = this.puddles.create(x, y, 'puddle').setDisplaySize(48, 14).setDepth(6);
       puddle.refreshBody().setData('safeUntil', 0);
     });
-    this.add.text(345, 449, 'BRUCE WAS HERE', { fontFamily: 'monospace', fontSize: '10px', color: '#9fd8df' }).setDepth(6);
   }
 
   drawPlatformArt(spec, index) {
@@ -94,17 +103,19 @@ export class MountainScene extends Phaser.Scene {
       const length = 9 + ((Math.round(x) + index * 7) % 15);
       g.fillStyle(0xd8f0f2, 0.95).fillTriangle(x, top + 10, x + 9, top + 10, x + 4, top + 10 + length);
     }
+    return g;
   }
 
   createActors() {
     this.createCharacterAnimations();
     this.schwein = this.add.sprite(744, 105, ASSETS.schweinFrames[0].key).setDisplaySize(210, 210).setDepth(9);
     this.schwein.play('schwein-idle');
-    this.player = this.physics.add.sprite(PLAYER_START.x, PLAYER_START.y, 'player').setScale(0.5).setVisible(false).setDepth(10);
+    const { playerStart } = this.stage;
+    this.player = this.physics.add.sprite(playerStart.x, playerStart.y, 'player').setScale(0.5).setVisible(false).setDepth(10);
     this.player.body.setSize(42, 74).setOffset(7, 3).setMaxVelocity(220, 520);
     this.player.setCollideWorldBounds(true);
     this.player.climbing = false;
-    this.playerArt = this.add.sprite(PLAYER_START.x, this.player.body.bottom, ASSETS.playerFrames[0].key)
+    this.playerArt = this.add.sprite(playerStart.x, this.player.body.bottom, ASSETS.playerFrames[0].key)
       .setOrigin(0.5, 1)
       .setDisplaySize(80, 80)
       .setDepth(10);
@@ -155,13 +166,16 @@ export class MountainScene extends Phaser.Scene {
     );
   }
 
-  startRun() {
-    this.state.start();
+  startRun(level = 1, resetLives = true) {
+    const nextStage = getStage(level) || getStage(1);
+    this.state.startLevel(nextStage.level, { resetLives });
+    this.stage = nextStage;
+    this.createCourse();
     this.inputController.clear();
     this.resetPlayer();
     this.resetSchwein();
     this.hazards.reset(this.time.now);
-    this.say('GET OFF MY MOUNTAIN!');
+    this.say(nextStage.level === 1 ? 'GET OFF MY MOUNTAIN!' : 'YOU AGAIN? KEEP CLIMBING!');
     this.events.emit('state-change');
   }
 
@@ -177,7 +191,8 @@ export class MountainScene extends Phaser.Scene {
   }
 
   resetPlayer() {
-    this.player.enableBody(true, PLAYER_START.x, PLAYER_START.y, true, true);
+    const { playerStart } = this.stage;
+    this.player.enableBody(true, playerStart.x, playerStart.y, true, true);
     this.player.setTexture('player').setScale(0.5).setVisible(false).setAngle(0).setAlpha(1).setVelocity(0, 0);
     this.player.body.setAllowGravity(true);
     this.player.climbing = false;
@@ -225,7 +240,7 @@ export class MountainScene extends Phaser.Scene {
     }
     this.player.setFlipX(horizontal < 0);
     this.updatePlayerArt(time, horizontal, vertical);
-    if (this.player.x > SUMMIT.x - 32 && this.player.y < 180) this.win();
+    if (this.player.x > this.stage.summit.x - 32 && this.player.y < 180) this.win();
   }
 
   updatePlayerArt(time, horizontal = 0, vertical = 0) {
@@ -327,7 +342,14 @@ export class MountainScene extends Phaser.Scene {
       y: 112,
       duration: 1250,
       ease: 'Linear',
-      onComplete: () => this.events.emit(this.state.summitOutcome() === 'red-card' ? 'red-card-won' : 'game-won'),
+      onComplete: () => {
+        const event = this.state.summitOutcome() === 'red-card' ? 'red-card-won' : 'game-won';
+        this.events.emit(event, {
+          level: this.state.level,
+          totalLevels: this.state.totalLevels,
+          nextLevel: hasStage(this.state.level + 1) ? this.state.level + 1 : null,
+        });
+      },
     });
   }
 

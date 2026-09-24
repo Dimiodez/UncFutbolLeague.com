@@ -14,8 +14,13 @@ export class GameState {
   }
 
   start() {
+    this.startLevel(1, { resetLives: true });
+  }
+
+  startLevel(level, { resetLives = false } = {}) {
     this.phase = 'playing';
-    this.lives = 3;
+    this.level = level;
+    if (resetLives) this.lives = 3;
     this.altitude = 0;
     this.stunnedUntil = 0;
     this.invulnerableUntil = 0;
