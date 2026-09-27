@@ -1213,7 +1213,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/matches",
-        "description": "Show the selected linked club’s three most recent verified FC27 results with real-player scorers, assists and human-player totals. Preview any full image sheet privately, then choose a Discord text or announcement channel if you want to publish it. Nothing posts publicly before that final selection.",
+        "description": "Show the selected linked club’s 3, 6 or 9 most recent verified FC27 results with real-player scorers, assists and human-player totals. EA may return fewer than requested; the bot cannot recover matches missing from its live feed. Preview a full image sheet privately, then choose a channel if you want to publish it. Nothing posts publicly before that final selection.",
         "status": "FC27 live",
         "options": [
           {
@@ -1222,10 +1222,22 @@ window.UFB_DOCS = [
             "type": 3,
             "required": true,
             "autocomplete": true
+          },
+          {
+            "name": "count",
+            "description": "How many recent games to show (default 3; EA may return fewer)",
+            "type": 4,
+            "required": false,
+            "choices": [
+              {"name":"3 games","value":3},
+              {"name":"6 games","value":6},
+              {"name":"9 games","value":9}
+            ]
           }
         ],
         "examples": [
-          "/matches team:UFL Como — Unassigned"
+          "/matches team:UFL Como — Unassigned",
+          "/matches team:UFL Como — Unassigned count:9"
         ],
         "preview": {
           "src": "/assets/ufb-example-match-sheet.png",
@@ -1391,6 +1403,34 @@ window.UFB_DOCS = [
         "examples": [
           "/matchnight league:unc-6v6 team:UFL Como starts_at:Friday 8:30 PM CT"
         ]
+      },
+      {
+        "name": "/rsvp create",
+        "description": "Post a named event with Yes, Tentative and No buttons in the current channel. Enter a local date and time plus an IANA timezone; Discord displays the start in each viewer’s own timezone. Optionally repeat daily, weekly or every two weeks for 2–52 occurrences (default 8). A fresh RSVP post appears after each prior occurrence starts. Position signup and formation views are future additions.",
+        "examples": [
+          "/rsvp create name:Training Night when:2026-10-03 20:30 timezone:America/Chicago repeat:weekly occurrences:8"
+        ],
+        "options": [
+          {"name":"name","description":"Event name","type":3,"required":true},
+          {"name":"when","description":"Local date and time: YYYY-MM-DD HH:mm","type":3,"required":true},
+          {"name":"timezone","description":"IANA timezone, e.g. America/Chicago","type":3,"required":true},
+          {"name":"repeat","description":"Repeat and post each next occurrence automatically","type":3,"required":false,"choices":[
+            {"name":"One time","value":"none"},{"name":"Daily","value":"daily"},{"name":"Weekly","value":"weekly"},{"name":"Every two weeks","value":"biweekly"}
+          ]},
+          {"name":"occurrences","description":"Total dates for recurring events (2–52; default 8)","type":4,"required":false,"min_value":2,"max_value":52}
+        ]
+      },
+      {
+        "name": "/rsvp list",
+        "description": "Privately list upcoming RSVP events in this Discord server, including their event IDs and next start times.",
+        "examples": ["/rsvp list"],
+        "options": []
+      },
+      {
+        "name": "/rsvp cancel",
+        "description": "The creator or a UFB Administrator stops an event and all future recurring posts. Its old Discord post remains visible but no longer accepts responses.",
+        "examples": ["/rsvp cancel event_id:12"],
+        "options": [{"name":"event_id","description":"ID shown on the post or in /rsvp list","type":4,"required":true,"min_value":1}]
       },
       {
         "name": "/standings",
