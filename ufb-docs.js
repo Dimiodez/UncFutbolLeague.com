@@ -1377,7 +1377,7 @@ window.UFB_DOCS = [
     "commands": [
       {
         "name": "/rsvp create",
-        "description": "The selected team’s manager or a UFB Moderator/Administrator picks a registered team, weekday, local time and timezone for one event or a recurring series. The next occurrence of the chosen weekday is used; if today's time has passed, it starts next week. Time accepts 7pm, 7:30pm or 19:00. Discord displays the start in each viewer’s timezone. Members answer Yes, Tentative or No. Creation and each recurring post ping @everyone. Selected reminders put details in the event thread plus a short @everyone link in the channel, so members are notified without filling the channel with full reminders. Without an available thread, the full reminder goes in the channel. The bot needs Mention Everyone permission in that channel; existing servers may need to grant it to the bot role. Older /matchnight posts still work, but new attendance uses /rsvp. Position signup and formations are future additions.",
+        "description": "A team manager or UFB Moderator/Administrator chooses a registered team, weekday, local time and timezone. The first event uses the next occurrence of that weekday (or next week if today's time passed); repeat can make it daily, weekly or biweekly. Enter time as 7pm, 7:30pm or 19:00. Discord displays the start in each member’s timezone. The first post and each recurring post ping @everyone, but changing a Yes/Tentative/No response never pings again. Choose 24-hour and/or 1-hour reminders. With thread enabled, reminder details stay in the event thread and a short @everyone link goes to the main channel so members are notified. If the thread is unavailable or off, the full reminder goes in the channel. The bot needs Mention Everyone permission there; existing servers may need to grant it to the bot role. Older /matchnight posts still work. Position signup and formations are future additions.",
         "examples": [
           "/rsvp create name:Roma Practice team:Roma FC day:Tuesday time:7pm timezone:Central repeat:weekly occurrences:8 reminders:both thread:true",
           "/rsvp create name:One Match Night team:Roma FC day:Friday time:7:30pm timezone:Central reminders:1h"
@@ -1397,7 +1397,7 @@ window.UFB_DOCS = [
           {"name":"reminders","description":"Optional reminder posts before each event","type":3,"required":false,"choices":[
             {"name":"No reminders","value":"none"},{"name":"1 hour before","value":"1h"},{"name":"24 hours before","value":"24h"},{"name":"24 hours and 1 hour before","value":"both"}
           ]},
-          {"name":"thread","description":"Open a discussion thread for each event night","type":5,"required":false}
+          {"name":"thread","description":"Keep reminder details and discussion in a thread","type":5,"required":false}
         ]
       },
       {
@@ -1510,7 +1510,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup helpcenter",
-        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with six simple-language threads covering Start Here, Teams & Rosters, Free Agents, FC27 Matches & Images, Official League and Administrator Setup. Run it again after command changes to refresh the same channel and threads without duplicates. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
+        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with six simple-language threads covering Start Here, Teams & Rosters, Free Agents, FC27 Matches & Images, Official League and Administrator Setup. The bot refreshes existing help centers when its guide changes; run this command to create or repair one manually without duplicate threads. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
         "examples": [
           "/setup helpcenter"
         ],
