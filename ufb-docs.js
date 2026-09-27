@@ -1377,15 +1377,19 @@ window.UFB_DOCS = [
     "commands": [
       {
         "name": "/rsvp create",
-        "description": "Post one event or a recurring series with Yes, Tentative and No buttons. Discord displays the start in each viewer’s timezone. Choose optional 1-hour and/or 24-hour reminders and an optional discussion thread for each night. A fresh post appears after each prior occurrence starts. Older /matchnight posts still work, but new attendance uses /rsvp. Position signup and formations are future additions.",
+        "description": "Pick a registered team, weekday, local time and timezone for one event or a recurring series. The next occurrence of the chosen weekday is used; if today's time has passed, it starts next week. Time accepts 7pm, 7:30pm or 19:00. Discord displays the start in each viewer’s timezone. Members answer Yes, Tentative or No. Optional reminders and a discussion thread are available for each night. Older /matchnight posts still work, but new attendance uses /rsvp. Position signup and formations are future additions.",
         "examples": [
-          "/rsvp create name:Training Night when:2026-10-03 20:30 timezone:America/Chicago repeat:weekly occurrences:8 reminders:both thread:true",
-          "/rsvp create name:One Match Night when:2026-10-04 19:00 timezone:America/Chicago reminders:1h"
+          "/rsvp create name:Roma Practice team:Roma FC day:Tuesday time:7pm timezone:Central repeat:weekly occurrences:8 reminders:both thread:true",
+          "/rsvp create name:One Match Night team:Roma FC day:Friday time:7:30pm timezone:Central reminders:1h"
         ],
         "options": [
           {"name":"name","description":"Event name","type":3,"required":true},
-          {"name":"when","description":"Local date and time: YYYY-MM-DD HH:mm","type":3,"required":true},
-          {"name":"timezone","description":"IANA timezone, e.g. America/Chicago","type":3,"required":true},
+          {"name":"team","description":"Choose the registered team playing","type":3,"required":true,"autocomplete":true},
+          {"name":"day","description":"Next occurrence of this weekday","type":3,"required":true,"choices":[
+            {"name":"Monday","value":"monday"},{"name":"Tuesday","value":"tuesday"},{"name":"Wednesday","value":"wednesday"},{"name":"Thursday","value":"thursday"},{"name":"Friday","value":"friday"},{"name":"Saturday","value":"saturday"},{"name":"Sunday","value":"sunday"}
+          ]},
+          {"name":"time","description":"Local time, e.g. 7pm or 7:30pm","type":3,"required":true},
+          {"name":"timezone","description":"Choose Central, Eastern, Pacific, or another timezone","type":3,"required":true,"autocomplete":true},
           {"name":"repeat","description":"Repeat and post each next occurrence automatically","type":3,"required":false,"choices":[
             {"name":"One time","value":"none"},{"name":"Daily","value":"daily"},{"name":"Weekly","value":"weekly"},{"name":"Every two weeks","value":"biweekly"}
           ]},
