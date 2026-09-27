@@ -1376,39 +1376,11 @@ window.UFB_DOCS = [
     "description": "Post availability RSVPs and select official leagues. Some league data integrations are still planned.",
     "commands": [
       {
-        "name": "/matchnight",
-        "description": "The team’s manager posts a match-night RSVP with Yes, Tentative and No buttons. Include an understandable date, time and timezone in starts_at.",
-        "options": [
-          {
-            "name": "league",
-            "description": "Choose the registered competition before selecting a team",
-            "type": 3,
-            "required": true,
-            "autocomplete": true
-          },
-          {
-            "name": "team",
-            "description": "Select the team and competition from suggestions",
-            "type": 3,
-            "required": true,
-            "autocomplete": true
-          },
-          {
-            "name": "starts_at",
-            "description": "Example: Tonight 8:30 PM CT",
-            "type": 3,
-            "required": true
-          }
-        ],
-        "examples": [
-          "/matchnight league:unc-6v6 team:UFL Como starts_at:Friday 8:30 PM CT"
-        ]
-      },
-      {
         "name": "/rsvp create",
-        "description": "Post a named event with Yes, Tentative and No buttons in the current channel. Enter a local date and time plus an IANA timezone; Discord displays the start in each viewer’s own timezone. Optionally repeat daily, weekly or every two weeks for 2–52 occurrences (default 8). A fresh RSVP post appears after each prior occurrence starts. Position signup and formation views are future additions.",
+        "description": "Post one event or a recurring series with Yes, Tentative and No buttons. Discord displays the start in each viewer’s timezone. Choose optional 1-hour and/or 24-hour reminders and an optional discussion thread for each night. A fresh post appears after each prior occurrence starts. Older /matchnight posts still work, but new attendance uses /rsvp. Position signup and formations are future additions.",
         "examples": [
-          "/rsvp create name:Training Night when:2026-10-03 20:30 timezone:America/Chicago repeat:weekly occurrences:8"
+          "/rsvp create name:Training Night when:2026-10-03 20:30 timezone:America/Chicago repeat:weekly occurrences:8 reminders:both thread:true",
+          "/rsvp create name:One Match Night when:2026-10-04 19:00 timezone:America/Chicago reminders:1h"
         ],
         "options": [
           {"name":"name","description":"Event name","type":3,"required":true},
@@ -1417,7 +1389,11 @@ window.UFB_DOCS = [
           {"name":"repeat","description":"Repeat and post each next occurrence automatically","type":3,"required":false,"choices":[
             {"name":"One time","value":"none"},{"name":"Daily","value":"daily"},{"name":"Weekly","value":"weekly"},{"name":"Every two weeks","value":"biweekly"}
           ]},
-          {"name":"occurrences","description":"Total dates for recurring events (2–52; default 8)","type":4,"required":false,"min_value":2,"max_value":52}
+          {"name":"occurrences","description":"Total dates for recurring events (2–52; default 8)","type":4,"required":false,"min_value":2,"max_value":52},
+          {"name":"reminders","description":"Optional reminder posts before each event","type":3,"required":false,"choices":[
+            {"name":"No reminders","value":"none"},{"name":"1 hour before","value":"1h"},{"name":"24 hours before","value":"24h"},{"name":"24 hours and 1 hour before","value":"both"}
+          ]},
+          {"name":"thread","description":"Open a discussion thread for each event night","type":5,"required":false}
         ]
       },
       {
