@@ -18,6 +18,8 @@ The original 6v6 Season 1 archive and Pick'ems data sync from Virtual Arena comp
 
 The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts, a balanced single-table league phase with guaranteed games per team, and qualifying play-ins that always resolve to a valid knockout bracket. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
 
+Aggregate BYOT is a separate custom game-night tool under Unc Wheel at `/wheel/aggregate-byot`; it is not an official end-of-season tournament. The former `/schedules/aggregate-byot` URL redirects there in the client.
+
 The public Users directory lists active members by Discord display nickname and shows staff or team titles assigned through the protected Admin clubhouse.
 
 `https://ufl.virtualarena.app/competitions/1/seasons/1/matches`

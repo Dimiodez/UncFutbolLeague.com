@@ -43,8 +43,7 @@ const scheduleTypes = {
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
   'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
-  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.'],
-  'aggregate-byot': ['Aggregate BYOT','Four games, one aggregate score, and golden goal when level.']
+  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.']
 };
 
 const locations = [
@@ -149,8 +148,8 @@ function teamsPage(params) {
 function schedulesPage(params) {
   const requestedType = params.get('type');
   if (!requestedType) {
-    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments'],['aggregate-byot','Aggregate BYOT','1v1, 3v3, 6v6 and 10v10 combined into one knockout score.','/schedules/aggregate-byot']];
-    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':key==='aggregate-byot'?'AB':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
+    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
+    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
   }
   const type=requestedType==='10v10'?'10v10':'6v6';
   const data = scheduleTypes[type];
@@ -163,7 +162,7 @@ function schedulesPage(params) {
 }
 
 function scheduleLandingTabs(active) {
-  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a><a class="tab ${active==='aggregate-byot'?'active':''}" href="/schedules/aggregate-byot" data-link>Aggregate BYOT</a></div>`;
+  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
 }
 
 function communityEventsPage() {
@@ -223,7 +222,7 @@ function aggregateSeriesCard(series,title) {
 
 function aggregateByotPage() {
   const rosters=aggregateByotState.teams.map((team,teamIndex)=>`<article><label class="aggregate-team-name"><span>Team name</span><input aria-label="Team ${teamIndex+1} name" value="${escapeHtml(team)}" data-aggregate-team="${teamIndex}"></label><div class="aggregate-player-list">${aggregateByotState.rosters[teamIndex].map((name,index)=>`<label><span>${String(index+1).padStart(2,'0')}</span><input aria-label="Team ${teamIndex+1} player ${index+1}" value="${escapeHtml(name)}" data-aggregate-player="${teamIndex}:${index}"></label>`).join('')}</div><small>1 to 1v1 · 3 to 3v3 · 6 to 6v6 · all return for 10v10</small></article>`).join('');
-  return pageHero('Four-match knockout format','Aggregate BYOT','Side-event wins and the 10v10 score combine to decide who advances.')+`<section class="section schedule-landing aggregate-byot-page">${scheduleLandingTabs('aggregate-byot')}<div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
+  return pageHero('Unc Wheel · game-night tools','Aggregate BYOT','A custom four-match knockout format—not an official end-of-season tournament.')+`<section class="section aggregate-byot-page"><a class="button button-secondary" href="/wheel" data-link>← Back to Unc Wheel</a><div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
 }
 
 function findAggregateSeries(id) {
@@ -626,7 +625,7 @@ async function hydrateUsersDirectory() {
 function arcadePage(){return '<section class="section arcade-hub"><span class="section-kicker">The clubhouse</span><h2>Arcade</h2><p class="section-intro">Pick a game. Rep your club. Beat your best.</p><div class="arcade-grid"><a class="card arcade-game-card" href="/arcade/cleat" data-link><img src="/assets/cleat-arcade.png" alt="Cleat pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">13 levels · Soccer breakout</span><h3>Cleat Arcade</h3><p>Break through defenders, dodge the buses, and beat the keeper. One cleat. Three lives.</p><strong>Play Cleat Arcade →</strong></a><a class="card arcade-game-card" href="/arcade/loosey-goosey" data-link><img src="/assets/goose-mode-arcade.png" alt="Goose Mode: Loosey Goosey pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless runner · Goose Mode</span><h3>Loosey Goosey</h3><p>Jump, glide, and honk your way to kickoff. Fuel up on Goose Mode and leave the opposition behind.</p><strong>Play Loosey Goosey →</strong></a><a class="card arcade-game-card" href="/arcade/sandy-uppy" data-link><img src="/assets/sandy-uppy-arcade.png" alt="Sandy Uppy pixel-art beach soccer game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless beach · Keep-ups</span><h3>Sandy Uppy</h3><p>Keep the ball off the sand, tackle castle builders, and watch the skies for a Goose Mode lifeline.</p><strong>Play Sandy Uppy →</strong></a></div></section>';}
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="section wheel-tools"><div><span class="section-kicker">Unc Wheel · game-night tools</span><h2>Aggregate BYOT</h2><p>Play a four-match knockout with your own squads. This is a custom Wheel format, not an official season-ending tournament.</p></div><a class="button button-primary" href="/wheel/aggregate-byot" data-link>Open Aggregate BYOT →</a></section><section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function funcPage() {
@@ -877,7 +876,11 @@ async function hydrateAccount() {
 }
 
 function render() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  let path = window.location.pathname.replace(/\/$/, '') || '/';
+  if (path === '/schedules/aggregate-byot') {
+    history.replaceState({}, '', `/wheel/aggregate-byot${window.location.search}${window.location.hash}`);
+    path = '/wheel/aggregate-byot';
+  }
   const params = new URLSearchParams(window.location.search);
   const main = document.querySelector('main');
   const canonicalPath = path === '/' ? '/' : path;
@@ -891,20 +894,20 @@ function render() {
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
   else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
   else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
-  else if (path === '/schedules/aggregate-byot') main.innerHTML = aggregateByotPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
   else if (path === routes.standings) main.innerHTML = standingsPage(params);
   else if (path === routes.users) main.innerHTML = usersPage();
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
   else if (path === routes.func) main.innerHTML = funcPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
+  else if (path === '/wheel/aggregate-byot') main.innerHTML = aggregateByotPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
   else if (path === routes.privacy) main.innerHTML = privacyPage();
   else if (path === routes.account) main.innerHTML = accountPage();
   else if (path === routes.ufb) main.innerHTML = ufbPage();
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
-  document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path || (new URL(a.href).pathname === '/arcade' && path.startsWith('/arcade/'))));
+  document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path || (new URL(a.href).pathname === '/arcade' && path.startsWith('/arcade/')) || (new URL(a.href).pathname === '/wheel' && path.startsWith('/wheel/'))));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
