@@ -23,7 +23,7 @@ Season 1 6v6 is preserved as a read-only Pick'ems archive. Season 2 team lists, 
 
 The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts, a balanced single-table league phase with guaranteed games per team, and qualifying play-ins that always resolve to a valid knockout bracket. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
 
-Aggregate BYOT is a separate custom game-night tool under Unc Wheel at `/wheel/aggregate-byot`; it is not an official end-of-season tournament. The former `/schedules/aggregate-byot` URL redirects there in the client.
+Aggregate BYOT is a custom game-night tool in the Unc Wheel tab bar; it is not an official end-of-season tournament. Its direct `/wheel/aggregate-byot` URL remains available, and the former `/schedules/aggregate-byot` URL redirects there in the client.
 
 The public Users directory lists active members by Discord display nickname and shows staff or team titles assigned through the protected Admin clubhouse.
 
