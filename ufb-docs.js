@@ -6,7 +6,7 @@ window.UFB_DOCS = [
     "commands": [
       {
         "name": "/ufb",
-        "description": "Open your private UFB control panel for My Team, Free Agents and Stats. Existing league-focused slash commands remain available as shortcuts.",
+        "description": "Open your private UFB control panel for My Team and Stats. Existing league-focused slash commands remain available as shortcuts.",
         "examples": [
           "/ufb"
         ],
@@ -1494,7 +1494,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup panel",
-        "description": "Discord Administrator or configured UFB Administrator: open the private setup panel for staff roles, competition defaults, free-agent publishing channels, Help Center and current EA feed configuration.",
+        "description": "Discord Administrator or configured UFB Administrator: open the private setup panel for staff roles, competition defaults, Help Center and current EA feed configuration.",
         "examples": [
           "/setup panel"
         ],
@@ -1510,7 +1510,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup helpcenter",
-        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with six simple-language threads covering Start Here, Teams & Rosters, Free Agents, FC27 Matches & Images, Official League and Administrator Setup. The bot refreshes existing help centers when its guide changes; run this command to create or repair one manually without duplicate threads. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
+        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with five simple-language threads covering Start Here, Teams & Rosters, FC27 Matches & Images, Official League and Administrator Setup. The bot refreshes existing help centers when its guide changes; run this command to create or repair one manually without duplicate threads. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
         "examples": [
           "/setup helpcenter"
         ],
@@ -1742,7 +1742,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup health",
-        "description": "Server owner/administrator: run a private readiness check covering EA club links, live FC27 feeds, pending match watchers, failed stat deliveries and free-agent publishing channels.",
+        "description": "Server owner/administrator: run a private readiness check covering EA club links, live FC27 feeds, pending match watchers and failed stat deliveries.",
         "examples": [
           "/setup health"
         ],

@@ -1,0 +1,113 @@
+window.UFL_SEASON_6V6_S2 = {
+  "division": "6v6",
+  "uflSeason": 2,
+  "competitionId": 1,
+  "seasonId": 2,
+  "source": "https://ufl.virtualarena.app/competitions/1/seasons/2/matches",
+  "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
+  "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
+  "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
+  "syncedAt": "2026-09-28T22:34:27.000Z",
+  "statsFetchedAt": "2026-09-28T22:34:27.000Z",
+  "teams": {
+    "team-12": [
+      "UFL Roma",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png"
+    ],
+    "team-11": [
+      "UFL Toluca",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png"
+    ]
+  },
+  "teamDetails": [
+    {
+      "key": "team-12",
+      "name": "UFL Roma",
+      "abbreviation": "ROM",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Roma",
+      "rosterSize": 0,
+      "stats": []
+    },
+    {
+      "key": "team-11",
+      "name": "UFL Toluca",
+      "abbreviation": "TLC",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
+      "rosterSize": 5,
+      "stats": []
+    }
+  ],
+  "standings": [
+    [
+      "team-11",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "team-12",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "weeks": [],
+  "leaderboards": {
+    "players": {
+      "goals": {
+        "name": "Boot",
+        "stat": "Goals",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/goals",
+        "records": []
+      },
+      "assists": {
+        "name": "Playmaker",
+        "stat": "Assists",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/assists",
+        "records": []
+      },
+      "goals_and_assists": {
+        "name": "Ball",
+        "stat": "Goals And Assists",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/goals_and_assists",
+        "records": []
+      },
+      "tackles_per_game": {
+        "name": "Enforcer",
+        "stat": "Tackles Per Game",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/tackles_per_game",
+        "records": []
+      },
+      "goalkeeper_cleansheet": {
+        "name": "Glove",
+        "stat": "Goalkeeper Cleansheets",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/goalkeeper_cleansheet",
+        "records": []
+      },
+      "defender_cleansheet": {
+        "name": "Shield",
+        "stat": "Defender Cleansheets",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/defender_cleansheet",
+        "records": []
+      },
+      "average_match_rating": {
+        "name": "Most Valuable Player",
+        "stat": "Average Match Rating",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/average_match_rating",
+        "records": []
+      }
+    }
+  }
+};

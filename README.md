@@ -14,7 +14,7 @@ The `_redirects` file provides single-page route fallback on Cloudflare Pages. P
 
 ## Virtual Arena league data
 
-Fixtures, results, standings, team crests, and Pick'ems match data are synced only from UNC Futbol League competition `1`, season `1`:
+The original 6v6 Season 1 archive and Pick'ems data sync from Virtual Arena competition `1`, season `1`. The current UFL Season 2 has separate feeds: 6v6 is Virtual Arena competition `1`, season `2`; 10v10 is competition `2`, season `3`. Virtual Arena's season `3` is still **UFL Season 2** on this website.
 
 The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts, a balanced single-table league phase with guaranteed games per team, and qualifying play-ins that always resolve to a valid knockout bracket. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
 
@@ -22,12 +22,11 @@ The public Users directory lists active members by Discord display nickname and 
 
 `https://ufl.virtualarena.app/competitions/1/seasons/1/matches`
 
-Run `node scripts/sync-virtual-arena.mjs` to refresh the local snapshot. The GitHub Actions workflow checks the same season four times daily and commits only when the official data changes.
+Run `node scripts/sync-virtual-arena.mjs` for the Season 1 archive and `node scripts/sync-virtual-arena-season2.mjs` for both current divisions. The bot-compatible JSON feeds are `pickems-app/season-data-6v6-s2.json` and `pickems-app/season-data-10v10-s2.json`. The GitHub Actions workflow checks all three Virtual Arena seasons four times daily and commits only when official data changes. Each Discord server links its own league to the matching public JSON feed with `/setup leaguesource`.
 
 ## Before launch
 
 - Add the permanent Discord invitation URL in `app.js`.
-- Link the FC27 Season 2 Virtual Arena feeds when the new 6v6 and 10v10 competitions are created.
 - Deploy to Cloudflare Pages, verify the preview, then update the GoDaddy `@` and `www` records.
 - The production UWU build is bundled under `wheel-app/` and integrated beneath the UFL navigation at `/wheel`. The same-origin frame automatically expands to the application's full content height so the page uses one natural scrollbar.
 

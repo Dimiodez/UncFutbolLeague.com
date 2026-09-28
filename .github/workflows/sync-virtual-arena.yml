@@ -22,14 +22,16 @@ jobs:
           node-version: 22
       - name: Sync competition 1 season 1
         run: node scripts/sync-virtual-arena.mjs
+      - name: Sync UFL Season 2 (6v6 and 10v10)
+        run: node scripts/sync-virtual-arena-season2.mjs
       - name: Publish changed league data
         run: |
-          if git diff --quiet -- pickems-app/season-data.js pickems-app/season-data.json; then
+          if git diff --quiet -- pickems-app/season-data.js pickems-app/season-data.json pickems-app/season-data-6v6-s2.json pickems-app/season-data-10v10-s2.json pickems-app/season-data-6v6-s2.js pickems-app/season-data-10v10-s2.js; then
             echo "UNC Futbol League data is already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add pickems-app/season-data.js pickems-app/season-data.json
+          git add pickems-app/season-data.js pickems-app/season-data.json pickems-app/season-data-6v6-s2.json pickems-app/season-data-10v10-s2.json pickems-app/season-data-6v6-s2.js pickems-app/season-data-10v10-s2.js
           git commit -m "Sync Virtual Arena league data"
           git push
