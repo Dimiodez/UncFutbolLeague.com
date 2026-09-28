@@ -1502,7 +1502,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup roles",
-        "description": "Post-install onboarding: choose separate Discord roles for UFB Administrator, Moderator and Team Manager from guided role selectors. UFB Administrators control bot setup; Moderators receive league-oversight access; Team Managers handle teams, rosters and recruiting. Only a real Discord server Administrator can assign or replace the UFB Administrator role.",
+        "description": "Post-install onboarding: choose separate Discord roles for UFB Administrator, Moderator and Team Manager from guided role selectors. UFB Administrators control bot setup; Moderators receive league-oversight access; Team Managers handle club registration and EA linking. Player signing and recruiting are in the workspace. Only a real Discord server Administrator can assign or replace the UFB Administrator role.",
         "examples": [
           "/setup roles"
         ],
