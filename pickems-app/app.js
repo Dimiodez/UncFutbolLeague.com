@@ -1,15 +1,25 @@
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const season = window.UFL_SEASON;
-const teamByKey = Object.fromEntries(Object.entries(season.teams).map(([key,[name,logo]]) => [key,{key,name,logo}]));
-const currentWeek = season.weeks.find(week => week.matches.some(match => match[3] === null))?.week ?? season.weeks.at(-1).week;
+const seasonData = window.UFL_SEASONS || { 's1-6v6': window.UFL_SEASON };
 const competitions = {
-  's1-6v6': { season: 1, division: '6v6', game: 'FC26', available: true },
-  's2-6v6': { season: 2, division: '6v6', game: 'FC27', available: false },
-  's2-10v10': { season: 2, division: '10v10', game: 'FC27', available: false }
+  's2-6v6': { season: 2, division: '6v6', game: 'FC27' },
+  's2-10v10': { season: 2, division: '10v10', game: 'FC27' },
+  's1-6v6': { season: 1, division: '6v6', game: 'FC26', archived: true }
 };
-const state = { competition: 's1-6v6', mode: 'simple', simpleWeek: currentWeek, detailWeek: currentWeek, simplePeriod: 'weekly', detailPeriod: 'weekly' };
-const teams = Object.values(teamByKey);
+const state = { competition: 's2-6v6', mode: 'simple', simpleWeek: 1, detailWeek: 1, simplePeriod: 'weekly', detailPeriod: 'weekly' };
+let season;
+let teamByKey;
+let teams;
+function useCompetition(key) {
+  state.competition = key;
+  season = seasonData[key] || { teams: {}, standings: [], weeks: [] };
+  teamByKey = Object.fromEntries(Object.entries(season.teams || {}).map(([teamKey,[name,logo]]) => [teamKey,{key:teamKey,name,logo}]));
+  teams = Object.values(teamByKey);
+  const currentWeek = season.weeks?.find(week => week.matches.some(match => match[3] === null || match[4] === null))?.week ?? season.weeks?.at(-1)?.week ?? 1;
+  state.simpleWeek = currentWeek;
+  state.detailWeek = currentWeek;
+}
+useCompetition(state.competition);
 const rosters = {
   ARS:['Saka','Ødegaard','Rice','Havertz'], CHE:['Palmer','Jackson','Fernández','Caicedo'], LIV:['Salah','Díaz','Szoboszlai','Mac Allister'],
   MCI:['Haaland','Foden','De Bruyne','Rodri'], MUN:['Fernandes','Rashford','Garnacho','Højlund'], NEW:['Isak','Gordon','Guimarães','Tonali'],
@@ -22,9 +32,9 @@ const serverBallots = new Map();
 const escapeHtml = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 const badge = team => `<img class="team-badge team-logo" src="${team.logo}" alt="${escapeHtml(team.name)} crest" loading="lazy">`;
 
-function weekData(week) { return season.weeks.find(item => item.week === week) || season.weeks[0]; }
+function weekData(week) { return season.weeks?.find(item => item.week === week) || season.weeks?.[0] || null; }
 function fixturesForWeek(week) {
-  return weekData(week).matches.map(([id,home,away,hs,as]) => ({
+  return (weekData(week)?.matches || []).map(([id,home,away,hs,as]) => ({
     id: String(id), home: teamByKey[home], away: teamByKey[away], hs, as,
     url: `https://ufl.virtualarena.app/matches/${id}`
   }));
@@ -35,14 +45,14 @@ function weekTabs(target, selected, type) {
     return `<button class="${week.week===selected?'active ':''}${complete?'complete':''}" data-${type}-week="${week.week}"><span>${complete?'✓':'OPEN'}</span>Week ${week.week}</button>`;
   }).join('');
 }
-function formatKickoff(week) { return weekData(week).date; }
+function formatKickoff(week) { return weekData(week)?.date || 'Date to be announced'; }
 const ballotKey = (competition, week) => `${competition}:${Number(week)}`;
 function getBallot(week) { return serverBallots.get(ballotKey(state.competition, week)) || {}; }
 function showToast(message) { const toast=$('#toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>toast.classList.remove('show'),2400); }
 
 function renderSimple() {
   const week=state.simpleWeek, data=weekData(week), fixtures=fixturesForWeek(week), complete=fixtures.every(f=>f.hs!==null&&f.as!==null), open=!complete&&Date.now()<data.scheduledAt*1000, saved=getBallot(week);
-  weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`Gameweek ${week} · 5 matches`;
+  weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`Gameweek ${week} · ${fixtures.length} match${fixtures.length===1?'':'es'}`;
   $('#simple-status').textContent=open?'Voting open':complete?'Final · voting closed':'Voting closed'; $('#simple-status').className=`status ${open?'open':'closed'}`;
   $('#live-badge').innerHTML=`<i></i> WEEK ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
   $('#simple-fixtures').innerHTML=fixtures.map((f,i)=>{
@@ -61,6 +71,8 @@ function renderSimple() {
 }
 function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
 function renderSimpleLeaders(){
+  $('#simple-leader-title').textContent=`${competitions[state.competition].division} standings`;
+  const source=$('#standings-source');if(source)source.href=season.standingsSource||season.seriesSource||'#';
   $('#simple-leaders').innerHTML=season.standings.map(([key,played,wins,draws,losses,gf,ga,gd,points],index)=>{
     const team=teamByKey[key];
     return `<a class="standing-row" href="${season.standingsSource}" target="_blank" rel="noopener noreferrer"><b>${index+1}</b>${badge(team)}<p><strong>${team.name}</strong><small>${wins}W · ${draws}D · ${losses}L</small></p><span>${played}</span><span>${gd>0?'+':''}${gd}</span><strong>${points}</strong></a>`;
@@ -101,11 +113,8 @@ function renderDetailLeaders(){ const season=state.detailPeriod==='season'; $('#
 document.addEventListener('click',async event=>{
   const competitionButton=event.target.closest('[data-competition]');if(competitionButton){
     const key=competitionButton.dataset.competition,config=competitions[key];if(!config)return;
-    state.competition=key;$$('[data-competition]').forEach(button=>button.classList.toggle('active',button===competitionButton));
-    const current=key==='s1-6v6';$('[data-competition-pane="s1-6v6"]').hidden=!current;$('#future-competition').hidden=current;
-    if(current){$('#subtitle').textContent='Pick the winner or a draw across all five scheduled matches.';await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();}
-    else {$('#future-title').textContent=`Season ${config.season} · ${config.division} Pick’ems`;$('#future-copy').textContent=`This tab is prepared for the next ${config.division} season. Its teams, fixtures, ballots, and leaderboard will remain separate from Season 1 when the new Virtual Arena season is linked.`;$('#live-badge').innerHTML=`<i></i> ${config.game} · FUTURE`;$('#subtitle').textContent=`The ${config.division} Pick’ems archive and future season live together here.`;}
-    window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);return;
+    useCompetition(key);$$('[data-competition]').forEach(button=>button.classList.toggle('active',button===competitionButton));
+    await renderCompetition();return;
   }
   const mode=event.target.closest('[data-mode]'); if(mode){state.mode=mode.dataset.mode; $$('[data-mode]').forEach(b=>b.classList.toggle('active',b===mode)); $$('[data-pane]').forEach(p=>p.classList.toggle('active',p.dataset.pane===state.mode)); $('#subtitle').textContent=state.mode==='simple'?'Pick the winner or a draw across all five scheduled matches.':'Call scores, scorers, assists, and your Double Down.'; window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);}
   const sw=event.target.closest('[data-simple-week]'); if(sw){state.simpleWeek=Number(sw.dataset.simpleWeek);await loadBallot(state.simpleWeek);await loadLeaderboard();renderSimple();}
@@ -127,6 +136,23 @@ document.addEventListener('click',async event=>{
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
-async function initialize(){await loadAuth();await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();}
-const syncedLabel=$('#data-source');if(syncedLabel&&season.syncedAt)syncedLabel.textContent=`Virtual Arena · synced ${new Date(season.syncedAt).toLocaleString()}`;
+async function renderCompetition(){
+  const config=competitions[state.competition],ready=Boolean(season.weeks?.length);
+  const syncedLabel=$('#data-source');if(syncedLabel)syncedLabel.textContent=season.syncedAt?`Virtual Arena · synced ${new Date(season.syncedAt).toLocaleString()}`:'Virtual Arena · awaiting first sync';
+  $('[data-competition-pane="pickems"]').hidden=!ready;$('#future-competition').hidden=ready;
+  if(ready){
+    $('#subtitle').textContent=config.archived?'Season 1 is closed and preserved here with its final results and leaderboard.':`Pick the winner or a draw in every ${config.division} fixture.`;
+    $('#live-badge').innerHTML=`<i></i> ${config.archived?'ARCHIVED':`${config.division} · SEASON 2`}`;
+    $('#season-heading').textContent=`${config.game} · UFL Season ${config.season}${config.archived?' · Archive':''}`;
+    await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();
+  }else{
+    const registered=season.teamDetails?.length||0;
+    $('#future-title').textContent=`UFL Season 2 · ${config.division} Pick’ems`;
+    $('#future-copy').textContent=`The ${config.division} competition is connected to Virtual Arena${registered?` with ${registered} registered team${registered===1?'':'s'}`:''}. Pick’ems will open automatically when the official schedule is published.`;
+    $('#live-badge').innerHTML=`<i></i> ${config.division} · REGISTRATION`;
+    $('#subtitle').textContent=`UFL Season 2 ${config.division} is ready for teams and fixtures.`;
+  }
+  window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
+}
+async function initialize(){await loadAuth();await renderCompetition();}
 initialize();

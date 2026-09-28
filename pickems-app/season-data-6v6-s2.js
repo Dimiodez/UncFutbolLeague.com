@@ -1,8 +1,12 @@
 window.UFL_SEASON_6V6_S2 = {
+  "key": "s2-6v6",
   "division": "6v6",
   "uflSeason": 2,
+  "game": "FC27",
+  "status": "registration",
   "competitionId": 1,
   "seasonId": 2,
+  "seriesSource": "https://ufl.virtualarena.app/competition-series/1/seasons/2",
   "source": "https://ufl.virtualarena.app/competitions/1/seasons/2/matches",
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
@@ -10,18 +14,18 @@ window.UFL_SEASON_6V6_S2 = {
   "syncedAt": "2026-09-28T22:34:27.000Z",
   "statsFetchedAt": "2026-09-28T22:34:27.000Z",
   "teams": {
-    "team-12": [
+    "ROM": [
       "UFL Roma",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png"
     ],
-    "team-11": [
+    "TLC": [
       "UFL Toluca",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png"
     ]
   },
   "teamDetails": [
     {
-      "key": "team-12",
+      "key": "ROM",
       "name": "UFL Roma",
       "abbreviation": "ROM",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
@@ -30,7 +34,7 @@ window.UFL_SEASON_6V6_S2 = {
       "stats": []
     },
     {
-      "key": "team-11",
+      "key": "TLC",
       "name": "UFL Toluca",
       "abbreviation": "TLC",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
@@ -41,7 +45,7 @@ window.UFL_SEASON_6V6_S2 = {
   ],
   "standings": [
     [
-      "team-11",
+      "TLC",
       0,
       0,
       0,
@@ -52,7 +56,7 @@ window.UFL_SEASON_6V6_S2 = {
       0
     ],
     [
-      "team-12",
+      "ROM",
       0,
       0,
       0,
@@ -107,6 +111,158 @@ window.UFL_SEASON_6V6_S2 = {
         "stat": "Average Match Rating",
         "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/average_match_rating",
         "records": []
+      }
+    },
+    "teams": {
+      "wins": {
+        "name": "Wins",
+        "stat": "Wins",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/wins",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "draws": {
+        "name": "Draws",
+        "stat": "Draws",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/draws",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "losses": {
+        "name": "Losses",
+        "stat": "Losses",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/losses",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goals_for": {
+        "name": "Goals Scored",
+        "stat": "Goals Scored",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/goals_for",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goals_against": {
+        "name": "Goals Conceded",
+        "stat": "Goals Conceded",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/goals_against",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goal_difference": {
+        "name": "Goal Difference",
+        "stat": "Goal Difference",
+        "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/teams/goal_difference",
+        "records": [
+          {
+            "data": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790634826.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
       }
     }
   }

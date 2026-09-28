@@ -14,7 +14,12 @@ The `_redirects` file provides single-page route fallback on Cloudflare Pages. P
 
 ## Virtual Arena league data
 
-The original 6v6 Season 1 archive and Pick'ems data sync from Virtual Arena competition `1`, season `1`. The current UFL Season 2 has separate feeds: 6v6 is Virtual Arena competition `1`, season `2`; 10v10 is competition `2`, season `3`. Virtual Arena's season `3` is still **UFL Season 2** on this website.
+UFL Season 2 uses two Virtual Arena competition feeds even though Virtual Arena numbers them differently. The public website intentionally presents both as UFL Season 2:
+
+- 6v6: competition `1`, Virtual Arena season `2`
+- 10v10: competition `2`, Virtual Arena season `3`
+
+Season 1 6v6 is preserved as a read-only Pick'ems archive. Season 2 team lists, standings, fixtures, results, statistics, and Pick'ems data sync from the two current feeds.
 
 The Schedules area also includes a recurring BYOT tournament page with flexible team/group counts, a balanced single-table league phase with guaranteed games per team, and qualifying play-ins that always resolve to a valid knockout bracket. Published BYOT draws are public, while its built-in tournament generator and publishing controls are restricted to signed-in owners and administrators.
 
@@ -22,13 +27,15 @@ Aggregate BYOT is a separate custom game-night tool under Unc Wheel at `/wheel/a
 
 The public Users directory lists active members by Discord display nickname and shows staff or team titles assigned through the protected Admin clubhouse.
 
-`https://ufl.virtualarena.app/competitions/1/seasons/1/matches`
+`https://ufl.virtualarena.app/competitions/1/seasons/2/matches`
 
-Run `node scripts/sync-virtual-arena.mjs` for the Season 1 archive and `node scripts/sync-virtual-arena-season2.mjs` for both current divisions. The bot-compatible JSON feeds are `pickems-app/season-data-6v6-s2.json` and `pickems-app/season-data-10v10-s2.json`. The GitHub Actions workflow checks all three Virtual Arena seasons four times daily and commits only when official data changes. Each Discord server links its own league to the matching public JSON feed with `/setup leaguesource`.
+`https://ufl.virtualarena.app/competitions/2/seasons/3/matches`
+
+Run `node scripts/sync-virtual-arena.mjs` to refresh both current divisions while retaining the committed Season 1 archive. The bot-compatible JSON feeds are `pickems-app/season-data-6v6-s2.json` and `pickems-app/season-data-10v10-s2.json`. The GitHub Actions workflow checks both current Virtual Arena seasons four times daily and commits only when official data changes. Each Discord server links its own league to the matching public JSON feed with `/setup leaguesource`.
 
 ## Before launch
 
-- Add the permanent Discord invitation URL in `app.js`.
+- Add the permanent Discord invitation URL in `app.js` when available.
 - Deploy to Cloudflare Pages, verify the preview, then update the GoDaddy `@` and `www` records.
 - The production UWU build is bundled under `wheel-app/` and integrated beneath the UFL navigation at `/wheel`. The same-origin frame automatically expands to the application's full content height so the page uses one natural scrollbar.
 
@@ -39,7 +46,7 @@ Run `node scripts/sync-virtual-arena.mjs` for the Season 1 archive and `node scr
 
 `wheel-app/` currently contains the verified production build from Unc Wheel United commit `6ecbcdc`. Rebuild it when the upstream Wheel changes. Touchline requires a persistent Python service and database, so its Pick'em deployment is tracked separately from this static shell.
 
-`pickems-app/` is a focused extraction of Touchline's Pick'em modes from commit `9bbf3fe`. Simple Pick'ems uses production Discord identity and D1-backed shared ballots, scoring, and leaderboards. Season 1 6v6 remains the current competition, with isolated Season 2 6v6 and 10v10 tabs prepared for their future Virtual Arena feeds. Detailed Pick'ems remains bundled but hidden for future use.
+`pickems-app/` is a focused extraction of Touchline's Pick'em modes from commit `9bbf3fe`. Simple Pick'ems uses production Discord identity and D1-backed shared ballots, scoring, and leaderboards. Season 2 6v6 and 10v10 are the current competitions; Season 1 6v6 is closed and remains available as a read-only archive. New Virtual Arena fixtures are added to D1 from the committed official snapshots when Pick'ems loads. Detailed Pick'ems remains bundled but hidden for future use.
 
 ## Discord authentication setup
 

@@ -1,8 +1,12 @@
 window.UFL_SEASON_10V10_S2 = {
+  "key": "s2-10v10",
   "division": "10v10",
   "uflSeason": 2,
+  "game": "FC27",
+  "status": "registration",
   "competitionId": 2,
   "seasonId": 3,
+  "seriesSource": "https://ufl.virtualarena.app/competition-series/1/seasons/3",
   "source": "https://ufl.virtualarena.app/competitions/2/seasons/3/matches",
   "standingsSource": "https://ufl.virtualarena.app/competitions/2/seasons/3/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/2/seasons/3/teams",
@@ -55,6 +59,44 @@ window.UFL_SEASON_10V10_S2 = {
         "name": "Most Valuable Player",
         "stat": "Average Match Rating",
         "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/players/average_match_rating",
+        "records": []
+      }
+    },
+    "teams": {
+      "wins": {
+        "name": "Wins",
+        "stat": "Wins",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/wins",
+        "records": []
+      },
+      "draws": {
+        "name": "Draws",
+        "stat": "Draws",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/draws",
+        "records": []
+      },
+      "losses": {
+        "name": "Losses",
+        "stat": "Losses",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/losses",
+        "records": []
+      },
+      "goals_for": {
+        "name": "Goals Scored",
+        "stat": "Goals Scored",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/goals_for",
+        "records": []
+      },
+      "goals_against": {
+        "name": "Goals Conceded",
+        "stat": "Goals Conceded",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/goals_against",
+        "records": []
+      },
+      "goal_difference": {
+        "name": "Goal Difference",
+        "stat": "Goal Difference",
+        "url": "https://ufl.virtualarena.app/competitions/2/seasons/3/stats/teams/goal_difference",
         "records": []
       }
     }

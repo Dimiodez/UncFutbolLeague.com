@@ -38,6 +38,9 @@
 /pickems-app/season-data.json
   Cache-Control: no-store, max-age=0
 
+/pickems-app/seasons/*
+  Cache-Control: no-store, max-age=0
+
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
