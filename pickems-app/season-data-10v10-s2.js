@@ -11,15 +11,28 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/stats",
-  "syncedAt": "2026-09-29T07:00:02.000Z",
-  "statsFetchedAt": "2026-09-29T07:00:02.000Z",
+  "syncedAt": "2026-09-29T16:33:09.000Z",
+  "statsFetchedAt": "2026-09-29T16:33:09.000Z",
   "teams": {
+    "NOB": [
+      "UFL Newell's OB",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png"
+    ],
     "TFC": [
       "UFL Timbers",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png"
     ]
   },
   "teamDetails": [
+    {
+      "key": "NOB",
+      "name": "UFL Newell's OB",
+      "abbreviation": "NOB",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
+      "rosterSize": 1,
+      "stats": []
+    },
     {
       "key": "TFC",
       "name": "UFL Timbers",
@@ -31,6 +44,17 @@ window.UFL_SEASON_10V10_S2 = {
     }
   ],
   "standings": [
+    [
+      "NOB",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
     [
       "TFC",
       0,
@@ -97,6 +121,15 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
@@ -111,6 +144,15 @@ window.UFL_SEASON_10V10_S2 = {
         "stat": "Draws",
         "url": "https://ufl.virtualarena.app/competitions/2/seasons/4/stats/teams/draws",
         "records": [
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
           {
             "data": {
               "name": "UFL Timbers",
@@ -129,6 +171,15 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
@@ -143,6 +194,15 @@ window.UFL_SEASON_10V10_S2 = {
         "stat": "Goals Scored",
         "url": "https://ufl.virtualarena.app/competitions/2/seasons/4/stats/teams/goals_for",
         "records": [
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
           {
             "data": {
               "name": "UFL Timbers",
@@ -161,6 +221,15 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
@@ -175,6 +244,15 @@ window.UFL_SEASON_10V10_S2 = {
         "stat": "Goal Difference",
         "url": "https://ufl.virtualarena.app/competitions/2/seasons/4/stats/teams/goal_difference",
         "records": [
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
           {
             "data": {
               "name": "UFL Timbers",
