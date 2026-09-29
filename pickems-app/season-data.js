@@ -1217,7 +1217,7 @@ window.UFL_SEASONS = {
         "abbreviation": "TLC",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
-        "rosterSize": 5,
+        "rosterSize": 7,
         "stats": []
       }
     ],
