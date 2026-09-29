@@ -39,3 +39,17 @@ test('registration snapshots stay usable before schedules are published', async 
     assert.ok(season.standingsSource);
   }
 });
+
+test('league surfaces expose season-first navigation', async () => {
+  const [siteApp, pickemsApp, pickemsMarkup] = await Promise.all([
+    readFile(new URL('../app.js', import.meta.url), 'utf8'),
+    readFile(new URL('../pickems-app/app.js', import.meta.url), 'utf8'),
+    readFile(new URL('../pickems-app/index.html', import.meta.url), 'utf8')
+  ]);
+  assert.match(siteApp, /leagueSeasonTabs\('\/teams'/);
+  assert.match(siteApp, /leagueSeasonTabs\('\/schedules'/);
+  assert.match(siteApp, /leagueSeasonTabs\('\/standings'/);
+  assert.match(pickemsMarkup, /data-pickem-season="1"/);
+  assert.match(pickemsMarkup, /data-pickem-division="10v10"/);
+  assert.match(pickemsApp, /'s1-10v10'.*unavailable: true/);
+});

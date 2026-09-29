@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20260909-season-tabs1">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20260929-season-navigation1">
 </head>
 <body>
   <main class="pickems-shell">
@@ -18,11 +18,16 @@
       <span class="live-badge" id="live-badge"><i></i> LOADING SEASON</span>
     </header>
 
-    <nav class="competition-switch" aria-label="Pick’ems season and division">
-      <button class="active" data-competition="s2-6v6"><span>Current</span><strong>Season 2</strong><small>6v6 · FC27</small></button>
-      <button data-competition="s2-10v10"><span>Current</span><strong>Season 2</strong><small>10v10 · FC27</small></button>
-      <button data-competition="s1-6v6"><span>Archived</span><strong>Season 1</strong><small>6v6 · FC26</small></button>
-    </nav>
+    <div class="competition-switch-stack">
+      <nav class="competition-switch" aria-label="Pick’ems season">
+        <button class="active" data-pickem-season="2"><span>Current</span><strong>Season 2</strong><small>FC27</small></button>
+        <button data-pickem-season="1"><span>Archived</span><strong>Season 1</strong><small>FC26</small></button>
+      </nav>
+      <nav class="competition-division-switch" aria-label="Pick’ems division">
+        <button class="active" data-pickem-division="6v6">6v6</button>
+        <button data-pickem-division="10v10">10v10</button>
+      </nav>
+    </div>
 
     <nav class="mode-switch" aria-label="Pick’ems format" hidden>
       <button class="active" data-mode="simple"><span>✓</span><strong>Simple Pick’ems</strong><small>Win, draw, or loss</small></button>
@@ -47,7 +52,7 @@
     </section>
 
     <section class="competition-future" id="future-competition">
-      <div class="future-mark">S2</div><p class="eyebrow">FC27 · Official season feeds connected</p><h2 id="future-title">UFL Season 2 · 6v6 Pick’ems</h2><p id="future-copy">Teams are registering now. Pick’ems will open automatically when the official schedule is published.</p><div class="future-checklist"><span>Season 1 archived</span><span>6v6 and 10v10 separated</span><span>Shared leaderboards ready</span></div>
+      <div class="future-mark" id="future-mark">S2</div><p class="eyebrow" id="future-kicker">FC27 · Official season feeds connected</p><h2 id="future-title">UFL Season 2 · 6v6 Pick’ems</h2><p id="future-copy">Teams are registering now. Pick’ems will open automatically when the official schedule is published.</p><div class="future-checklist"><span>Season 1 archived</span><span>6v6 and 10v10 separated</span><span>Shared leaderboards ready</span></div>
     </section>
 
     <section class="mode-pane" data-pane="detailed" hidden>
@@ -61,6 +66,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20260929-10v10-season4"></script>
-  <script src="/pickems-app/app.js?v=20260928-season2"></script>
+  <script src="/pickems-app/app.js?v=20260929-season-navigation1"></script>
 </body>
 </html>

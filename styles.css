@@ -107,6 +107,7 @@ main { min-height: 70vh; }
 .tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin: 2rem 0; }
 .tab { padding: .75rem 1rem; border: 1px solid #bdc9d6; background: white; text-decoration: none; font: 800 .95rem "Barlow Condensed", sans-serif; text-transform: uppercase; }
 .tab.active, .tab:hover { background: var(--navy); color: white; border-color: var(--navy); }
+.league-tab-stack{display:grid;gap:0;margin:2rem 0}.league-tab-stack .tabs{margin:0}.league-season-tabs{gap:.75rem;padding-bottom:1rem;border-bottom:1px solid var(--line)}.league-season-tab{display:grid;min-width:180px;gap:2px;padding:1rem 1.2rem;text-align:left}.league-season-tab strong{font-size:1.15rem}.league-season-tab small{color:var(--muted);font:700 .68rem Inter,sans-serif;letter-spacing:.02em;text-transform:none}.league-season-tab.active small,.league-season-tab:hover small{color:#c4d3e4}.league-division-tabs{padding-top:1rem}
 .table-wrap { overflow-x: auto; background: white; border: 1px solid var(--line); }
 .sync-note{margin:16px 0;color:var(--muted);font-size:.78rem}.match-number{display:block;margin-top:2px;color:var(--muted)}.result-link{font-weight:800;text-decoration:none}.result-link.final{color:var(--good)}.result-link.upcoming{color:var(--blue)}.table-team{display:flex;align-items:center;gap:10px;min-width:190px;color:inherit;text-decoration:none}.table-team img{width:32px;height:32px;object-fit:contain}.league-team-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.league-team-card{display:grid;grid-template-columns:68px minmax(0,1fr) auto;align-items:center;gap:18px;padding:20px;border:1px solid var(--line);border-left:4px solid var(--blue);color:inherit;background:var(--paper);text-decoration:none;box-shadow:var(--shadow);transition:.2s}.league-team-card:hover{border-left-color:var(--red);transform:translateY(-2px)}.league-team-card img{width:64px;height:64px;object-fit:contain}.league-team-card h2,.league-team-card p{margin:0}.league-team-card h2{font-size:1.55rem}.league-team-card p,.league-team-card span{color:var(--muted);font-size:.75rem}.league-team-card b{color:var(--red);font-size:.75rem}
 @media(min-width:721px){.league-team-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}.league-team-card{display:grid!important;grid-template-columns:68px minmax(0,1fr) auto!important}.league-team-card img{width:64px!important;height:64px!important}}
@@ -188,6 +189,7 @@ td strong { font-family: "Barlow Condensed", sans-serif; font-size: 1.1rem; }
   .page-hero p { max-width: 100%; overflow-wrap: anywhere; }
   .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tab { min-width: 0; padding-inline: .6rem; text-align: center; }
+  .league-season-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.league-division-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}.league-season-tab{text-align:left}
   .empty-state { padding-inline: 1rem; overflow: hidden; }
   .empty-state h2 { font-size: clamp(2rem, 11vw, 2.8rem); overflow-wrap: anywhere; }
   .integrated-app iframe { min-height: calc(100vh - 82px); }

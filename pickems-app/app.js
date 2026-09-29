@@ -4,20 +4,31 @@ const seasonData = window.UFL_SEASONS || { 's1-6v6': window.UFL_SEASON };
 const competitions = {
   's2-6v6': { season: 2, division: '6v6', game: 'FC27' },
   's2-10v10': { season: 2, division: '10v10', game: 'FC27' },
-  's1-6v6': { season: 1, division: '6v6', game: 'FC26', archived: true }
+  's1-6v6': { season: 1, division: '6v6', game: 'FC26', archived: true },
+  's1-10v10': { season: 1, division: '10v10', game: 'FC26', archived: true, unavailable: true }
 };
-const state = { competition: 's2-6v6', mode: 'simple', simpleWeek: 1, detailWeek: 1, simplePeriod: 'weekly', detailPeriod: 'weekly' };
+const state = { competition: 's2-6v6', selectedSeason: 2, selectedDivision: '6v6', mode: 'simple', simpleWeek: 1, detailWeek: 1, simplePeriod: 'weekly', detailPeriod: 'weekly' };
 let season;
 let teamByKey;
 let teams;
 function useCompetition(key) {
   state.competition = key;
+  const config = competitions[key];
+  state.selectedSeason = config.season;
+  state.selectedDivision = config.division;
   season = seasonData[key] || { teams: {}, standings: [], weeks: [] };
   teamByKey = Object.fromEntries(Object.entries(season.teams || {}).map(([teamKey,[name,logo]]) => [teamKey,{key:teamKey,name,logo}]));
   teams = Object.values(teamByKey);
   const currentWeek = season.weeks?.find(week => week.matches.some(match => match[3] === null || match[4] === null))?.week ?? season.weeks?.at(-1)?.week ?? 1;
   state.simpleWeek = currentWeek;
   state.detailWeek = currentWeek;
+}
+function selectCompetition(seasonNumber, division) {
+  const key = `s${seasonNumber}-${division}`;
+  if (!competitions[key]) return;
+  useCompetition(key);
+  $$('[data-pickem-season]').forEach(button=>button.classList.toggle('active',Number(button.dataset.pickemSeason)===seasonNumber));
+  $$('[data-pickem-division]').forEach(button=>button.classList.toggle('active',button.dataset.pickemDivision===division));
 }
 useCompetition(state.competition);
 const rosters = {
@@ -111,11 +122,8 @@ function renderDetail(){
 function renderDetailLeaders(){ const season=state.detailPeriod==='season'; $('#detail-leader-title').textContent=season?'Season leaderboard':`Week ${state.detailWeek}`; $$('[data-detail-period]').forEach(b=>b.classList.toggle('active',b.dataset.detailPeriod===state.detailPeriod)); $('#detail-leaders').innerHTML=entries.slice(0,5).map((e,i)=>leaderRow(i,e[0],e[1],season?e[4]:Math.max(4,35-i*3),season?e[5]+7-i:e[5])).join(''); }
 
 document.addEventListener('click',async event=>{
-  const competitionButton=event.target.closest('[data-competition]');if(competitionButton){
-    const key=competitionButton.dataset.competition,config=competitions[key];if(!config)return;
-    useCompetition(key);$$('[data-competition]').forEach(button=>button.classList.toggle('active',button===competitionButton));
-    await renderCompetition();return;
-  }
+  const seasonButton=event.target.closest('[data-pickem-season]');if(seasonButton){selectCompetition(Number(seasonButton.dataset.pickemSeason),state.selectedDivision);await renderCompetition();return;}
+  const divisionButton=event.target.closest('[data-pickem-division]');if(divisionButton){selectCompetition(state.selectedSeason,divisionButton.dataset.pickemDivision);await renderCompetition();return;}
   const mode=event.target.closest('[data-mode]'); if(mode){state.mode=mode.dataset.mode; $$('[data-mode]').forEach(b=>b.classList.toggle('active',b===mode)); $$('[data-pane]').forEach(p=>p.classList.toggle('active',p.dataset.pane===state.mode)); $('#subtitle').textContent=state.mode==='simple'?'Pick the winner or a draw across all five scheduled matches.':'Call scores, scorers, assists, and your Double Down.'; window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);}
   const sw=event.target.closest('[data-simple-week]'); if(sw){state.simpleWeek=Number(sw.dataset.simpleWeek);await loadBallot(state.simpleWeek);await loadLeaderboard();renderSimple();}
   const dw=event.target.closest('[data-detail-week]'); if(dw){state.detailWeek=Number(dw.dataset.detailWeek);renderDetail();}
@@ -147,10 +155,14 @@ async function renderCompetition(){
     await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();
   }else{
     const registered=season.teamDetails?.length||0;
-    $('#future-title').textContent=`UFL Season 2 · ${config.division} Pick’ems`;
-    $('#future-copy').textContent=`The ${config.division} competition is connected to Virtual Arena${registered?` with ${registered} registered team${registered===1?'':'s'}`:''}. Pick’ems will open automatically when the official schedule is published.`;
-    $('#live-badge').innerHTML=`<i></i> ${config.division} · REGISTRATION`;
-    $('#subtitle').textContent=`UFL Season 2 ${config.division} is ready for teams and fixtures.`;
+    $('#future-mark').textContent=`S${config.season}`;
+    $('#future-kicker').textContent=`${config.game} · ${config.unavailable?'League history':'Official season feeds connected'}`;
+    $('#future-title').textContent=`UFL Season ${config.season} · ${config.division} Pick’ems`;
+    $('#future-copy').textContent=config.unavailable
+      ? `${config.division} was not contested in UFL Season ${config.season}, so there are no fixtures or Pick’ems to archive in this division.`
+      : `The ${config.division} competition is connected to Virtual Arena${registered?` with ${registered} registered team${registered===1?'':'s'}`:''}. Pick’ems will open automatically when the official schedule is published.`;
+    $('#live-badge').innerHTML=`<i></i> ${config.unavailable?'ARCHIVED':`${config.division} · REGISTRATION`}`;
+    $('#subtitle').textContent=config.unavailable?`Season ${config.season} ${config.division} was not contested.`:`UFL Season ${config.season} ${config.division} is ready for teams and fixtures.`;
   }
   window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
 }
