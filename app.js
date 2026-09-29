@@ -14,11 +14,11 @@ const virtualArena = {
     stats: 'https://ufl.virtualarena.app/competitions/1/seasons/2/stats'
   },
   '10v10': {
-    series: 'https://ufl.virtualarena.app/competition-series/1/seasons/3',
-    schedule: 'https://ufl.virtualarena.app/competitions/2/seasons/3/matches',
-    standings: 'https://ufl.virtualarena.app/competitions/2/seasons/3/standings',
-    teams: 'https://ufl.virtualarena.app/competitions/2/seasons/3/teams',
-    stats: 'https://ufl.virtualarena.app/competitions/2/seasons/3/stats'
+    series: 'https://ufl.virtualarena.app/competition-series/1/seasons/2',
+    schedule: 'https://ufl.virtualarena.app/competitions/2/seasons/4/matches',
+    standings: 'https://ufl.virtualarena.app/competitions/2/seasons/4/standings',
+    teams: 'https://ufl.virtualarena.app/competitions/2/seasons/4/teams',
+    stats: 'https://ufl.virtualarena.app/competitions/2/seasons/4/stats'
   },
   '6v6Season1': {
     schedule: 'https://ufl.virtualarena.app/competitions/1/seasons/1/matches',
@@ -667,7 +667,7 @@ function ufbPage() {
     ...group.commands
   ]}:group);
   const groups=visibleDocs.map(group=>`<details class="ufb-category"><summary>${escapeHtml(group.title)}</summary><p>${escapeHtml(group.description)}</p>${group.commands.map(command=>`<article class="ufb-command"><div><code>${escapeHtml(command.name)}</code><span class="season-chip">${escapeHtml(command.status||'Available')}</span></div><p>${escapeHtml(command.description)}</p>${command.options?.length?`<small>Options: ${command.options.map(o=>escapeHtml(o.name)+(o.required?' (required)':' (optional)')).join(' · ')}</small>`:''}${examples(command)}${preview(command)}</article>`).join('')}</details>`).join('');
-  return pageHero('UFL · Discord operations','Unc Futból Bot','The official command guide for league teams, players and FC27 match reporting.')+`<section class="section ufb-reference"><div class="card"><h2>Command reference</h2><p>Use these slash commands in Discord. The examples are templates: replace names and channels with your own. Select leagues and teams from Discord’s suggestions. Required options must be filled in; optional ones can be left out.</p><p>Register and link clubs for EA match reporting. Use /setup panel for owner/administrator settings. Free-agent listings, club recruiting, player signing and release are kept in the development workspace and are not live bot commands.</p><p>Official 6v6 and 10v10 are both UFL Season 2. Virtual Arena uses season 2 for 6v6 and season 3 for 10v10; both now sync into separate website data feeds. Each Discord server still chooses which of those feeds to link to its own leagues. Open /ufb for private button-based navigation.</p><p class="sync-note">EA FC 27 club search, recent matches, separate two-team game sheets and automatic match monitoring are connected for testing. /schedule remains league fixtures; /rsvp handles separate attendance events. Cups, BYOT competitions, draft nights and recruiting remain in the workshop for later development. Guide updated September 28, 2026.</p></div>${groups}</section>`;
+  return pageHero('UFL · Discord operations','Unc Futból Bot','The official command guide for league teams, players and FC27 match reporting.')+`<section class="section ufb-reference"><div class="card"><h2>Command reference</h2><p>Use these slash commands in Discord. The examples are templates: replace names and channels with your own. Select leagues and teams from Discord’s suggestions. Required options must be filled in; optional ones can be left out.</p><p>Register and link clubs for EA match reporting. Use /setup panel for owner/administrator settings. Free-agent listings, club recruiting, player signing and release are kept in the development workspace and are not live bot commands.</p><p>Official 6v6 and 10v10 are both UFL Season 2. Virtual Arena uses season ID 2 for 6v6 and season ID 4 for 10v10; both sync into separate website data feeds. Each Discord server still chooses which of those feeds to link to its own leagues. Open /ufb for private button-based navigation.</p><p class="sync-note">EA FC 27 club search, recent matches, separate two-team game sheets and automatic match monitoring are connected for testing. /schedule remains league fixtures; /rsvp handles separate attendance events. Cups, BYOT competitions, draft nights and recruiting remain in the workshop for later development. Guide updated September 29, 2026.</p></div>${groups}</section>`;
 }
 
 async function getAuthState() {
