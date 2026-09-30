@@ -30,7 +30,7 @@ window.UFL_SEASON_6V6_S2 = {
       "abbreviation": "ROM",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Roma",
-      "rosterSize": 1,
+      "rosterSize": 4,
       "stats": []
     },
     {
