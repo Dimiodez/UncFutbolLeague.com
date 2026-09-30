@@ -15,4 +15,7 @@ export async function ensureByotHistory(env) {
   await env.DB.prepare(`INSERT INTO byot_history (id,title,event_date,lifecycle_status,champion,finalist,champion_score,finalist_score,roster_json)
     VALUES ('inaugural','Pistoleros CF lift the first crown','2026-09-04','completed','Pistoleros CF','UFL Lyon',5,2,'["Dez","Gucci","Dloww","Luis"]')
     ON CONFLICT(id) DO NOTHING`).run();
+  await env.DB.prepare(`INSERT INTO byot_history (id,title,event_date,lifecycle_status,champion,finalist,champion_score,finalist_score,roster_json)
+    VALUES ('season-2-aggregate-preseason','Finger Poppers FC win the Aggregate BYOT crown','2026-09-29','completed','Finger Poppers FC','Swamp City FC',4,1,'[]')
+    ON CONFLICT(id) DO NOTHING`).run();
 }
