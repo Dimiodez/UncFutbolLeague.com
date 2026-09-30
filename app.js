@@ -208,7 +208,7 @@ function byotBuilder() {
 
 const completedByotDefaults = [
   {id:'season-2-aggregate-preseason',title:'Finger Poppers FC win the Aggregate BYOT crown',eventDate:'2026-09-29',lifecycleStatus:'completed',champion:'Finger Poppers FC',finalist:'Swamp City FC',championScore:4,finalistScore:1,roster:[],kicker:'Season 2 Preseason · Aggregate BYOT',image:'/assets/finger-poppers-fc-aggregate-champions.png',imageAlt:'Finger Poppers FC celebrating the Season 2 Aggregate BYOT Preseason Cup championship',imageKind:'photo',resultCopy:'Finger Poppers FC defeated Swamp City FC 4–1 to become the first Aggregate BYOT Preseason Cup champions of UFL Season 2.'},
-  {id:'inaugural',title:'Pistoleros CF lift the first crown',eventDate:'2026-09-04',lifecycleStatus:'completed',champion:'Pistoleros CF',finalist:'UFL Lyon',championScore:5,finalistScore:2,roster:['Dez','Gucci','Dloww','Luis'],kicker:'Inaugural BYOT Tournament',image:'/assets/pistoleros-cf.png',imageAlt:'Pistoleros CF crest',imageKind:'crest'}
+  {id:'inaugural',title:'Pistoleros CF lift the first crown',eventDate:'2026-09-04',lifecycleStatus:'completed',champion:'Pistoleros CF',finalist:'UFL Lyon',championScore:5,finalistScore:2,roster:['Dez','Gucci','Dloww','Luis'],kicker:'Inaugural BYOT Tournament',image:'/assets/pistoleros-cf-byot-champions.png',imageAlt:'Pistoleros CF celebrating their inaugural 4v4 BYOT championship',imageKind:'photo'}
 ];
 
 function completedByot(record=completedByotDefaults[0], editable=false) {
