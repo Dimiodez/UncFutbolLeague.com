@@ -1,6 +1,7 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb'
+  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb',
+  utility: '/utility', fun: '/fun', league: '/league'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -99,6 +100,37 @@ function homePage() {
   <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>6v6 League</h3><p>Registration is underway. Teams, standings, and fixtures update from Virtual Arena as they are published.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>10v10 League</h3><p>The full tactical experience is now part of UFL Season 2, with clubs and fixtures arriving soon.</p><a href="/teams?division=10v10" data-link>Open 10v10 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.webp" alt="Animated UNC Futbol League crest" decoding="async"></div></div></section>`;
+}
+
+const hubCard = ({mark,title,copy,href,label,status=''}) => `<a class="hub-card" href="${href}" data-link><span class="hub-card-mark">${mark}</span><div>${status?`<span class="season-chip season-chip-live">${status}</span>`:''}<h2>${title}</h2><p>${copy}</p><strong>${label} <i aria-hidden="true">→</i></strong></div></a>`;
+
+function utilityHubPage() {
+  return pageHero('UFL · Utility', 'Make game night easy', 'Useful tools for sorting teams, settling debates and running custom competition formats.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">U</span><div><span class="section-kicker">Utility</span><h2>Less setup.<br>More football.</h2><p class="section-intro">Open a tool and get the group moving. Everything here is designed to work quickly on desktop or mobile.</p></div></div><div class="hub-card-grid">${[
+      {mark:'W',title:'Unc Wheel',copy:'Build player pools, randomize teams and let the wheel handle the decision nobody wants to make.',href:'/wheel',label:'Open the wheel'},
+      {mark:'A',title:'Aggregate BYOT',copy:'Set four squads, manage ten-player rosters and track the complete multi-format aggregate bracket.',href:'/wheel/aggregate-byot',label:'Build a bracket'}
+    ].map(hubCard).join('')}</div></section>`;
+}
+
+function funPage() {
+  return pageHero('UFL · Fun', 'The clubhouse playground', 'Create, predict and compete when the final whistle is not the end of the night.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">F</span><div><span class="section-kicker">Fun</span><h2>Built for bragging rights.</h2><p class="section-intro">Make a player card, call the next result or climb an arcade leaderboard. Serious prizes are not required.</p></div></div><div class="hub-card-grid">${[
+      {mark:'FC',title:'FUNC Card Studio',copy:'Create a Futbol Unc Novelty Card with your portrait, club, position and custom attributes.',href:'/func',label:'Create a card'},
+      {mark:'P',title:'Pick’ems',copy:'Predict matchweek results, save picks to your Discord account and chase the season leaderboard.',href:'/pickems',label:'Make your picks',status:'Season 2'},
+      {mark:'AR',title:'UFL Arcade',copy:'Play Cleat, Loosey Goosey and Sandy Uppy, then put your best run on the community boards.',href:'/arcade',label:'Enter the arcade'}
+    ].map(hubCard).join('')}</div></section>`;
+}
+
+function leaguePage() {
+  return pageHero('UFL · League', 'The official match centre', 'Teams, fixtures, tables, rules and every route to a UFL trophy.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
+      {mark:'T',title:'Teams',copy:'Browse 6v6, 10v10 and house teams across the current season and archive.',href:'/teams?season=2&division=6v6',label:'Browse clubs'},
+      {mark:'S',title:'Schedules',copy:'Find league matchweeks, community events and published results.',href:'/schedules?season=2&type=6v6',label:'View fixtures'},
+      {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'},
+      {mark:'C',title:'League Cup',copy:'Follow official cup fixtures and each knockout path to the final.',href:'/schedules/league-cup',label:'Follow the cup'},
+      {mark:'BY',title:'BYOT Tournaments',copy:'See recurring bring-your-own-team events, brackets and completed champions.',href:'/schedules/byot-tournaments',label:'View tournaments'},
+      {mark:'R',title:'Rules',copy:'Read matchday standards, gameplay restrictions and the league format.',href:'/rules',label:'Read the rules'}
+    ].map(hubCard).join('')}</div></section>`;
 }
 
 function rulesPage() {
@@ -954,6 +986,9 @@ function render() {
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = arcadePage();
+  else if (path === routes.utility) main.innerHTML = utilityHubPage();
+  else if (path === routes.fun) main.innerHTML = funPage();
+  else if (path === routes.league) main.innerHTML = leaguePage();
   else if (path === '/arcade/loosey-goosey') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Loosey Goosey"><iframe class="integrated-app-frame" src="/goose-app/" title="Loosey Goosey soccer runner" scrolling="no"></iframe></section>';
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
@@ -975,8 +1010,10 @@ function render() {
   else if (path === routes.ufb) main.innerHTML = ufbPage();
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
-  document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path || (new URL(a.href).pathname === '/arcade' && path.startsWith('/arcade/')) || (new URL(a.href).pathname === '/wheel' && path.startsWith('/wheel/'))));
+  document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
+  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/rules' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
+  document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   hydrateAccount();
