@@ -22,10 +22,10 @@ Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runt
 
 ## Chase structure
 
-The planned game is a ten-level referee chase. Schwein escapes at the summit
-of Levels 1–9; the referee gives him the red card at the end of Level 10. Only
-Levels 1 through 7 exist in this prototype. The later layouts are intentionally not
-implemented while the current art and game feel are being tuned.
+The game is a ten-level referee chase. Schwein escapes at the summit of Levels
+1–9; the referee gives him the red card at the end of Level 10. All ten mountain
+layouts now exist in the standalone prototype, while the final red-card
+cutscene remains deliberately deferred until Level 10's playfield is approved.
 
 Soccer-ball pressure follows one predictable campaign curve: each level adds
 10 to rolling speed and removes 200 ms from the throw interval, matching the
@@ -159,3 +159,27 @@ attempt isolates the head-on soccer-ball jump; normal Level 9 still starts at
 the mountain base with every hazard active. Schwein and his throw origin sit 18
 pixels farther right to make the timing readable without changing the
 level-wide ball speed or cadence.
+
+## Level 10: Final Whistle Peak
+
+Level 10 translates the hand-drawn finale into a mirrored six-tier boss
+mountain. The referee begins at the center of a full base platform, then chooses
+between left and right entry ladders. The lower ledge splits at the center, and
+the three upper traversal rows break into short left, center, and right shelves
+with jumpable seams. Both sides remain physically complete routes to a single
+central summit ladder.
+
+Bizzie waits for the referee's first committed movement, telegraphs that same
+side, and drops onto its lower shelf to deny the obvious route. The opposite
+entry remains available from the base. Schwein occupies the centered summit and
+chooses a fresh left or right throw direction for each soccer ball. Visible edge
+pillars keep both branches on the mountain, while a central peak on the later
+middle row randomly returns arriving balls to either lane.
+
+Bruce performs two separate finale runs at Level 10 speed. His first starts
+outside the bottom-right edge and climbs to the summit; after exiting, his
+second starts at the summit and descends through the mirrored route before
+running off the lower-left edge. Both routes use the authored ladders and jump
+the same platform seams as the referee. The stage uses
+`mountain-final-summit-v1.png`, the storm-ringed final-peak background generated
+specifically for this encounter.

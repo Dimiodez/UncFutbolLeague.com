@@ -5,7 +5,7 @@ import {
   BIZZIE_PLAYER_BLOCKER_HEIGHT,
   nextBizzieDeflection,
 } from '../game/BizzieDirector.js';
-import { buildBruceRoute } from '../game/BruceDirector.js';
+import { buildBruceDescentRoute, buildBruceRoute } from '../game/BruceDirector.js';
 import { canMountLadder, ladderAtFeet } from '../game/LadderNavigation.js';
 import { chooseBallDeflection, isInsideRespawnClearance, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
@@ -54,6 +54,7 @@ import {
   LEVEL_NINE_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
+  LEVEL_TEN_ROUTE,
   PLATFORMS,
   STAGES,
   TUNING,
@@ -113,8 +114,8 @@ test('every authored ladder can be entered from the platform above or below', ()
   }
 });
 
-test('prototype contains nine stages and leaves only the final mountain unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+test('prototype contains the complete ten-level mountain chase', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
@@ -123,8 +124,9 @@ test('prototype contains nine stages and leaves only the final mountain unbuilt'
   assert.equal(getStage(7)?.name, 'Glacier Lock Run');
   assert.equal(getStage(8)?.name, 'Defender Detour');
   assert.equal(getStage(9)?.name, 'Avalanche Anger Run');
+  assert.equal(getStage(10)?.name, 'Final Whistle Peak');
   assert.equal(hasStage(9), true);
-  assert.equal(hasStage(10), false);
+  assert.equal(hasStage(10), true);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -699,6 +701,45 @@ test('Level 9 has one full ice row and a right-moving physical ball chute', () =
   ]);
   assert.equal(passablePillars.find(({ platformIndex }) => platformIndex === 3).reflectIncoming, true);
   assert.deepEqual(passablePillars.filter(({ platformIndex }) => platformIndex === 2).map(({ direction }) => direction), [1, -1]);
+});
+
+test('Level 10 builds the mirrored finale from the authored sketch', () => {
+  const stage = getStage(10);
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  assert.equal(stage.backgroundKey, 'mountain-final-summit');
+  assert.equal(hasPhysicalRoute(LEVEL_TEN_ROUTE), true);
+  assert.equal(stage.playerStart.x, WORLD.width / 2);
+  assert.equal(stage.summit.side, 'center');
+  assert.equal(hasReachedSummit(stage, stage.summit.x, 150), true);
+  assert.equal(hasReachedSummit(stage, stage.summit.x + 100, 150), false);
+  assert.equal(stage.schwein.randomThrowDirection, true);
+  assert.equal(stage.schwein.ballSpawnX, WORLD.width / 2);
+  assert.deepEqual(stage.bruceRuns.map(({ direction }) => direction), ['up', 'down']);
+  assert.deepEqual(Object.keys(stage.bizzie.adaptiveChoices), ['left', 'right']);
+  assert.equal(stage.spikeDeflectors.length, 1);
+  assert.deepEqual(stage.spikeDeflectors[0], { platformIndex: 2, x: 480 });
+  assert.deepEqual(stage.tuning.ballSpeed, ballTuningForLevel(10).ballSpeed);
+  assert.deepEqual(stage.tuning.ballInterval, ballTuningForLevel(10).ballInterval);
+  stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+  });
+});
+
+test('Level 10 gives Bruce one complete ascent and one complete descent', () => {
+  const stage = getStage(10);
+  const ascent = buildBruceRoute(stage);
+  const descent = buildBruceDescentRoute(stage);
+  assert.equal(ascent[0].platformIndex, 0);
+  assert.equal(ascent.at(-1).platformIndex, stage.platforms.length - 1);
+  assert.equal(descent[0].platformIndex, stage.platforms.length - 1);
+  assert.equal(descent.at(-1).platformIndex, 0);
+  assert.equal(ascent.filter(({ mode }) => mode === 'climb').length, stage.platforms.length - 1);
+  assert.equal(descent.filter(({ mode }) => mode === 'climb').length, stage.platforms.length - 1);
+  assert.ok(ascent.some(({ mode }) => mode === 'jump'));
+  assert.ok(descent.some(({ mode }) => mode === 'jump'));
 });
 
 test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {

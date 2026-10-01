@@ -72,6 +72,11 @@ export class HazardDirector {
   }
 
   spawnBall() {
+    const schwein = this.scene.stage.schwein;
+    const direction = schwein?.randomThrowDirection
+      ? chooseBallDeflection()
+      : schwein?.throwDirection ?? -1;
+    if (schwein?.randomThrowDirection) this.scene.schwein.setFlipX(direction > 0);
     this.scene.animateSchwein();
     this.scene.time.delayedCall(430, () => {
       if (!this.scene.state.isPlaying()) return;
@@ -82,9 +87,9 @@ export class HazardDirector {
           .sort((a, b) => (a.getData('spawnedAt') || 0) - (b.getData('spawnedAt') || 0));
         while (activeBalls.length >= maxBalls) activeBalls.shift().destroy();
       }
-      const schwein = this.scene.stage.schwein;
-      const direction = schwein?.throwDirection ?? -1;
-      const ball = this.balls.create(schwein?.ballSpawnX ?? 665, 95, ASSETS.ballFrames[0].key);
+      const spawnX = (schwein?.ballSpawnX ?? 665)
+        + direction * (schwein?.randomThrowDirection ? schwein?.ballSpawnOffset ?? 0 : 0);
+      const ball = this.balls.create(spawnX, 95, ASSETS.ballFrames[0].key);
       ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(112, 16, 16).setBounce(0.05).setDepth(8)
         .setVelocity(direction * this.tuning('ballSpeed'), -35);
       if (direction < 0) ball.playReverse('soccer-roll');

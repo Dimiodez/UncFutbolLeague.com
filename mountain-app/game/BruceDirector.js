@@ -8,6 +8,11 @@ function ladderFromIndex(stage, ladder) {
   return stage.platforms.findIndex((platform) => platform.y === ladder.bottom);
 }
 
+function ladderToIndex(stage, ladder) {
+  if (Number.isInteger(ladder.toIndex)) return ladder.toIndex;
+  return stage.platforms.findIndex((platform) => platform.y === ladder.top);
+}
+
 function appendRunAcrossGaps(route, stage, platformIndex, startX, targetX) {
   const y = stage.platforms[platformIndex].y - 12;
   const direction = Math.sign(targetX - startX) || 1;
@@ -51,6 +56,27 @@ export function buildBruceRoute(stage, worldWidth = WORLD.width) {
   return route;
 }
 
+export function buildBruceDescentRoute(stage) {
+  const topIndex = stage.platforms.length - 1;
+  const top = stage.platforms[topIndex];
+  const route = [{ x: stage.summit.x + 42, y: top.y - 12, mode: 'run', platformIndex: topIndex }];
+  let currentX = route[0].x;
+
+  for (let row = topIndex; row > 0; row -= 1) {
+    const ladders = stage.ladders.filter((ladder) => ladderToIndex(stage, ladder) === row);
+    if (!ladders.length) throw new Error(`Bruce descent has no ladder from platform ${row}`);
+    const ladder = ladders.reduce((best, candidate) => (
+      Math.abs(candidate.x - currentX) < Math.abs(best.x - currentX) ? candidate : best
+    ));
+    appendRunAcrossGaps(route, stage, row, currentX, ladder.x);
+    route.push({ x: ladder.x, y: stage.platforms[row - 1].y - 12, mode: 'climb', platformIndex: row - 1 });
+    currentX = ladder.x;
+  }
+
+  appendRunAcrossGaps(route, stage, 0, currentX, -70);
+  return route;
+}
+
 export class BruceDirector {
   constructor(scene) {
     this.scene = scene;
@@ -73,8 +99,12 @@ export class BruceDirector {
   reset(now) {
     this.clear();
     this.reachedSummit = false;
-    this.scheduled = isBruceLevel(this.scene.state.level);
-    this.nextStartAt = this.scheduled ? now + 5200 : Number.POSITIVE_INFINITY;
+    this.runIndex = 0;
+    this.runPlans = this.scene.stage.bruceRuns?.length
+      ? this.scene.stage.bruceRuns
+      : [{ direction: 'up', delay: 5200 }];
+    this.scheduled = isBruceLevel(this.scene.state.level) && this.runPlans.length > 0;
+    this.nextStartAt = this.scheduled ? now + (this.runPlans[0].delay ?? 5200) : Number.POSITIVE_INFINITY;
   }
 
   clear() {
@@ -94,7 +124,7 @@ export class BruceDirector {
 
     const target = this.route[this.waypointIndex];
     if (!target) {
-      this.arriveAtSummit();
+      this.finishRun();
       return;
     }
     const dx = target.x - this.sprite.x;
@@ -154,12 +184,14 @@ export class BruceDirector {
   startRun() {
     this.scheduled = false;
     this.running = true;
-    this.route = buildBruceRoute(this.scene.stage);
+    this.activeRun = this.runPlans[this.runIndex] || { direction: 'up' };
+    this.route = this.activeRun.direction === 'down'
+      ? buildBruceDescentRoute(this.scene.stage)
+      : buildBruceRoute(this.scene.stage);
     this.waypointIndex = 1;
     this.lastPuddleAt = 0;
     this.lastPuddleX = Number.NaN;
     this.jumpState = null;
-    this.reachedSummit = false;
     const start = this.route[0];
     this.sprite.enableBody(true, start.x, start.y, true, true)
       .setDisplaySize(88, 88)
@@ -190,21 +222,29 @@ export class BruceDirector {
     });
   }
 
-  arriveAtSummit() {
+  finishRun() {
     if (!this.running) return;
     this.running = false;
-    this.reachedSummit = true;
+    const direction = this.activeRun?.direction || 'up';
+    if (direction === 'up') this.reachedSummit = true;
     this.sprite.setVelocity(0, 0).play('bruce-run', true);
-    this.scene.say(pickLine(BRUCE_SUMMIT_LINES));
-    this.scene.time.delayedCall(1550, () => {
+    if (direction === 'up') this.scene.say(pickLine(BRUCE_SUMMIT_LINES));
+    this.scene.time.delayedCall(direction === 'up' ? 1550 : 250, () => {
       if (!this.sprite.active || !this.scene.state.isPlaying()) return;
-      this.sprite.setFlipX(false).play('bruce-run', true);
+      this.sprite.setFlipX(direction === 'down').play('bruce-run', true);
       this.scene.tweens.add({
         targets: this.sprite,
-        x: WORLD.width + 120,
+        x: direction === 'up' ? WORLD.width + 120 : -120,
         duration: 900,
         ease: 'Linear',
-        onComplete: () => this.sprite.disableBody(true, true),
+        onComplete: () => {
+          this.sprite.disableBody(true, true);
+          this.runIndex += 1;
+          const next = this.runPlans[this.runIndex];
+          if (!next || !this.scene.state.isPlaying()) return;
+          this.scheduled = true;
+          this.nextStartAt = this.scene.time.now + (next.delay ?? 3200);
+        },
       });
     });
   }

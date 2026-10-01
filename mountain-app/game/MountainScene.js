@@ -1,7 +1,7 @@
 import { createTextures } from './ArtFactory.js';
-import { ASSETS } from './AssetManifest.js';
-import { BizzieDirector } from './BizzieDirector.js';
-import { BruceDirector } from './BruceDirector.js';
+import { ASSETS } from './AssetManifest.js?v=level-ten-layout-1';
+import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-1';
+import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-1';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
 import {
@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-nine-final-practice-1';
-import { HazardDirector } from './HazardDirector.js?v=level-nine-final-practice-1';
+import { GameState } from './GameState.js?v=level-ten-layout-1';
+import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-1';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-final-practice-1';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-1';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -137,6 +137,7 @@ export class MountainScene extends Phaser.Scene {
         .setData('reflectIncoming', Boolean(spec.reflectIncoming))
         .setData('randomDirection', Boolean(spec.randomDirection));
     });
+    this.stage.spikeDeflectors.forEach((spec) => this.createSpikeDeflector(spec));
   }
 
   drawPlatformArt(spec, index) {
@@ -350,6 +351,7 @@ export class MountainScene extends Phaser.Scene {
     }
     this.hazards.update(time);
     this.bruce.update(time, delta);
+    this.bizzie.update(time);
     const altitude = Math.max(0, Math.round((WORLD.height - this.player.y) * 18));
     if (altitude !== this.state.altitude) {
       this.state.altitude = altitude;

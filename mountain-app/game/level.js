@@ -389,6 +389,49 @@ export const LEVEL_NINE_DISRUPTIONS = Object.freeze([
   }),
 ]);
 
+const LEVEL_TEN_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 940, direction: 1, style: 'rock' },
+  { x: 480, y: 590, width: 900, direction: -1, style: 'snow' },
+  { x: 480, y: 490, width: 900, direction: 1, style: 'rock' },
+  { x: 480, y: 390, width: 900, direction: -1, style: 'snow' },
+  { x: 480, y: 290, width: 900, direction: 1, style: 'rock' },
+  { x: 480, y: 190, width: 480, direction: 1, style: 'snow' },
+]);
+
+const LEVEL_TEN_LADDERS = Object.freeze([
+  { id: 'l10-entry-left', x: 215, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l10-entry-right', x: 745, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l10-rise-left', x: 170, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l10-rise-right', x: 790, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l10-cross-left', x: 385, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l10-cross-right', x: 575, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l10-upper-left', x: 170, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l10-upper-right', x: 790, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l10-summit', x: 480, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+const LEVEL_TEN_GAPS = Object.freeze([
+  Object.freeze({ platformIndex: 1, gapX: 480, gapWidth: 88 }),
+  Object.freeze({ platformIndex: 2, gapX: 300, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 2, gapX: 660, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 78 }),
+  Object.freeze({ platformIndex: 3, gapX: 660, gapWidth: 78 }),
+  Object.freeze({ platformIndex: 4, gapX: 330, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 4, gapX: 630, gapWidth: 76 }),
+]);
+
+export const LEVEL_TEN_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_TEN_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_TEN_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
 export function icePatchAt(stage, x, feetY, tolerance = 10) {
   return stage?.icePatches?.find((patch) => {
     const platform = stage.platforms[patch.platformIndex];
@@ -399,6 +442,7 @@ export function icePatchAt(stage, x, feetY, tolerance = 10) {
 
 export function hasReachedSummit(stage, playerX, playerY, maximumY = 180) {
   if (!stage?.summit || playerY >= maximumY) return false;
+  if (stage.summit.side === 'center') return Math.abs(playerX - stage.summit.x) < 68;
   return stage.summit.side === 'left'
     ? playerX < stage.summit.x + 32
     : playerX > stage.summit.x - 32;
@@ -410,6 +454,7 @@ const freezeStage = (stage) => Object.freeze({
   gaps: Object.freeze((stage.gaps || []).map((gap) => Object.freeze(gap))),
   icePatches: Object.freeze((stage.icePatches || []).map((patch) => Object.freeze(patch))),
   ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
+  spikeDeflectors: Object.freeze((stage.spikeDeflectors || []).map((spike) => Object.freeze(spike))),
   bizzie: stage.bizzie ? Object.freeze(stage.bizzie) : null,
   schwein: stage.schwein ? Object.freeze(stage.schwein) : null,
   tuning: Object.freeze(stage.tuning),
@@ -644,6 +689,63 @@ export const STAGES = Object.freeze([
       initialBallDelay: 4600,
       salmonInterval: 5400,
       maxBalls: 10,
+    },
+  }),
+  freezeStage({
+    level: 10,
+    name: 'Final Whistle Peak',
+    backgroundKey: 'mountain-final-summit',
+    platforms: LEVEL_TEN_PLATFORMS,
+    ladders: LEVEL_TEN_LADDERS,
+    playerStart: Object.freeze({ x: 480, y: 650 }),
+    summit: Object.freeze({ x: 480, y: 150, side: 'center' }),
+    puddles: [],
+    gaps: LEVEL_TEN_GAPS,
+    route: LEVEL_TEN_ROUTE,
+    speechSide: 'right',
+    schwein: {
+      x: 480,
+      y: 105,
+      randomThrowDirection: true,
+      ballSpawnX: 480,
+      ballSpawnOffset: 72,
+      salmonSpawnX: 480,
+      escapeDirection: 1,
+    },
+    bizzie: {
+      platformIndex: 1,
+      adaptiveChoices: {
+        left: { x: 285 },
+        right: { x: 675 },
+      },
+      decisionThreshold: 46,
+      telegraphDelay: 80,
+      revealDelay: 1450,
+    },
+    bruceRuns: [
+      { direction: 'up', delay: 5200 },
+      { direction: 'down', delay: 3600 },
+    ],
+    spikeDeflectors: [
+      { platformIndex: 2, x: 480 },
+    ],
+    ballBumpers: [
+      { platformIndex: 4, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 4, x: 915, direction: -1, playerPassable: true },
+      { platformIndex: 3, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 3, x: 915, direction: -1, playerPassable: true },
+      { platformIndex: 2, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 2, x: 915, direction: -1, playerPassable: true },
+      { platformIndex: 1, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 1, x: 915, direction: -1, playerPassable: true },
+      { platformIndex: 0, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 0, x: 915, direction: -1, playerPassable: true },
+    ],
+    tuning: {
+      ...ballTuningForLevel(10),
+      initialBallDelay: 4100,
+      salmonInterval: 5100,
+      maxBalls: 11,
     },
   }),
 ]);

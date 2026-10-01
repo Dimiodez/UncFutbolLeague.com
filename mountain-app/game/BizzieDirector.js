@@ -24,12 +24,34 @@ export class BizzieDirector {
     this.active = false;
     this.playerBumpAt = 0;
     this.lastDeflectionDirection = 1;
+    this.awaitingChoice = false;
   }
 
   reset() {
     this.clear();
     const spec = this.scene.stage.bizzie;
     if (!spec) return;
+    if (spec.adaptiveChoices) {
+      this.baseSpec = spec;
+      this.choiceOriginX = this.scene.stage.playerStart.x;
+      this.awaitingChoice = true;
+      return;
+    }
+    this.schedule(spec);
+  }
+
+  update() {
+    if (!this.awaitingChoice || !this.scene.state.isPlaying()) return;
+    const delta = this.scene.player.x - this.choiceOriginX;
+    if (Math.abs(delta) < (this.baseSpec.decisionThreshold ?? 48)) return;
+    const side = delta < 0 ? 'left' : 'right';
+    const choice = this.baseSpec.adaptiveChoices?.[side];
+    if (!choice) return;
+    this.awaitingChoice = false;
+    this.schedule({ ...this.baseSpec, ...choice, chosenSide: side });
+  }
+
+  schedule(spec) {
     const platform = this.scene.stage.platforms[spec.platformIndex];
     if (!platform) return;
     this.spec = spec;
@@ -159,7 +181,9 @@ export class BizzieDirector {
     this.playerBlocker.disableBody(true, true);
     this.ballBlocker.disableBody(true, true);
     this.active = false;
+    this.awaitingChoice = false;
     this.lastDeflectionDirection = 1;
+    this.baseSpec = null;
     this.spec = null;
   }
 }

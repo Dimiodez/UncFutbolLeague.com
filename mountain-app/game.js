@@ -1,5 +1,5 @@
-import { MountainScene } from './game/MountainScene.js?v=level-nine-final-practice-1';
-import { hasStage, TUNING, WORLD } from './game/level.js?v=level-nine-final-practice-1';
+import { MountainScene } from './game/MountainScene.js?v=level-ten-layout-1';
+import { hasStage, TUNING, WORLD } from './game/level.js?v=level-ten-layout-1';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
@@ -66,7 +66,12 @@ function start() {
   hideOverlay();
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
+  const directFinalPreview = level === 10 && !carryLives && scene.state.yellowCards === 0;
   scene.startRun(level, !carryLives);
+  if (directFinalPreview) {
+    scene.state.yellowCards = 1;
+    scene.state.cardedLevels = [6];
+  }
   if (previewPractice && level === previewLevel) scene.startPracticeArea(previewPractice);
   if (previewCutscene && level === 6) {
     window.setTimeout(() => {
