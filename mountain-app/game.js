@@ -1,5 +1,6 @@
-import { MountainScene } from './game/MountainScene.js?v=level-ten-layout-4';
-import { hasStage, TUNING, WORLD } from './game/level.js?v=level-ten-layout-4';
+import { MountainScene } from './game/MountainScene.js?v=run-leaderboard-1';
+import { hasStage, TUNING, WORLD } from './game/level.js?v=run-leaderboard-1';
+import { formatRunTime, saveLeaderboardEntry } from './game/leaderboard.js?v=run-leaderboard-1';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
@@ -12,7 +13,7 @@ let speechTimer;
 let speechQueue = [];
 let speechActive = false;
 let queuedLevel = hasStage(previewLevel) ? previewLevel : 1;
-let carryLives = false;
+let carryCampaign = false;
 
 function showOverlay(kicker, title, copy, action) {
   $('#overlay').hidden = false;
@@ -20,6 +21,8 @@ function showOverlay(kicker, title, copy, action) {
   $('#overlay-title').innerHTML = title;
   $('#overlay-copy').textContent = copy;
   $('#action').textContent = action;
+  $('#run-results').hidden = true;
+  $('#overlay').classList.remove('overlay--results');
 }
 
 function hideOverlay() { $('#overlay').hidden = true; }
@@ -55,6 +58,8 @@ function syncHud() {
   const { state } = scene;
   $('#altitude').textContent = `${String(state.altitude).padStart(4, '0')} FT`;
   $('#lives').textContent = `${'♥ '.repeat(state.lives)}${'♡ '.repeat(Math.max(0, 3 - state.lives))}`.trim();
+  $('#time').textContent = formatRunTime(state.stats.activePlayMs);
+  $('#deaths').textContent = String(state.stats.totalDeaths).padStart(2, '0');
   const status = state.phase === 'playing' && state.isStunned(scene.time.now) ? 'SLIPPED!' : state.phase.toUpperCase();
   $('#status').textContent = status;
   $('#pause').disabled = !['playing', 'paused'].includes(state.phase);
@@ -66,8 +71,8 @@ function start() {
   hideOverlay();
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
-  const directFinalPreview = level === 10 && !carryLives && scene.state.yellowCards === 0;
-  scene.startRun(level, !carryLives);
+  const directFinalPreview = level === 10 && !carryCampaign && scene.state.yellowCards === 0;
+  scene.startRun(level, !carryCampaign);
   if (directFinalPreview) {
     scene.state.yellowCards = 1;
     scene.state.cardedLevels = [6];
@@ -84,7 +89,7 @@ function start() {
     }, 350);
   }
   queuedLevel = null;
-  carryLives = false;
+  carryCampaign = false;
   $('#game canvas')?.focus({ preventScroll: true });
 }
 
@@ -158,21 +163,17 @@ function bindScene(activeScene) {
   scene.events.on('cutscene-start', clearSpeech);
   scene.events.on('game-over', () => {
     queuedLevel = scene.state.level;
-    carryLives = false;
-    showOverlay('SCHWEIN WINS', 'MOUNTAIN<br>DOWN.', 'No lives left. One angry pig. Take another run at this mountain.', `Retry Level ${scene.state.level} ↗`);
+    carryCampaign = true;
+    showOverlay(
+      `LEVEL ${scene.state.level} RESET`,
+      'THREE STRIKES.<br>CLIMB AGAIN.',
+      `The referee keeps the campaign clock and all ${scene.state.stats.totalDeaths} recorded deaths, but this level restarts with three lives.`,
+      `Retry Level ${scene.state.level} ↗`,
+    );
   });
-  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards, bonusLivesAwarded, lives }) => {
+  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards }) => {
     queuedLevel = nextLevel || level;
-    carryLives = Boolean(nextLevel);
-    if (bonusLivesAwarded) {
-      showOverlay(
-        `LEVEL ${level} OF ${totalLevels} CLEARED`,
-        'BRUCE<br>BEATEN!',
-        `You reached the summit before Bruce. +${bonusLivesAwarded} LIVES — ${lives} lives carry into Level ${nextLevel}. Schwein got away again.`,
-        nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
-      );
-      return;
-    }
+    carryCampaign = Boolean(nextLevel);
     if (outcome === 'yellow-card') {
       showOverlay(
         `LEVEL ${level} OF ${totalLevels} CLEARED`,
@@ -186,18 +187,69 @@ function bindScene(activeScene) {
       `LEVEL ${level} OF ${totalLevels} CLEARED`,
       'SCHWEIN<br>ESCAPES!',
       nextLevel
-        ? `Schwein fled to Level ${nextLevel}. The referee keeps the remaining lives and continues the chase.`
+        ? `Schwein fled to Level ${nextLevel}. Your campaign time and incident totals continue with the chase.`
         : `Level ${level} complete. Schwein escaped toward the unfinished mountains; the red card still waits at Level 10.`,
       nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
     );
   });
-  scene.events.on('red-card-won', () => showOverlay(
-    'LEVEL 10 CLEARED',
-    'RED CARD<br>SCHWEIN!',
-    'The referee finally caught the pig captain. Ten mountains. One long-overdue red card.',
-    'Play again ↗',
-  ));
+  scene.events.on('red-card-won', ({ stats }) => {
+    queuedLevel = 1;
+    carryCampaign = false;
+    const result = saveLeaderboardEntry(stats);
+    showOverlay(
+      'LEVEL 10 CLEARED',
+      'RED CARD<br>SCHWEIN!',
+      `The referee finally caught the pig captain in ${formatRunTime(stats.activePlayMs)} with ${stats.totalDeaths} deaths.`,
+      'Play again ↗',
+    );
+    renderLeaderboard(result);
+  });
   syncHud();
+}
+
+function renderLeaderboard({ entry, entries }) {
+  const results = $('#run-results');
+  const summary = $('#run-summary');
+  const body = $('#leaderboard-body');
+  summary.replaceChildren();
+  body.replaceChildren();
+  const labels = [
+    ['ACTIVE TIME', formatRunTime(entry.activePlayMs)],
+    ['DEATHS', entry.totalDeaths],
+    ['BALLS TO FACE', entry.ballsTakenToFace],
+    ['SALMON STRIKES', entry.salmonStrikes],
+    ['BRUCE SOCK KNOCKS', entry.bruceSockKnocks],
+    ['BIZZIE INTERRUPTIONS', entry.bizzieInterruptions],
+  ];
+  labels.forEach(([label, value]) => {
+    const cell = document.createElement('div');
+    const name = document.createElement('span');
+    const score = document.createElement('strong');
+    name.textContent = label;
+    score.textContent = value;
+    cell.append(name, score);
+    summary.append(cell);
+  });
+  entries.forEach((run, index) => {
+    const row = document.createElement('tr');
+    if (run.completedAt === entry.completedAt) row.className = 'current-run';
+    [
+      index + 1,
+      formatRunTime(run.activePlayMs),
+      run.totalDeaths,
+      run.ballsTakenToFace,
+      run.salmonStrikes,
+      run.bruceSockKnocks,
+      run.bizzieInterruptions,
+    ].forEach((value) => {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    });
+    body.append(row);
+  });
+  results.hidden = false;
+  $('#overlay').classList.add('overlay--results');
 }
 
 const readyPoll = window.setInterval(() => {
@@ -207,3 +259,5 @@ const readyPoll = window.setInterval(() => {
     bindScene(activeScene);
   }
 }, 30);
+
+window.setInterval(syncHud, 250);

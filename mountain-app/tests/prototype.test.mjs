@@ -8,6 +8,7 @@ import {
 } from '../game/BizzieDirector.js';
 import { buildBruceDescentRoute, buildBruceRoute } from '../game/BruceDirector.js';
 import { canMountLadder, ladderAtFeet } from '../game/LadderNavigation.js';
+import { formatRunTime, sortLeaderboardEntries } from '../game/leaderboard.js';
 import { chooseBallDeflection, isInsideRespawnClearance, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
@@ -187,21 +188,31 @@ test('fall-death boundary sits below the screen but before the extended physics 
   assert.ok(FALL_DEATH_Y < WORLD.height + 80);
 });
 
-test('life state ignores hits during invulnerability and ends after three hits', () => {
+test('three accepted deaths reset only the current level', () => {
   const state = new GameState();
   state.start();
-  assert.equal(state.takeHit(1000), true);
+  assert.equal(state.takeHit(1000, 'ball'), true);
+  assert.equal(state.stats.totalDeaths, 1);
+  assert.equal(state.stats.ballsTakenToFace, 1);
   assert.equal(state.lives, 2);
   assert.equal(state.invulnerableUntil, 1000 + HIT_INVULNERABILITY_MS);
   state.phase = 'playing';
-  assert.equal(state.takeHit(1200), false);
+  assert.equal(state.takeHit(1200, 'ball'), false);
   assert.equal(state.isInvulnerable(1849), true, 'respawn remains protected after the hurt animation');
-  assert.equal(state.takeHit(4199), false);
-  assert.equal(state.takeHit(4200), true);
+  assert.equal(state.takeHit(4199, 'fall'), false);
+  assert.equal(state.takeHit(4200, 'fall'), true);
   state.phase = 'playing';
-  assert.equal(state.takeHit(7400), true);
+  assert.equal(state.takeHit(7400, 'ball'), true);
   assert.equal(state.phase, 'over');
   assert.equal(state.lives, 0);
+  assert.equal(state.stats.totalDeaths, 3);
+  assert.equal(state.stats.ballsTakenToFace, 2);
+  const elapsed = state.stats.activePlayMs;
+  state.startLevel(state.level);
+  assert.equal(state.level, 1);
+  assert.equal(state.lives, 3);
+  assert.equal(state.stats.totalDeaths, 3);
+  assert.equal(state.stats.activePlayMs, elapsed);
 });
 
 test('respawn clearance removes only balls threatening the reset pocket', () => {
@@ -241,31 +252,67 @@ test('two yellow cards produce the Level 10 red card', () => {
   assert.equal(state.summitOutcome(), 'red-card');
 });
 
-test('remaining lives carry into Level 2 but reset on a fresh run', () => {
+test('campaign stats carry between levels and reset only for a fresh run', () => {
   const state = new GameState();
   state.start();
-  state.lives = 2;
+  state.tick(1250);
+  state.recordDeath('fall');
   state.startLevel(2);
   assert.equal(state.level, 2);
-  assert.equal(state.lives, 2);
-  state.startLevel(2, { resetLives: true });
   assert.equal(state.lives, 3);
+  assert.equal(state.stats.activePlayMs, 1250);
+  assert.equal(state.stats.totalDeaths, 1);
+  state.startLevel(2, { resetRun: true });
+  assert.deepEqual(state.runSummary(), {
+    activePlayMs: 0,
+    totalDeaths: 0,
+    ballsTakenToFace: 0,
+    salmonStrikes: 0,
+    bruceSockKnocks: 0,
+    bizzieInterruptions: 0,
+  });
 });
 
-test('beating Bruce on Level 5 awards the campaign\'s only two bonus lives', () => {
+test('active timer excludes paused, hit, won, and overlay time', () => {
   const state = new GameState();
-  state.startLevel(4, { resetLives: true });
-  assert.equal(state.awardBruceBonus(false), 0, 'ordinary levels cannot award the bonus');
-  state.startLevel(5);
-  assert.equal(state.awardBruceBonus(true), 0, 'Bruce reaching the summit first forfeits the bonus');
-  assert.equal(state.lives, 3);
-  assert.equal(state.awardBruceBonus(false), 2);
-  assert.equal(state.lives, 5);
-  assert.equal(state.awardBruceBonus(false), 0, 'Level 5 cannot be farmed');
-  state.startLevel(10);
-  assert.equal(state.awardBruceBonus(false), 0, 'finishing Level 10 cannot award a useless postgame life');
-  assert.equal(state.lives, 5);
-  assert.deepEqual(state.bruceBonusLevels, [5]);
+  state.start();
+  state.tick(1000);
+  state.phase = 'paused';
+  state.tick(5000);
+  state.phase = 'hit';
+  state.tick(850);
+  state.phase = 'won';
+  state.tick(9000);
+  state.phase = 'playing';
+  state.tick(625);
+  assert.equal(state.stats.activePlayMs, 1625);
+  assert.equal(formatRunTime(state.stats.activePlayMs), '00:01.6');
+});
+
+test('funny incident counters stay separate from deaths', () => {
+  const state = new GameState();
+  state.start();
+  state.recordSalmonStrike();
+  state.recordBruceSockKnock();
+  state.recordBruceSockKnock();
+  state.recordBizzieInterruption();
+  assert.equal(state.stats.totalDeaths, 0);
+  assert.equal(state.stats.salmonStrikes, 1);
+  assert.equal(state.stats.bruceSockKnocks, 2);
+  assert.equal(state.stats.bizzieInterruptions, 1);
+});
+
+test('leaderboard ranks active time first and deaths as the tie-breaker', () => {
+  const entries = sortLeaderboardEntries([
+    { activePlayMs: 65000, totalDeaths: 1 },
+    { activePlayMs: 60000, totalDeaths: 9 },
+    { activePlayMs: 65000, totalDeaths: 0 },
+  ]);
+  assert.deepEqual(entries.map(({ activePlayMs, totalDeaths }) => [activePlayMs, totalDeaths]), [
+    [60000, 9],
+    [65000, 0],
+    [65000, 1],
+  ]);
 });
 
 test('tantrums occur every three levels before the final chase', () => {

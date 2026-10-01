@@ -6,7 +6,7 @@
   <title>Mountain Mayhem · UFL Arcade</title>
   <meta name="description" content="Climb FC Mountains, dodge Schwein's soccer balls, and survive the salmon in this retro UFL arcade game.">
   <link rel="icon" href="assets/fc-mountains.png">
-  <link rel="stylesheet" href="style.css?v=art3">
+  <link rel="stylesheet" href="style.css?v=run-leaderboard-1">
 </head>
 <body>
   <main>
@@ -22,6 +22,8 @@
       <div class="scoreboard" aria-live="polite">
         <div><span>ALTITUDE</span><strong id="altitude">0000 FT</strong></div>
         <div><span>LIVES</span><strong id="lives">♥ ♥ ♥</strong></div>
+        <div><span>ACTIVE TIME</span><strong id="time">00:00.0</strong></div>
+        <div><span>DEATHS</span><strong id="deaths">00</strong></div>
         <div><span>STATUS</span><strong id="status">READY</strong></div>
         <button id="pause" type="button" disabled>Pause</button>
       </div>
@@ -33,6 +35,16 @@
           <span id="overlay-kicker" class="eyebrow">FC MOUNTAINS PRESENTS</span>
           <h2 id="overlay-title">CLIMB.<br>DODGE.<br>SURVIVE.</h2>
           <p id="overlay-copy">Ten mountains. One final summit. Read the routes, survive Schwein's hazards, outrun Bruce, beat Bizzie's defensive trap, and deliver the red card.</p>
+          <section id="run-results" class="run-results" hidden aria-label="Local run leaderboard">
+            <div id="run-summary" class="run-summary"></div>
+            <h3>LOCAL TOP 10</h3>
+            <div class="leaderboard-scroll">
+              <table>
+                <thead><tr><th>#</th><th>TIME</th><th>DEATHS</th><th>BALLS</th><th>SALMON</th><th>BRUCE</th><th>BIZZIE</th></tr></thead>
+                <tbody id="leaderboard-body"></tbody>
+              </table>
+            </div>
+          </section>
           <button id="action" type="button">Start climbing ↗</button>
         </div>
       </div>
@@ -55,6 +67,6 @@
   </main>
 
   <script src="vendor/phaser.min.js"></script>
-  <script type="module" src="game.js?v=level-ten-layout-4"></script>
+  <script type="module" src="game.js?v=run-leaderboard-1"></script>
 </body>
 </html>

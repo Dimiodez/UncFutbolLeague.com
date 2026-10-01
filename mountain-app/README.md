@@ -1,6 +1,6 @@
 # Mountain Mayhem prototype
 
-This directory is intentionally isolated from the UNC Futbol League website. It has no public route, arcade card, leaderboard integration, or production documentation entry.
+This directory is intentionally isolated from the UNC Futbol League website. It has no public route, arcade card, remote leaderboard service, or production documentation entry. Its leaderboard is browser-local prototype data only.
 
 ## Run locally
 
@@ -63,9 +63,10 @@ Bruce's route runner lives in `game/BruceDirector.js`. He is scheduled every
 five levels, moves faster on Level 10, follows the authored ladder route, leaves
 temporary sweat puddles, mutters at the summit, and exits the screen. Use
 the normal campaign schedule on Level 5; Bruce cannot appear on Level 3.
-Reaching the Level 5 summit before Bruce awards two extra lives. The reward can
-only be claimed once and does not repeat on Level 10, where a postgame life would
-have no value.
+Each level starts with three lives. Losing the third life resets only the current
+level with three fresh lives; campaign time, total deaths, cards, and incident
+counters persist. Bruce remains a route-and-slip threat rather than an
+extra-life race.
 
 Levels 7 and 9 reserve the ice mechanic. Jumping remains available, but steering
 locks to the entry direction while sliding. Level 7 introduces three bright,
@@ -149,8 +150,8 @@ ladder moves from the stacked right route to the isolated left shelf, forcing a
 readable cross-course climb. Four small ball-only pillars guard the marked
 right, center, and lower edges: the referee passes through them, while balls
 reverse and stay on the authored descent lanes. A hit leaves enough visible
-respawn invulnerability to escape the next incoming ball instead of losing
-another life immediately.
+respawn invulnerability to escape the next incoming ball instead of immediately
+recording another death.
 
 For isolated final-approach tuning, `?level=9&practice=finalPlatform` starts the
 referee on the upper-right side after the avalanche gaps appear. This practice
@@ -186,3 +187,15 @@ running off the lower-left edge. Both routes use the authored ladders and jump
 the same platform seams as the referee. The stage uses
 `mountain-final-summit-v1.png`, the storm-ringed final-peak background generated
 specifically for this encounter.
+
+## Run timing and local leaderboard
+
+The campaign clock advances only while `GameState.phase === 'playing'`. Pausing,
+switching away from the tab, hit/respawn delays, three-life reset overlays,
+level-complete overlays, and card cutscenes do not add time. Stats carry between
+levels and through same-level resets, then clear only when a new campaign begins.
+
+Finishing Level 10 stores a browser-local Top 10 ordered by active play time,
+with total deaths as the tie-breaker. Each result also shows balls taken to the
+face, salmon strikes, Bruce collisions or sweat slips, and Bizzie interruptions.
+There is no score or remote/public leaderboard in this standalone realm.

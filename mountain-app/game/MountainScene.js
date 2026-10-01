@@ -1,7 +1,7 @@
 import { createTextures } from './ArtFactory.js';
-import { ASSETS } from './AssetManifest.js?v=level-ten-layout-4';
-import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-4';
-import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-4';
+import { ASSETS } from './AssetManifest.js?v=run-leaderboard-1';
+import { BizzieDirector } from './BizzieDirector.js?v=run-leaderboard-1';
+import { BruceDirector } from './BruceDirector.js?v=run-leaderboard-1';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
 import {
@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-ten-layout-4';
-import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-4';
+import { GameState } from './GameState.js?v=run-leaderboard-1';
+import { HazardDirector } from './HazardDirector.js?v=run-leaderboard-1';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-4';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=run-leaderboard-1';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -259,20 +259,20 @@ export class MountainScene extends Phaser.Scene {
       (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
     );
     this.physics.add.overlap(this.player, this.hazards.balls, (_player, ball) => this.hitByBall(ball));
-    this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip(GAMEPLAY_NOTICES.salmonSlip, fish));
-    this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip(GAMEPLAY_NOTICES.bruceCollision, null, false));
+    this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip(GAMEPLAY_NOTICES.salmonSlip, fish, true, null, 'salmon'));
+    this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip(GAMEPLAY_NOTICES.bruceCollision, null, false, null, 'bruce'));
     this.physics.add.overlap(
       this.player,
       this.puddles,
-      (_player, puddle) => this.slip(GAMEPLAY_NOTICES.brucePuddle, puddle, false, SCHWEIN_BRUCE_SWEAT_LINE),
+      (_player, puddle) => this.slip(GAMEPLAY_NOTICES.brucePuddle, puddle, false, SCHWEIN_BRUCE_SWEAT_LINE, 'bruce'),
       (player, puddle) => this.canTriggerPuddle(player, puddle),
     );
   }
 
-  startRun(level = 1, resetLives = true) {
+  startRun(level = 1, resetCampaign = true) {
     this.clearSummitCutscene();
     const nextStage = getStage(level) || getStage(1);
-    this.state.startLevel(nextStage.level, { resetLives });
+    this.state.startLevel(nextStage.level, { resetRun: resetCampaign });
     this.stage = nextStage;
     this.practiceSpawn = null;
     this.events.emit('speech-side', nextStage.speechSide || 'left');
@@ -284,7 +284,6 @@ export class MountainScene extends Phaser.Scene {
     this.hazards.reset(this.time.now);
     this.bruce.reset(this.time.now);
     this.bizzie.reset();
-    this.bruceBonusLives = 0;
     this.resetStageEvents();
     this.say(openingLineForLevel(nextStage.level));
     this.events.emit('state-change');
@@ -345,6 +344,7 @@ export class MountainScene extends Phaser.Scene {
 
   update(time, delta) {
     if (!this.state?.isPlaying()) return;
+    this.state.tick(delta);
     if (this.player.y > FALL_DEATH_Y) {
       this.loseLife('fall');
       return;
@@ -562,6 +562,7 @@ export class MountainScene extends Phaser.Scene {
 
   knockPlayerFromBizzie() {
     if (!this.state.isPlaying()) return;
+    this.state.recordBizzieInterruption();
     this.state.stun(this.time.now, 1000);
     this.stopClimbing();
     const direction = this.player.x < this.bizzie.visual.x ? -1 : 1;
@@ -583,8 +584,10 @@ export class MountainScene extends Phaser.Scene {
       && this.time.now >= (puddle.getData('safeUntil') || 0);
   }
 
-  slip(label, hazard, consumeHazard = true, spokenLine = null) {
+  slip(label, hazard, consumeHazard = true, spokenLine = null, statSource = null) {
     if (!this.state.isPlaying() || this.state.isStunned(this.time.now)) return;
+    if (statSource === 'salmon') this.state.recordSalmonStrike();
+    if (statSource === 'bruce') this.state.recordBruceSockKnock();
     this.state.stun(this.time.now, TUNING.stunMs);
     this.stopClimbing();
     this.player.setVelocity(0, 0);
@@ -605,7 +608,7 @@ export class MountainScene extends Phaser.Scene {
   loseLife(source, hazard = null) {
     if (source === 'fall' && this.fallResetPending) return;
     if (source === 'fall') this.fallResetPending = true;
-    if (!this.state.takeHit(this.time.now)) {
+    if (!this.state.takeHit(this.time.now, source)) {
       if (source === 'fall') {
         this.resetPlayer();
         this.bizzie.reset();
@@ -641,7 +644,6 @@ export class MountainScene extends Phaser.Scene {
   win() {
     if (!this.state.isPlaying()) return;
     this.state.phase = 'won';
-    this.bruceBonusLives = this.state.awardBruceBonus(this.bruce.reachedSummit);
     this.state.issueYellowCard();
     const outcome = this.state.summitOutcome();
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
@@ -752,8 +754,7 @@ export class MountainScene extends Phaser.Scene {
       nextLevel: hasStage(this.state.level + 1) ? this.state.level + 1 : null,
       outcome,
       yellowCards: this.state.yellowCards,
-      bonusLivesAwarded: this.bruceBonusLives,
-      lives: this.state.lives,
+      stats: this.state.runSummary(),
     });
   }
 

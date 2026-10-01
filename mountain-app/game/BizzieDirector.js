@@ -130,6 +130,7 @@ export class BizzieDirector {
   blockPlayer(player) {
     if (!this.active || this.scene.time.now < this.playerBumpAt) return;
     this.playerBumpAt = this.scene.time.now + 360;
+    this.scene.state.recordBizzieInterruption();
     const direction = player.x < this.visual.x ? -1 : 1;
     this.scene.stopClimbing();
     if (this.spec.knockDownOnContact) {
