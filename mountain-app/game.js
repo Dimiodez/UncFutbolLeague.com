@@ -1,4 +1,4 @@
-import { MountainScene } from './game/MountainScene.js';
+import { MountainScene } from './game/MountainScene.js?v=level-nine-avalanche-4';
 import { hasStage, TUNING, WORLD } from './game/level.js';
 
 const $ = (selector) => document.querySelector(selector);
@@ -144,6 +144,9 @@ function bindScene(activeScene) {
   });
   scene.events.on('speech', (line) => {
     queueSpeech(line);
+  });
+  scene.events.on('speech-side', (side) => {
+    $('#speech-bubble').classList.toggle('speech-bubble--right', side === 'right');
   });
   scene.events.on('cutscene-start', clearSpeech);
   scene.events.on('game-over', () => {

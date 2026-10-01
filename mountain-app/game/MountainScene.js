@@ -22,7 +22,7 @@ import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -270,6 +270,7 @@ export class MountainScene extends Phaser.Scene {
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
+    this.events.emit('speech-side', nextStage.speechSide || 'left');
     this.backgroundArt.setTexture(nextStage.backgroundKey || ASSETS.background.key);
     this.createCourse();
     this.inputController.clear();
@@ -285,13 +286,15 @@ export class MountainScene extends Phaser.Scene {
   }
 
   resetSchwein() {
+    const spec = this.stage.schwein || {};
+    this.schweinBaseY = spec.y ?? 105;
     this.tantrumActive = false;
     this.tweens.killTweensOf(this.schwein);
     this.schwein
-      .setPosition(744, 105)
+      .setPosition(spec.x ?? 744, this.schweinBaseY)
       .setVisible(true)
       .setAlpha(1)
-      .setFlipX(false)
+      .setFlipX(spec.flipX ?? false)
       .setDisplaySize(210, 210)
       .play('schwein-idle', true);
   }
@@ -377,7 +380,7 @@ export class MountainScene extends Phaser.Scene {
     }
     this.player.setFlipX(horizontal < 0);
     this.updatePlayerArt(time, horizontal, vertical);
-    if (this.player.x > this.stage.summit.x - 32 && this.player.y < 180) this.win();
+    if (hasReachedSummit(this.stage, this.player.x, this.player.y)) this.win();
   }
 
   updatePlayerArt(time, horizontal = 0, vertical = 0) {
@@ -411,7 +414,7 @@ export class MountainScene extends Phaser.Scene {
     this.schwein.play('schwein-tantrum', true);
     this.tweens.add({
       targets: this.schwein,
-      y: 48,
+      y: this.schweinBaseY - 57,
       duration: 180,
       yoyo: true,
       repeat: 1,
@@ -426,7 +429,7 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(930, () => {
       this.tantrumActive = false;
       if (this.schwein?.active && this.state.isPlaying()) {
-        this.schwein.setY(105).play('schwein-idle', true);
+        this.schwein.setY(this.schweinBaseY).play('schwein-idle', true);
       }
     });
   }
@@ -616,10 +619,11 @@ export class MountainScene extends Phaser.Scene {
   }
 
   runSchweinOff(outcome) {
+    const escapeDirection = this.stage.schwein?.escapeDirection ?? 1;
     this.schwein.setDisplaySize(190, 190).play('schwein-run', true);
     this.tweens.add({
       targets: this.schwein,
-      x: WORLD.width + 125,
+      x: escapeDirection < 0 ? -125 : WORLD.width + 125,
       y: 112,
       duration: 1250,
       ease: 'Linear',

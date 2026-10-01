@@ -131,3 +131,18 @@ authored bottom-row gaps remain valid jump hazards.
 The right-side ladder between the middle rows sits just inside its gap edge,
 leaving a usable climbing window after incoming balls roll past. The Level 8
 sweat puddle sits on the solid left-hand route rather than inside that gap.
+
+## Level 9: Avalanche Anger Run
+
+Level 9 mirrors the summit presentation: Schwein occupies the left ledge, faces
+right, and throws balls into a right-moving physical chute. Dialogue moves to
+the right side of the game frame so it stays clear of Schwein and the top-row
+mechanics. His scheduled tantrum lands after a short opening window and drops
+nine authored platform sections across five rows. Every break remains jumpable,
+avoids every ladder, and preserves a complete route to the summit.
+
+The bottom row is one fully iced platform, as planned for Level 9. Its locked
+steering combines with the faster ninth-level ball cadence, while end bumpers
+keep balls active on the course instead of letting them immediately leave the
+screen. Level 9 is difficult by timing and route execution, not by an impossible
+gap or a hidden dead end.

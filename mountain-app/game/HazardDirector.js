@@ -65,11 +65,22 @@ export class HazardDirector {
     this.scene.animateSchwein();
     this.scene.time.delayedCall(430, () => {
       if (!this.scene.state.isPlaying()) return;
-      const ball = this.balls.create(665, 95, ASSETS.ballFrames[0].key);
+      const maxBalls = this.tuning('maxBalls');
+      if (Number.isFinite(maxBalls)) {
+        const activeBalls = this.balls.getChildren()
+          .filter((ball) => ball?.active)
+          .sort((a, b) => (a.getData('spawnedAt') || 0) - (b.getData('spawnedAt') || 0));
+        while (activeBalls.length >= maxBalls) activeBalls.shift().destroy();
+      }
+      const schwein = this.scene.stage.schwein;
+      const direction = schwein?.throwDirection ?? -1;
+      const ball = this.balls.create(schwein?.ballSpawnX ?? 665, 95, ASSETS.ballFrames[0].key);
       ball.setDisplaySize(TUNING.ballDiameter, TUNING.ballDiameter).setCircle(112, 16, 16).setBounce(0.05).setDepth(8)
-        .setVelocity(-this.tuning('ballSpeed'), -35);
-      ball.playReverse('soccer-roll');
-      ball.body.setMaxVelocity(180, 520);
+        .setVelocity(direction * this.tuning('ballSpeed'), -35);
+      if (direction < 0) ball.playReverse('soccer-roll');
+      else ball.play('soccer-roll');
+      ball.body.setMaxVelocity(Math.max(220, this.tuning('ballSpeed') * 1.25), 520);
+      ball.setData('spawnedAt', this.scene.time.now);
       ball.platformIndex = -1;
     });
     this.scene.events.emit('schwein-ball-line');
@@ -79,7 +90,7 @@ export class HazardDirector {
     this.scene.animateSchwein('salmon');
     this.scene.time.delayedCall(430, () => {
       if (!this.scene.state.isPlaying()) return;
-      const start = { x: 780, y: 92 };
+      const start = { x: this.scene.stage.schwein?.salmonSpawnX ?? 780, y: 92 };
       const targetIndex = this.platformIndexForPlayer();
       const targetPlatform = this.scene.stage.platforms[targetIndex];
       const halfWidth = targetPlatform.width / 2 - 34;

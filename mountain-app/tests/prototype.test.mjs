@@ -37,6 +37,7 @@ import {
   BALL_PROGRESSION,
   ballTuningForLevel,
   getStage,
+  hasReachedSummit,
   hasStage,
   icePatchAt,
   FALL_DEATH_Y,
@@ -49,6 +50,8 @@ import {
   LEVEL_SIX_ROUTE,
   LEVEL_SEVEN_ROUTE,
   LEVEL_EIGHT_ROUTE,
+  LEVEL_NINE_DISRUPTIONS,
+  LEVEL_NINE_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -110,8 +113,8 @@ test('every authored ladder can be entered from the platform above or below', ()
   }
 });
 
-test('prototype contains eight stages and leaves the final mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7, 8]);
+test('prototype contains nine stages and leaves only the final mountain unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7, 8, 9]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
@@ -119,8 +122,9 @@ test('prototype contains eight stages and leaves the final mountains unbuilt', (
   assert.equal(getStage(6)?.name, 'Splitter Spike Cirque');
   assert.equal(getStage(7)?.name, 'Glacier Lock Run');
   assert.equal(getStage(8)?.name, 'Defender Detour');
-  assert.equal(hasStage(8), true);
-  assert.equal(hasStage(9), false);
+  assert.equal(getStage(9)?.name, 'Avalanche Anger Run');
+  assert.equal(hasStage(9), true);
+  assert.equal(hasStage(10), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -576,6 +580,71 @@ test('Level 8 platform breaks form a jumpable player route and a caught ball chu
     { from: 3, direction: -1, startX: 500 },
     { from: 2, direction: 1, startX: 480 },
     { from: 1, direction: -1, startX: 125 },
+  ];
+  falls.forEach(({ from, direction, startX }) => {
+    const target = stage.platforms[from - 1];
+    const landing = projectedBallLandingX(stage, from, direction, stage.tuning.ballSpeed, TUNING.gravity, startX);
+    assert.ok(landing >= target.x - target.width / 2 + radius, `row ${from} misses left`);
+    assert.ok(landing <= target.x + target.width / 2 - radius, `row ${from} misses right`);
+  });
+});
+
+test('Level 9 reverses the summit, throw direction, and dialogue side', () => {
+  const stage = getStage(9);
+  assert.equal(hasPhysicalRoute(LEVEL_NINE_ROUTE), true);
+  assert.equal(isTantrumLevel(stage.level), true);
+  assert.equal(isBruceLevel(stage.level), false);
+  assert.equal(stage.speechSide, 'right');
+  assert.ok(stage.schwein.x < WORLD.width / 2);
+  assert.equal(stage.schwein.flipX, true);
+  assert.equal(stage.schwein.throwDirection, 1);
+  assert.equal(stage.schwein.escapeDirection, -1);
+  assert.equal(stage.summit.side, 'left');
+  assert.equal(hasReachedSummit(stage, stage.summit.x, 150), true);
+  assert.equal(hasReachedSummit(stage, WORLD.width - 80, 150), false);
+  assert.equal(hasReachedSummit(stage, stage.summit.x, 220), false);
+  assert.deepEqual(stage.tuning.ballSpeed, ballTuningForLevel(9).ballSpeed);
+  assert.deepEqual(stage.tuning.ballInterval, ballTuningForLevel(9).ballInterval);
+  assert.equal(stage.tuning.maxBalls, 10);
+});
+
+test('Level 9 tantrum drops nine jumpable pieces without cutting its route', () => {
+  const stage = getStage(9);
+  const disruption = LEVEL_NINE_DISRUPTIONS[0];
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  assert.equal(hasPhysicalRoute(LEVEL_NINE_ROUTE, disruption.disableEdgeIds), true);
+  assert.equal(disruption.gaps.length, 9);
+  assert.equal(disruption.gaps.some(({ platformIndex }) => platformIndex === 0), false);
+  disruption.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+  });
+});
+
+test('Level 9 has one full ice row and a right-moving physical ball chute', () => {
+  const stage = getStage(9);
+  const patch = stage.icePatches[0];
+  assert.deepEqual(iceRuleForLevel(stage.level), {
+    coverage: 'full-platform',
+    fullPlatformCount: 1,
+    jumpAllowed: true,
+    steeringLocked: true,
+  });
+  assert.equal(stage.icePatches.length, 1);
+  assert.equal(patch.platformIndex, 0);
+  assert.equal(patch.x, stage.platforms[0].x);
+  assert.equal(patch.width, stage.platforms[0].width);
+  assert.equal(icePatchAt(stage, patch.x, stage.platforms[0].y - 12), patch);
+
+  const radius = TUNING.ballDiameter / 2;
+  const falls = [
+    { from: 5, direction: 1, startX: 420 },
+    { from: 4, direction: 1, startX: 700 },
+    { from: 3, direction: -1, startX: 650 },
+    { from: 2, direction: -1, startX: 350 },
+    { from: 1, direction: 1, startX: 260 },
   ];
   falls.forEach(({ from, direction, startX }) => {
     const target = stage.platforms[from - 1];

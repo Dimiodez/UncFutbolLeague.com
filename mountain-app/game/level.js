@@ -338,12 +338,67 @@ const LEVEL_EIGHT_GAPS = Object.freeze([
   Object.freeze({ platformIndex: 0, gapX: 520, gapWidth: 84 }),
 ]);
 
+const LEVEL_NINE_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 940, direction: 1, style: 'ice' },
+  { x: 480, y: 590, width: 900, direction: 1, style: 'rock' },
+  { x: 480, y: 490, width: 900, direction: -1, style: 'snow' },
+  { x: 480, y: 390, width: 900, direction: -1, style: 'rock' },
+  { x: 480, y: 290, width: 920, direction: 1, style: 'snow' },
+  { x: 420, y: 190, width: 760, direction: 1, style: 'rock' },
+]);
+
+const LEVEL_NINE_LADDERS = Object.freeze([
+  { id: 'l9-ladder-0', x: 520, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l9-ladder-1', x: 820, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l9-ladder-2', x: 480, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l9-ladder-3', x: 820, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l9-ladder-4', x: 560, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+export const LEVEL_NINE_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_NINE_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_NINE_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
+export const LEVEL_NINE_DISRUPTIONS = Object.freeze([
+  Object.freeze({
+    id: 'l9-avalanche-grid',
+    kind: 'platform-gaps',
+    gaps: Object.freeze([
+      Object.freeze({ platformIndex: 5, gapX: 420, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 4, gapX: 300, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 4, gapX: 700, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 3, gapX: 650, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 2, gapX: 350, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 2, gapX: 700, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 1, gapX: 260, gapWidth: 76 }),
+      Object.freeze({ platformIndex: 1, gapX: 700, gapWidth: 78 }),
+    ]),
+    disableEdgeIds: Object.freeze([]),
+  }),
+]);
+
 export function icePatchAt(stage, x, feetY, tolerance = 10) {
   return stage?.icePatches?.find((patch) => {
     const platform = stage.platforms[patch.platformIndex];
     const surfaceY = platform.y - 12;
     return Math.abs(feetY - surfaceY) <= tolerance && Math.abs(x - patch.x) <= patch.width / 2;
   }) || null;
+}
+
+export function hasReachedSummit(stage, playerX, playerY, maximumY = 180) {
+  if (!stage?.summit || playerY >= maximumY) return false;
+  return stage.summit.side === 'left'
+    ? playerX < stage.summit.x + 32
+    : playerX > stage.summit.x - 32;
 }
 
 const freezeStage = (stage) => Object.freeze({
@@ -353,6 +408,7 @@ const freezeStage = (stage) => Object.freeze({
   icePatches: Object.freeze((stage.icePatches || []).map((patch) => Object.freeze(patch))),
   ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
   bizzie: stage.bizzie ? Object.freeze(stage.bizzie) : null,
+  schwein: stage.schwein ? Object.freeze(stage.schwein) : null,
   tuning: Object.freeze(stage.tuning),
 });
 
@@ -541,6 +597,41 @@ export const STAGES = Object.freeze([
       ...ballTuningForLevel(8),
       initialBallDelay: 5800,
       salmonInterval: 5700,
+    },
+  }),
+  freezeStage({
+    level: 9,
+    name: 'Avalanche Anger Run',
+    backgroundKey: 'mountain-basin-storm',
+    platforms: LEVEL_NINE_PLATFORMS,
+    ladders: LEVEL_NINE_LADDERS,
+    playerStart: Object.freeze({ x: 100, y: 650 }),
+    summit: Object.freeze({ x: 90, y: 150, side: 'left' }),
+    puddles: [{ x: 570, y: 476 }],
+    icePatches: [{ platformIndex: 0, x: 480, width: 940 }],
+    route: LEVEL_NINE_ROUTE,
+    disruptions: LEVEL_NINE_DISRUPTIONS,
+    speechSide: 'right',
+    schwein: {
+      x: 185,
+      y: 105,
+      flipX: true,
+      throwDirection: 1,
+      ballSpawnX: 264,
+      salmonSpawnX: 260,
+      escapeDirection: -1,
+    },
+    ballBumpers: [
+      { platformIndex: 3, x: 900, direction: -1 },
+      { platformIndex: 1, x: 70, direction: 1 },
+      { platformIndex: 0, x: 920, direction: -1 },
+    ],
+    tantrumDelay: 3300,
+    tuning: {
+      ...ballTuningForLevel(9),
+      initialBallDelay: 4600,
+      salmonInterval: 5400,
+      maxBalls: 10,
     },
   }),
 ]);
