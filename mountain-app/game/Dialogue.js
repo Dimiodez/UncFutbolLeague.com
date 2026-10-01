@@ -92,6 +92,8 @@ export const BRUCE_SUMMIT_LINES = Object.freeze([
   'DO YOU GUYS DO SOCK SOCK, SHOE SHOE... OR SOCK SHOE, SOCK SHOE?',
 ]);
 
+export const BIZZIE_REVEAL_LINE = "You're not getting through me!";
+
 export const LEVEL_SIX_CUTSCENE = Object.freeze({
   referee: 'Stop telling me to suck my ass!',
   schwein: "Mama Mia, suck a big'a fat cock'a",

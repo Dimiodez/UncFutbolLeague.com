@@ -104,3 +104,14 @@ All current Schwein, Bruce, referee, and gameplay-notice copy is centralized in
 `game/Dialogue.js` so future script passes do not require editing gameplay code.
 The complete Level 10 red-card exchange is stored there now, but remains inactive
 until Level 10 itself is built.
+
+## Level 8: Bizzie's defensive detour
+
+Level 8 introduces Bizzie as a silent, non-damaging roadblock. The tempting
+right-side entry ladder leaves the referee on the wrong side of his lane-filling
+blocking stance; the longer left entry ladder is the guaranteed route onward.
+Bizzie arrives with a five-frame stomp, cannot be passed or jumped, and launches
+colliding soccer balls into a readable airborne ricochet without changing the
+authored platform route. Four jumpable platform breaks make that alternate route
+meaningfully harder and form a caught, physics-driven ball chute. His source artwork, normalized runtime frames, and
+preview sheet are kept under `assets/sprites/`.

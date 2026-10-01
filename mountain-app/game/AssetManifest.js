@@ -42,4 +42,12 @@ export const ASSETS = Object.freeze({
     key: `bruce-climb-frame-${index + 1}`,
     url: `assets/sprites/bruce-climb/${String(index + 1).padStart(2, '0')}.png`,
   }))),
+  bizzieBlockFrames: Object.freeze(Array.from({ length: 5 }, (_, index) => Object.freeze({
+    key: `bizzie-block-frame-${index + 1}`,
+    url: `assets/sprites/bizzie-block/${String(index + 1).padStart(2, '0')}.png`,
+  }))),
+  bizzieLandFrames: Object.freeze(Array.from({ length: 5 }, (_, index) => Object.freeze({
+    key: `bizzie-land-frame-${index + 1}`,
+    url: `assets/sprites/bizzie-land/${String(index + 1).padStart(2, '0')}.png`,
+  }))),
 });

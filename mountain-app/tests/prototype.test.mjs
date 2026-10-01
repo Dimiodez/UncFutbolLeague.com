@@ -1,11 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
+import {
+  BIZZIE_PLAYER_BLOCKER_HEIGHT,
+  chooseBizzieDeflection,
+} from '../game/BizzieDirector.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
 import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
   ballHitLine,
+  BIZZIE_REVEAL_LINE,
   BRUCE_SUMMIT_LINES,
   GAMEPLAY_NOTICES,
   LEVEL_TEN_CUTSCENE,
@@ -42,6 +47,7 @@ import {
   LEVEL_SIX_DISRUPTIONS,
   LEVEL_SIX_ROUTE,
   LEVEL_SEVEN_ROUTE,
+  LEVEL_EIGHT_ROUTE,
   LEVEL_THREE_DISRUPTIONS,
   LEVEL_THREE_ROUTE,
   PLATFORMS,
@@ -82,16 +88,17 @@ test('course geometry remains within the fixed arcade viewport', () => {
   }
 });
 
-test('prototype contains seven stages and leaves later mountains unbuilt', () => {
-  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7]);
+test('prototype contains eight stages and leaves the final mountains unbuilt', () => {
+  assert.deepEqual(STAGES.map(({ level }) => level), [1, 2, 3, 4, 5, 6, 7, 8]);
   assert.equal(getStage(2)?.name, 'Switchback Scramble');
   assert.equal(getStage(3)?.name, 'Tantrum Traverse');
   assert.equal(getStage(4)?.name, 'False Summit Pass');
   assert.equal(getStage(5)?.name, 'Bruce Basin Pursuit');
   assert.equal(getStage(6)?.name, 'Splitter Spike Cirque');
   assert.equal(getStage(7)?.name, 'Glacier Lock Run');
-  assert.equal(hasStage(7), true);
-  assert.equal(hasStage(8), false);
+  assert.equal(getStage(8)?.name, 'Defender Detour');
+  assert.equal(hasStage(8), true);
+  assert.equal(hasStage(9), false);
 });
 
 test('Level 2 is only a modest hazard increase', () => {
@@ -485,6 +492,62 @@ test('Level 7 keeps its ice, gaps, and ladders readable while balls descend ever
     stage.icePatches.filter((patch) => patch.platformIndex === platformIndex).forEach((patch) => {
       assert.ok(Math.abs(patch.x - gapX) > patch.width / 2 + gapWidth / 2);
     });
+  });
+});
+
+test('Level 8 makes Bizzie deny the tempting lane while preserving the harder route', () => {
+  const stage = getStage(8);
+  assert.equal(hasPhysicalRoute(LEVEL_EIGHT_ROUTE), true);
+  assert.equal(hasPhysicalRoute(LEVEL_EIGHT_ROUTE, [stage.bizzie.obviousEntryLadderId]), true);
+  assert.equal(isTantrumLevel(stage.level), false);
+  assert.equal(isBruceLevel(stage.level), false);
+  assert.equal(iceRuleForLevel(stage.level), null);
+  assert.equal(stage.bizzie.platformIndex, 1);
+  assert.ok(stage.bizzie.revealDelay > 0);
+
+  const obvious = stage.ladders.find(({ id }) => id === stage.bizzie.obviousEntryLadderId);
+  const alternate = stage.ladders.find(({ id }) => id === stage.bizzie.alternateEntryLadderId);
+  const onward = stage.ladders.find(({ id }) => id === stage.bizzie.onwardLadderId);
+  assert.ok(Math.abs(stage.playerStart.x - obvious.x) < Math.abs(stage.playerStart.x - alternate.x));
+  assert.ok(onward.x < stage.bizzie.x && stage.bizzie.x < obvious.x);
+  assert.ok(alternate.x < stage.bizzie.x, 'alternate entry must arrive on the onward side of Bizzie');
+
+  const jumpApex = TUNING.jumpSpeed ** 2 / (2 * TUNING.gravity);
+  const rowClearance = stage.platforms[1].y - stage.platforms[2].y - 24;
+  assert.ok(BIZZIE_PLAYER_BLOCKER_HEIGHT > jumpApex, 'Bizzie must be too tall for the compact hop');
+  assert.ok(BIZZIE_PLAYER_BLOCKER_HEIGHT < rowClearance, 'Bizzie must not intrude into the platform above');
+  assert.equal(chooseBizzieDeflection(() => 0.1), -1);
+  assert.equal(chooseBizzieDeflection(() => 0.9), 1);
+  assert.equal(stage.bizzie.ballDeflectionDirection, -1);
+  assert.equal(BIZZIE_REVEAL_LINE, "You're not getting through me!");
+  assert.deepEqual(stage.tuning.ballSpeed, ballTuningForLevel(8).ballSpeed);
+  assert.deepEqual(stage.tuning.ballInterval, ballTuningForLevel(8).ballInterval);
+});
+
+test('Level 8 platform breaks form a jumpable player route and a caught ball chute', () => {
+  const stage = getStage(8);
+  const radius = TUNING.ballDiameter / 2;
+  const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
+  assert.deepEqual(stage.gaps.map(({ platformIndex }) => platformIndex), [4, 3, 2, 0]);
+  stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
+    assert.ok(gapWidth < maximumJumpTravel);
+    stage.ladders.filter((ladder) => (
+      ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
+    )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
+  });
+
+  const falls = [
+    { from: 5, direction: -1 },
+    { from: 4, direction: 1, startX: 620 },
+    { from: 3, direction: -1, startX: 500 },
+    { from: 2, direction: 1, startX: 480 },
+    { from: 1, direction: -1, startX: 125 },
+  ];
+  falls.forEach(({ from, direction, startX }) => {
+    const target = stage.platforms[from - 1];
+    const landing = projectedBallLandingX(stage, from, direction, stage.tuning.ballSpeed, TUNING.gravity, startX);
+    assert.ok(landing >= target.x - target.width / 2 + radius, `row ${from} misses left`);
+    assert.ok(landing <= target.x + target.width / 2 - radius, `row ${from} misses right`);
   });
 });
 

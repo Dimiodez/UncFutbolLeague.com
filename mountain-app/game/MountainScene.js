@@ -1,5 +1,6 @@
 import { createTextures } from './ArtFactory.js';
 import { ASSETS } from './AssetManifest.js';
+import { BizzieDirector } from './BizzieDirector.js';
 import { BruceDirector } from './BruceDirector.js';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
@@ -46,6 +47,8 @@ export class MountainScene extends Phaser.Scene {
     ASSETS.ballFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.bruceRunFrames.forEach((asset) => this.load.image(asset.key, asset.url));
     ASSETS.bruceClimbFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.bizzieBlockFrames.forEach((asset) => this.load.image(asset.key, asset.url));
+    ASSETS.bizzieLandFrames.forEach((asset) => this.load.image(asset.key, asset.url));
   }
 
   create() {
@@ -63,6 +66,7 @@ export class MountainScene extends Phaser.Scene {
     this.createActors();
     this.hazards = new HazardDirector(this);
     this.bruce = new BruceDirector(this);
+    this.bizzie = new BizzieDirector(this);
     this.createPhysics();
     this.events.on('schwein-ball-line', () => this.say(pickLine(SCHWEIN_BALL_LINES)));
     this.events.on('schwein-salmon-line', () => this.say(pickLine(SCHWEIN_SALMON_LINES)));
@@ -217,6 +221,16 @@ export class MountainScene extends Phaser.Scene {
     const bruceClimbKeys = ASSETS.bruceClimbFrames.map((asset) => ({ key: asset.key }));
     this.anims.create({ key: 'bruce-run', frames: bruceRunKeys, frameRate: 10, repeat: -1 });
     this.anims.create({ key: 'bruce-climb', frames: bruceClimbKeys, frameRate: 8, repeat: -1 });
+    const bizzieBlockKeys = ASSETS.bizzieBlockFrames.map((asset) => ({ key: asset.key }));
+    const bizzieLandKeys = ASSETS.bizzieLandFrames.map((asset) => ({ key: asset.key }));
+    this.anims.create({ key: 'bizzie-land', frames: bizzieLandKeys, frameRate: 10, repeat: 0 });
+    this.anims.create({ key: 'bizzie-block', frames: bizzieBlockKeys, frameRate: 10, repeat: 0 });
+    this.anims.create({
+      key: 'bizzie-impact',
+      frames: [bizzieBlockKeys[4], bizzieBlockKeys[3], bizzieBlockKeys[4]],
+      frameRate: 14,
+      repeat: 0,
+    });
   }
 
   createPhysics() {
@@ -227,6 +241,12 @@ export class MountainScene extends Phaser.Scene {
     this.physics.add.collider(this.hazards.balls, this.ballBumpers, (ball, bumper) => this.hazards.ballHitBumper(ball, bumper));
     this.physics.add.overlap(this.hazards.balls, this.spikeDeflectors, (ball, spike) => this.hazards.ballHitBumper(ball, spike));
     this.physics.add.collider(this.player, this.spikeDeflectors);
+    this.physics.add.collider(this.player, this.bizzie.playerBlocker, (player) => this.bizzie.blockPlayer(player));
+    this.physics.add.overlap(
+      this.hazards.balls,
+      this.bizzie.ballBlocker,
+      (first, second) => this.bizzie.deflectBall(first, second),
+    );
     this.physics.add.collider(
       this.hazards.salmon,
       this.platforms,
@@ -256,6 +276,7 @@ export class MountainScene extends Phaser.Scene {
     this.resetSchwein();
     this.hazards.reset(this.time.now);
     this.bruce.reset(this.time.now);
+    this.bizzie.reset();
     this.bruceBonusLives = 0;
     this.resetStageEvents();
     this.say(openingLineForLevel(nextStage.level));
@@ -551,6 +572,7 @@ export class MountainScene extends Phaser.Scene {
     this.events.emit('state-change');
     if (this.state.phase === 'over') {
       this.bruce.clear();
+      this.bizzie.clear();
       this.player.disableBody(true, false);
       this.playerArt.play('player-hurt', true).setAlpha(0.72);
       this.events.emit('game-over');
@@ -575,6 +597,7 @@ export class MountainScene extends Phaser.Scene {
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
     this.hazards.clear();
     this.bruce.clear();
+    this.bizzie.clear();
     this.tantrumTimer?.remove(false);
     this.events.emit('state-change');
     if (outcome === 'yellow-card') {

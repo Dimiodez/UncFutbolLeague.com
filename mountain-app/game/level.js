@@ -301,6 +301,43 @@ export const LEVEL_SEVEN_ROUTE = Object.freeze({
   }))),
 });
 
+const LEVEL_EIGHT_PLATFORMS = Object.freeze([
+  { x: 480, y: 690, width: 960, direction: -1, style: 'rock' },
+  { x: 540, y: 590, width: 800, direction: -1, style: 'snow' },
+  { x: 460, y: 490, width: 840, direction: 1, style: 'rock' },
+  { x: 480, y: 390, width: 900, direction: -1, style: 'snow' },
+  { x: 440, y: 290, width: 880, direction: 1, style: 'rock' },
+  { x: 540, y: 190, width: 720, direction: -1, style: 'snow' },
+]);
+
+const LEVEL_EIGHT_LADDERS = Object.freeze([
+  { id: 'l8-obvious-entry', x: 790, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l8-alternate-entry', x: 170, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l8-ladder-1', x: 230, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l8-ladder-2', x: 720, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l8-ladder-3', x: 240, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l8-ladder-4', x: 700, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+]);
+
+export const LEVEL_EIGHT_ROUTE = Object.freeze({
+  start: 'platform-0',
+  summit: 'platform-5',
+  nodes: Object.freeze(LEVEL_EIGHT_PLATFORMS.map((_platform, index) => `platform-${index}`)),
+  edges: Object.freeze(LEVEL_EIGHT_LADDERS.map((ladder) => Object.freeze({
+    id: ladder.id,
+    from: `platform-${ladder.fromIndex}`,
+    to: `platform-${ladder.toIndex}`,
+    type: 'ladder',
+  }))),
+});
+
+const LEVEL_EIGHT_GAPS = Object.freeze([
+  Object.freeze({ platformIndex: 4, gapX: 620, gapWidth: 78 }),
+  Object.freeze({ platformIndex: 3, gapX: 500, gapWidth: 78 }),
+  Object.freeze({ platformIndex: 2, gapX: 480, gapWidth: 82 }),
+  Object.freeze({ platformIndex: 0, gapX: 520, gapWidth: 84 }),
+]);
+
 export function icePatchAt(stage, x, feetY, tolerance = 10) {
   return stage?.icePatches?.find((patch) => {
     const platform = stage.platforms[patch.platformIndex];
@@ -315,6 +352,7 @@ const freezeStage = (stage) => Object.freeze({
   gaps: Object.freeze((stage.gaps || []).map((gap) => Object.freeze(gap))),
   icePatches: Object.freeze((stage.icePatches || []).map((patch) => Object.freeze(patch))),
   ballBumpers: Object.freeze((stage.ballBumpers || []).map((bumper) => Object.freeze(bumper))),
+  bizzie: stage.bizzie ? Object.freeze(stage.bizzie) : null,
   tuning: Object.freeze(stage.tuning),
 });
 
@@ -470,6 +508,39 @@ export const STAGES = Object.freeze([
       ...ballTuningForLevel(7),
       initialBallDelay: 4300,
       salmonInterval: 6000,
+    },
+  }),
+  freezeStage({
+    level: 8,
+    name: 'Defender Detour',
+    backgroundKey: 'mountain-pass-sunset',
+    platforms: LEVEL_EIGHT_PLATFORMS,
+    ladders: LEVEL_EIGHT_LADDERS,
+    playerStart: Object.freeze({ x: 840, y: 650 }),
+    summit: Object.freeze({ x: 790, y: 150 }),
+    puddles: [{ x: 500, y: 376 }],
+    route: LEVEL_EIGHT_ROUTE,
+    gaps: LEVEL_EIGHT_GAPS,
+    bizzie: {
+      platformIndex: 1,
+      x: 500,
+      revealDelay: 1300,
+      obviousEntryLadderId: 'l8-obvious-entry',
+      alternateEntryLadderId: 'l8-alternate-entry',
+      onwardLadderId: 'l8-ladder-1',
+      ballDeflectionDirection: -1,
+    },
+    ballBumpers: [
+      { platformIndex: 4, x: 45, direction: 1 },
+      { platformIndex: 3, x: 900, direction: -1 },
+      { platformIndex: 2, x: 55, direction: 1 },
+      { platformIndex: 1, x: 900, direction: -1 },
+      { platformIndex: 0, x: 15, direction: 1 },
+    ],
+    tuning: {
+      ...ballTuningForLevel(8),
+      initialBallDelay: 4100,
+      salmonInterval: 5700,
     },
   }),
 ]);
