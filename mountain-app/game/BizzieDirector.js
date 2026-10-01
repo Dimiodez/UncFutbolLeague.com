@@ -4,7 +4,7 @@ import { BIZZIE_REVEAL_LINE } from './Dialogue.js';
 export const BIZZIE_PLAYER_BLOCKER_HEIGHT = 72;
 export const BIZZIE_PLAYER_BLOCKER_WIDTH = 92;
 
-export const chooseBizzieDeflection = (random = Math.random) => (random() < 0.5 ? -1 : 1);
+export const nextBizzieDeflection = (previousDirection) => (previousDirection < 0 ? 1 : -1);
 
 export class BizzieDirector {
   constructor(scene) {
@@ -19,8 +19,11 @@ export class BizzieDirector {
     this.playerBlocker.disableBody(true, true);
     this.ballBlocker.disableBody(true, true);
     this.revealTimer = null;
+    this.telegraphTimer = null;
+    this.telegraphVisual = null;
     this.active = false;
     this.playerBumpAt = 0;
+    this.lastDeflectionDirection = 1;
   }
 
   reset() {
@@ -31,14 +34,49 @@ export class BizzieDirector {
     if (!platform) return;
     this.spec = spec;
     this.surfaceY = platform.y - 12;
-    this.revealTimer = this.scene.time.delayedCall(spec.revealDelay ?? 1300, () => this.reveal());
+    this.telegraphTimer = this.scene.time.delayedCall(spec.telegraphDelay ?? 700, () => this.telegraph());
+    this.revealTimer = this.scene.time.delayedCall(spec.revealDelay ?? 2600, () => this.reveal());
+  }
+
+  telegraph() {
+    if (!this.spec || !this.scene.state.isPlaying()) return;
+    const marker = this.scene.add.ellipse(0, 0, 112, 24, 0xf8fff4, 0.28)
+      .setStrokeStyle(5, 0x159447, 0.95);
+    const warningPlate = this.scene.add.rectangle(0, -54, 138, 42, 0x0b4123, 0.94)
+      .setStrokeStyle(3, 0xf8fff4, 1);
+    const warning = this.scene.add.text(0, -54, 'ROUTE BLOCKED', {
+      fontFamily: 'monospace',
+      fontStyle: 'bold',
+      fontSize: '16px',
+      color: '#ffffff',
+    }).setOrigin(0.5);
+    this.telegraphVisual = this.scene.add.container(
+      this.spec.x,
+      this.surfaceY - 4,
+      [marker, warningPlate, warning],
+    ).setDepth(13);
+    this.scene.tweens.add({
+      targets: this.telegraphVisual,
+      alpha: 0.68,
+      duration: 320,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.InOut',
+    });
   }
 
   reveal() {
     if (!this.spec || !this.scene.state.isPlaying()) return;
     const { x } = this.spec;
-    this.active = true;
+    this.destroyTelegraph();
     this.visual.setPosition(x, this.surfaceY).setVisible(true).setAlpha(1).setScale(1).play('bizzie-land', true);
+    this.visual.once('animationcomplete-bizzie-land', () => this.lockLane());
+  }
+
+  lockLane() {
+    if (!this.spec || !this.scene.state.isPlaying()) return;
+    const { x } = this.spec;
+    this.active = true;
     this.playerBlocker.enableBody(true, x, this.surfaceY - BIZZIE_PLAYER_BLOCKER_HEIGHT / 2, true, false)
       .setDisplaySize(BIZZIE_PLAYER_BLOCKER_WIDTH, BIZZIE_PLAYER_BLOCKER_HEIGHT)
       .refreshBody();
@@ -46,11 +84,8 @@ export class BizzieDirector {
       .setDisplaySize(82, 98)
       .refreshBody();
     this.makeSnowPuff(x, this.surfaceY);
-    this.scene.cameras.main.shake(120, 0.004);
     this.scene.say(BIZZIE_REVEAL_LINE);
-    this.visual.once('animationcomplete-bizzie-land', () => {
-      if (this.active) this.visual.play('bizzie-block', true);
-    });
+    this.visual.play('bizzie-block', true);
   }
 
   makeSnowPuff(x, y) {
@@ -75,7 +110,6 @@ export class BizzieDirector {
     const direction = player.x < this.visual.x ? -1 : 1;
     this.scene.stopClimbing();
     player.setVelocityX(direction * 90);
-    this.scene.cameras.main.shake(70, 0.003);
     this.scene.tweens.add({
       targets: this.visual,
       scaleX: 1.035,
@@ -91,28 +125,41 @@ export class BizzieDirector {
     if (!this.active || !ball?.active) return;
     const now = this.scene.time.now;
     if (now < (ball.getData('bizzieDeflectLockUntil') || 0)) return;
-    const direction = this.spec.ballDeflectionDirection || chooseBizzieDeflection();
+    const direction = nextBizzieDeflection(this.lastDeflectionDirection);
+    this.lastDeflectionDirection = direction;
     const speed = this.scene.stage.tuning.ballSpeed;
-    ball.setData('bizzieDeflectLockUntil', now + 700)
-      .setPosition(this.visual.x + direction * 54, Math.min(ball.y, this.surfaceY - 72))
-      .setVelocity(direction * speed * 1.08, -185);
+    // Bizzie changes the lane, not the danger. Give the ball a short lateral
+    // pop and let normal gravity/platform physics carry it down the mountain.
+    ball.setData('bizzieDeflectLockUntil', now + 2400)
+      .setPosition(this.visual.x + direction * 54, this.surfaceY - 22)
+      .setVelocity(direction * speed * 1.18, -105);
     if (direction < 0) ball.playReverse('soccer-roll', true);
     else ball.play('soccer-roll', true);
     this.visual.play('bizzie-impact', true);
     this.visual.once('animationcomplete-bizzie-impact', () => {
       if (this.active) this.visual.play('bizzie-block', true);
     });
-    this.scene.cameras.main.shake(85, 0.004);
+  }
+
+  destroyTelegraph() {
+    if (!this.telegraphVisual) return;
+    this.scene.tweens.killTweensOf(this.telegraphVisual);
+    this.telegraphVisual.destroy(true);
+    this.telegraphVisual = null;
   }
 
   clear() {
     this.revealTimer?.remove(false);
+    this.telegraphTimer?.remove(false);
     this.revealTimer = null;
+    this.telegraphTimer = null;
+    this.destroyTelegraph();
     this.scene.tweens.killTweensOf(this.visual);
     this.visual.stop().setVisible(false).setPosition(-200, -200).setScale(1);
     this.playerBlocker.disableBody(true, true);
     this.ballBlocker.disableBody(true, true);
     this.active = false;
+    this.lastDeflectionDirection = 1;
     this.spec = null;
   }
 }

@@ -137,8 +137,9 @@ export class HazardDirector {
   ballHitBumper(ball, bumper) {
     const randomDirection = bumper.getData('randomDirection');
     let direction = bumper.getData('direction');
+    const now = this.scene.time.now;
+    if (now < (ball.getData('bumperLockUntil') || 0)) return;
     if (randomDirection) {
-      const now = this.scene.time.now;
       if (now < (ball.getData('deflectLockUntil') || 0)) return;
       direction = chooseBallDeflection();
       // Clear the illustrated tip before handing the ball back to gravity. The
@@ -150,7 +151,10 @@ export class HazardDirector {
         .setVelocityY(30);
     }
     if (!direction) return;
-    ball.setVelocityX(direction * this.tuning('ballSpeed'));
+    const clearance = bumper.body.width / 2 + ball.body.width / 2 + 4;
+    ball.setData('bumperLockUntil', now + 300)
+      .setX(bumper.x + direction * clearance)
+      .setVelocityX(direction * this.tuning('ballSpeed'));
     if (direction < 0) ball.playReverse('soccer-roll', true);
     else ball.play('soccer-roll', true);
   }

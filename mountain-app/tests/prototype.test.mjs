@@ -3,9 +3,10 @@ import assert from 'node:assert/strict';
 import { GameState } from '../game/GameState.js';
 import {
   BIZZIE_PLAYER_BLOCKER_HEIGHT,
-  chooseBizzieDeflection,
+  nextBizzieDeflection,
 } from '../game/BizzieDirector.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
+import { ladderAtFeet } from '../game/LadderNavigation.js';
 import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
@@ -84,6 +85,23 @@ test('course geometry remains within the fixed arcade viewport', () => {
       assert.equal(ladder.top, upper.y);
       assert.ok(Math.abs(ladder.x - lower.x) < lower.width / 2);
       assert.ok(Math.abs(ladder.x - upper.x) < upper.width / 2);
+    });
+  }
+});
+
+test('every authored ladder can be entered from the platform above or below', () => {
+  for (const stage of STAGES) {
+    stage.ladders.forEach((ladder) => {
+      const lowerIndex = Number.isInteger(ladder.fromIndex)
+        ? ladder.fromIndex
+        : stage.platforms.findIndex((platform) => platform.y === ladder.bottom);
+      const upperIndex = Number.isInteger(ladder.toIndex) ? ladder.toIndex : lowerIndex + 1;
+      const runtimeLadder = { ...ladder, top: ladder.top + 8, bottom: ladder.bottom - 8 };
+      const upperFeetY = stage.platforms[upperIndex].y - 12;
+      const lowerFeetY = stage.platforms[lowerIndex].y - 12;
+      assert.equal(ladderAtFeet([runtimeLadder], ladder.x, upperFeetY), runtimeLadder);
+      assert.equal(ladderAtFeet([runtimeLadder], ladder.x, lowerFeetY), runtimeLadder);
+      assert.equal(ladderAtFeet([runtimeLadder], ladder.x + 40, upperFeetY), null);
     });
   }
 });
@@ -503,7 +521,8 @@ test('Level 8 makes Bizzie deny the tempting lane while preserving the harder ro
   assert.equal(isBruceLevel(stage.level), false);
   assert.equal(iceRuleForLevel(stage.level), null);
   assert.equal(stage.bizzie.platformIndex, 1);
-  assert.ok(stage.bizzie.revealDelay > 0);
+  assert.ok(stage.bizzie.telegraphDelay > 0);
+  assert.ok(stage.bizzie.revealDelay - stage.bizzie.telegraphDelay >= 1500);
 
   const obvious = stage.ladders.find(({ id }) => id === stage.bizzie.obviousEntryLadderId);
   const alternate = stage.ladders.find(({ id }) => id === stage.bizzie.alternateEntryLadderId);
@@ -516,9 +535,9 @@ test('Level 8 makes Bizzie deny the tempting lane while preserving the harder ro
   const rowClearance = stage.platforms[1].y - stage.platforms[2].y - 24;
   assert.ok(BIZZIE_PLAYER_BLOCKER_HEIGHT > jumpApex, 'Bizzie must be too tall for the compact hop');
   assert.ok(BIZZIE_PLAYER_BLOCKER_HEIGHT < rowClearance, 'Bizzie must not intrude into the platform above');
-  assert.equal(chooseBizzieDeflection(() => 0.1), -1);
-  assert.equal(chooseBizzieDeflection(() => 0.9), 1);
-  assert.equal(stage.bizzie.ballDeflectionDirection, -1);
+  assert.equal(nextBizzieDeflection(1), -1);
+  assert.equal(nextBizzieDeflection(-1), 1);
+  assert.equal('ballDeflectionDirection' in stage.bizzie, false);
   assert.equal(BIZZIE_REVEAL_LINE, "You're not getting through me!");
   assert.deepEqual(stage.tuning.ballSpeed, ballTuningForLevel(8).ballSpeed);
   assert.deepEqual(stage.tuning.ballInterval, ballTuningForLevel(8).ballInterval);

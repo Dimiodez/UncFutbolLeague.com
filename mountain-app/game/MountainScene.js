@@ -21,6 +21,7 @@ import {
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
+import { ladderAtFeet } from './LadderNavigation.js';
 import { FALL_DEATH_Y, getStage, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
 
 function gapsByPlatform(gaps = []) {
@@ -223,7 +224,7 @@ export class MountainScene extends Phaser.Scene {
     this.anims.create({ key: 'bruce-climb', frames: bruceClimbKeys, frameRate: 8, repeat: -1 });
     const bizzieBlockKeys = ASSETS.bizzieBlockFrames.map((asset) => ({ key: asset.key }));
     const bizzieLandKeys = ASSETS.bizzieLandFrames.map((asset) => ({ key: asset.key }));
-    this.anims.create({ key: 'bizzie-land', frames: bizzieLandKeys, frameRate: 10, repeat: 0 });
+    this.anims.create({ key: 'bizzie-land', frames: bizzieLandKeys, frameRate: 6, repeat: 0 });
     this.anims.create({ key: 'bizzie-block', frames: bizzieBlockKeys, frameRate: 10, repeat: 0 });
     this.anims.create({
       key: 'bizzie-impact',
@@ -315,7 +316,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   nearestLadder() {
-    return this.ladders.find((ladder) => Math.abs(this.player.x - ladder.x) < 28 && this.player.y > ladder.top - 36 && this.player.y < ladder.bottom + 30);
+    return ladderAtFeet(this.ladders, this.player.x, this.player.body.bottom);
   }
 
   update(time, delta) {
@@ -348,7 +349,8 @@ export class MountainScene extends Phaser.Scene {
       this.player.iceDirection = 0;
       this.player.body.setAllowGravity(false);
       this.player.setVelocity(horizontal * TUNING.moveSpeed * 0.45, vertical * TUNING.climbSpeed);
-      if (!ladder || horizontal !== 0 && vertical === 0 || this.player.y < ladder?.top - 18 || this.player.y > ladder?.bottom + 20) this.stopClimbing();
+      const feetY = this.player.body.bottom;
+      if (!ladder || horizontal !== 0 && vertical === 0 || feetY < ladder?.top - 24 || feetY > ladder?.bottom + 24) this.stopClimbing();
     } else {
       this.player.body.setAllowGravity(true);
       const icePatch = this.player.body.blocked.down
@@ -563,9 +565,13 @@ export class MountainScene extends Phaser.Scene {
     if (source === 'fall' && this.fallResetPending) return;
     if (source === 'fall') this.fallResetPending = true;
     if (!this.state.takeHit(this.time.now)) {
-      if (source === 'fall') this.resetPlayer();
+      if (source === 'fall') {
+        this.resetPlayer();
+        this.bizzie.reset();
+      }
       return;
     }
+    this.bizzie.clear();
     this.cameras.main.flash(180, 210, 50, 45);
     this.cameras.main.shake(250, 0.012);
     this.say(source === 'fall' ? pickLine(SCHWEIN_FALL_LINES) : ballHitLine());
@@ -584,6 +590,7 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(source === 'fall' ? 650 : 850, () => {
       this.state.phase = 'playing';
       this.resetPlayer();
+      this.bizzie.reset();
       this.events.emit('state-change');
     });
   }

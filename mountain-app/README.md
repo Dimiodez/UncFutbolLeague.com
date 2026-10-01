@@ -107,11 +107,18 @@ until Level 10 itself is built.
 
 ## Level 8: Bizzie's defensive detour
 
-Level 8 introduces Bizzie as a silent, non-damaging roadblock. The tempting
+Level 8 introduces Bizzie as a non-damaging roadblock. The tempting
 right-side entry ladder leaves the referee on the wrong side of his lane-filling
 blocking stance; the longer left entry ladder is the guaranteed route onward.
-Bizzie arrives with a five-frame stomp, cannot be passed or jumped, and launches
-colliding soccer balls into a readable airborne ricochet without changing the
+An animated landing marker warns where Bizzie will arrive before his slower
+five-frame stomp locks the lane. He cannot be passed or jumped and alternates
+colliding soccer balls left and right with a short momentum-preserving ricochet;
+gravity then keeps each ball moving down the course instead of neutralizing it.
+There is no repeated screen shake or one-sided ball pile. After a lost life,
+Bizzie leaves and repeats the warning-and-landing sequence so the alternate path
+is never permanently sealed. His line is “You're not
+getting through me!” The player can enter every ladder from either end, so a
+blocked route can always be backed out of. These changes do not alter the
 authored platform route. Four jumpable platform breaks make that alternate route
 meaningfully harder and form a caught, physics-driven ball chute. His source artwork, normalized runtime frames, and
 preview sheet are kept under `assets/sprites/`.

@@ -524,11 +524,11 @@ export const STAGES = Object.freeze([
     bizzie: {
       platformIndex: 1,
       x: 500,
-      revealDelay: 1300,
+      telegraphDelay: 600,
+      revealDelay: 3400,
       obviousEntryLadderId: 'l8-obvious-entry',
       alternateEntryLadderId: 'l8-alternate-entry',
       onwardLadderId: 'l8-ladder-1',
-      ballDeflectionDirection: -1,
     },
     ballBumpers: [
       { platformIndex: 4, x: 45, direction: 1 },
@@ -539,7 +539,7 @@ export const STAGES = Object.freeze([
     ],
     tuning: {
       ...ballTuningForLevel(8),
-      initialBallDelay: 4100,
+      initialBallDelay: 5800,
       salmonInterval: 5700,
     },
   }),
