@@ -1,11 +1,12 @@
-import { MountainScene } from './game/MountainScene.js?v=level-nine-pillars-1';
-import { hasStage, TUNING, WORLD } from './game/level.js?v=level-nine-pillars-1';
+import { MountainScene } from './game/MountainScene.js?v=level-nine-final-practice-1';
+import { hasStage, TUNING, WORLD } from './game/level.js?v=level-nine-final-practice-1';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
 const previewLevel = Number(previewParams.get('level'));
 const previewCutscene = previewParams.get('cutscene') === '1';
 const previewWin = previewParams.get('win') === '1';
+const previewPractice = previewParams.get('practice');
 let scene;
 let speechTimer;
 let speechQueue = [];
@@ -66,6 +67,7 @@ function start() {
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
   scene.startRun(level, !carryLives);
+  if (previewPractice && level === previewLevel) scene.startPracticeArea(previewPractice);
   if (previewCutscene && level === 6) {
     window.setTimeout(() => {
       if (scene?.state.isPlaying()) scene.win();

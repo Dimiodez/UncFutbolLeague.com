@@ -609,7 +609,10 @@ test('Level 9 reverses the summit, throw direction, and dialogue side', () => {
   assert.ok(stage.schwein.x < WORLD.width / 2);
   assert.equal(stage.schwein.flipX, true);
   assert.equal(stage.schwein.throwDirection, 1);
+  assert.equal(stage.schwein.x, 203);
+  assert.equal(stage.schwein.ballSpawnX, 282);
   assert.equal(stage.schwein.escapeDirection, -1);
+  assert.deepEqual(stage.practiceSpawns.finalPlatform, { x: 735, y: 150 });
   assert.equal(stage.summit.side, 'left');
   assert.equal(hasReachedSummit(stage, stage.summit.x, 150), true);
   assert.equal(hasReachedSummit(stage, WORLD.width - 80, 150), false);

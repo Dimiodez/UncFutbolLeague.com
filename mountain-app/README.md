@@ -151,3 +151,11 @@ right, center, and lower edges: the referee passes through them, while balls
 reverse and stay on the authored descent lanes. A hit leaves enough visible
 respawn invulnerability to escape the next incoming ball instead of losing
 another life immediately.
+
+For isolated final-approach tuning, `?level=9&practice=finalPlatform` starts the
+referee on the upper-right side after the avalanche gaps appear. This practice
+spawn also remains the respawn point after a miss and suppresses salmon so each
+attempt isolates the head-on soccer-ball jump; normal Level 9 still starts at
+the mountain base with every hazard active. Schwein and his throw origin sit 18
+pixels farther right to make the timing readable without changing the
+level-wide ball speed or cadence.

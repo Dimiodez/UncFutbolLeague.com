@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-nine-pillars-1';
-import { HazardDirector } from './HazardDirector.js?v=level-nine-pillars-1';
+import { GameState } from './GameState.js?v=level-nine-final-practice-1';
+import { HazardDirector } from './HazardDirector.js?v=level-nine-final-practice-1';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-pillars-1';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-final-practice-1';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -273,6 +273,7 @@ export class MountainScene extends Phaser.Scene {
     const nextStage = getStage(level) || getStage(1);
     this.state.startLevel(nextStage.level, { resetLives });
     this.stage = nextStage;
+    this.practiceSpawn = null;
     this.events.emit('speech-side', nextStage.speechSide || 'left');
     this.backgroundArt.setTexture(nextStage.backgroundKey || ASSETS.background.key);
     this.createCourse();
@@ -286,6 +287,22 @@ export class MountainScene extends Phaser.Scene {
     this.resetStageEvents();
     this.say(openingLineForLevel(nextStage.level));
     this.events.emit('state-change');
+  }
+
+  startPracticeArea(area) {
+    const spawn = this.stage?.practiceSpawns?.[area];
+    if (!spawn || !this.state.isPlaying()) return false;
+    this.practiceSpawn = spawn;
+    this.tantrumTimer?.remove(false);
+    this.tantrumTimer = null;
+    const disruption = this.stage.disruptions?.[0];
+    if (disruption) this.applyDisruption(disruption);
+    this.resetPlayer();
+    this.hazards.clearBallsNear(spawn, 300);
+    this.hazards.salmon.clear(true, true);
+    this.hazards.nextSalmonAt = Number.POSITIVE_INFINITY;
+    this.events.emit('state-change');
+    return true;
   }
 
   resetSchwein() {
@@ -303,7 +320,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   resetPlayer() {
-    const { playerStart } = this.stage;
+    const playerStart = this.practiceSpawn || this.stage.playerStart;
     this.player.enableBody(true, playerStart.x, playerStart.y, true, true);
     this.player.setTexture('player').setScale(0.5).setVisible(false).setAngle(0).setAlpha(1).setVelocity(0, 0);
     this.player.body.setAllowGravity(true);
@@ -600,7 +617,7 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(220, () => this.playerArt.setVisible(false));
     this.time.delayedCall(source === 'fall' ? 650 : 850, () => {
       this.state.phase = 'playing';
-      if (source === 'ball') this.hazards.clearBallsNear(this.stage.playerStart);
+      if (source === 'ball') this.hazards.clearBallsNear(this.practiceSpawn || this.stage.playerStart);
       this.resetPlayer();
       this.bizzie.reset();
       this.events.emit('state-change');

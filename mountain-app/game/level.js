@@ -616,13 +616,16 @@ export const STAGES = Object.freeze([
     disruptions: LEVEL_NINE_DISRUPTIONS,
     speechSide: 'right',
     schwein: {
-      x: 185,
+      x: 203,
       y: 105,
       flipX: true,
       throwDirection: 1,
-      ballSpawnX: 264,
-      salmonSpawnX: 260,
+      ballSpawnX: 282,
+      salmonSpawnX: 278,
       escapeDirection: -1,
+    },
+    practiceSpawns: {
+      finalPlatform: { x: 735, y: 150 },
     },
     ballBumpers: [
       { platformIndex: 4, x: 925, direction: -1, playerPassable: true },
