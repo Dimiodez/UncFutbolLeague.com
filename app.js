@@ -128,8 +128,7 @@ function leaguePage() {
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, community events and published results.',href:'/schedules?season=2&type=6v6',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'},
       {mark:'C',title:'League Cup',copy:'Follow official cup fixtures and each knockout path to the final.',href:'/schedules/league-cup',label:'Follow the cup'},
-      {mark:'BY',title:'BYOT Tournaments',copy:'See recurring bring-your-own-team events, brackets and completed champions.',href:'/schedules/byot-tournaments',label:'View tournaments'},
-      {mark:'R',title:'Rules',copy:'Read matchday standards, gameplay restrictions and the league format.',href:'/rules',label:'Read the rules'}
+      {mark:'BY',title:'BYOT Tournaments',copy:'See recurring bring-your-own-team events, brackets and completed champions.',href:'/schedules/byot-tournaments',label:'View tournaments'}
     ].map(hubCard).join('')}</div></section>`;
 }
 
@@ -1012,7 +1011,7 @@ function render() {
   else main.innerHTML = homePage();
   document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
-  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/rules' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
+  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
