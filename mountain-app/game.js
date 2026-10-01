@@ -1,5 +1,5 @@
-import { MountainScene } from './game/MountainScene.js?v=level-ten-layout-1';
-import { hasStage, TUNING, WORLD } from './game/level.js?v=level-ten-layout-1';
+import { MountainScene } from './game/MountainScene.js?v=level-ten-layout-3';
+import { hasStage, TUNING, WORLD } from './game/level.js?v=level-ten-layout-3';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);

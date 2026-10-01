@@ -163,15 +163,18 @@ level-wide ball speed or cadence.
 ## Level 10: Final Whistle Peak
 
 Level 10 translates the hand-drawn finale into a mirrored six-tier boss
-mountain. The referee begins at the center of a full base platform, then chooses
-between left and right entry ladders. The lower ledge splits at the center, and
-the three upper traversal rows break into short left, center, and right shelves
-with jumpable seams. Both sides remain physically complete routes to a single
-central summit ladder.
+mountain. The referee begins at the center of a broad base platform, then chooses
+between left and right entry ladders. The marked outer ends are removed from the
+base. A wide, deliberately unjumpable opening separates the two lower branches;
+the next row has small outer shelves and one joined center, while the row above
+has one central jump. The upper row retains three sections before both sides
+converge on the central summit ladder.
 
 Bizzie waits for the referee's first committed movement, telegraphs that same
-side, and drops onto its lower shelf to deny the obvious route. The opposite
-entry remains available from the base. Schwein occupies the centered summit and
+side, and drops onto its small outer shelf directly over that branch's ladder.
+His landing shakes the mountain and knocks the referee down without breaking
+platforms; touching him while climbing kicks the referee back down the ladder.
+The opposite entry remains available from the base. Schwein occupies the centered summit and
 chooses a fresh left or right throw direction for each soccer ball. Visible edge
 pillars keep both branches on the mountain, while a central peak on the later
 middle row randomly returns arriving balls to either lane.

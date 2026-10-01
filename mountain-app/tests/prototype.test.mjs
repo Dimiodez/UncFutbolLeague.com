@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { GameState, HIT_INVULNERABILITY_MS } from '../game/GameState.js';
 import {
   BIZZIE_PLAYER_BLOCKER_HEIGHT,
+  BIZZIE_PLAYER_BLOCKER_WIDTH,
   nextBizzieDeflection,
 } from '../game/BizzieDirector.js';
 import { buildBruceDescentRoute, buildBruceRoute } from '../game/BruceDirector.js';
@@ -716,12 +717,27 @@ test('Level 10 builds the mirrored finale from the authored sketch', () => {
   assert.equal(stage.schwein.ballSpawnX, WORLD.width / 2);
   assert.deepEqual(stage.bruceRuns.map(({ direction }) => direction), ['up', 'down']);
   assert.deepEqual(Object.keys(stage.bizzie.adaptiveChoices), ['left', 'right']);
+  assert.deepEqual(stage.bizzie.adaptiveChoices, { left: { x: 120 }, right: { x: 840 } });
+  assert.equal(stage.bizzie.slamOnLand, true);
+  assert.equal(stage.bizzie.knockDownOnContact, true);
+  assert.deepEqual(
+    stage.ladders.slice(0, 4).map(({ x }) => x),
+    [340, 620, 95, 865],
+    'the lower four ladders follow the yellow markup',
+  );
+  assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 0).map(({ gapX }) => gapX), [50, 910]);
+  assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 2).map(({ gapX }) => gapX), [220, 740]);
+  assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 3).map(({ gapX }) => gapX), [480]);
+  const adaptiveLadders = stage.ladders.slice(2, 4);
+  assert.ok(Math.abs(stage.bizzie.adaptiveChoices.left.x - adaptiveLadders[0].x) < BIZZIE_PLAYER_BLOCKER_WIDTH / 2);
+  assert.ok(Math.abs(stage.bizzie.adaptiveChoices.right.x - adaptiveLadders[1].x) < BIZZIE_PLAYER_BLOCKER_WIDTH / 2);
   assert.equal(stage.spikeDeflectors.length, 1);
   assert.deepEqual(stage.spikeDeflectors[0], { platformIndex: 2, x: 480 });
   assert.deepEqual(stage.tuning.ballSpeed, ballTuningForLevel(10).ballSpeed);
   assert.deepEqual(stage.tuning.ballInterval, ballTuningForLevel(10).ballInterval);
   stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
-    assert.ok(gapWidth < maximumJumpTravel);
+    if (platformIndex === 1) assert.ok(gapWidth > maximumJumpTravel, 'the lower branches must not shortcut across');
+    else assert.ok(gapWidth < maximumJumpTravel);
     stage.ladders.filter((ladder) => (
       ladder.fromIndex === platformIndex || ladder.toIndex === platformIndex
     )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));

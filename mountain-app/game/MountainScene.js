@@ -1,7 +1,7 @@
 import { createTextures } from './ArtFactory.js';
-import { ASSETS } from './AssetManifest.js?v=level-ten-layout-1';
-import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-1';
-import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-1';
+import { ASSETS } from './AssetManifest.js?v=level-ten-layout-3';
+import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-3';
+import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-3';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
 import {
@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-ten-layout-1';
-import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-1';
+import { GameState } from './GameState.js?v=level-ten-layout-3';
+import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-3';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-1';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-3';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -557,6 +557,18 @@ export class MountainScene extends Phaser.Scene {
     this.player.setVelocity(shove, -145);
     this.playerArt.play('player-slip', true);
     this.events.emit('notice', GAMEPLAY_NOTICES.tantrumKnockdown);
+    this.events.emit('state-change');
+  }
+
+  knockPlayerFromBizzie() {
+    if (!this.state.isPlaying()) return;
+    this.state.stun(this.time.now, 1000);
+    this.stopClimbing();
+    const direction = this.player.x < this.bizzie.visual.x ? -1 : 1;
+    this.player.setVelocity(direction * 85, -125);
+    this.playerArt.play('player-slip', true);
+    this.cameras.main.shake(380, 0.016);
+    this.cameras.main.flash(120, 235, 245, 238, false);
     this.events.emit('state-change');
   }
 

@@ -399,10 +399,10 @@ const LEVEL_TEN_PLATFORMS = Object.freeze([
 ]);
 
 const LEVEL_TEN_LADDERS = Object.freeze([
-  { id: 'l10-entry-left', x: 215, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
-  { id: 'l10-entry-right', x: 745, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
-  { id: 'l10-rise-left', x: 170, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
-  { id: 'l10-rise-right', x: 790, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l10-entry-left', x: 340, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l10-entry-right', x: 620, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l10-rise-left', x: 95, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l10-rise-right', x: 865, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
   { id: 'l10-cross-left', x: 385, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l10-cross-right', x: 575, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l10-upper-left', x: 170, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
@@ -411,11 +411,12 @@ const LEVEL_TEN_LADDERS = Object.freeze([
 ]);
 
 const LEVEL_TEN_GAPS = Object.freeze([
-  Object.freeze({ platformIndex: 1, gapX: 480, gapWidth: 88 }),
-  Object.freeze({ platformIndex: 2, gapX: 300, gapWidth: 76 }),
-  Object.freeze({ platformIndex: 2, gapX: 660, gapWidth: 76 }),
-  Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 78 }),
-  Object.freeze({ platformIndex: 3, gapX: 660, gapWidth: 78 }),
+  Object.freeze({ platformIndex: 0, gapX: 50, gapWidth: 70 }),
+  Object.freeze({ platformIndex: 0, gapX: 910, gapWidth: 70 }),
+  Object.freeze({ platformIndex: 1, gapX: 480, gapWidth: 190 }),
+  Object.freeze({ platformIndex: 2, gapX: 220, gapWidth: 82 }),
+  Object.freeze({ platformIndex: 2, gapX: 740, gapWidth: 82 }),
+  Object.freeze({ platformIndex: 3, gapX: 480, gapWidth: 96 }),
   Object.freeze({ platformIndex: 4, gapX: 330, gapWidth: 76 }),
   Object.freeze({ platformIndex: 4, gapX: 630, gapWidth: 76 }),
 ]);
@@ -715,12 +716,14 @@ export const STAGES = Object.freeze([
     bizzie: {
       platformIndex: 1,
       adaptiveChoices: {
-        left: { x: 285 },
-        right: { x: 675 },
+        left: { x: 120 },
+        right: { x: 840 },
       },
       decisionThreshold: 46,
       telegraphDelay: 80,
       revealDelay: 1450,
+      slamOnLand: true,
+      knockDownOnContact: true,
     },
     bruceRuns: [
       { direction: 'up', delay: 5200 },

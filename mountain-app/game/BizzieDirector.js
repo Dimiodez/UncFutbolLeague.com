@@ -106,6 +106,7 @@ export class BizzieDirector {
       .setDisplaySize(82, 98)
       .refreshBody();
     this.makeSnowPuff(x, this.surfaceY);
+    if (this.spec.slamOnLand) this.scene.knockPlayerFromBizzie();
     this.scene.say(BIZZIE_REVEAL_LINE);
     this.visual.play('bizzie-block', true);
   }
@@ -131,7 +132,14 @@ export class BizzieDirector {
     this.playerBumpAt = this.scene.time.now + 360;
     const direction = player.x < this.visual.x ? -1 : 1;
     this.scene.stopClimbing();
-    player.setVelocityX(direction * 90);
+    if (this.spec.knockDownOnContact) {
+      this.scene.state.stun(this.scene.time.now, 650);
+      player.setVelocity(direction * 90, 135);
+      this.scene.playerArt.play('player-slip', true);
+      this.scene.events.emit('state-change');
+    } else {
+      player.setVelocityX(direction * 90);
+    }
     this.scene.tweens.add({
       targets: this.visual,
       scaleX: 1.035,
