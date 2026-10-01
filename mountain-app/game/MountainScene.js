@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-nine-branches-2';
-import { HazardDirector } from './HazardDirector.js?v=level-nine-branches-2';
+import { GameState } from './GameState.js?v=level-nine-pillars-1';
+import { HazardDirector } from './HazardDirector.js?v=level-nine-pillars-1';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-branches-2';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-pillars-1';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -132,7 +132,10 @@ export class MountainScene extends Phaser.Scene {
       art.fillStyle(0xeaf5f3, 1).fillRoundedRect(spec.x - 10, y - 20, 20, 9, 4);
       this.courseVisuals.push(art);
       const bumper = this.ballBumpers.create(spec.x, y, 'platform');
-      bumper.setDisplaySize(16, 38).refreshBody().setVisible(false).setData('direction', spec.direction);
+      bumper.setDisplaySize(16, 38).refreshBody().setVisible(false)
+        .setData('direction', spec.direction)
+        .setData('reflectIncoming', Boolean(spec.reflectIncoming))
+        .setData('randomDirection', Boolean(spec.randomDirection));
     });
   }
 

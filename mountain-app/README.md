@@ -144,8 +144,10 @@ descent lane, so the hazards no longer repeat one predictable course. Every
 break remains jumpable, avoids every ladder, and preserves a complete route.
 
 The bottom row is one fully iced platform, as planned for Level 9. Its locked
-steering combines with the faster ninth-level ball cadence. The final three
-ladders share a protected right-side pocket beyond the upper ball drops, so the
-referee does not have to clear a gap while a ball lands on the ladder. A hit now
-leaves enough visible respawn invulnerability to escape the next incoming ball
-instead of losing another life immediately.
+steering combines with the faster ninth-level ball cadence. The upper-middle
+ladder moves from the stacked right route to the isolated left shelf, forcing a
+readable cross-course climb. Four small ball-only pillars guard the marked
+right, center, and lower edges: the referee passes through them, while balls
+reverse and stay on the authored descent lanes. A hit leaves enough visible
+respawn invulnerability to escape the next incoming ball instead of losing
+another life immediately.

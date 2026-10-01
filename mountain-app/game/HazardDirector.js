@@ -157,9 +157,11 @@ export class HazardDirector {
 
   ballHitBumper(ball, bumper) {
     const randomDirection = bumper.getData('randomDirection');
+    const reflectIncoming = bumper.getData('reflectIncoming');
     let direction = bumper.getData('direction');
     const now = this.scene.time.now;
     if (now < (ball.getData('bumperLockUntil') || 0)) return;
+    if (reflectIncoming) direction = -(Math.sign(ball.body.velocity.x) || direction || 1);
     if (randomDirection) {
       if (now < (ball.getData('deflectLockUntil') || 0)) return;
       direction = chooseBallDeflection();

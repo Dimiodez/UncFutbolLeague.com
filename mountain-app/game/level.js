@@ -351,7 +351,7 @@ const LEVEL_NINE_LADDERS = Object.freeze([
   { id: 'l9-ladder-0', x: 180, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l9-ladder-1', x: 480, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
   { id: 'l9-ladder-2', x: 820, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
-  { id: 'l9-ladder-3', x: 820, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
+  { id: 'l9-ladder-3', x: 170, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
   { id: 'l9-ladder-4', x: 760, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
 ]);
 
@@ -625,8 +625,12 @@ export const STAGES = Object.freeze([
       escapeDirection: -1,
     },
     ballBumpers: [
+      { platformIndex: 4, x: 925, direction: -1, playerPassable: true },
       { platformIndex: 3, x: 70, direction: 1 },
+      { platformIndex: 3, x: 500, reflectIncoming: true, playerPassable: true },
       { platformIndex: 3, x: 750, direction: -1 },
+      { platformIndex: 2, x: 45, direction: 1, playerPassable: true },
+      { platformIndex: 2, x: 915, direction: -1, playerPassable: true },
       { platformIndex: 1, x: 70, direction: 1 },
       { platformIndex: 1, x: 900, direction: -1 },
       { platformIndex: 0, x: 920, direction: -1 },

@@ -1,5 +1,5 @@
-import { MountainScene } from './game/MountainScene.js?v=level-nine-branches-2';
-import { hasStage, TUNING, WORLD } from './game/level.js?v=level-nine-branches-2';
+import { MountainScene } from './game/MountainScene.js?v=level-nine-pillars-1';
+import { hasStage, TUNING, WORLD } from './game/level.js?v=level-nine-pillars-1';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);

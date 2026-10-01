@@ -674,16 +674,28 @@ test('Level 9 has one full ice row and a right-moving physical ball chute', () =
   const initialLanding = projectedBallLandingX(stage, 5, 1, stage.tuning.ballSpeed, TUNING.gravity, 420);
   assert.ok(Math.abs(initialLanding - splitter.x) < 2, 'the first fall must physically hit the random splitter');
 
-  const protectedLadder = stage.ladders.find(({ id }) => id === 'l9-ladder-3');
+  const movedLadder = stage.ladders.find(({ id }) => id === 'l9-ladder-3');
   const upperLadder = stage.ladders.find(({ id }) => id === 'l9-ladder-4');
   const rightBranchLanding = projectedBallLandingX(stage, 4, 1, stage.tuning.ballSpeed, TUNING.gravity, 596);
   const rightBranchBumper = stage.ballBumpers.find(({ platformIndex, direction }) => platformIndex === 3 && direction === -1);
   const rightBranchGap = disruption.gaps.find(({ platformIndex, gapX }) => platformIndex === 3 && gapX === 650);
   assert.ok(rightBranchLanding < rightBranchBumper.x);
-  assert.ok(rightBranchBumper.x < protectedLadder.x);
   assert.ok(rightBranchGap.gapX < rightBranchLanding);
-  assert.equal(stage.ladders.find(({ id }) => id === 'l9-ladder-2').x, protectedLadder.x);
+  assert.equal(movedLadder.x, 170, 'the circled upper ladder moves into the left-side slot');
+  disruption.gaps
+    .filter(({ platformIndex }) => platformIndex === 3 || platformIndex === 4)
+    .forEach(({ gapX, gapWidth }) => assert.ok(Math.abs(movedLadder.x - gapX) > gapWidth / 2 + 20));
   assert.ok(upperLadder.x > 596 + 78 / 2, 'the summit ladder sits beyond the upper ball drop');
+
+  const passablePillars = stage.ballBumpers.filter(({ playerPassable }) => playerPassable);
+  assert.deepEqual(passablePillars.map(({ platformIndex, x }) => [platformIndex, x]), [
+    [4, 925],
+    [3, 500],
+    [2, 45],
+    [2, 915],
+  ]);
+  assert.equal(passablePillars.find(({ platformIndex }) => platformIndex === 3).reflectIncoming, true);
+  assert.deepEqual(passablePillars.filter(({ platformIndex }) => platformIndex === 2).map(({ direction }) => direction), [1, -1]);
 });
 
 test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {
