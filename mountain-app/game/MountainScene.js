@@ -1,7 +1,7 @@
 import { createTextures } from './ArtFactory.js';
-import { ASSETS } from './AssetManifest.js?v=level-ten-layout-3';
-import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-3';
-import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-3';
+import { ASSETS } from './AssetManifest.js?v=level-ten-layout-4';
+import { BizzieDirector } from './BizzieDirector.js?v=level-ten-layout-4';
+import { BruceDirector } from './BruceDirector.js?v=level-ten-layout-4';
 import { isTantrumLevel } from './campaign.js';
 import { hasPhysicalRoute } from './CourseSafety.js';
 import {
@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js?v=level-ten-layout-3';
-import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-3';
+import { GameState } from './GameState.js?v=level-ten-layout-4';
+import { HazardDirector } from './HazardDirector.js?v=level-ten-layout-4';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-3';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-ten-layout-4';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {

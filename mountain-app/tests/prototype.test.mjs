@@ -726,6 +726,13 @@ test('Level 10 builds the mirrored finale from the authored sketch', () => {
     'the lower four ladders follow the yellow markup',
   );
   assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 0).map(({ gapX }) => gapX), [50, 910]);
+  const base = stage.platforms[0];
+  const baseLeft = base.x - base.width / 2;
+  const baseRight = base.x + base.width / 2;
+  const [leftEdgeGap, rightEdgeGap] = stage.gaps.filter(({ platformIndex }) => platformIndex === 0);
+  assert.equal(leftEdgeGap.gapX - leftEdgeGap.gapWidth / 2, baseLeft, 'the left base gap removes the orphan corner ledge');
+  assert.equal(rightEdgeGap.gapX + rightEdgeGap.gapWidth / 2, baseRight, 'the right base gap removes the orphan corner ledge');
+  assert.equal(stage.ballBumpers.some(({ platformIndex }) => platformIndex === 0), false, 'the deleted base corners have no orphan pillars');
   assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 2).map(({ gapX }) => gapX), [220, 740]);
   assert.deepEqual(stage.gaps.filter(({ platformIndex }) => platformIndex === 3).map(({ gapX }) => gapX), [480]);
   const adaptiveLadders = stage.ladders.slice(2, 4);

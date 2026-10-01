@@ -411,8 +411,8 @@ const LEVEL_TEN_LADDERS = Object.freeze([
 ]);
 
 const LEVEL_TEN_GAPS = Object.freeze([
-  Object.freeze({ platformIndex: 0, gapX: 50, gapWidth: 70 }),
-  Object.freeze({ platformIndex: 0, gapX: 910, gapWidth: 70 }),
+  Object.freeze({ platformIndex: 0, gapX: 50, gapWidth: 80 }),
+  Object.freeze({ platformIndex: 0, gapX: 910, gapWidth: 80 }),
   Object.freeze({ platformIndex: 1, gapX: 480, gapWidth: 190 }),
   Object.freeze({ platformIndex: 2, gapX: 220, gapWidth: 82 }),
   Object.freeze({ platformIndex: 2, gapX: 740, gapWidth: 82 }),
@@ -741,8 +741,6 @@ export const STAGES = Object.freeze([
       { platformIndex: 2, x: 915, direction: -1, playerPassable: true },
       { platformIndex: 1, x: 45, direction: 1, playerPassable: true },
       { platformIndex: 1, x: 915, direction: -1, playerPassable: true },
-      { platformIndex: 0, x: 45, direction: 1, playerPassable: true },
-      { platformIndex: 0, x: 915, direction: -1, playerPassable: true },
     ],
     tuning: {
       ...ballTuningForLevel(10),
