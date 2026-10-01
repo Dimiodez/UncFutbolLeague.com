@@ -122,3 +122,7 @@ blocked route can always be backed out of. These changes do not alter the
 authored platform route. Four jumpable platform breaks make that alternate route
 meaningfully harder and form a caught, physics-driven ball chute. His source artwork, normalized runtime frames, and
 preview sheet are kept under `assets/sprites/`.
+
+The right-side ladder between the middle rows sits just inside its gap edge,
+leaving a usable climbing window after incoming balls roll past. The Level 8
+sweat puddle sits on the solid left-hand route rather than inside that gap.

@@ -555,6 +555,17 @@ test('Level 8 platform breaks form a jumpable player route and a caught ball chu
     )).forEach((ladder) => assert.ok(Math.abs(ladder.x - gapX) > gapWidth / 2 + 20));
   });
 
+  const exposedLadder = stage.ladders.find(({ id }) => id === 'l8-ladder-2');
+  const exposedRowGap = stage.gaps.find(({ platformIndex }) => platformIndex === 3);
+  assert.ok(exposedLadder.x > exposedRowGap.gapX + exposedRowGap.gapWidth / 2);
+  assert.ok(exposedLadder.x - (exposedRowGap.gapX + exposedRowGap.gapWidth / 2) <= 50);
+  stage.puddles.forEach((puddle) => {
+    const gap = stage.gaps.find(({ platformIndex }) => (
+      Math.abs(stage.platforms[platformIndex].y - 12 - puddle.y) <= 2
+    ));
+    assert.ok(!gap || Math.abs(puddle.x - gap.gapX) > gap.gapWidth / 2 + 32);
+  });
+
   const falls = [
     { from: 5, direction: -1 },
     { from: 4, direction: 1, startX: 620 },

@@ -314,7 +314,7 @@ const LEVEL_EIGHT_LADDERS = Object.freeze([
   { id: 'l8-obvious-entry', x: 790, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l8-alternate-entry', x: 170, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l8-ladder-1', x: 230, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
-  { id: 'l8-ladder-2', x: 720, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l8-ladder-2', x: 580, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l8-ladder-3', x: 240, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
   { id: 'l8-ladder-4', x: 700, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
 ]);
@@ -518,7 +518,7 @@ export const STAGES = Object.freeze([
     ladders: LEVEL_EIGHT_LADDERS,
     playerStart: Object.freeze({ x: 840, y: 650 }),
     summit: Object.freeze({ x: 790, y: 150 }),
-    puddles: [{ x: 500, y: 376 }],
+    puddles: [{ x: 350, y: 376 }],
     route: LEVEL_EIGHT_ROUTE,
     gaps: LEVEL_EIGHT_GAPS,
     bizzie: {
