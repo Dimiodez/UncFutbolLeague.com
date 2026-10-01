@@ -1,5 +1,7 @@
 import { CAMPAIGN, isBruceLevel } from './campaign.js';
 
+export const HIT_INVULNERABILITY_MS = 3200;
+
 export class GameState {
   constructor() { this.reset(); }
 
@@ -51,12 +53,13 @@ export class GameState {
 
   isPlaying() { return this.phase === 'playing'; }
   isStunned(now) { return now < this.stunnedUntil; }
+  isInvulnerable(now) { return now < this.invulnerableUntil; }
   stun(now, duration) { this.stunnedUntil = Math.max(this.stunnedUntil, now + duration); }
 
   takeHit(now) {
-    if (!this.isPlaying() || now < this.invulnerableUntil) return false;
+    if (!this.isPlaying() || this.isInvulnerable(now)) return false;
     this.lives -= 1;
-    this.invulnerableUntil = now + 1500;
+    this.invulnerableUntil = now + HIT_INVULNERABILITY_MS;
     this.phase = this.lives > 0 ? 'hit' : 'over';
     return true;
   }

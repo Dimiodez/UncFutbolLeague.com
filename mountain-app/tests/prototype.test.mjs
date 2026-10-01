@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { GameState } from '../game/GameState.js';
+import { GameState, HIT_INVULNERABILITY_MS } from '../game/GameState.js';
 import {
   BIZZIE_PLAYER_BLOCKER_HEIGHT,
   nextBizzieDeflection,
 } from '../game/BizzieDirector.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
 import { canMountLadder, ladderAtFeet } from '../game/LadderNavigation.js';
-import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
+import { chooseBallDeflection, isInsideRespawnClearance, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
   ballHitLine,
@@ -189,13 +189,24 @@ test('life state ignores hits during invulnerability and ends after three hits',
   state.start();
   assert.equal(state.takeHit(1000), true);
   assert.equal(state.lives, 2);
+  assert.equal(state.invulnerableUntil, 1000 + HIT_INVULNERABILITY_MS);
   state.phase = 'playing';
   assert.equal(state.takeHit(1200), false);
-  assert.equal(state.takeHit(2600), true);
-  state.phase = 'playing';
+  assert.equal(state.isInvulnerable(1849), true, 'respawn remains protected after the hurt animation');
+  assert.equal(state.takeHit(4199), false);
   assert.equal(state.takeHit(4200), true);
+  state.phase = 'playing';
+  assert.equal(state.takeHit(7400), true);
   assert.equal(state.phase, 'over');
   assert.equal(state.lives, 0);
+});
+
+test('respawn clearance removes only balls threatening the reset pocket', () => {
+  const spawn = { x: 100, y: 650 };
+  assert.equal(isInsideRespawnClearance(210, 650, spawn, 220), true);
+  assert.equal(isInsideRespawnClearance(100, 450, spawn, 220), true);
+  assert.equal(isInsideRespawnClearance(400, 650, spawn, 220), false);
+  assert.equal(isInsideRespawnClearance(100, 390, spawn, 220), false);
 });
 
 test('slips last approximately two seconds', () => {
@@ -614,6 +625,7 @@ test('Level 9 tantrum drops nine jumpable pieces without cutting its route', () 
   const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
   assert.equal(hasPhysicalRoute(LEVEL_NINE_ROUTE, disruption.disableEdgeIds), true);
   assert.equal(disruption.gaps.length, 9);
+  assert.equal(disruption.spikeDeflectors.length, 1);
   assert.equal(disruption.gaps.some(({ platformIndex }) => platformIndex === 0), false);
   disruption.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
     assert.ok(gapWidth < maximumJumpTravel);
@@ -641,10 +653,14 @@ test('Level 9 has one full ice row and a right-moving physical ball chute', () =
   const radius = TUNING.ballDiameter / 2;
   const falls = [
     { from: 5, direction: 1, startX: 420 },
-    { from: 4, direction: 1, startX: 700 },
+    { from: 4, direction: -1, startX: 300 },
+    { from: 4, direction: 1, startX: 596 },
+    { from: 3, direction: 1, startX: 300 },
     { from: 3, direction: -1, startX: 650 },
     { from: 2, direction: -1, startX: 350 },
+    { from: 2, direction: 1, startX: 700 },
     { from: 1, direction: 1, startX: 260 },
+    { from: 1, direction: -1, startX: 700 },
   ];
   falls.forEach(({ from, direction, startX }) => {
     const target = stage.platforms[from - 1];
@@ -652,6 +668,22 @@ test('Level 9 has one full ice row and a right-moving physical ball chute', () =
     assert.ok(landing >= target.x - target.width / 2 + radius, `row ${from} misses left`);
     assert.ok(landing <= target.x + target.width / 2 - radius, `row ${from} misses right`);
   });
+
+  const disruption = LEVEL_NINE_DISRUPTIONS[0];
+  const splitter = disruption.spikeDeflectors[0];
+  const initialLanding = projectedBallLandingX(stage, 5, 1, stage.tuning.ballSpeed, TUNING.gravity, 420);
+  assert.ok(Math.abs(initialLanding - splitter.x) < 2, 'the first fall must physically hit the random splitter');
+
+  const protectedLadder = stage.ladders.find(({ id }) => id === 'l9-ladder-3');
+  const upperLadder = stage.ladders.find(({ id }) => id === 'l9-ladder-4');
+  const rightBranchLanding = projectedBallLandingX(stage, 4, 1, stage.tuning.ballSpeed, TUNING.gravity, 596);
+  const rightBranchBumper = stage.ballBumpers.find(({ platformIndex, direction }) => platformIndex === 3 && direction === -1);
+  const rightBranchGap = disruption.gaps.find(({ platformIndex, gapX }) => platformIndex === 3 && gapX === 650);
+  assert.ok(rightBranchLanding < rightBranchBumper.x);
+  assert.ok(rightBranchBumper.x < protectedLadder.x);
+  assert.ok(rightBranchGap.gapX < rightBranchLanding);
+  assert.equal(stage.ladders.find(({ id }) => id === 'l9-ladder-2').x, protectedLadder.x);
+  assert.ok(upperLadder.x > 596 + 78 / 2, 'the summit ladder sits beyond the upper ball drop');
 });
 
 test('Level 4 ball momentum reaches the second-lowest shelf and base', () => {

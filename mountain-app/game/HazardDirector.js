@@ -3,6 +3,10 @@ import { TUNING, WORLD } from './level.js';
 
 export const chooseBallDeflection = (random = Math.random) => (random() < 0.5 ? -1 : 1);
 
+export const isInsideRespawnClearance = (ballX, ballY, spawn, radius) => (
+  Math.hypot(ballX - spawn.x, ballY - spawn.y) <= radius
+);
+
 export function projectedBallLandingX(stage, currentPlatformIndex, direction, speed, gravity, startX = null) {
   const current = stage?.platforms?.[currentPlatformIndex];
   const next = stage?.platforms?.[currentPlatformIndex - 1];
@@ -34,6 +38,12 @@ export class HazardDirector {
   clear() {
     this.balls.clear(true, true);
     this.salmon.clear(true, true);
+  }
+
+  clearBallsNear(spawn, radius = 220) {
+    this.balls.children.each((ball) => {
+      if (ball?.active && isInsideRespawnClearance(ball.x, ball.y, spawn, radius)) ball.destroy();
+    });
   }
 
   tuning(key) {

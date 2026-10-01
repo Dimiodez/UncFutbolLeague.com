@@ -18,11 +18,11 @@ import {
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
 } from './Dialogue.js';
-import { GameState } from './GameState.js';
-import { HazardDirector } from './HazardDirector.js';
+import { GameState } from './GameState.js?v=level-nine-branches-2';
+import { HazardDirector } from './HazardDirector.js?v=level-nine-branches-2';
 import { InputController } from './InputController.js';
 import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
-import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
+import { FALL_DEATH_Y, getStage, hasReachedSummit, hasStage, icePatchAt, TUNING, WORLD } from './level.js?v=level-nine-branches-2';
 
 function gapsByPlatform(gaps = []) {
   return gaps.reduce((groups, gap) => {
@@ -254,7 +254,7 @@ export class MountainScene extends Phaser.Scene {
       (fish) => this.hazards.salmonLanded(fish),
       (fish, platform) => this.hazards.shouldSalmonLand(fish, platform),
     );
-    this.physics.add.overlap(this.player, this.hazards.balls, () => this.hitByBall());
+    this.physics.add.overlap(this.player, this.hazards.balls, (_player, ball) => this.hitByBall(ball));
     this.physics.add.overlap(this.player, this.hazards.salmon, (_player, fish) => this.slip(GAMEPLAY_NOTICES.salmonSlip, fish));
     this.physics.add.overlap(this.player, this.bruce.sprite, () => this.slip(GAMEPLAY_NOTICES.bruceCollision, null, false));
     this.physics.add.overlap(
@@ -397,7 +397,11 @@ export class MountainScene extends Phaser.Scene {
     }
     // The animation frames are bottom-centre normalized. Anchor their feet to
     // the physics body's bottom instead of centering them on the body.
-    this.playerArt.setPosition(this.player.x, this.player.body.bottom).play(animation, true);
+    const respawnBlink = this.state.isInvulnerable(time) && Math.floor(time / 110) % 2 === 0;
+    this.playerArt
+      .setPosition(this.player.x, this.player.body.bottom)
+      .setAlpha(respawnBlink ? 0.38 : 1)
+      .play(animation, true);
     if (horizontal !== 0) this.playerArt.setFlipX(horizontal < 0);
   }
 
@@ -562,9 +566,9 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(TUNING.stunMs, () => this.events.emit('state-change'));
   }
 
-  hitByBall() { this.loseLife('ball'); }
+  hitByBall(ball) { this.loseLife('ball', ball); }
 
-  loseLife(source) {
+  loseLife(source, hazard = null) {
     if (source === 'fall' && this.fallResetPending) return;
     if (source === 'fall') this.fallResetPending = true;
     if (!this.state.takeHit(this.time.now)) {
@@ -574,6 +578,7 @@ export class MountainScene extends Phaser.Scene {
       }
       return;
     }
+    if (source === 'ball' && hazard?.active) hazard.destroy();
     this.bizzie.clear();
     this.cameras.main.flash(180, 210, 50, 45);
     this.cameras.main.shake(250, 0.012);
@@ -592,6 +597,7 @@ export class MountainScene extends Phaser.Scene {
     this.time.delayedCall(220, () => this.playerArt.setVisible(false));
     this.time.delayedCall(source === 'fall' ? 650 : 850, () => {
       this.state.phase = 'playing';
+      if (source === 'ball') this.hazards.clearBallsNear(this.stage.playerStart);
       this.resetPlayer();
       this.bizzie.reset();
       this.events.emit('state-change');

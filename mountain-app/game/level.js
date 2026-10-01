@@ -348,11 +348,11 @@ const LEVEL_NINE_PLATFORMS = Object.freeze([
 ]);
 
 const LEVEL_NINE_LADDERS = Object.freeze([
-  { id: 'l9-ladder-0', x: 520, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
-  { id: 'l9-ladder-1', x: 820, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
-  { id: 'l9-ladder-2', x: 480, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l9-ladder-0', x: 180, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
+  { id: 'l9-ladder-1', x: 480, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
+  { id: 'l9-ladder-2', x: 820, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l9-ladder-3', x: 820, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
-  { id: 'l9-ladder-4', x: 560, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
+  { id: 'l9-ladder-4', x: 760, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
 ]);
 
 export const LEVEL_NINE_ROUTE = Object.freeze({
@@ -374,13 +374,16 @@ export const LEVEL_NINE_DISRUPTIONS = Object.freeze([
     gaps: Object.freeze([
       Object.freeze({ platformIndex: 5, gapX: 420, gapWidth: 78 }),
       Object.freeze({ platformIndex: 4, gapX: 300, gapWidth: 76 }),
-      Object.freeze({ platformIndex: 4, gapX: 700, gapWidth: 78 }),
+      Object.freeze({ platformIndex: 4, gapX: 596, gapWidth: 78 }),
       Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 76 }),
       Object.freeze({ platformIndex: 3, gapX: 650, gapWidth: 78 }),
       Object.freeze({ platformIndex: 2, gapX: 350, gapWidth: 76 }),
       Object.freeze({ platformIndex: 2, gapX: 700, gapWidth: 78 }),
       Object.freeze({ platformIndex: 1, gapX: 260, gapWidth: 76 }),
       Object.freeze({ platformIndex: 1, gapX: 700, gapWidth: 78 }),
+    ]),
+    spikeDeflectors: Object.freeze([
+      Object.freeze({ sourcePlatformIndex: 5, platformIndex: 4, x: 524 }),
     ]),
     disableEdgeIds: Object.freeze([]),
   }),
@@ -622,8 +625,10 @@ export const STAGES = Object.freeze([
       escapeDirection: -1,
     },
     ballBumpers: [
-      { platformIndex: 3, x: 900, direction: -1 },
+      { platformIndex: 3, x: 70, direction: 1 },
+      { platformIndex: 3, x: 750, direction: -1 },
       { platformIndex: 1, x: 70, direction: 1 },
+      { platformIndex: 1, x: 900, direction: -1 },
       { platformIndex: 0, x: 920, direction: -1 },
     ],
     tantrumDelay: 3300,
