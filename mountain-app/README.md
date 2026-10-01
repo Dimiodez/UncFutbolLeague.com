@@ -123,6 +123,11 @@ authored platform route. Four jumpable platform breaks make that alternate route
 meaningfully harder and form a caught, physics-driven ball chute. His source artwork, normalized runtime frames, and
 preview sheet are kept under `assets/sprites/`.
 
+Ladder mounting is directional on every built and future stage: Up enters from a
+ladder's lower platform and Down enters from its upper platform. Pressing Down at
+the bottom end can therefore never pull the referee through the mountain floor;
+authored bottom-row gaps remain valid jump hazards.
+
 The right-side ladder between the middle rows sits just inside its gap edge,
 leaving a usable climbing window after incoming balls roll past. The Level 8
 sweat puddle sits on the solid left-hand route rather than inside that gap.

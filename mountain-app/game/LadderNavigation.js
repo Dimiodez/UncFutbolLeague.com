@@ -12,3 +12,9 @@ export function ladderAtFeet(
     && feetY < ladder.bottom + bottomPadding
   )) || null;
 }
+
+export function canMountLadder(ladder, feetY, verticalDirection, mountPadding = 28) {
+  if (!ladder || verticalDirection === 0) return false;
+  if (verticalDirection < 0) return feetY >= ladder.bottom - mountPadding;
+  return feetY <= ladder.top + mountPadding;
+}

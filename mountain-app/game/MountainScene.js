@@ -21,7 +21,7 @@ import {
 import { GameState } from './GameState.js';
 import { HazardDirector } from './HazardDirector.js';
 import { InputController } from './InputController.js';
-import { ladderAtFeet } from './LadderNavigation.js';
+import { canMountLadder, ladderAtFeet } from './LadderNavigation.js';
 import { FALL_DEATH_Y, getStage, hasStage, icePatchAt, TUNING, WORLD } from './level.js';
 
 function gapsByPlatform(gaps = []) {
@@ -340,7 +340,7 @@ export class MountainScene extends Phaser.Scene {
     const ladder = this.nearestLadder();
     const vertical = (this.inputController.down('up') ? -1 : 0) + (this.inputController.down('down') ? 1 : 0);
     const horizontal = (this.inputController.down('left') ? -1 : 0) + (this.inputController.down('right') ? 1 : 0);
-    if (ladder && vertical !== 0) {
+    if (ladder && vertical !== 0 && (this.player.climbing || canMountLadder(ladder, this.player.body.bottom, vertical))) {
       this.player.climbing = true;
       this.player.x = Phaser.Math.Linear(this.player.x, ladder.x, 0.35);
     }

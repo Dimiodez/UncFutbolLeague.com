@@ -6,7 +6,7 @@ import {
   nextBizzieDeflection,
 } from '../game/BizzieDirector.js';
 import { buildBruceRoute } from '../game/BruceDirector.js';
-import { ladderAtFeet } from '../game/LadderNavigation.js';
+import { canMountLadder, ladderAtFeet } from '../game/LadderNavigation.js';
 import { chooseBallDeflection, projectedBallLandingX } from '../game/HazardDirector.js';
 import { chooseSafeDisruption, hasPhysicalRoute, safeDisruptions } from '../game/CourseSafety.js';
 import {
@@ -102,6 +102,10 @@ test('every authored ladder can be entered from the platform above or below', ()
       assert.equal(ladderAtFeet([runtimeLadder], ladder.x, upperFeetY), runtimeLadder);
       assert.equal(ladderAtFeet([runtimeLadder], ladder.x, lowerFeetY), runtimeLadder);
       assert.equal(ladderAtFeet([runtimeLadder], ladder.x + 40, upperFeetY), null);
+      assert.equal(canMountLadder(runtimeLadder, lowerFeetY, -1), true);
+      assert.equal(canMountLadder(runtimeLadder, lowerFeetY, 1), false);
+      assert.equal(canMountLadder(runtimeLadder, upperFeetY, 1), true);
+      assert.equal(canMountLadder(runtimeLadder, upperFeetY, -1), false);
     });
   }
 });
