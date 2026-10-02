@@ -146,7 +146,7 @@ async function hydrateSandyBums(month='all'){
     status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
     const players=data.players;
     const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>FC Sandy Bums ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong></li>`).join('');
-    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>`:'<p>No players recorded yet.</p>'}</section><section><h2>Most recent 5 matches</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap house-club-player-scroll" role="region" aria-label="FC Sandy Bums player statistics" tabindex="0"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>${players.length>20?'<p class="house-club-scroll-hint">Scroll within the player table to see more.</p>':''}`:'<p>No players recorded yet.</p>'}</section><section><h2>Most recent 5 matches</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
     container.querySelector('thead')?.addEventListener('click',event=>{
       const key=event.target.closest('[data-house-sort]')?.dataset.houseSort;
       if(!key)return;
@@ -154,6 +154,7 @@ async function hydrateSandyBums(month='all'){
       else{sandyBumsSort.key=key;sandyBumsSort.direction=key==='latest_name'?'asc':'desc';}
       container.querySelector('thead tr').innerHTML=sandyBumsPlayerHead();
       container.querySelector('tbody').innerHTML=sandyBumsPlayerRows(players);
+      container.querySelector('.house-club-player-scroll').scrollTop=0;
       container.querySelector(`[data-house-sort="${key}"]`)?.focus();
     });
   }catch{
