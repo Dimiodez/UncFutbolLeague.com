@@ -4,7 +4,7 @@ import vm from 'node:vm';
 
 const source=readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const start=source.indexOf('const sandyBumsColumns=');
-const end=source.indexOf('async function hydrateSandyBums(',start);
+const end=source.indexOf('async function hydrateHouseClub(',start);
 assert.ok(start>=0&&end>start,'Sandy Bums sort helpers must exist');
 const context={};
 vm.runInNewContext(`${source.slice(start,end)}\nglobalThis.testSort={state:sandyBumsSort,sort:sortedSandyBumsPlayers};`,context);
