@@ -1103,7 +1103,7 @@ document.querySelectorAll('.nav-group').forEach(group => {
 });
 document.querySelector('#reroll-location').addEventListener('click', setLocation);
 function setTheme(theme) {
-  const validTheme = ['classic','dark','vintage'].includes(theme) ? theme : 'classic';
+  const validTheme = ['classic','dark','vintage'].includes(theme) ? theme : 'dark';
   document.documentElement.dataset.theme = validTheme;
   localStorage.setItem('ufl-theme', validTheme);
   document.querySelectorAll('[data-theme-choice]').forEach(button => {
