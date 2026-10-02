@@ -15,7 +15,9 @@ import {
   ballHitLine,
   BIZZIE_REVEAL_LINE,
   BRUCE_SUMMIT_LINES,
+  endScreenForLevel,
   GAMEPLAY_NOTICES,
+  LEVEL_END_SCREENS,
   LEVEL_TEN_CUTSCENE,
   openingLineForLevel,
   SCHWEIN_BALL_HIT_LINES,
@@ -877,6 +879,34 @@ test('dialogue pools retain the complete authored line counts', () => {
   assert.equal(SCHWEIN_RED_CARD_LINES.length, 2);
   assert.equal(BRUCE_SUMMIT_LINES.length, 5);
   assert.equal(SCHWEIN_BRUCE_SWEAT_LINE, 'MAN, I BET YOU HOPE THAT’S SWEAT, HUH?... IT’S NOT.');
+});
+
+test('all ten levels have their authored escalating end-screen copy', () => {
+  assert.equal(Object.keys(LEVEL_END_SCREENS).length, 10);
+  assert.deepEqual(
+    Array.from({ length: 10 }, (_value, index) => endScreenForLevel(index + 1).button),
+    [
+      'Climb Level 2 ↗',
+      'Climb Level 3 ↗',
+      'Climb Level 4 ↗',
+      'Climb Level 5 ↗',
+      'Climb Level 6 ↗',
+      'Climb Level 7 ↗',
+      'Climb Level 8 ↗',
+      'Climb Level 9 ↗',
+      'Climb Level 10 ↗',
+      'Play again ↗',
+    ],
+  );
+  assert.match(endScreenForLevel(3).text, /ALRIGHT DICKHEAD, NOW I’M PISSED!/);
+  assert.match(endScreenForLevel(5).text, /BRUCE|Bruce/);
+  assert.match(endScreenForLevel(6).title, /FIRST/);
+  assert.match(endScreenForLevel(8).text, /ME BRICK WALL\. ME STOP BALL\./);
+  assert.match(endScreenForLevel(9).text, /THIS IS MY FUCKING MOUNTAIN!/);
+  const finale = endScreenForLevel(10, { activeTime: '12:34.5', totalDeaths: 17 });
+  assert.match(finale.text, /12:34\.5/);
+  assert.match(finale.text, /17 deaths/);
+  assert.doesNotMatch(finale.text, /\[ACTIVE TIME\]|\[TOTAL DEATHS\]/);
 });
 
 test('soccer-ball hit dialogue uses the requested 70/15/15 weighting', () => {

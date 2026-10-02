@@ -1,6 +1,7 @@
 import { MountainScene } from './game/MountainScene.js?v=run-leaderboard-1';
 import { hasStage, TUNING, WORLD } from './game/level.js?v=run-leaderboard-1';
 import { formatRunTime, saveLeaderboardEntry } from './game/leaderboard.js?v=run-leaderboard-1';
+import { endScreenForLevel } from './game/Dialogue.js?v=end-screen-copy-1';
 
 const $ = (selector) => document.querySelector(selector);
 const previewParams = new URLSearchParams(window.location.search);
@@ -171,37 +172,21 @@ function bindScene(activeScene) {
       `Retry Level ${scene.state.level} ↗`,
     );
   });
-  scene.events.on('game-won', ({ level, totalLevels, nextLevel, outcome, yellowCards }) => {
+  scene.events.on('game-won', ({ level, nextLevel }) => {
     queuedLevel = nextLevel || level;
     carryCampaign = Boolean(nextLevel);
-    if (outcome === 'yellow-card') {
-      showOverlay(
-        `LEVEL ${level} OF ${totalLevels} CLEARED`,
-        'FIRST<br>YELLOW!',
-        `Schwein now has ${yellowCards} yellow card. Catch him again for a second yellow — and the automatic red card.`,
-        nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
-      );
-      return;
-    }
-    showOverlay(
-      `LEVEL ${level} OF ${totalLevels} CLEARED`,
-      'SCHWEIN<br>ESCAPES!',
-      nextLevel
-        ? `Schwein fled to Level ${nextLevel}. Your campaign time and incident totals continue with the chase.`
-        : `Level ${level} complete. Schwein escaped toward the unfinished mountains; the red card still waits at Level 10.`,
-      nextLevel ? `Climb Level ${nextLevel} ↗` : `Run Level ${level} again ↗`,
-    );
+    const screen = endScreenForLevel(level);
+    showOverlay(screen.kicker, screen.title, screen.text, screen.button);
   });
   scene.events.on('red-card-won', ({ stats }) => {
     queuedLevel = 1;
     carryCampaign = false;
     const result = saveLeaderboardEntry(stats);
-    showOverlay(
-      'LEVEL 10 CLEARED',
-      'RED CARD<br>SCHWEIN!',
-      `The referee finally caught the pig captain in ${formatRunTime(stats.activePlayMs)} with ${stats.totalDeaths} deaths.`,
-      'Play again ↗',
-    );
+    const screen = endScreenForLevel(10, {
+      activeTime: formatRunTime(stats.activePlayMs),
+      totalDeaths: stats.totalDeaths,
+    });
+    showOverlay(screen.kicker, screen.title, screen.text, screen.button);
     renderLeaderboard(result);
   });
   syncHud();

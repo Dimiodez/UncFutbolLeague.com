@@ -113,6 +113,79 @@ export const LEVEL_TEN_CUTSCENE = Object.freeze([
   Object.freeze({ speaker: 'schwein', line: 'ALRIGHT, DICKHEAD.' }),
 ]);
 
+export const LEVEL_END_SCREENS = Object.freeze({
+  1: Object.freeze({
+    kicker: 'LEVEL 1 OF 10 CLEARED',
+    title: 'THE CHASE<br>BEGINS!',
+    text: 'Schwein took one look at the referee, yelled “SUCK MY ASS,” and ran higher up the mountain. Naturally, you follow him.',
+    button: 'Climb Level 2 ↗',
+  }),
+  2: Object.freeze({
+    kicker: 'LEVEL 2 OF 10 CLEARED',
+    title: 'HE KEEPS<br>CLIMBING!',
+    text: 'Apparently throwing balls downhill wasn’t enough. Schwein has more mountain, more balls, and absolutely no intention of behaving.',
+    button: 'Climb Level 3 ↗',
+  }),
+  3: Object.freeze({
+    kicker: 'LEVEL 3 OF 10 CLEARED',
+    title: 'SCHWEIN IS<br>GETTING PISSED!',
+    text: 'Schwein rage-stomped the mountain and somehow made everything worse. “ALRIGHT DICKHEAD, NOW I’M PISSED!”',
+    button: 'Climb Level 4 ↗',
+  }),
+  4: Object.freeze({
+    kicker: 'LEVEL 4 OF 10 CLEARED',
+    title: 'NO TURNING<br>BACK!',
+    text: 'The referee keeps climbing. Schwein keeps running. At this point neither of you seems emotionally capable of stopping.',
+    button: 'Climb Level 5 ↗',
+  }),
+  5: Object.freeze({
+    kicker: 'LEVEL 5 OF 10 CLEARED',
+    title: 'HALFWAY<br>UP!',
+    text: 'Bruce has entered the premises. He also has no idea why. “I CAME UP HERE TO GET SOMETHING... DOES ANYBODY REMEMBER WHAT IT WAS?”',
+    button: 'Climb Level 6 ↗',
+  }),
+  6: Object.freeze({
+    kicker: 'LEVEL 6 OF 10 CLEARED',
+    title: 'FIRST<br>YELLOW!',
+    text: 'Schwein finally gets booked, rage-stomps the mountain, and responds exactly as expected. Let’s hope he acts a little better next time... or else it’s a red!',
+    button: 'Climb Level 7 ↗',
+  }),
+  7: Object.freeze({
+    kicker: 'LEVEL 7 OF 10 CLEARED',
+    title: 'SCHWEIN IS<br>ON A YELLOW!',
+    text: 'One more card sends him off. Schwein’s response to this information was approximately “SUCK MY ASS,” so expectations remain low.',
+    button: 'Climb Level 8 ↗',
+  }),
+  8: Object.freeze({
+    kicker: 'LEVEL 8 OF 10 CLEARED',
+    title: 'THE BRICK<br>WALL!',
+    text: 'Bizzie has joined the mountain. His tactical instructions are simple: “ME BRICK WALL. ME STOP BALL.”',
+    button: 'Climb Level 9 ↗',
+  }),
+  9: Object.freeze({
+    kicker: 'LEVEL 9 OF 10 CLEARED',
+    title: 'FINAL<br>WARNING!',
+    text: 'Schwein rage-stomped again. Harder this time. “MAMA MIA! THIS IS MY FUCKING MOUNTAIN!” One climb remains.',
+    button: 'Climb Level 10 ↗',
+  }),
+  10: Object.freeze({
+    kicker: 'LEVEL 10 CLEARED',
+    title: 'RED CARD<br>SCHWEIN!',
+    text: 'Not even Schwein, the mountain, or Bizzie’s brick-wall defense could stop it. The referee finally caught the pig captain in [ACTIVE TIME] with [TOTAL DEATHS] deaths.',
+    button: 'Play again ↗',
+  }),
+});
+
+export function endScreenForLevel(level, values = {}) {
+  const screen = LEVEL_END_SCREENS[level] || LEVEL_END_SCREENS[1];
+  return {
+    ...screen,
+    text: screen.text
+      .replace('[ACTIVE TIME]', values.activeTime ?? '[ACTIVE TIME]')
+      .replace('[TOTAL DEATHS]', values.totalDeaths ?? '[TOTAL DEATHS]'),
+  };
+}
+
 export const GAMEPLAY_NOTICES = Object.freeze({
   bruceEntry: 'BRUCE HAS ENTERED THE PREMISES!',
   blackIce: 'BLACK ICE — GOOD LUCK STOPPING!',

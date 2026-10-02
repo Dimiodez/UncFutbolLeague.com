@@ -103,8 +103,10 @@ without touching the production website.
 
 All current Schwein, Bruce, referee, and gameplay-notice copy is centralized in
 `game/Dialogue.js` so future script passes do not require editing gameplay code.
+The ten authored level-clear overlays are centralized there as well, including
+the final screen's dynamic active-time and total-deaths placeholders.
 The complete Level 10 red-card exchange is stored there now, but remains inactive
-until Level 10 itself is built.
+until the final cutscene implementation is approved.
 
 ## Level 8: Bizzie's defensive detour
 
