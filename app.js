@@ -124,7 +124,9 @@ function funPage() {
 function leaguePage() {
   return pageHero('UFL · League', 'The official match centre', 'Teams, fixtures, tables, rules and every route to a UFL trophy.') +
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
-      {mark:'T',title:'Teams',copy:'Browse 6v6, 10v10 and house teams across the current season and archive.',href:'/teams?season=2&division=6v6',label:'Browse clubs'},
+      {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
+      {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
+      {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Match data will be connected later.',href:'/stats',label:'Explore the numbers'},
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, community events and published results.',href:'/schedules?season=2&type=6v6',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'},
       {mark:'C',title:'League Cup',copy:'Follow official cup fixtures and each knockout path to the final.',href:'/schedules/league-cup',label:'Follow the cup'},
@@ -992,12 +994,16 @@ function render() {
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
-  else if (path === routes.teams) main.innerHTML = teamsPage(params);
+  else if (path === routes.teams || path === '/clubs') main.innerHTML = leagueClubsPage(params);
+  else if (path.startsWith('/clubs/')) main.innerHTML = leagueClubProfile(decodeURIComponent(path.slice(7)),params);
+  else if (path === '/players') main.innerHTML = leaguePlayersPage(params);
+  else if (path.startsWith('/players/')) main.innerHTML = leaguePlayerProfile(path.slice(9),params);
+  else if (path === '/stats') main.innerHTML = leagueStatsPage(params);
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
   else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
   else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
-  else if (path === routes.standings) main.innerHTML = standingsPage(params);
+  else if (path === routes.standings) main.innerHTML = leagueStandingsPage(params);
   else if (path === routes.users) main.innerHTML = usersPage();
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
   else if (path === routes.func) main.innerHTML = funcPage();
@@ -1015,6 +1021,7 @@ function render() {
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
+  bindLeagueExplorer();
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();
