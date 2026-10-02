@@ -7,8 +7,28 @@ const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 const app=read('app.js');
 const context=vm.createContext({window:{},URLSearchParams,console});
 vm.runInContext(read('pickems-app/season-data.js'),context);
-vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('league-pages.js'),context);
+vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
+
+test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
+  const html=render("featuredClubSection(new Date('2026-10-02T12:00:00Z'))");
+  assert.match(html,/UFL Roma/);
+  assert.match(html,/>Dez</);
+  assert.match(html,/>Gabe</);
+  assert.match(html,/DimiOdez/);
+  assert.match(html,/bRzGabriel98/);
+  assert.match(html,/rankings and match data pending/);
+  assert.doesNotMatch(html,/#2/);
+  for(const match of html.matchAll(/src="(\/assets\/league\/[^" ]+)"/g)) assert.ok(fs.existsSync(new URL(match[1].slice(1),root)),match[1]);
+});
+
+test('spotlight changes on Monday UTC and covers both divisions once per cycle',()=>{
+  assert.equal(render("featuredClubSelection(new Date('2026-10-04T23:59:59Z')).key"),'ROM');
+  assert.notEqual(render("featuredClubSelection(new Date('2026-10-05T00:00:00Z')).key"),'ROM');
+  const cycle=JSON.parse(render("JSON.stringify(Array.from({length:16},(_,i)=>featuredClubSelection(new Date(Date.parse(featuredClubConfig.startsAt)+i*604800000))))"));
+  assert.equal(new Set(cycle.map(c=>c.division+':'+c.key)).size,16);
+  assert.ok(cycle.some(c=>c.division==='10v10'));
+});
 test('archived clubs have artwork and internal profiles',()=>{
   const html=render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))");
   assert.equal((html.match(/class="league-club-tile"/g)||[]).length,10);

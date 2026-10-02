@@ -28,3 +28,11 @@ Keep club IDs, season membership, roster membership and EA account identity sepa
 `node --test scripts/league-pages.test.mjs`
 
 Local preview: `node dev-server.mjs` at port 4173.
+# Weekly homepage club spotlight
+
+The homepage reuses current-season club artwork and roster records. Rotation starts with Roma for the week of September 28, 2026 and changes on Monday at 00:00 UTC, covering each 6v6 and 10v10 club once per cycle. No recurring job or visitor-specific storage is needed. Roma's confirmed captains are Dez (DimiOdez) and Gabe (bRzGabriel98), linked to existing player IDs. Clubs without assigned captains show squad members without claiming they are captains.
+
+Results and club totals use the committed season snapshot. Zero-game tables are not presented as competitive rankings; individual player stats and new fixtures remain pending until connected. Captain metadata is presently maintained in source, not an admin editor.
+
+Future roster management must retain permanent player identities separately from season/division membership. Removing a membership must not delete a player: the player becomes unassigned in that competition. Search and filters should cover all players, clubs and unassigned free agents. Membership and captain writes must enforce server-side admin/captain permissions, with a maximum of three captains per club. No self-service reassignment or administrative roster backend has been enabled in this preview.
+

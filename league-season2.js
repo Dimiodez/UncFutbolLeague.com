@@ -125,6 +125,8 @@ const leagueProvisionalSeasons = {
         "id": "1790190586159-566",
         "name": "bRzGabriel98",
         "club": "ROM",
+        "role": "captain",
+        "displayName": "Gabe",
         "number": "",
         "portrait": true
       },
@@ -146,6 +148,8 @@ const leagueProvisionalSeasons = {
         "id": "1790183123676-110",
         "name": "DimiOdez",
         "club": "ROM",
+        "role": "captain",
+        "displayName": "Dez",
         "number": "",
         "portrait": true
       },
