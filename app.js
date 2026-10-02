@@ -91,7 +91,37 @@ function emptyState(title, copy, action = '') {
 }
 
 function houseTeamsContent() {
-  return `<div class="house-team-callout"><span class="section-kicker">Open pickup nights</span><h2>Free to join. Pickup games almost every night.</h2><p>Choose a house, meet the community, and jump in whenever a lobby opens.</p></div><div class="house-team-grid"><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-sandy-bums.png" alt="FC Sandy Bums crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p></article><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-mountains.png" alt="FC Mountains crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p></article></div>`;
+  return `<div class="house-team-callout"><span class="section-kicker">Open pickup nights</span><h2>Free to join. Pickup games almost every night.</h2><p>Choose a house, meet the community, and jump in whenever a lobby opens.</p></div><div class="house-team-grid"><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-sandy-bums.png" alt="FC Sandy Bums crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p><a href="/teams/house/fc-sandy-bums" data-link>View results and players →</a></article><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-mountains.png" alt="FC Mountains crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p></article></div>`;
+}
+
+function sandyBumsPage(){
+  return pageHero('House teams · FC27', 'FC Sandy Bums', 'Results and player statistics from games recorded by our FC27 tracker.') +
+    `<section class="section house-club-history"><a href="/teams?division=house" data-link>← All house teams</a><div class="house-club-toolbar"><label for="house-club-month">Month (Central time)</label><select id="house-club-month"><option value="all">All recorded games</option></select><span id="house-club-sync" aria-live="polite">Loading club history…</span></div><div id="house-club-content" aria-live="polite"></div></section>`;
+}
+
+async function hydrateSandyBums(month='all'){
+  const container=document.querySelector('#house-club-content');
+  if(!container)return;
+  const selector=document.querySelector('#house-club-month');
+  const status=document.querySelector('#house-club-sync');
+  container.innerHTML='<p>Loading results and player stats…</p>';
+  try{
+    const response=await fetch(`/api/house-clubs/fc-sandy-bums?month=${encodeURIComponent(month)}`);
+    if(!response.ok)throw new Error('Club history unavailable');
+    const data=await response.json();
+    if(document.querySelector('#house-club-content')!==container||selector.value!==month)return;
+    selector.innerHTML='<option value="all">All recorded games</option>'+data.months.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`)))}</option>`).join('');
+    selector.value=month;
+    selector.onchange=()=>hydrateSandyBums(selector.value);
+    status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
+    const players=data.players.map(player=>`<tr><th scope="row">${escapeHtml(player.latest_name)}</th><td>${Number(player.appearances)||0}</td><td>${Number(player.goals)||0}</td><td>${Number(player.assists)||0}</td><td>${player.average_rating===null?'—':Number(player.average_rating).toFixed(2)}</td></tr>`).join('');
+    const matches=data.matches.map(match=>`<li><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>FC Sandy Bums ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong></li>`).join('');
+    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players?`<div class="table-wrap"><table><thead><tr><th>Player</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Avg rating</th></tr></thead><tbody>${players}</tbody></table></div>`:'<p>No players recorded yet.</p>'}</section><section><h2>Results</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+  }catch{
+    if(document.querySelector('#house-club-content')!==container)return;
+    status.textContent='History temporarily unavailable';
+    container.innerHTML='<p>We could not load FC Sandy Bums history right now. Please try again shortly.</p>';
+  }
 }
 
 function homePage() {
@@ -997,6 +1027,7 @@ function render() {
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
   else if (path === routes.teams || path === '/clubs') main.innerHTML = leagueClubsPage(params);
+  else if (path === '/teams/house/fc-sandy-bums') main.innerHTML = sandyBumsPage();
   else if (path.startsWith('/clubs/')) main.innerHTML = leagueClubProfile(decodeURIComponent(path.slice(7)),params);
   else if (path === '/players') main.innerHTML = leaguePlayersPage(params);
   else if (path.startsWith('/players/')) main.innerHTML = leaguePlayerProfile(path.slice(9),params);
@@ -1030,6 +1061,7 @@ function render() {
   renderAggregateByotBoard();
   hydrateUsersDirectory();
   hydrateHomeCalendar();
+  if(path==='/teams/house/fc-sandy-bums')hydrateSandyBums();
   window.scrollTo({ ...scrollPosition, behavior: 'instant' });
 }
 
