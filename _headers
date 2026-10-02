@@ -26,6 +26,9 @@
 /league-pages.js
   Cache-Control: no-store, max-age=0
 
+/league-season2.js
+  Cache-Control: no-store, max-age=0
+
 /league-pages.css
   Cache-Control: public, max-age=0, must-revalidate
 

@@ -14,7 +14,11 @@
 .league-club-art:after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 45%,rgba(0,0,0,.7)); }
 .league-art-caption { position:absolute; bottom:1rem; left:1.25rem; color:#fff; font-size:.8rem; z-index:1; }
 .league-club-body { padding:1.6rem 1.4rem 1.2rem; position:relative; }
-.league-club-crest { position:absolute; right:1.3rem; top:-35px; width:74px; height:74px; object-fit:contain; padding:8px; background:var(--white); border:1px solid var(--line); border-radius:18px; }
+.league-club-crest { position:absolute; right:1.3rem; top:-35px; width:74px; height:74px; object-fit:contain; padding:8px; background:var(--white); border:1px solid var(--line); border-radius:50%; transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease; }
+.league-club-tile:hover .league-club-crest,.league-club-tile:focus-visible .league-club-crest { transform:translateY(-8px) scale(1.15); border-color:var(--sky); box-shadow:0 0 0 7px color-mix(in srgb,var(--sky) 18%,transparent),0 12px 24px rgba(0,0,0,.2); }
+.league-player-body>img { transition:transform .25s ease; }
+.league-player-tile:hover .league-player-body>img,.league-player-tile:focus-visible .league-player-body>img { transform:scale(1.16); }
+@media(prefers-reduced-motion:reduce) { .league-club-tile,.league-player-tile,.league-club-crest,.league-player-body>img { transition:none; } }
 .league-club-body small { color:var(--muted); text-transform:uppercase; letter-spacing:.1em; font-size:.7rem; }
 .league-club-body h2 { margin:.65rem 0; font-size:1.6rem; }
 .league-club-body p { color:var(--muted); min-height:4.2rem; font-size:.92rem; line-height:1.65; }
