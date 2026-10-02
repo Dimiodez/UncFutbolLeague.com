@@ -19,6 +19,18 @@
 - Add an admin weekly featured-club override. Maintain alternating 6v6/10v10 slots and independent no-repeat cycles.
 - Optimize the largest crest images and check all three themes, mobile menus, accessibility and public link thumbnails.
 
+## Community-first UFL league platform requirements
+
+- Connect the website and Discord bot to one authoritative UFL backend/database. Approved website changes must appear in bot command results, and authorized bot changes must appear on the website. Share permission checks, one-team-per-league constraints, captain roles and an audit trail. Map Discord users, permanent player IDs and EA club/account records explicitly; make repeated bot requests safe and define website refresh/invalidation behavior. Avoid separate roster stores that can drift. This integration is planned, not currently enabled.
+
+- Purpose: serve UNC league members, not sell a multi-tenant league-management service. Registration, team linking and concurrent UFL competitions must not depend on paid tiers. Optional Patreon or merch is distant-future support, not a participation requirement.
+- One permanent player identity, with separate memberships for each league/division and season. A player may belong to one active 6v6 team and one active 10v10 team simultaneously, but never two active teams in the same competition. Enforce this constraint server-side and transactionally, not just in the UI.
+- Support player signup, team invitations/requests and authorized roster approval. Define who can approve transfers; retain membership history and match records. Removing a membership returns the player to that competition's unassigned pool without deleting their identity or other league membership.
+- Discord sign-in identifies the website member; EA/platform handles and club links are separate records. Do not claim that a supplied handle verifies EA account ownership.
+- Use stable UFL season/competition IDs and shareable routes independent of upstream VA IDs. External provider mappings may change without resetting rosters, registration, standings archives or saved picks.
+- Concurrent leagues should operate independently. One unavailable external feed must not stop another competition from refreshing. Retain last-good data, display freshness, and surface actionable admin sync errors.
+- VA replacement is a staged future build, not included in the published layout. Current 10v10 URLs changed again according to the owner; await the replacement links before changing mappings.
+
 ## Release record
 
 Previous production source for rollback: `efc9aebc0e63ceccfd44c599740129661d0e8c6a`. Release brings in its latest VA snapshots before promoting the navigation branch. 28 relevant automated checks pass; successful sixes refresh was run, while tens retained its last good snapshot after official VA HTTP 404 responses.
