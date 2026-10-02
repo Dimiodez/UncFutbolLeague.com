@@ -476,7 +476,7 @@ const leagueProvisionalSeasons = {
         "name": "UFL Palace",
         "art": true,
         "webpCrest": false,
-        "key": "club-1790121387566",
+        "key": "PALA",
         "logo": "/assets/league/club-1790121387566-crest.png",
         "image": "/assets/league/club-1790121387566.jpg"
       },
@@ -540,7 +540,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122562723",
         "name": "bilal",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -631,7 +631,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122621591",
         "name": "Dr. Drei",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": false
       },
@@ -659,7 +659,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122588664",
         "name": "germanwigends",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -687,7 +687,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122602942",
         "name": "Hockey Soon",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -701,7 +701,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122635033",
         "name": "i_spit_hot_fire",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": false
       },
@@ -722,7 +722,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122592945",
         "name": "Jamal",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": false
       },
@@ -757,7 +757,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122626361",
         "name": "liz",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -771,7 +771,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122580955",
         "name": "LOW T (Bradical)",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -820,7 +820,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122597540",
         "name": "phantom",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -841,7 +841,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122570549",
         "name": "Ripp",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": true
       },
@@ -932,7 +932,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790122614866",
         "name": "Turd \"El Tito\" Ferguson",
-        "club": "club-1790121387566",
+        "club": "PALA",
         "number": "",
         "portrait": false
       },

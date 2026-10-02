@@ -54,7 +54,7 @@ test('season 2 has separate provisional rosters, not inherited archived players'
   assert.equal((tens.match(/class="league-player-tile"/g)||[]).length,65);
   const sixClubs=render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))");
   const tenClubs=render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))");
-  assert.equal((sixClubs.match(/class="league-club-tile"/g)||[]).length,9);
+  assert.equal((sixClubs.match(/class="league-club-tile"/g)||[]).length,10);
   assert.equal((tenClubs.match(/class="league-club-tile"/g)||[]).length,7);
   assert.equal((render("leagueClubProfile('ROM',new URLSearchParams('season=2'))").match(/class="league-player-tile"/g)||[]).length,6);
   assert.match(render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2'))"),/provisional roster/);

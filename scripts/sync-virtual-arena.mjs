@@ -12,9 +12,13 @@ const decodeHtml = value => value
   .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
   .replace(/&#x([\da-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)));
 
-async function pageProps(config, path) {
+async function pageProps(config, path, { allowMissing = false } = {}) {
   const seasonBase = `${BASE}/competitions/${config.competitionId}/seasons/${config.seasonId}`;
   const response = await fetch(`${seasonBase}/${path}`, { headers: { 'user-agent': 'UncFutbolLeague.com data sync' } });
+  if (response.status === 404 && allowMissing && path === 'stats') {
+    console.warn(`Virtual Arena ${config.key}/stats is not published yet; continuing core league sync.`);
+    return { leaderboards: {}, statsUnavailable: true };
+  }
   if (!response.ok) throw new Error(`Virtual Arena ${config.key}/${path} returned ${response.status}`);
   const html = await response.text();
   const match = html.match(/data-page="([^"]+)"/);
@@ -56,7 +60,7 @@ function normalizeLeaderboards(leaderboards = {}) {
 
 async function buildSeason(config) {
   const [matchProps, standingProps, teamProps, statsProps] = await Promise.all([
-    pageProps(config, 'matches'), pageProps(config, 'standings'), pageProps(config, 'teams'), pageProps(config, 'stats')
+    pageProps(config, 'matches'), pageProps(config, 'standings'), pageProps(config, 'teams'), pageProps(config, 'stats', { allowMissing: true })
   ]);
   const seasonBase = `${BASE}/competitions/${config.competitionId}/seasons/${config.seasonId}`;
   const teamRows = teamProps.teams?.data || [];
@@ -134,7 +138,8 @@ async function buildSeason(config) {
     teamsSource: `${seasonBase}/teams`,
     statsSource: `${seasonBase}/stats`,
     syncedAt,
-    statsFetchedAt: syncedAt,
+    statsFetchedAt: statsProps.statsUnavailable ? null : syncedAt,
+    statsStatus: statsProps.statsUnavailable ? 'pending' : 'available',
     teams,
     teamDetails,
     standings,
@@ -150,7 +155,22 @@ archivedSeason.uflSeason = 1;
 archivedSeason.game = 'FC26';
 archivedSeason.status = 'archived';
 
-const liveSeasons = await Promise.all(seasons.map(buildSeason));
+// Preserve a division's last good snapshot if its official feed is temporarily
+// unavailable, without preventing the other division from refreshing.
+const syncResults = await Promise.allSettled(seasons.map(buildSeason));
+if (syncResults.every(result => result.status === 'rejected')) {
+  throw new Error(`All Virtual Arena divisions failed: ${syncResults.map(result => result.reason.message).join('; ')}`);
+}
+const liveSeasons = await Promise.all(syncResults.map(async (result, index) => {
+  if (result.status === 'fulfilled') return result.value;
+  const config = seasons[index];
+  console.warn(`::warning::${config.key} refresh failed; retaining last good snapshot. ${result.reason.message}`);
+  const previous = JSON.parse(await readFile(`pickems-app/seasons/${config.key}.json`, 'utf8'));
+  if (previous.competitionId !== config.competitionId || previous.seasonId !== config.seasonId) {
+    throw new Error(`Refusing to retain a mismatched snapshot for ${config.key}`);
+  }
+  return previous;
+}));
 const output = { 's1-6v6': archivedSeason, ...Object.fromEntries(liveSeasons.map(season => [season.key, season])) };
 
 await mkdir('pickems-app/seasons', { recursive: true });
@@ -165,5 +185,6 @@ for (const season of liveSeasons) {
 await writeFile('pickems-app/season-data.js', `window.UFL_SEASONS = ${JSON.stringify(output, null, 2)};\nwindow.UFL_SEASON = window.UFL_SEASONS['s2-6v6'];\n`);
 
 for (const season of liveSeasons) {
-  console.log(`Synced ${season.key}: ${season.teamDetails.length} teams, ${season.weeks.length} matchweeks, ${season.weeks.flatMap(week => week.matches).length} matches.`);
+  const refreshed = syncResults[seasons.findIndex(config => config.key === season.key)].status === 'fulfilled';
+  console.log(`${refreshed ? 'Synced' : 'Retained'} ${season.key}: ${season.teamDetails.length} teams, ${season.weeks.length} matchweeks, ${season.weeks.flatMap(week => week.matches).length} matches.`);
 }
