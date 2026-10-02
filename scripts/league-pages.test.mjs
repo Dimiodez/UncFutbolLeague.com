@@ -22,12 +22,19 @@ test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   for(const match of html.matchAll(/src="(\/assets\/league\/[^" ]+)"/g)) assert.ok(fs.existsSync(new URL(match[1].slice(1),root)),match[1]);
 });
 
-test('spotlight changes on Monday UTC and covers both divisions once per cycle',()=>{
+test('spotlight alternates divisions and independently exhausts each club list before repeating',()=>{
   assert.equal(render("featuredClubSelection(new Date('2026-10-04T23:59:59Z')).key"),'ROM');
   assert.notEqual(render("featuredClubSelection(new Date('2026-10-05T00:00:00Z')).key"),'ROM');
-  const cycle=JSON.parse(render("JSON.stringify(Array.from({length:16},(_,i)=>featuredClubSelection(new Date(Date.parse(featuredClubConfig.startsAt)+i*604800000))))"));
-  assert.equal(new Set(cycle.map(c=>c.division+':'+c.key)).size,16);
-  assert.ok(cycle.some(c=>c.division==='10v10'));
+  const cycle=JSON.parse(render("JSON.stringify(Array.from({length:40},(_,i)=>featuredClubSelection(new Date(Date.parse(featuredClubConfig.startsAt)+i*604800000))))"));
+  cycle.forEach((club,i)=>assert.equal(club.division,i%2?'10v10':'6v6'));
+  for(const [division,size] of [['6v6',9],['10v10',7]]) {
+    const clubs=cycle.filter(c=>c.division===division).map(c=>c.key);
+    for(let offset=0;offset+size<=clubs.length;offset+=size) {
+      assert.equal(new Set(clubs.slice(offset,offset+size)).size,size);
+      assert.deepEqual(clubs.slice(offset,offset+size),clubs.slice(0,size));
+    }
+    assert.equal(clubs[size],clubs[0]);
+  }
 });
 test('archived clubs have artwork and internal profiles',()=>{
   const html=render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))");
