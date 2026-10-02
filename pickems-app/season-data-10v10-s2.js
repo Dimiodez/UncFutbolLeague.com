@@ -43,7 +43,7 @@ window.UFL_SEASON_10V10_S2 = {
       "abbreviation": "NOB",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-      "rosterSize": 3,
+      "rosterSize": 4,
       "stats": []
     },
     {
