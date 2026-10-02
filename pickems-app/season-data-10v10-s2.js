@@ -11,9 +11,13 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/2/seasons/4/stats",
-  "syncedAt": "2026-09-29T16:33:09.000Z",
-  "statsFetchedAt": "2026-09-29T16:33:09.000Z",
+  "syncedAt": "2026-10-01T14:16:46.000Z",
+  "statsFetchedAt": "2026-10-01T14:16:46.000Z",
   "teams": {
+    "PALA": [
+      "Palace",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png"
+    ],
     "NOB": [
       "UFL Newell's OB",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png"
@@ -25,12 +29,21 @@ window.UFL_SEASON_10V10_S2 = {
   },
   "teamDetails": [
     {
+      "key": "PALA",
+      "name": "Palace",
+      "abbreviation": "PALA",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+      "url": "https://ufl.virtualarena.app/teams/Palace",
+      "rosterSize": 5,
+      "stats": []
+    },
+    {
       "key": "NOB",
       "name": "UFL Newell's OB",
       "abbreviation": "NOB",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-newells-ob-1790699626.png",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-      "rosterSize": 3,
+      "rosterSize": 4,
       "stats": []
     },
     {
@@ -57,6 +70,17 @@ window.UFL_SEASON_10V10_S2 = {
     ],
     [
       "TFC",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "PALA",
       0,
       0,
       0,
@@ -136,6 +160,15 @@ window.UFL_SEASON_10V10_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -158,6 +191,15 @@ window.UFL_SEASON_10V10_S2 = {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
             },
             "team": null,
             "stat": 0
@@ -186,6 +228,15 @@ window.UFL_SEASON_10V10_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -208,6 +259,15 @@ window.UFL_SEASON_10V10_S2 = {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
             },
             "team": null,
             "stat": 0
@@ -236,6 +296,15 @@ window.UFL_SEASON_10V10_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -258,6 +327,15 @@ window.UFL_SEASON_10V10_S2 = {
               "name": "UFL Timbers",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-timbers-1790644273.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
             },
             "team": null,
             "stat": 0

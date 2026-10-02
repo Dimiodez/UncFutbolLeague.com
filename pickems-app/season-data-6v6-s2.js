@@ -11,9 +11,13 @@ window.UFL_SEASON_6V6_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-  "syncedAt": "2026-09-29T05:17:02.000Z",
-  "statsFetchedAt": "2026-09-29T05:17:02.000Z",
+  "syncedAt": "2026-10-01T19:48:37.000Z",
+  "statsFetchedAt": "2026-10-01T19:48:37.000Z",
   "teams": {
+    "PHN": [
+      "Place Holder Name",
+      null
+    ],
     "ROM": [
       "UFL Roma",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png"
@@ -24,6 +28,15 @@ window.UFL_SEASON_6V6_S2 = {
     ]
   },
   "teamDetails": [
+    {
+      "key": "PHN",
+      "name": "Place Holder Name",
+      "abbreviation": "PHN",
+      "logo": null,
+      "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name",
+      "rosterSize": 3,
+      "stats": []
+    },
     {
       "key": "ROM",
       "name": "UFL Roma",
@@ -57,6 +70,17 @@ window.UFL_SEASON_6V6_S2 = {
     ],
     [
       "ROM",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "PHN",
       0,
       0,
       0,
@@ -136,6 +160,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -158,6 +191,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "UFL Roma",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
             },
             "team": null,
             "stat": 0
@@ -186,6 +228,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -208,6 +259,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "UFL Roma",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
             },
             "team": null,
             "stat": 0
@@ -236,6 +296,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -258,6 +327,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "UFL Roma",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Place Holder Name",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
             },
             "team": null,
             "stat": 0
