@@ -1199,11 +1199,11 @@ window.UFL_SEASONS = {
       ],
       "ROM": [
         "UFL Roma",
-        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png"
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png"
       ],
       "TLC": [
         "UFL Toluca",
-        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png"
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
       ]
     },
     "teamDetails": [
@@ -1220,7 +1220,7 @@ window.UFL_SEASONS = {
         "key": "ROM",
         "name": "UFL Roma",
         "abbreviation": "ROM",
-        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Roma",
         "rosterSize": 4,
         "stats": []
@@ -1229,7 +1229,7 @@ window.UFL_SEASONS = {
         "key": "TLC",
         "name": "UFL Toluca",
         "abbreviation": "TLC",
-        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
         "rosterSize": 7,
         "stats": []
@@ -1325,7 +1325,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1334,7 +1334,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
@@ -1359,7 +1359,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1368,7 +1368,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
@@ -1393,7 +1393,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1402,7 +1402,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
@@ -1427,7 +1427,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1436,7 +1436,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
@@ -1461,7 +1461,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1470,7 +1470,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
@@ -1495,7 +1495,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-toluca-1790618117.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
@@ -1504,7 +1504,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/ufl-roma-1790684832.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
               },
               "team": null,
