@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env, params }) {
   if (!status.connected) return json({ ...status, error: 'The bot has not been connected to the website yet.' }, 503);
   try {
     const result = await fetchUfbService(env, `/admin/linked-clubs/${encodeURIComponent(clubId)}/matches`);
-    return json({ ...result.status, club: result.data?.club || null, matches: recentMatchList(result.data) });
+    return json({ ...result.status, club: result.data?.club || null, matches: recentMatchList(result.data), partial: result.data?.partial === true });
   } catch (error) {
     const responseStatus = Number.isInteger(error?.status) && error.status >= 400 && error.status < 500 ? error.status : 502;
     console.error(JSON.stringify({ message: 'Unable to load UFB recent matches', clubId, error: error instanceof Error ? error.message : String(error) }));
