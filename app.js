@@ -99,6 +99,36 @@ function sandyBumsPage(){
     `<section class="section house-club-history"><a href="/teams?division=house" data-link>← All house teams</a><div class="house-club-toolbar"><label for="house-club-month">Month (Central time)</label><select id="house-club-month"><option value="all">All recorded games</option></select><span id="house-club-sync" aria-live="polite">Loading club history…</span></div><div id="house-club-content" aria-live="polite"></div></section>`;
 }
 
+const sandyBumsColumns=[['latest_name','Player'],['appearances','Apps'],['goals','Goals'],['assists','Assists'],['average_rating','Avg rating']];
+const sandyBumsSort={key:'appearances',direction:'desc'};
+const sandyBumsNameOrder=new Intl.Collator(undefined,{numeric:true,sensitivity:'base'});
+
+function sortedSandyBumsPlayers(players){
+  const {key,direction}=sandyBumsSort;
+  return [...players].sort((left,right)=>{
+    if(key==='average_rating'&&(left.average_rating===null||right.average_rating===null)){
+      if(left.average_rating===null&&right.average_rating!==null)return 1;
+      if(right.average_rating===null&&left.average_rating!==null)return -1;
+    }
+    const comparison=key==='latest_name'
+      ? sandyBumsNameOrder.compare(left.latest_name,right.latest_name)
+      : Number(left[key])-Number(right[key]);
+    return (direction==='asc'?comparison:-comparison)||sandyBumsNameOrder.compare(left.latest_name,right.latest_name);
+  });
+}
+
+function sandyBumsPlayerRows(players){
+  return sortedSandyBumsPlayers(players).map(player=>`<tr><th scope="row">${escapeHtml(player.latest_name)}</th><td>${Number(player.appearances)||0}</td><td>${Number(player.goals)||0}</td><td>${Number(player.assists)||0}</td><td>${player.average_rating===null?'—':Number(player.average_rating).toFixed(2)}</td></tr>`).join('');
+}
+
+function sandyBumsPlayerHead(){
+  return sandyBumsColumns.map(([key,label])=>{
+    const active=sandyBumsSort.key===key;
+    const next=active?(sandyBumsSort.direction==='desc'?'asc':'desc'):(key==='latest_name'?'asc':'desc');
+    return `<th scope="col" aria-sort="${active?(sandyBumsSort.direction==='asc'?'ascending':'descending'):'none'}"><button type="button" data-house-sort="${key}" aria-label="Sort by ${label}, ${next==='asc'?'ascending':'descending'}">${label}<span aria-hidden="true">${active?(sandyBumsSort.direction==='asc'?'↑':'↓'):'↕'}</span></button></th>`;
+  }).join('');
+}
+
 async function hydrateSandyBums(month='all'){
   const container=document.querySelector('#house-club-content');
   if(!container)return;
@@ -114,9 +144,18 @@ async function hydrateSandyBums(month='all'){
     selector.value=month;
     selector.onchange=()=>hydrateSandyBums(selector.value);
     status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
-    const players=data.players.map(player=>`<tr><th scope="row">${escapeHtml(player.latest_name)}</th><td>${Number(player.appearances)||0}</td><td>${Number(player.goals)||0}</td><td>${Number(player.assists)||0}</td><td>${player.average_rating===null?'—':Number(player.average_rating).toFixed(2)}</td></tr>`).join('');
+    const players=data.players;
     const matches=data.matches.map(match=>`<li><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>FC Sandy Bums ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong></li>`).join('');
-    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players?`<div class="table-wrap"><table><thead><tr><th>Player</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Avg rating</th></tr></thead><tbody>${players}</tbody></table></div>`:'<p>No players recorded yet.</p>'}</section><section><h2>Results</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>`:'<p>No players recorded yet.</p>'}</section><section><h2>Results</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+    container.querySelector('thead')?.addEventListener('click',event=>{
+      const key=event.target.closest('[data-house-sort]')?.dataset.houseSort;
+      if(!key)return;
+      if(sandyBumsSort.key===key)sandyBumsSort.direction=sandyBumsSort.direction==='asc'?'desc':'asc';
+      else{sandyBumsSort.key=key;sandyBumsSort.direction=key==='latest_name'?'asc':'desc';}
+      container.querySelector('thead tr').innerHTML=sandyBumsPlayerHead();
+      container.querySelector('tbody').innerHTML=sandyBumsPlayerRows(players);
+      container.querySelector(`[data-house-sort="${key}"]`)?.focus();
+    });
   }catch{
     if(document.querySelector('#house-club-content')!==container)return;
     status.textContent='History temporarily unavailable';
