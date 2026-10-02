@@ -127,10 +127,8 @@ function leaguePage() {
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
       {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Match data will be connected later.',href:'/stats',label:'Explore the numbers'},
-      {mark:'S',title:'Schedules',copy:'Find league matchweeks, community events and published results.',href:'/schedules?season=2&type=6v6',label:'View fixtures'},
-      {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'},
-      {mark:'C',title:'League Cup',copy:'Follow official cup fixtures and each knockout path to the final.',href:'/schedules/league-cup',label:'Follow the cup'},
-      {mark:'BY',title:'BYOT Tournaments',copy:'See recurring bring-your-own-team events, brackets and completed champions.',href:'/schedules/byot-tournaments',label:'View tournaments'}
+      {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
+      {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
     ].map(hubCard).join('')}</div></section>`;
 }
 
