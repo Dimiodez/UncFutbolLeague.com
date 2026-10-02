@@ -976,6 +976,9 @@ async function hydrateAccount() {
 }
 
 function render() {
+  // Keep the viewport steady while replacing route content. The old DOM can
+  // temporarily shorten the page, so capture the position before changing it.
+  const scrollPosition = { left: window.scrollX, top: window.scrollY };
   let path = window.location.pathname.replace(/\/$/, '') || '/';
   if (path === '/schedules/aggregate-byot') {
     history.replaceState({}, '', `/wheel/aggregate-byot${window.location.search}${window.location.hash}`);
@@ -1028,7 +1031,7 @@ function render() {
   renderAggregateByotBoard();
   hydrateUsersDirectory();
   hydrateHomeCalendar();
-  window.scrollTo(0,0);
+  window.scrollTo({ ...scrollPosition, behavior: 'instant' });
 }
 
 function randomLocation() { return locations[Math.floor(Math.random() * locations.length)]; }
