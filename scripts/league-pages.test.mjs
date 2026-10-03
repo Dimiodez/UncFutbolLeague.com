@@ -10,6 +10,21 @@ vm.runInContext(read('pickems-app/season-data.js'),context);
 vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
 
+test('linked dual-division players show both team logos without changing their rosters',()=>{
+  const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
+  const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
+  for(const html of [six,ten]){
+    assert.match(html,/player-1790183123676-110-white-kit.png/);
+    assert.match(html,/DimiOdez/);
+    assert.match(html,/<figcaption>6v6<\/figcaption>/);
+    assert.match(html,/<figcaption>10v10<\/figcaption>/);
+    assert.equal((html.match(/<figure title=/g)||[]).length,2);
+  }
+  const archive=render("leaguePlayerProfile('1790040141524',new URLSearchParams('season=1&division=6v6'))");
+  assert.equal((archive.match(/<figure title=/g)||[]).length,1);
+  assert.doesNotMatch(archive,/<figcaption>10v10/);
+});
+
 test('portraits follow players across divisions, seasons and new membership IDs',()=>{
   assert.equal(render("playerPortraitSource({id:'future-10v10',name:'DMELLOW',portrait:false})"),'/assets/league/player-1790642010611-white-kit.png');
   assert.equal(render("playerPortraitSource({id:'future-3v3',name:'DimiOdez',portrait:'/old.jpg'})"),'/assets/league/player-1790183123676-110-white-kit.png');
@@ -22,7 +37,7 @@ test('portraits follow players across divisions, seasons and new membership IDs'
 test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   const html=render("featuredClubSection(new Date('2026-10-02T12:00:00Z'))");
   assert.match(html,/UFL Roma/);
-  assert.match(html,/>Dez</);
+  assert.match(html,/>DimiOdez</);
   assert.match(html,/>Gabe</);
   assert.match(html,/DimiOdez/);
   assert.match(html,/bRzGabriel98/);

@@ -149,7 +149,7 @@ const leagueProvisionalSeasons = {
         "name": "DimiOdez",
         "club": "ROM",
         "role": "captain",
-        "displayName": "Dez",
+        "displayName": "DimiOdez",
         "number": "",
         "portrait": true
       },
@@ -595,7 +595,7 @@ const leagueProvisionalSeasons = {
       },
       {
         "id": "1790179840025",
-        "name": "Dez",
+        "name": "DimiOdez",
         "club": "club-1790120967830",
         "number": "",
         "portrait": true

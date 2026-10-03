@@ -40,6 +40,10 @@ html[data-theme="dark"] .league-tile-footer strong { color:var(--sky); }
 .league-player-body h2 { font-size:1.05rem; margin:0; overflow-wrap:anywhere; }
 .league-player-body p { font-size:.7rem; text-transform:uppercase; color:var(--muted); letter-spacing:.04em; }
 .league-player-body>img { width:45px; height:45px; object-fit:contain; }
+.league-player-memberships { display:flex; justify-content:center; align-items:flex-start; gap:18px; }
+.league-player-memberships figure { margin:0; }
+.league-player-memberships img { width:45px; height:45px; object-fit:contain; }
+.league-player-memberships figcaption { font-size:.65rem; color:var(--muted); margin-top:5px; }
 .league-player-tile[hidden],#league-player-no-results[hidden] { display:none; }
 .league-back { display:inline-block; margin-bottom:1.5rem; font-weight:800; }
 .league-club-profile { display:grid; grid-template-columns:1.2fr 1fr; background:var(--white); border:1px solid var(--line); border-radius:24px; overflow:hidden; }

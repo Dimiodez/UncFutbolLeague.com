@@ -71,10 +71,23 @@ function leagueClubsPage(params) {
   const keys=Object.keys(context.season?.teams||{}).sort((a,b)=>leagueTeam(a,context.season)[0].localeCompare(leagueTeam(b,context.season)[0]));
   return pageHero('UFL · League','The clubs','Different colours. Different identities. One league.')+`<section class="section league-explorer">${leagueViewNavigation('/clubs',context)}${context.provisional?'<p class="sync-note">Provisional club and player roster from our collaborator · official VA registration will be linked as clubs register.</p>':''}<div class="league-directory-head"><div><span class="section-kicker">Club directory</span><h2>Find your colours.</h2></div><span>${keys.length} clubs</span></div><div class="league-club-tiles">${keys.map(key=>leagueClubCard(key,context)).join('')}</div>${keys.length?'':emptyState('The next lineup is on its way','Clubs will appear here when the selected season’s team list is available.')}</section>`;
 }
+function playerLeagueMemberships(player,context){
+  if(context.archive)return [{division:context.division,...leagueClubVisual(player.club,context.season)}];
+  const identity=playerIdentityKey(player);
+  return ['6v6','10v10'].flatMap(division=>{
+    const other=leagueViewContext(new URLSearchParams({season:context.selected.id,division}));
+    const entries=other.players.filter(candidate=>playerIdentityKey(candidate)===identity);
+    // Do not merge ambiguous duplicate names into another person's team.
+    const membership=division===context.division?player:entries.length===1?entries[0]:null;
+    return membership?[{division,...leagueClubVisual(membership.club,other.season)}]:[];
+  });
+}
 function leaguePlayerCard(player,context) {
   player={...player,portrait:playerPortraitSource(player)};
   const club=leagueClubVisual(player.club,context.season);
-  return `<a class="league-player-tile" data-player-card data-search="${escapeHtml((player.name+' '+club.name).toLowerCase())}" href="${leagueViewLink(`/players/${player.id}`,context)}" data-link><div class="league-player-art">${player.portrait?`<img src="${escapeHtml(typeof player.portrait==='string'?player.portrait:`/assets/league/player-${player.id}.jpg`)}" alt="${escapeHtml(player.name)}" loading="lazy">`:`<span class="league-shirt-number">${player.number?'#'+player.number:'UFL'}</span>`}<span class="league-player-season">S${context.selected.id} · ${context.division}</span></div><div class="league-player-body"><h2>${escapeHtml(player.name)}</h2><p>${escapeHtml(club.name)}</p><img src="${escapeHtml(club.logo)}" alt="${escapeHtml(club.name)} crest" loading="lazy"></div></a>`;
+  const memberships=playerLeagueMemberships(player,context);
+  const logos=memberships.map(team=>`<figure title="${escapeHtml(`${team.division} · ${team.name}`)}"><img src="${escapeHtml(team.logo)}" alt="${escapeHtml(`${team.name} · ${team.division}`)}" loading="lazy">${memberships.length>1?`<figcaption>${team.division}</figcaption>`:''}</figure>`).join('');
+  return `<a class="league-player-tile" data-player-card data-search="${escapeHtml((player.name+' '+memberships.map(team=>team.name).join(' ')).toLowerCase())}" href="${leagueViewLink(`/players/${player.id}`,context)}" data-link><div class="league-player-art">${player.portrait?`<img src="${escapeHtml(typeof player.portrait==='string'?player.portrait:`/assets/league/player-${player.id}.jpg`)}" alt="${escapeHtml(player.name)}" loading="lazy">`:`<span class="league-shirt-number">${player.number?'#'+player.number:'UFL'}</span>`}<span class="league-player-season">S${context.selected.id} · ${context.division}</span></div><div class="league-player-body"><h2>${escapeHtml(player.name)}</h2><p>${escapeHtml(club.name)}</p><div class="league-player-memberships" aria-label="Team memberships">${logos}</div></div></a>`;
 }
 function leaguePlayersPage(params) {
   const context=leagueViewContext(params),club=params.get('club')||'';
