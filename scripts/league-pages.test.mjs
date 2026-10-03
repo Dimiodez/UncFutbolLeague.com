@@ -112,3 +112,12 @@ test('every local reference image exists',()=>{
   const html=render("['season=1','season=2&division=6v6','season=2&division=10v10'].map(q=>leagueClubsPage(new URLSearchParams(q))+leaguePlayersPage(new URLSearchParams(q))).join('')");
   for(const match of html.matchAll(/src="(\/assets\/league\/[^" ]+)"/g)) assert.ok(fs.existsSync(new URL(match[1].slice(1),root)),match[1]);
 });
+
+test('managed roster releases update club pages and free-agent profiles without altering the archive',()=>{
+  render("globalThis.leagueManagedRosterState={players:{'6v6':[{id:'1790183123676-110',identity:'1790183123676-110',name:'DimiOdez',club:null}],'10v10':[{id:'1790179840025',identity:'1790183123676-110',name:'DimiOdez',club:'ROM'}]}};");
+  try{
+    const html=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");assert.match(html,/Free agent/);assert.doesNotMatch(html,/\/clubs\/null/);assert.match(html,/club=free-agent/);
+    assert.equal(render("leagueViewContext(new URLSearchParams('season=1')).players.length"),26);
+    assert.equal(render("leagueViewContext(new URLSearchParams('season=2')).players.filter(p=>p.club==='ROM').length"),0);
+  }finally{render('delete globalThis.leagueManagedRosterState');}
+});

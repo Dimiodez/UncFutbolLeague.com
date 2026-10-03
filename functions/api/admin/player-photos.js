@@ -1,15 +1,15 @@
 import {json} from '../../_lib/auth.js';
-import {staffGuard,playerFor,photoForm,validatePhoto} from '../../_lib/player-photos.js';
+import {staffGuard,resolvePhotoPlayer,photoForm,validatePhoto} from '../../_lib/player-photos.js';
 export async function onRequestGet({request,env}){
   const guard=await staffGuard(request,env);if(guard.response)return guard.response;
-  const player=playerFor(new URL(request.url).searchParams.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
+  const player=await resolvePhotoPlayer(env,new URL(request.url).searchParams.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
   const rows=await env.DB.prepare('SELECT id,player_id,status,created_at,reviewed_at,original_deleted_at FROM player_photo_submissions WHERE identity_id=? ORDER BY created_at DESC,id DESC LIMIT 50').bind(player.identity).all();
   return json({photos:rows.results.map(row=>({...row,originalUrl:row.original_deleted_at?null:`/api/admin/player-photos/${row.id}/image`}))});
 }
 export async function onRequestPost({request,env}){
   const guard=await staffGuard(request,env,true);if(guard.response)return guard.response;
   let form,photo;try{form=await photoForm(request);}catch(error){return json({error:error.message},400);}
-  const player=playerFor(form.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
+  const player=await resolvePhotoPlayer(env,form.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
   if(form.get('action')==='cleanup'){
     // Only reviewed originals for this exact player identity are eligible. Pending uploads stay private.
     const originals=await env.DB.prepare("SELECT id,original_key FROM player_photo_submissions WHERE identity_id=? AND status IN ('approved','rejected') AND original_deleted_at IS NULL").bind(player.identity).all();
