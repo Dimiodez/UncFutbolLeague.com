@@ -15,7 +15,14 @@ test('private bridge rejects missing scope, writes and unknown clubs',async()=>{
   assert.equal((await handleBridge(request('/admin/linked-clubs/1/matches'),env(null),()=>{throw new Error('Should not fetch');})).status,404);
 });
 test('EA normalization keeps assists separate from shots and filters unrelated matches',()=>{
-  const matches=normalizeMatches(raw,'leagueMatch','1197975');assert.equal(matches[0].playedAt,1790000000000);assert.deepEqual(matches[0].clubs.find(c=>c.id==='1197975').players[0].stats,['MID','8.4','2','3']);assert.equal(normalizeMatches(raw,'leagueMatch','different').length,0);
+  const matches=normalizeMatches(raw,'leagueMatch','1197975');assert.equal(matches[0].playedAt,1790000000000);assert.deepEqual(matches[0].clubs.find(c=>c.id==='1197975').players[0].stats,['MID','8.4','2','9','3','—','—','—','—','—','—','—','—','—']);assert.equal(normalizeMatches(raw,'leagueMatch','different').length,0);
+});
+test('match-sheet contract includes pass/tackle percentages, interceptions, saves and MotM',()=>{
+  const fixture=structuredClone(raw);Object.assign(fixture[0].players[1197975].p1,{passesCompleted:24,passes:30,tacklesWon:2,tackles:4,interceptions:5,saves:0,manOfTheMatch:1});
+  const p=normalizeMatches(fixture,'leagueMatch','1197975')[0].clubs.find(c=>c.id==='1197975').players[0];
+  assert.equal(p.stats.length,14);assert.equal(p.stats[9],'24 / 30 (80%)');assert.equal(p.stats[10],'2 / 4 (50%)');assert.equal(p.stats[11],'5');assert.equal(p.stats[13],'0');assert.equal(p.motm,true);
+  Object.assign(fixture[0].players[1197975].p1,{passesCompleted:undefined,passesmade:0,passes:undefined,passattempts:0,tacklesWon:undefined,tacklesmade:3,tackles:undefined,tackleattempts:6});
+  const alias=normalizeMatches(fixture,'leagueMatch','1197975')[0].clubs.find(c=>c.id==='1197975').players[0];assert.equal(alias.stats[9],'0 / 0 (0%)');assert.equal(alias.stats[10],'3 / 6 (50%)');
 });
 test('bridge deduplicates match types and marks partial feed failures',async()=>{
   const r=await handleBridge(request('/admin/linked-clubs/25/matches'),env(),async url=>url.searchParams.get('type')==='playoffMatch'?new Response(null,{status:503}):Response.json(raw));const body=await r.json();assert.equal(r.status,200);assert.equal(body.matches.length,1);assert.equal(body.partial,true);

@@ -5,6 +5,8 @@ const number=value=>{const n=Number(value);return Number.isFinite(n)?n:0;};
 const count=value=>Math.max(0,Math.trunc(number(value)));
 const record=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:null;
 const text=value=>typeof value==='string'||typeof value==='number'?String(value):'';
+const stat=value=>value===undefined||value===null||value===''||!Number.isFinite(Number(value))?'—':String(count(value));
+const ratio=(made,attempts)=>{const m=stat(made),a=stat(attempts);return m==='—'||a==='—'?'—':`${m} / ${a} (${Number(a)?Math.round(Number(m)/Number(a)*100):0}%)`;};
 const clubView=row=>({id:String(row.id),name:row.name,league:row.league,eaClubId:row.ea_club_id,eaClubName:row.ea_club_name||row.name,platform:row.ea_platform||'common-gen5'});
 const query=`SELECT t.id,t.name,t.ea_club_id,t.ea_club_name,t.ea_platform,l.name AS league
  FROM teams t JOIN leagues l ON l.id=t.league_id
@@ -31,7 +33,8 @@ export function normalizeMatches(raw,type,wanted) {
         }
       }
       const position=value=>{const p=text(value).toLowerCase();return p.includes('goal')?'GK':p.includes('def')?'DEF':p.includes('mid')?'MID':p.includes('for')||p.includes('att')?'FWD':text(value)||'—';};
-      return {id:clubId,name:text(club.clubName??club.name??record(club.details)?.name)||'Unknown club',score:count(club.score??club.goals),players:rows.map(([key,p])=>({id:text(p.playerId)||key,name:text(p.name??p.playername??p.vProName)||'Unknown player',human:true,motm:count(p.manOfTheMatch)===1,stats:[position(p.position??p.pos??p.vProPosition),number(p.rating)?number(p.rating).toFixed(1):'—',String(count(p.goals)),String(count(p.assists))]}))};
+      // Same 14-slot contract as UFB; its match sheet displays slots 0–4, 9–11 and 13.
+      return {id:clubId,name:text(club.clubName??club.name??record(club.details)?.name)||'Unknown club',score:count(club.score??club.goals),players:rows.map(([key,p])=>({id:text(p.playerId)||key,name:text(p.name??p.playername??p.vProName)||'Unknown player',human:true,motm:count(p.manOfTheMatch)===1,stats:[position(p.position??p.pos??p.vProPosition),number(p.rating)?number(p.rating).toFixed(1):'—',stat(p.goals),stat(p.shots),stat(p.assists),'—','—','—','—',ratio(p.passesCompleted??p.passesmade,p.passes??p.passattempts),ratio(p.tacklesWon??p.tacklesmade,p.tackles??p.tackleattempts),stat(p.interceptions),'—',stat(p.saves)]}))};
     });
     return {id,playedAt:timestamp<1e12?timestamp*1000:timestamp,type,clubs:normalized};
   }).filter(match=>match.clubs.some(club=>club.id===wanted));
