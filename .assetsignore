@@ -1,5 +1,6 @@
 bot-match-bridge/
 scripts/
+migrations/
 *.md
 preview-*.png
 wrangler.toml

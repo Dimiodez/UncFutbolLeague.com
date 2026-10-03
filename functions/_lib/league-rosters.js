@@ -16,6 +16,7 @@ export function discordName(value){
 export async function rosterSnapshot(env){
  const result=await env.DB.prepare(`SELECT p.id AS identity,p.discord_name,m.division,m.profile_id,m.team_key,m.metadata_json
  FROM league_players p LEFT JOIN league_roster_memberships m ON m.player_id=p.id AND m.season='2'
+ WHERE NOT EXISTS(SELECT 1 FROM league_player_aliases a WHERE a.alias_id=p.id)
  ORDER BY p.discord_name COLLATE NOCASE,p.id`).all();
  const people=new Map();
  for(const row of result.results){if(!people.has(row.identity))people.set(row.identity,{id:row.identity,name:row.discord_name,memberships:{}});

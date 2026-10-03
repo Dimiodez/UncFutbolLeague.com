@@ -4,10 +4,11 @@ import {PLAYER_PHOTO_CATALOG} from './player-photo-catalog.js';
 export const MAX_PHOTO_BYTES=5*1024*1024;
 export const playerFor=id=>Object.hasOwn(PLAYER_PHOTO_CATALOG,String(id))?PLAYER_PHOTO_CATALOG[String(id)]:null;
 export async function resolvePhotoPlayer(env,id){
- const existing=playerFor(id);if(existing)return existing;
+ const existing=playerFor(id);
+ if(existing){const alias=await env.DB.prepare('SELECT canonical_id FROM league_player_aliases WHERE alias_id=?').bind(existing.identity).first();return {...existing,identity:alias?.canonical_id||existing.identity};}
  if(typeof id!=='string'||!/^player-[a-f0-9-]{36}$/.test(id))return null;
- const player=await env.DB.prepare('SELECT id,discord_name FROM league_players WHERE id=?').bind(id).first();
- return player?{id:player.id,name:player.discord_name,identity:player.id}:null;
+ const player=await env.DB.prepare('SELECT p.id,p.discord_name,a.canonical_id FROM league_players p LEFT JOIN league_player_aliases a ON a.alias_id=p.id WHERE p.id=?').bind(id).first();
+ return player?{id:player.id,name:player.discord_name,identity:player.canonical_id||player.id}:null;
 }
 export async function staffGuard(request,env,write=false){
   const actor=await getSession(request,env);
