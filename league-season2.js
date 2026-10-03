@@ -151,7 +151,7 @@ const leagueProvisionalSeasons = {
         "role": "captain",
         "displayName": "Dez",
         "number": "",
-        "portrait": "/assets/league/player-1790183123676-110-white-kit.png"
+        "portrait": true
       },
       {
         "id": "1790183044696",
@@ -172,7 +172,7 @@ const leagueProvisionalSeasons = {
         "name": "DMellow",
         "club": "club-1790623010463",
         "number": "",
-        "portrait": "/assets/league/player-1790642010611-white-kit.png"
+        "portrait": true
       },
       {
         "id": "1790190806748",

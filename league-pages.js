@@ -43,7 +43,8 @@ function leagueViewContext(params) {
   const provisional=selected.id==='2'?leagueProvisionalSeasons[division]:null;
   const archive=selected.id==='1'&&division==='6v6';
   const season=provisional?{...official,teams:{...official?.teams,...Object.fromEntries(provisional.clubs.map(c=>[c.key,[c.name,c.logo]]))},provisionalClubs:provisional.clubs}:official;
-  return {selected,division,season,archive,provisional,players:archive?leaguePlayerReference:provisional?.players||[]};
+  const players=(archive?leaguePlayerReference:provisional?.players||[]).map(player=>({...player,portrait:playerPortraitSource(player)}));
+  return {selected,division,season,archive,provisional,players};
 }
 function leagueViewLink(path, context, extra='') {
   return `${path}?season=${context.selected.id}&division=${context.division}${extra}`;
@@ -71,6 +72,7 @@ function leagueClubsPage(params) {
   return pageHero('UFL · League','The clubs','Different colours. Different identities. One league.')+`<section class="section league-explorer">${leagueViewNavigation('/clubs',context)}${context.provisional?'<p class="sync-note">Provisional club and player roster from our collaborator · official VA registration will be linked as clubs register.</p>':''}<div class="league-directory-head"><div><span class="section-kicker">Club directory</span><h2>Find your colours.</h2></div><span>${keys.length} clubs</span></div><div class="league-club-tiles">${keys.map(key=>leagueClubCard(key,context)).join('')}</div>${keys.length?'':emptyState('The next lineup is on its way','Clubs will appear here when the selected season’s team list is available.')}</section>`;
 }
 function leaguePlayerCard(player,context) {
+  player={...player,portrait:playerPortraitSource(player)};
   const club=leagueClubVisual(player.club,context.season);
   return `<a class="league-player-tile" data-player-card data-search="${escapeHtml((player.name+' '+club.name).toLowerCase())}" href="${leagueViewLink(`/players/${player.id}`,context)}" data-link><div class="league-player-art">${player.portrait?`<img src="${escapeHtml(typeof player.portrait==='string'?player.portrait:`/assets/league/player-${player.id}.jpg`)}" alt="${escapeHtml(player.name)}" loading="lazy">`:`<span class="league-shirt-number">${player.number?'#'+player.number:'UFL'}</span>`}<span class="league-player-season">S${context.selected.id} · ${context.division}</span></div><div class="league-player-body"><h2>${escapeHtml(player.name)}</h2><p>${escapeHtml(club.name)}</p><img src="${escapeHtml(club.logo)}" alt="${escapeHtml(club.name)} crest" loading="lazy"></div></a>`;
 }

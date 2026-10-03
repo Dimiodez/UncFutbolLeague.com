@@ -7,8 +7,17 @@ const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 const app=read('app.js');
 const context=vm.createContext({window:{},URLSearchParams,console});
 vm.runInContext(read('pickems-app/season-data.js'),context);
-vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('league-pages.js')+read('featured-club.js'),context);
+vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
+
+test('portraits follow players across divisions, seasons and new membership IDs',()=>{
+  assert.equal(render("playerPortraitSource({id:'future-10v10',name:'DMELLOW',portrait:false})"),'/assets/league/player-1790642010611-white-kit.png');
+  assert.equal(render("playerPortraitSource({id:'future-3v3',name:'DimiOdez',portrait:'/old.jpg'})"),'/assets/league/player-1790183123676-110-white-kit.png');
+  assert.equal(render("playerPortraitSource({id:'1790040141524',name:'DimiOdez',portrait:true})"),'/assets/league/player-1790183123676-110-white-kit.png');
+  assert.equal(render("playerPortraitSource({id:'unrelated',name:'DMellowFan',portrait:false})"),null);
+  assert.match(render("leaguePlayerProfile('1790040141524',new URLSearchParams('season=1&division=6v6'))"),/player-1790183123676-110-white-kit.png/);
+  assert.match(render("leaguePlayerCard({id:'future-10v10',name:'DMellow',club:'ROM',portrait:false},leagueViewContext(new URLSearchParams('season=2&division=10v10')))"),/player-1790642010611-white-kit.png/);
+});
 
 test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   const html=render("featuredClubSection(new Date('2026-10-02T12:00:00Z'))");

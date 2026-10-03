@@ -1,5 +1,7 @@
 # League presentation preview — 2 October 2026
 
+Player portrait updates live in `player-portraits.js`, independent of roster membership. Update the shared character entry once; league profiles/cards and weekly spotlights resolve it across divisions and seasons. New membership IDs with the same confirmed username inherit the portrait. If a username changes, add its confirmed alias/ID to that entry; do not guess based on similar display names. Keep this script before `league-pages.js` in every website publish.
+
 Clone branch: `codex/ufl-navigation-remap`. Do not merge into production until approved.
 
 ## Routes
