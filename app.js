@@ -149,7 +149,7 @@ async function hydrateHouseClub(slug,month='all'){
   const status=document.querySelector('#house-club-sync');
   container.innerHTML='<p>Loading results and player stats…</p>';
   try{
-    const response=await fetch(`/api/house-clubs/${slug}?month=${encodeURIComponent(month)}`);
+    const response=await fetch(`/api/house-clubs/${slug}?month=${encodeURIComponent(month)}&details=2`);
     if(!response.ok)throw new Error('Club history unavailable');
     const data=await response.json();
     if(document.querySelector('#house-club-content')!==container||selector.value!==month)return;
@@ -158,8 +158,24 @@ async function hydrateHouseClub(slug,month='all'){
     selector.onchange=()=>hydrateHouseClub(slug,selector.value);
     status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
     const players=data.players;
-    const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><details class="house-match-details"><summary><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>${escapeHtml(clubName)} ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong><span class="house-match-hint">View full match stats</span></summary>${houseMatchDetails(match)}</details></li>`).join('');
+    const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><details class="house-match-details" data-match-id="${escapeHtml(match.match_id)}"><summary><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>${escapeHtml(clubName)} ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong><span class="house-match-hint">View full match stats</span></summary><div class="house-match-report">${match.details?houseMatchDetails(match):'<p>Open this result to load its saved match stats.</p>'}</div></details></li>`).join('');
     container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap house-club-player-scroll" role="region" aria-label="${escapeHtml(clubName)} player statistics" tabindex="0"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>${players.length>20?'<p class="house-club-scroll-hint">Scroll within the player table to see more.</p>':''}`:'<p>No players recorded yet.</p>'}</section><section><h2>Most recent 5 matches</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+    container.querySelectorAll('.house-match-details').forEach(card=>card.addEventListener('toggle',async()=>{
+      if(!card.open||card.dataset.loaded||card.dataset.loading)return;
+      const report=card.querySelector('.house-match-report');
+      card.dataset.loading='true';
+      try{
+        const response=await fetch(`/api/house-clubs/${slug}?match=${encodeURIComponent(card.dataset.matchId)}&details=2`);
+        if(!response.ok)throw new Error('Match unavailable');
+        const payload=await response.json();
+        const selected=payload.matches?.find(match=>String(match.match_id)===card.dataset.matchId);
+        if(!selected?.details)throw new Error('Match details unavailable');
+        report.innerHTML=houseMatchDetails(selected);
+        card.dataset.loaded='true';
+      }catch{
+        if(!report.querySelector('table'))report.innerHTML='<p>We could not load this match right now. Close and reopen it to retry.</p>';
+      }finally{delete card.dataset.loading;}
+    }));
     container.querySelector('thead')?.addEventListener('click',event=>{
       const key=event.target.closest('[data-house-sort]')?.dataset.houseSort;
       if(!key)return;
