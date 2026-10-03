@@ -1,6 +1,6 @@
 # Player photos: private upload, review and approval
 
-R2 enabled by the owner on 2026-10-03. Private Standard bucket `unc-ufl-player-photos` created and the new photo tables applied to the existing website database. Production deployment and authenticated staff acceptance must be verified separately.
+Published on 2026-10-03 at `https://767686b0.uncfutbolleague-com.pages.dev` and the live custom domain. R2 enabled by the owner; private Standard bucket `unc-ufl-player-photos` created, production binding connected, and the new photo tables applied to the existing website database. Public manifest returned 200; signed-out photo listing and original retrieval returned 403. R2 public dev URL is disabled. All 21 photo/directory tests and the functions build passed. Authenticated staff upload acceptance still needs a real signed-in session; the available browser was signed out. No real player photo was uploaded or replaced during verification.
 
 After the owner enables R2 in Cloudflare:
 
