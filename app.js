@@ -1151,6 +1151,7 @@ function render() {
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   bindLeagueExplorer();
+  if(typeof hydratePlayerPhotos==='function')hydratePlayerPhotos();
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();

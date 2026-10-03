@@ -16,7 +16,8 @@ const jsonError = (message, status) => new Response(JSON.stringify({ error: mess
 
 export async function onRequest(context) {
   const length = Number(context.request.headers.get('content-length') || 0);
-  if (length > 65536) return jsonError('Request body is too large.', 413);
+  const photoUpload=context.request.method==='POST'&&/^\/api\/admin\/player-photos(?:\/[a-zA-Z0-9-]+)?$/.test(new URL(context.request.url).pathname);
+  if (length > (photoUpload?5*1024*1024+16384:65536)) return jsonError('Request body is too large.', 413);
 
   let response;
   try {
