@@ -1587,7 +1587,7 @@ window.UFL_SEASONS = {
         "abbreviation": "TFC",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
-        "rosterSize": 6,
+        "rosterSize": 7,
         "stats": []
       },
       {
