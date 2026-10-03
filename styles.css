@@ -43,6 +43,12 @@ a { color: inherit; }
 .nav-hub-link strong{color:var(--red);font-size:1.52rem;line-height:.7;letter-spacing:-.01em;text-shadow:0 0 18px rgba(234,18,53,.22)}
 .nav-hub-link span{font-size:.96rem}
 .nav-hub.active .nav-hub-link span,.nav-hub-link:hover span{color:#fff}
+@media (min-width:1001px){
+  .nav-hub-link{padding:.65rem .1rem .65rem .95rem}
+  .nav-hub-link strong{font-size:clamp(1.8rem,2.15vw,2.1rem)}
+  .nav-hub-link span{font-size:clamp(1.16rem,1.35vw,1.3rem);letter-spacing:.04em}
+  .nav-hub .nav-group-caret{font-size:1.15rem;padding:.8rem .5rem!important}
+}
 .theme-switcher { display: flex; padding: .22rem; gap: .15rem; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; }
 .theme-switcher button { display: grid; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: white; cursor: pointer; }
 .theme-switcher button:hover, .theme-switcher button.active { background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(255,255,255,.25); }
