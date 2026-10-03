@@ -97,7 +97,7 @@ function houseTeamsContent() {
 const houseClubNames={'fc-sandy-bums':'FC Sandy Bums','fc-mountains':'FC Mountains'};
 function houseClubPage(clubName){
   return pageHero('House teams · FC27', clubName, 'Results and player statistics from games recorded by our FC27 tracker.') +
-    `<section class="section house-club-history"><a href="/teams?division=house" data-link>← All house teams</a><div class="house-club-toolbar"><label for="house-club-month">Month (Central time)</label><select id="house-club-month"><option value="all">All recorded games</option></select><span id="house-club-sync" aria-live="polite">Loading club history…</span></div><div id="house-club-content" aria-live="polite"></div></section>`;
+    `<section class="section house-club-history"><a href="/teams?division=house" data-link>← All house teams</a><div class="house-club-toolbar"><label for="house-club-month">Month (Central time)</label><select id="house-club-month"><option value="all">All recorded games</option></select><button type="button" class="button button-secondary" id="house-club-check">Check for new matches</button><span id="house-club-sync" aria-live="polite">Loading club history…</span></div><p id="house-club-check-result" class="house-club-note" role="status"></p><div id="house-club-content" aria-live="polite"></div></section>`;
 }
 
 const sandyBumsColumns=[['latest_name','Player'],['appearances','Apps'],['goals','Goals'],['assists','Assists'],['average_rating','Avg rating']];
@@ -140,16 +140,30 @@ function houseMatchDetails(match){
   }).join('')}<p class="house-club-note">Passes: completed / attempted. Tackles: won / attempted. A 3.0 match rating is excluded from monthly averages; other stats still count.</p>`;
 }
 
-async function hydrateHouseClub(slug,month='all'){
+async function hydrateHouseClub(slug,month='all',fresh=false){
   const clubName=houseClubNames[slug];
   if(!clubName)return;
   const container=document.querySelector('#house-club-content');
   if(!container)return;
   const selector=document.querySelector('#house-club-month');
   const status=document.querySelector('#house-club-sync');
+  const check=document.querySelector('#house-club-check');
+  check.onclick=async()=>{
+    const result=document.querySelector('#house-club-check-result');
+    check.disabled=true;check.textContent='Checking EA…';
+    result.textContent='Checking for new games. This may take a few seconds…';
+    try{
+      const response=await fetch(`/api/house-clubs/${slug}`,{method:'POST'});
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload.error||'The check could not be completed.');
+      await hydrateHouseClub(slug,selector.value,true);
+      result.textContent=payload.message;
+    }catch(error){result.textContent=error.message||'Could not check for new matches. Please try again shortly.';}
+    finally{check.disabled=false;check.textContent='Check for new matches';}
+  };
   container.innerHTML='<p>Loading results and player stats…</p>';
   try{
-    const response=await fetch(`/api/house-clubs/${slug}?month=${encodeURIComponent(month)}&details=2`);
+    const response=await fetch(`/api/house-clubs/${slug}?month=${encodeURIComponent(month)}&details=2${fresh?`&fresh=${Date.now()}`:''}`);
     if(!response.ok)throw new Error('Club history unavailable');
     const data=await response.json();
     if(document.querySelector('#house-club-content')!==container||selector.value!==month)return;
