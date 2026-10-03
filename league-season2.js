@@ -172,7 +172,7 @@ const leagueProvisionalSeasons = {
         "name": "DMellow",
         "club": "club-1790623010463",
         "number": "",
-        "portrait": true
+        "portrait": "/assets/league/player-1790642010611-white-kit.png"
       },
       {
         "id": "1790190806748",
