@@ -19,14 +19,14 @@ test('UFL Season 2 divisions map to their distinct Virtual Arena feeds', async (
   );
   assert.deepEqual(
     [ten.uflSeason, ten.division, ten.competitionId, ten.seasonId],
-    [2, '10v10', 2, 4]
+    [2, '10v10', 3, 5]
   );
   assert.match(six.source, /competitions\/1\/seasons\/2\/matches$/);
-  assert.match(ten.source, /competitions\/2\/seasons\/4\/matches$/);
-  assert.match(ten.standingsSource, /competitions\/2\/seasons\/4\/standings$/);
-  assert.match(ten.teamsSource, /competitions\/2\/seasons\/4\/teams$/);
-  assert.match(ten.statsSource, /competitions\/2\/seasons\/4\/stats$/);
-  assert.match(ten.seriesSource, /competition-series\/1\/seasons\/2$/);
+  assert.match(ten.source, /competitions\/3\/seasons\/5\/matches$/);
+  assert.match(ten.standingsSource, /competitions\/3\/seasons\/5\/standings$/);
+  assert.match(ten.teamsSource, /competitions\/3\/seasons\/5\/teams$/);
+  assert.match(ten.statsSource, /competitions\/3\/seasons\/5\/stats$/);
+  assert.match(ten.seriesSource, /competitions\/3\/seasons\/5$/);
 });
 
 test('registration snapshots stay usable before schedules are published', async () => {

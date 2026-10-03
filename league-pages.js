@@ -42,7 +42,21 @@ function leagueViewContext(params) {
   const official=leagueSeasonFor(division,selected.id);
   const provisional=selected.id==='2'?leagueProvisionalSeasons[division]:null;
   const archive=selected.id==='1'&&division==='6v6';
-  const season=provisional?{...official,teams:{...official?.teams,...Object.fromEntries(provisional.clubs.map(c=>[c.key,[c.name,c.logo]]))},provisionalClubs:provisional.clubs}:official;
+  // Provider abbreviations can change. Preserve collaborator profile/roster keys
+  // when an official entry has the same key or a unique normalized club name.
+  const clubIdentity=name=>String(name||'').replace(/^UFL\s+/i,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const aliases=Object.fromEntries(Object.entries(official?.teams||{}).map(([key,team])=>{
+    const exact=provisional?.clubs.find(c=>c.key===key);
+    const matches=provisional?.clubs.filter(c=>clubIdentity(c.name)===clubIdentity(team[0]))||[];
+    return [key,exact?.key||(matches.length===1?matches[0].key:key)];
+  }));
+  const mappedKey=key=>aliases[key]||key;
+  const season=provisional?{...official,
+    teams:{...Object.fromEntries(Object.entries(official?.teams||{}).map(([key,team])=>[mappedKey(key),team])),...Object.fromEntries(provisional.clubs.map(c=>[c.key,[c.name,c.logo]]))},
+    teamDetails:official?.teamDetails?.map(t=>({...t,key:mappedKey(t.key)})),
+    standings:official?.standings?.map(([key,...stats])=>[mappedKey(key),...stats]),
+    weeks:official?.weeks?.map(week=>({...week,matches:week.matches.map(([id,home,away,...scores])=>[id,mappedKey(home),mappedKey(away),...scores])})),
+    provisionalClubs:provisional.clubs}:official;
   const players=(archive?leaguePlayerReference:provisional?.players||[]).map(player=>({...player,portrait:playerPortraitSource(player)}));
   return {selected,division,season,archive,provisional,players};
 }

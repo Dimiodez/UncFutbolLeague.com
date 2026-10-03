@@ -90,6 +90,15 @@ test('player filters and club profile use only reference roster',()=>{
   const profile=render("leagueClubProfile('HAM',new URLSearchParams('season=1'))");
   assert.equal((profile.match(/class="league-player-tile"/g)||[]).length,6);
 });
+test('new VA abbreviations retain stable provisional club keys without duplicate teams',()=>{
+  const view=render("leagueViewContext(new URLSearchParams('season=2&division=10v10'))");
+  assert.equal(Object.keys(view.season.teams).length,7);
+  const milan=view.provisional.clubs.find(c=>c.name==='UFL Milan');
+  const tabasco=view.provisional.clubs.find(c=>c.name==='UFL Tabasco Kids');
+  assert.ok(view.season.teamDetails.some(t=>t.key===milan.key));
+  assert.ok(view.season.teamDetails.some(t=>t.key===tabasco.key));
+  assert.ok(!view.season.teams.ACM);assert.ok(!view.season.teams.TK);
+});
 test('standings preserve final totals, and stats filters show no invented results',()=>{
   const standings=render("leagueStandingsPage(new URLSearchParams('season=1'))");
   assert.match(standings,/43 points · 14 wins · 18 matches/);

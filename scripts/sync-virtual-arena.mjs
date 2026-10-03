@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 const BASE = 'https://ufl.virtualarena.app';
 const seasons = [
   { key: 's2-6v6', competitionId: 1, seasonId: 2, division: '6v6', uflSeason: 2 },
-  { key: 's2-10v10', competitionId: 2, seasonId: 4, division: '10v10', uflSeason: 2 }
+  { key: 's2-10v10', competitionId: 3, seasonId: 5, division: '10v10', uflSeason: 2 }
 ];
 
 const decodeHtml = value => value
@@ -132,7 +132,7 @@ async function buildSeason(config) {
     status: weeks.length ? 'active' : 'registration',
     competitionId: config.competitionId,
     seasonId: config.seasonId,
-    seriesSource: `${BASE}/competition-series/1/seasons/${config.uflSeason}`,
+    seriesSource: config.division === '10v10' ? seasonBase : `${BASE}/competition-series/1/seasons/${config.uflSeason}`,
     source: `${seasonBase}/matches`,
     standingsSource: `${seasonBase}/standings`,
     teamsSource: `${seasonBase}/teams`,

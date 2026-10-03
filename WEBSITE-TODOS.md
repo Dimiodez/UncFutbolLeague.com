@@ -3,13 +3,13 @@
 ## Preserve production data on every layout release
 
 - Keep `.github/workflows/sync-virtual-arena.yml` and `scripts/sync-virtual-arena.mjs` active. Scheduled sync runs four times daily; these are published snapshots, not an in-match live feed.
-- Preserve official VA links and mappings: UFL Season 2 6v6 uses competition 1 / VA season 2; 10v10 uses competition 2 / VA season 4. Both are UFL Season 2.
+- Preserve official VA links and mappings: UFL Season 2 6v6 uses competition 1 / VA season 2; 10v10 uses competition 3 / VA season 5. Both are UFL Season 2.
 - Before publishing, merge the latest master snapshots, retain the Season 1 archive, and verify results, standings, fixtures and Pick'ems against the official feeds. Do not overwrite newer VA data with clone snapshots.
 - Preserve production authentication, database bindings, saved predictions, FUNC creations and arcade records. Do not migrate or clear user data for a visual release.
 
 ## Next features
 
-- URGENT: On release day, VA competition 2 / season 4 matches, standings and stats return HTTP 404. Confirm the official 10v10 season URLs with the league/VA administrator. Do not guess a replacement season. Last good tens data is retained while sixes can refresh independently; GitHub sync emits a warning for unavailable feeds.
+- October 3, 2026: owner supplied the replacement 10v10 feed, competition 3 / season 5. Keep the UFL Season 2 identity and existing saved picks; external provider IDs are not UFL season numbers.
 
 - Add secure player membership management: stable player identities, season/division assignments, reassignment and an unassigned free-agent pool. Removing a player from a club must not delete the player.
 - Extend directory search/filtering to club and unassigned players. Define which users can request changes and which captains/admins approve them; enforce permissions on the server.
@@ -29,7 +29,7 @@
 - Discord sign-in identifies the website member; EA/platform handles and club links are separate records. Do not claim that a supplied handle verifies EA account ownership.
 - Use stable UFL season/competition IDs and shareable routes independent of upstream VA IDs. External provider mappings may change without resetting rosters, registration, standings archives or saved picks.
 - Concurrent leagues should operate independently. One unavailable external feed must not stop another competition from refreshing. Retain last-good data, display freshness, and surface actionable admin sync errors.
-- VA replacement is a staged future build, not included in the published layout. Current 10v10 URLs changed again according to the owner; await the replacement links before changing mappings.
+- VA replacement is a staged future build, not included in the published layout. Keep provider mappings separate from stable UFL identities so upstream URL changes do not reset registrations or league history.
 
 ## Release record
 

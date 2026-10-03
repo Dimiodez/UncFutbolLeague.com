@@ -17,7 +17,7 @@ The `_redirects` file provides single-page route fallback on Cloudflare Pages. P
 UFL Season 2 uses two Virtual Arena competition feeds even though Virtual Arena numbers them differently. The public website intentionally presents both as UFL Season 2:
 
 - 6v6: competition `1`, Virtual Arena season ID `2`
-- 10v10: competition `2`, Virtual Arena season ID `4`
+- 10v10: competition `3`, Virtual Arena season ID `5` (updated October 3, 2026)
 
 Season 1 6v6 is preserved as a read-only Pick'ems archive. Season 2 team lists, standings, fixtures, results, statistics, and Pick'ems data sync from the two current feeds.
 
@@ -29,7 +29,7 @@ The public Users directory lists active members by Discord display nickname and 
 
 `https://ufl.virtualarena.app/competitions/1/seasons/2/matches`
 
-`https://ufl.virtualarena.app/competitions/2/seasons/4/matches`
+`https://ufl.virtualarena.app/competitions/3/seasons/5/matches`
 
 Run `node scripts/sync-virtual-arena.mjs` to refresh both current divisions while retaining the committed Season 1 archive. The bot-compatible JSON feeds are `pickems-app/season-data-6v6-s2.json` and `pickems-app/season-data-10v10-s2.json`. The GitHub Actions workflow checks both current Virtual Arena seasons four times daily and commits only when official data changes. Each Discord server links its own league to the matching public JSON feed with `/setup leaguesource`.
 
