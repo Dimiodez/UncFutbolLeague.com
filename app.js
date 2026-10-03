@@ -130,6 +130,16 @@ function sandyBumsPlayerHead(){
   }).join('');
 }
 
+function houseMatchDetails(match){
+  if(!match.details)return '<p>Detailed stats have not been archived for this game yet.</p>';
+  const columns=[[0,'Position'],[1,'Rating'],[2,'Goals'],[3,'Shots'],[4,'Assists'],[9,'Passes'],[10,'Tackles'],[11,'Interceptions'],[13,'Saves']];
+  return `${match.details.partial?'<p>Only the original saved stats are available for this older game.</p>':''}${match.details.clubs.map(club=>{
+    const players=club.players||[];
+    const available=columns.filter(([index])=>players.some(player=>player.stats?.[index]!=null&&player.stats[index]!=='—'));
+    return `<section class="house-match-sheet"><h3>${escapeHtml(club.name)}</h3>${players.length?`<p>${players.length} human players · ★ EA Man of the Match</p><div class="table-wrap" role="region" tabindex="0" aria-label="${escapeHtml(club.name)} match stats"><table><thead><tr><th scope="col">Player</th>${available.map(([,label])=>`<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${players.map(player=>`<tr><th scope="row">${player.motm?'★ ':''}${escapeHtml(player.name)}</th>${available.map(([index])=>`<td>${escapeHtml(player.stats?.[index]??'—')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:'<p>No human player stats were returned for this team.</p>'}</section>`;
+  }).join('')}<p class="house-club-note">Passes: completed / attempted. Tackles: won / attempted. A 3.0 match rating is excluded from monthly averages; other stats still count.</p>`;
+}
+
 async function hydrateHouseClub(slug,month='all'){
   const clubName=houseClubNames[slug];
   if(!clubName)return;
@@ -148,7 +158,7 @@ async function hydrateHouseClub(slug,month='all'){
     selector.onchange=()=>hydrateHouseClub(slug,selector.value);
     status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
     const players=data.players;
-    const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>${escapeHtml(clubName)} ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong></li>`).join('');
+    const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><details class="house-match-details"><summary><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>${escapeHtml(clubName)} ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong><span class="house-match-hint">View full match stats</span></summary>${houseMatchDetails(match)}</details></li>`).join('');
     container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap house-club-player-scroll" role="region" aria-label="${escapeHtml(clubName)} player statistics" tabindex="0"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>${players.length>20?'<p class="house-club-scroll-hint">Scroll within the player table to see more.</p>':''}`:'<p>No players recorded yet.</p>'}</section><section><h2>Most recent 5 matches</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
     container.querySelector('thead')?.addEventListener('click',event=>{
       const key=event.target.closest('[data-house-sort]')?.dataset.houseSort;
