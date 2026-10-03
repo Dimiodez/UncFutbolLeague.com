@@ -28,7 +28,7 @@ async function hydratePlayerPhotos(){
   const reset=()=>{if(!image)return;state.scale=Math.min(512/image.width,640/image.height);scale.value=state.scale;state.x=(512-image.width*state.scale)/2;state.y=(640-image.height*state.scale)/2;draw();};
   async function load(){
     const data=await request(`/api/admin/player-photos?playerId=${encodeURIComponent(playerId)}`);if(!root.isConnected)return;
-    photos=data.photos;list.innerHTML=photos.length?`<h3>Saved uploads</h3>${photos.map(p=>`<button type="button" class="photo-review-item" data-photo-open="${escapeHtml(p.id)}">${escapeHtml(p.status)} · ${escapeHtml(new Date(p.created_at+'Z').toLocaleString())} · Review original</button>`).join('')}`:'<p>No photos submitted for this player yet.</p>';
+    photos=data.photos;list.innerHTML=photos.length?`<h3>Saved uploads</h3>${photos.map(p=>p.originalUrl?`<button type="button" class="photo-review-item" data-photo-open="${escapeHtml(p.id)}">${escapeHtml(p.status)} · ${escapeHtml(new Date(p.created_at+'Z').toLocaleString())} · Review original</button>`:`<p>${escapeHtml(p.status)} · Original removed</p>`).join('')}<button type="button" class="button button-secondary" data-photo-cleanup>Clean up reviewed originals & old portraits</button><p>Preserves the current approved portrait and pending uploads. Removed originals cannot be edited again unless reuploaded.</p>`:'<p>No photos submitted for this player yet.</p>';
   }
   root.querySelector('form').addEventListener('submit',async event=>{
     event.preventDefault();if(busy)return;
@@ -37,6 +37,11 @@ async function hydratePlayerPhotos(){
     try{await request('/api/admin/player-photos',{method:'POST',body:form});await load();message('Saved privately. You can close this page and format it later.');root.querySelector('form').reset();}catch(error){message(error.message,true);}finally{lock(false);}
   });
   list.addEventListener('click',async event=>{
+    if(event.target.closest('[data-photo-cleanup]')){
+      if(busy||!confirm('Permanently remove reviewed originals and older portraits for this player? The current approved portrait and pending uploads will stay.'))return;
+      lock(true);message('Removing old photos…');
+      try{const form=new FormData();form.set('action','cleanup');form.set('playerId',playerId);const result=await request('/api/admin/player-photos',{method:'POST',body:form});editor.hidden=true;image?.close();image=null;selected=null;await load();message(`Removed ${result.removed} files. Current portrait and pending uploads preserved.`);}catch(error){message(error.message,true);}finally{lock(false);}return;
+    }
     const button=event.target.closest('[data-photo-open]');if(!button||busy)return;
     const chosen=photos.find(p=>p.id===button.dataset.photoOpen);lock(true);message('Loading private original…');
     try{const response=await fetch(chosen.originalUrl,{credentials:'same-origin',cache:'no-store'});if(!response.ok)throw new Error('Unable to load private original.');

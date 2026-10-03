@@ -15,6 +15,7 @@ export async function onRequestPost({request,env,params}){
   const key=`portraits/${crypto.randomUUID()}.png`;
   await env.PLAYER_PHOTOS.put(key,photo.bytes,{httpMetadata:{contentType:'image/png'}});
   try{await env.DB.batch([
+    env.DB.prepare('INSERT OR IGNORE INTO player_photo_retired_assets(object_key,identity_id) SELECT portrait_key,identity_id FROM player_photo_publications WHERE identity_id=?').bind(row.identity_id),
     env.DB.prepare("UPDATE player_photo_submissions SET status='approved',portrait_key=?,reviewed_by=?,reviewed_at=CURRENT_TIMESTAMP WHERE id=?").bind(key,guard.actor.discord_id,row.id),
     env.DB.prepare('INSERT INTO player_photo_publications(identity_id,submission_id,portrait_key,approved_by) VALUES(?,?,?,?) ON CONFLICT(identity_id) DO UPDATE SET submission_id=excluded.submission_id,portrait_key=excluded.portrait_key,approved_by=excluded.approved_by,approved_at=CURRENT_TIMESTAMP').bind(row.identity_id,row.id,key,guard.actor.discord_id)
   ]);}catch(error){await env.PLAYER_PHOTOS.delete(key);throw error;}

@@ -2,7 +2,7 @@ import {getSession,json,sameOrigin} from './auth.js';
 import {consumeRateLimit} from './rate-limit.js';
 import {PLAYER_PHOTO_CATALOG} from './player-photo-catalog.js';
 export const MAX_PHOTO_BYTES=5*1024*1024;
-export const playerFor=id=>PLAYER_PHOTO_CATALOG[String(id)]||null;
+export const playerFor=id=>Object.hasOwn(PLAYER_PHOTO_CATALOG,String(id))?PLAYER_PHOTO_CATALOG[String(id)]:null;
 export async function staffGuard(request,env,write=false){
   const actor=await getSession(request,env);
   if(!actor||!['owner','admin'].includes(actor.role))return {response:json({error:'Administrator access required.'},403)};

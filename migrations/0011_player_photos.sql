@@ -4,7 +4,11 @@ CREATE TABLE IF NOT EXISTS player_photo_submissions (
  uploaded_by TEXT NOT NULL REFERENCES users(discord_id),
  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','approved','rejected')),
  portrait_key TEXT, reviewed_by TEXT REFERENCES users(discord_id),
- created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, reviewed_at TEXT
+ created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, reviewed_at TEXT, original_deleted_at TEXT
+);
+CREATE TABLE IF NOT EXISTS player_photo_retired_assets (
+ object_key TEXT PRIMARY KEY, identity_id TEXT NOT NULL,
+ retired_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS player_photos_identity ON player_photo_submissions(identity_id,created_at);
 CREATE TABLE IF NOT EXISTS player_photo_publications (

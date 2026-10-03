@@ -11,3 +11,7 @@ service = "unc-ufl-match-bridge"
 database_id = "2e4969ed-3a15-4e07-b0a2-516fb480b58f"
 binding = "DB"
 database_name = "DB"
+
+[[env.production.r2_buckets]]
+binding = "PLAYER_PHOTOS"
+bucket_name = "unc-ufl-player-photos"
