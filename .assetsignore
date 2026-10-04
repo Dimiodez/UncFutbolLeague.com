@@ -7,3 +7,4 @@ wrangler.toml
 dev-server.mjs
 functions/
 assets/league/player-*
+.wrangler/

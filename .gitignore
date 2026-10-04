@@ -3,3 +3,4 @@
 preview-*.png
 .dev.vars
 .dev.vars.*
+.wrangler/
