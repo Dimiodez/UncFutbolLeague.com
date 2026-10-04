@@ -3,6 +3,9 @@ import { consumeRateLimit } from '../../_lib/rate-limit.js';
 
 export async function onRequestGet({ request, env }) {
   const requestUrl = new URL(request.url);
+  if (env.SITE_ORIGIN && requestUrl.origin !== env.SITE_ORIGIN) {
+    return Response.redirect(`${env.SITE_ORIGIN}/api/auth/discord`,308);
+  }
   if (requestUrl.hostname === 'uncfutbolleague.com') {
     requestUrl.hostname = 'www.uncfutbolleague.com';
     return Response.redirect(requestUrl.toString(), 308);
@@ -13,7 +16,7 @@ export async function onRequestGet({ request, env }) {
   const rate = await consumeRateLimit(env, { scope: 'discord-login', subject, limit: 15 });
   if (!rate.success) return json({ error: 'Too many login attempts. Please wait a minute and try again.' }, 429, { 'retry-after': String(rate.retryAfter) });
   const state = randomToken();
-  const callback = 'https://www.uncfutbolleague.com/api/auth/callback';
+  const callback = `${env.SITE_ORIGIN || 'https://www.uncfutbolleague.com'}/api/auth/callback`;
   const authorize = new URL('https://discord.com/oauth2/authorize');
   authorize.search = new URLSearchParams({
     client_id: env.DISCORD_CLIENT_ID,

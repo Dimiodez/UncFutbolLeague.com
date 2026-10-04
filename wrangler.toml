@@ -3,6 +3,10 @@ name = "ufl-major-update-preview"
 pages_build_output_dir = "."
 compatibility_date = "2026-09-03"
 
+[env.production.vars]
+SITE_ORIGIN = "https://ufl-major-update-preview.pages.dev"
+EA_API_BASE_URL = "https://proclubs-api.onrender.com/api"
+
 [[env.production.d1_databases]]
 database_id = "6f0ee529-d74f-443f-9165-ffb746d210f1"
 binding = "DB"

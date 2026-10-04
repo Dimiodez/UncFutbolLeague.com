@@ -1,2 +1,13 @@
 body { padding-bottom: 64px; }
 .preview-notice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 10000; padding: 12px 20px; background: #f5c45e; color: #071b36; text-align: center; font: 600 14px/1.5 Inter, sans-serif; box-shadow: 0 -2px 12px #0004; }
+.preview-notice a { color: #071b36; text-decoration: underline; }
+.preview-ea { max-width: 1000px; margin: 40px auto; padding: 24px; }
+.preview-ea form { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; margin: 24px 0; }
+.preview-ea label { display: grid; gap: 8px; }
+.preview-ea input { padding: 12px; min-width: 240px; font: inherit; }
+.preview-ea button { padding: 12px 18px; font: inherit; cursor: pointer; }
+.preview-ea section { margin: 24px 0; }
+.preview-ea article { padding: 18px; margin: 14px 0; border: 1px solid #547095; border-radius: 10px; }
+.preview-ea table { width: 100%; border-collapse: collapse; }
+.preview-ea td,.preview-ea th { padding: 10px; text-align: left; }
+.preview-ea .sheet { overflow-x: auto; }

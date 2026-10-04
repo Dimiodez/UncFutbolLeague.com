@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import {onRequestGet as login} from '../functions/api/auth/discord.js';
+import {onRequestGet as callback} from '../functions/api/auth/callback.js';
+import {previewEaApi} from '../functions/_lib/preview-ea.js';
+const origin='https://ufl-major-update-preview.pages.dev';
+const sql=[];
+const DB={prepare(query){sql.push(query);return{bind(){return{run:async()=>({}),first:async()=>({request_count:1})}}}},batch:async()=>[]};
+const env={DB,SITE_ORIGIN:origin,DISCORD_CLIENT_ID:'test-client',DISCORD_CLIENT_SECRET:'test-only-secret',OWNER_DISCORD_ID:'test-owner'};
+const authorization=await login({request:new Request(origin+'/api/auth/discord'),env});
+assert.equal(authorization.status,302);
+assert.equal(new URL(authorization.headers.get('location')).searchParams.get('redirect_uri'),origin+'/api/auth/callback');
+assert.equal(new URL(authorization.headers.get('location')).searchParams.get('scope'),'identify');
+assert.match(authorization.headers.get('set-cookie'),/HttpOnly; Secure; SameSite=Lax/);
+assert.equal((await login({request:new Request('https://other-preview.test/api/auth/discord'),env})).status,308);
+assert.equal((await callback({request:new Request(origin+'/api/auth/callback?state=bad&code=x'),env})).status,400);
+let network=0;
+globalThis.fetch=async(url,options)=>{
+ network++;
+ if(String(url).endsWith('/oauth2/token')){assert.equal(options.body.get('redirect_uri'),origin+'/api/auth/callback');return Response.json({access_token:'test-access'});}
+ if(String(url).endsWith('/users/@me'))return Response.json({id:'test-owner',username:'Owner',global_name:'Owner'});
+ return Response.json([{clubId:'96510',name:'FC Mountains'}]);
+};
+const result=await callback({request:new Request(origin+'/api/auth/callback?state=good&code=test',{headers:{cookie:'__Host-ufl_oauth_state=good'}}),env});
+assert.equal(result.headers.get('location'),origin+'/account?login=success');
+assert(sql.some(query=>query.includes('INSERT INTO users')));
+assert(sql.some(query=>query.includes('INSERT INTO sessions')));
+assert.equal((await previewEaApi(new Request(origin+'/api/ea/search?name=x'),env)).status,400);
+const search=await previewEaApi(new Request(origin+'/api/ea/search?name=FC%20Mountains'),env);
+assert.equal((await search.json()).clubs[0].id,'96510');
+assert.equal((await previewEaApi(new Request(origin+'/api/ea/links',{method:'POST',body:'{}'}),env)).status,401);
+assert.equal(network,3);
+console.log('PASS: preview-specific OAuth, cookie/state protections, preview DB writes, verified EA search, link authentication.');

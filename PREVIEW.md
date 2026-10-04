@@ -5,10 +5,10 @@ Cloned from official website commit `33e2020` on 4 October 2026. This is not the
 
 ## Isolation
 
-- Dedicated empty D1 database `6f0ee529-d74f-443f-9165-ffb746d210f1`; no production database binding.
-- No bot service, Discord OAuth credentials, or production photo bucket binding.
-- Advanced-mode `_worker.js` owns all requests; copied `functions/` are not deployed or executed.
-- All non-GET/HEAD requests are rejected. Sign-in and backend workflows remain disabled until deliberately built against test resources.
+- Dedicated D1 database `6f0ee529-d74f-443f-9165-ffb746d210f1`; authentication, staff-title, rate-limit and preview EA-link tables only; no production database binding.
+- No bot service or production photo bucket binding. Discord credentials must be configured separately on this Pages project.
+- Advanced-mode `_worker.js` owns all requests; only explicitly imported authentication and EA modules run. Other copied `functions/` are not deployed as routes.
+- Discord registration/sign-in/sign-out and saving the signed-in user's preview EA club links are supported. Other mutations, including player photos, live bot commands and event publishing, remain blocked.
 - League pages initially use saved source snapshots. Live tracker checks, event publishing and account services are intentionally unavailable.
 - Player portraits are excluded from deployment. A GET-only allowlisted proxy displays public portraits from production, with no cookies forwarded. Player photo ownership stays on production.
 - The checkout retains existing tracked image files because it shares repository history; do not edit them on this branch. They are not a preview upload destination.
@@ -21,3 +21,14 @@ Preserve production `player-portraits.js`, `assets/league/player-*`, the photo b
 Do not copy preview `_worker.js`, preview banner, preview publishing script, preview database ID, or preview hosting settings into production.
 
 Public preview is shareable but not private/password protected; do not add secrets or private player information.
+
+## Discord OAuth activation
+
+Add this redirect URL to the chosen Discord application's OAuth2 Redirects without removing the existing live callback:
+`https://ufl-major-update-preview.pages.dev/api/auth/callback`
+
+In Cloudflare Pages → `ufl-major-update-preview` → Settings → Variables and Secrets, configure production-environment `DISCORD_CLIENT_ID`, encrypted `DISCORD_CLIENT_SECRET`, and `OWNER_DISCORD_ID`. SITE_ORIGIN is set in wrangler.toml. Existing encrypted production secrets cannot be read back or copied by the Cloudflare API; configure them explicitly and redeploy. Do not put secrets in chat or Git. Using the same Discord app does not share sessions: cookies are host-only and users/sessions live exclusively in the preview DB.
+
+## EA connection
+
+`/ea-clubs.html` provides public club search and recent league/playoff/friendly results via the existing HTTPS relay. It shows the actual returned timestamps, not fabricated fresh games. Signed-in users can save independently verified club selections to their own preview account at `/api/ea/links`. This is not proof of club management/ownership, not EA player claiming, not league registration, and does not add games to standings. Scheduled-fixture matching and verified player identity remain later milestones.

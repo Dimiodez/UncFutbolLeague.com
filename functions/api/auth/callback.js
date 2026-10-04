@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
   const code = url.searchParams.get('code');
   if (!code) return Response.redirect(`${url.origin}/account?login=denied`, 302);
 
-  const siteOrigin = 'https://www.uncfutbolleague.com';
+  const siteOrigin = env.SITE_ORIGIN || 'https://www.uncfutbolleague.com';
   const redirectUri = `${siteOrigin}/api/auth/callback`;
   const tokenResponse = await fetch('https://discord.com/api/v10/oauth2/token', {
     method: 'POST',
