@@ -34,6 +34,9 @@ test('house dashboard exposes clean public sections without internal tracker cop
 
 test('partnerships are calculated from shared detailed match appearances',()=>{
   assert.match(source,/function sbPairData\(matches\)/);
+  assert.match(source,/function sbLoadPartnerships\(root,data\)/);
+  assert.match(source,/missing\.slice\(offset,offset\+4\)/);
+  assert.match(source,/match=\$\{encodeURIComponent\(match\.match_id\)\}/);
   assert.match(source,/row\.matches>=2/);
   assert.match(source,/row\.defensiveMatches>=2/);
   assert.match(source,/row\.matches>=3/);
@@ -46,11 +49,13 @@ test('club honors include month filtering and the Sandiest Bum headline award',(
   assert.match(source,/Sandiest Bum/);
   assert.match(source,/complete ongoing period/);
   assert.match(source,/month=\$\{encodeURIComponent\(month\)\}/);
-  assert.match(source,/every appearance’s rating plus all goals and assists/);
+  assert.match(source,/player with the most appearances/);
+  assert.match(source,/Top Rated/);
+  assert.match(source,/minimum 25% participation/);
   assert.match(source,/data-sandy-panel="honors"/);
 });
 
-test('Sandiest Bum rewards the complete monthly body of work instead of a small rating sample',()=>{
+test('Sandiest Bum is the monthly appearance leader and Top Rated remains separate',()=>{
   const context={};runInNewContext(`${source}\nthis.testHonorData=sbHonorData;`,context);
   const honors=context.testHonorData([
     {player_id:'small',latest_name:'Four Games',appearances:4,goals:0,assists:0,average_rating:8.5},
@@ -58,6 +63,7 @@ test('Sandiest Bum rewards the complete monthly body of work instead of a small 
   ],27);
   assert.equal(honors.sandiest.name,'Full Month');
   assert.equal(honors.sandiest.totalMatches,27);
+  assert.equal(honors.rated.name,'Full Month');
 });
 
 test('Sandy match archive keeps every result but initially windows the latest ten',()=>{

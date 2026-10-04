@@ -2,7 +2,7 @@ const houseTrackerClubs={
   'fc-sandy-bums':{slug:'fc-sandy-bums',name:'FC Sandy Bums',shortName:'Sandy Bums',analyticsName:'Sandy',clubId:'43521',crest:'/assets/fc-sandy-bums.png'},
   'fc-mountains':{slug:'fc-mountains',name:'FC Mountains',shortName:'Mountains',analyticsName:'Mountains',clubId:'96510',crest:'/assets/fc-mountains.png'}
 };
-const sandyTrackerState={data:null,club:houseTrackerClubs['fc-sandy-bums'],month:'all',sort:'appearances'};
+const sandyTrackerState={data:null,club:houseTrackerClubs['fc-sandy-bums'],month:'all',sort:'appearances',partnershipDetails:null,partnershipPromise:null};
 
 const sbEsc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
 const sbNum=value=>Number(value)||0;
@@ -10,7 +10,7 @@ const sbDate=value=>new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',
 const sbMonth=value=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'2-digit'}).formatToParts(new Date(value));return `${parts.find(part=>part.type==='year')?.value}-${parts.find(part=>part.type==='month')?.value}`;};
 
 function houseClubTrackerPage(slug){
-  const club=houseTrackerClubs[slug]||houseTrackerClubs['fc-sandy-bums'];sandyTrackerState.club=club;sandyTrackerState.data=null;
+  const club=houseTrackerClubs[slug]||houseTrackerClubs['fc-sandy-bums'];sandyTrackerState.club=club;sandyTrackerState.data=null;sandyTrackerState.partnershipDetails=null;sandyTrackerState.partnershipPromise=null;
   return `<section class="club-dashboard-preview sandy-dashboard-preview house-${club.slug}">
     <header class="club-dashboard-hero sandy-dashboard-hero">
       <div class="club-dashboard-identity"><img class="sandy-dashboard-crest" src="${club.crest}" alt="${club.name} crest"><div><span class="section-kicker">FC27 · HOUSE CLUB</span><h1>${club.name}</h1><div class="club-dashboard-badges"><b>EA club ${club.clubId}</b><b>Common Gen 5</b><b id="sandy-link-status">Stats connecting</b></div></div></div>
@@ -70,18 +70,16 @@ function sbPairData(matches){
 function sbHonorData(players,totalMatches){
   const rows=(players||[]).map(player=>({
     id:String(player.player_id||player.latest_name||''),name:player.latest_name||'Unknown player',apps:sbNum(player.appearances),
-    goals:sbNum(player.goals),assists:sbNum(player.assists),rating:sbNum(player.average_rating),totalMatches,
-    ratingTotal:sbNum(player.average_rating)*sbNum(player.appearances)
+    goals:sbNum(player.goals),assists:sbNum(player.assists),rating:sbNum(player.average_rating),totalMatches
   })).filter(row=>row.id&&row.apps>0);
   const pick=(filter,sort)=>[...rows].filter(filter).sort(sort)[0]||null;
   const regularMinimum=Math.max(1,Math.ceil(totalMatches*.25));
   return {
-    sandiest:pick(row=>row.apps>0,(a,b)=>(b.ratingTotal+b.goals*4+b.assists*3)-(a.ratingTotal+a.goals*4+a.assists*3)||b.apps-a.apps),
+    sandiest:pick(row=>row.apps>0,(a,b)=>b.apps-a.apps||b.rating-a.rating||(b.goals+b.assists)-(a.goals+a.assists)),
     boot:pick(row=>row.apps>0,(a,b)=>b.goals-a.goals||b.assists-a.assists||b.rating-a.rating),
     assists:pick(row=>row.apps>0,(a,b)=>b.assists-a.assists||b.goals-a.goals||b.rating-a.rating),
     contributions:pick(row=>row.apps>0,(a,b)=>(b.goals+b.assists)-(a.goals+a.assists)||b.goals-a.goals||b.apps-a.apps),
-    rated:pick(row=>row.apps>=regularMinimum,(a,b)=>b.rating-a.rating||b.apps-a.apps),
-    iron:pick(row=>row.apps>0,(a,b)=>b.apps-a.apps||b.rating-a.rating)
+    rated:pick(row=>row.apps>=regularMinimum,(a,b)=>b.rating-a.rating||b.apps-a.apps)
   };
 }
 
@@ -174,6 +172,23 @@ function sbPartnerships(data){
   </div><p class="house-feature-note">Partnerships require shared appearances. Defensive honors require both players to be recorded at DEF or GK.</p>`;
 }
 
+async function sbLoadPartnerships(root,data){
+  const panel=root.querySelector('[data-sandy-panel="partnerships"]');
+  if(sandyTrackerState.partnershipDetails){panel.innerHTML=sbPartnerships({...data,matches:sandyTrackerState.partnershipDetails});return;}
+  if(sandyTrackerState.partnershipPromise)return sandyTrackerState.partnershipPromise;
+  sandyTrackerState.partnershipPromise=(async()=>{
+    const matches=[...data.matches],missing=matches.map((match,index)=>({match,index})).filter(({match})=>!sbOwnClub(match)?.players?.length);
+    for(let offset=0;offset<missing.length;offset+=4){
+      panel.innerHTML=`<div class="sandy-loading">Loading complete partnership history… ${Math.min(offset,missing.length)} of ${missing.length}</div>`;
+      await Promise.all(missing.slice(offset,offset+4).map(async({match,index})=>{
+        try{const response=await fetch(`/api/house-clubs/${sandyTrackerState.club.slug}?match=${encodeURIComponent(match.match_id)}`);if(!response.ok)return;const payload=await response.json(),full=payload.matches?.find(item=>String(item.match_id)===String(match.match_id));if(full?.details)matches[index]=full;}catch{}
+      }));
+    }
+    sandyTrackerState.partnershipDetails=matches;panel.innerHTML=sbPartnerships({...data,matches});
+  })().finally(()=>{sandyTrackerState.partnershipPromise=null;});
+  return sandyTrackerState.partnershipPromise;
+}
+
 function sbHonorCard(mark,title,player,value,detail,headline=false){
   if(!player)return `<article class="house-honor-card is-empty ${headline?'is-headline':''}"><span>${mark}</span><div><small>${title}</small><h3>Still up for grabs</h3><p>No eligible appearance has been recorded in this period.</p></div></article>`;
   return `<article class="house-honor-card ${headline?'is-headline':''}"><span>${mark}</span><div><small>${title}</small><h3>${sbEsc(player.name)}</h3><strong>${value(player)}</strong><p>${detail(player)}</p></div></article>`;
@@ -184,13 +199,12 @@ function sbHonors(data,allData,month=allData.months[0]||'all'){
   const monthName=month==='all'?'All recorded matches':new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${month}-01T12:00:00Z`));
   const periodCopy=month==='all'?'Every archived club match is included.':`Every recorded ${monthName} match from the 1st through the latest sync is included.`;
   return `<div class="club-panel-heading"><div><span class="section-kicker">House-club awards</span><h2>UFL Club Honors</h2><p>${periodCopy}</p></div><label>Award period<select id="house-honors-month"><option value="all" ${month==='all'?'selected':''}>All recorded matches</option>${allData.months.map(value=>`<option value="${value}" ${value===month?'selected':''}>${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><div class="house-honors-period"><span>${monthName} · complete ongoing period</span><strong>${matches.length} club match${matches.length===1?'':'es'}</strong></div><div class="house-honor-grid">
-    ${sbHonorCard('SB','Sandiest Bum',honors.sandiest,player=>`${player.apps} of ${player.totalMatches} matches`,player=>`${player.goals} goals · ${player.assists} assists · ${player.rating.toFixed(2)} average rating`,true)}
+    ${sbHonorCard('SB','Sandiest Bum',honors.sandiest,player=>`${player.apps} of ${player.totalMatches} matches`,player=>`${Math.round(player.apps/Math.max(player.totalMatches,1)*100)}% attendance · ${player.rating.toFixed(2)} average rating`,true)}
     ${sbHonorCard('GB','Golden Boot',honors.boot,player=>`${player.goals} goals`,player=>`${player.assists} assists in ${player.apps} appearances`)}
     ${sbHonorCard('AL','Assist Leader',honors.assists,player=>`${player.assists} assists`,player=>`${player.goals} goals in ${player.apps} appearances`)}
     ${sbHonorCard('GC','Goal Contribution Leader',honors.contributions,player=>`${player.goals+player.assists} G + A`,player=>`${player.goals} goals · ${player.assists} assists in ${player.apps} appearances`)}
-    ${sbHonorCard('TR','Top Rated Regular',honors.rated,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.apps} of ${player.totalMatches} matches`)}
-    ${sbHonorCard('IU','Iron Unc',honors.iron,player=>`${player.apps} appearances`,player=>`${Math.round(player.apps/Math.max(player.totalMatches,1)*100)}% of the club’s matches`)}
-  </div><p class="house-feature-note"><strong>Sandiest Bum:</strong> the month-long impact leader, calculated from every appearance’s rating plus all goals and assists. One strong night cannot outweigh a full month by average rating alone.</p>`;
+    ${sbHonorCard('TR','Top Rated',honors.rated,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.apps} of ${player.totalMatches} matches · minimum 25% participation`)}
+  </div><p class="house-feature-note"><strong>Sandiest Bum:</strong> the player with the most appearances in the selected period. A tie is decided by average rating, then goal contributions. <strong>Top Rated:</strong> the best average rating among players who appeared in at least 25% of the club’s matches.</p>`;
 }
 
 async function sbLoadHonors(root,allData,month){
@@ -239,7 +253,7 @@ async function hydrateSandyTrackerPreview(){
     root.querySelector('[data-sandy-panel="squad"]').innerHTML=sbSquad(data);
     root.querySelector('[data-sandy-panel="matches"]').innerHTML=sbMatches(data);
     root.querySelector('[data-sandy-panel="analytics"]').innerHTML=sbAnalytics(data,totals);
-    root.querySelector('[data-sandy-panel="partnerships"]').innerHTML=sbPartnerships(data);
+    root.querySelector('[data-sandy-panel="partnerships"]').innerHTML='<div class="sandy-loading">Open Partnerships to calculate the complete saved history.</div>';
     sbLoadHonors(root,data,data.months[0]||'all');
     root.querySelector('#sandy-player-sort')?.addEventListener('change',event=>{const grid=root.querySelector('#sandy-squad-grid'),key=event.target.value;[...grid.children].sort((a,b)=>Number(b.dataset[key])-Number(a.dataset[key])).forEach(card=>grid.append(card));});
     root.querySelector('#sandy-month-filter')?.addEventListener('change',event=>{const month=event.target.value,list=root.querySelector('#sandy-match-list'),hint=root.querySelector('#sandy-match-scroll-hint');const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month);list.innerHTML=matches.map(sbMatchCard).join('')||'<p>No matches in this month.</p>';hint.hidden=matches.length<=10;hint.textContent=`Latest 10 are in view · scroll for ${Math.max(0,matches.length-10)} older matches.`;sbBindMatchInteractions(root);sbApplyMatchWindow(list);});
@@ -252,6 +266,6 @@ async function hydrateSandyTrackerPreview(){
 
 function bindSandyTrackerPreview(){
   const root=document.querySelector('.sandy-dashboard-preview');if(!root)return;
-  root.querySelectorAll('[data-sandy-tab]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.sandyTab;root.querySelectorAll('[data-sandy-tab]').forEach(item=>{const active=item===button;item.setAttribute('aria-selected',String(active));});root.querySelectorAll('[data-sandy-panel]').forEach(panel=>{panel.hidden=panel.dataset.sandyPanel!==id;});if(id==='matches')sbApplyMatchWindow(root.querySelector('#sandy-match-list'));}));
+  root.querySelectorAll('[data-sandy-tab]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.sandyTab;root.querySelectorAll('[data-sandy-tab]').forEach(item=>{const active=item===button;item.setAttribute('aria-selected',String(active));});root.querySelectorAll('[data-sandy-panel]').forEach(panel=>{panel.hidden=panel.dataset.sandyPanel!==id;});if(id==='matches')sbApplyMatchWindow(root.querySelector('#sandy-match-list'));if(id==='partnerships'&&sandyTrackerState.data)sbLoadPartnerships(root,sandyTrackerState.data);}));
   hydrateSandyTrackerPreview();
 }
