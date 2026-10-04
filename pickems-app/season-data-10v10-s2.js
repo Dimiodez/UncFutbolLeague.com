@@ -11,10 +11,14 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-  "syncedAt": "2026-10-03T07:00:02.000Z",
-  "statsFetchedAt": "2026-10-03T07:00:02.000Z",
+  "syncedAt": "2026-10-04T18:09:46.000Z",
+  "statsFetchedAt": "2026-10-04T18:09:46.000Z",
   "statsStatus": "available",
   "teams": {
+    "RM": [
+      "Real Madrid",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+    ],
     "PALA": [
       "Palace",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
@@ -37,6 +41,15 @@ window.UFL_SEASON_10V10_S2 = {
     ]
   },
   "teamDetails": [
+    {
+      "key": "RM",
+      "name": "Real Madrid",
+      "abbreviation": "RM",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
+      "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
+      "rosterSize": 1,
+      "stats": []
+    },
     {
       "key": "PALA",
       "name": "Palace",
@@ -130,6 +143,17 @@ window.UFL_SEASON_10V10_S2 = {
     ],
     [
       "ACM",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "RM",
       0,
       0,
       0,
