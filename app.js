@@ -1128,6 +1128,7 @@ function render() {
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
   else if (path === '/test/maykop') main.innerHTML = maykopClubDashboardPage();
+  else if (path === '/test/sandy-bums') main.innerHTML = sandyBumsTrackerPreviewPage();
   else if (path === routes.teams || path === '/clubs') main.innerHTML = leagueClubsPage(params);
   else if (path === '/teams/house/fc-sandy-bums' || path === '/teams/house/fc-mountains') main.innerHTML = houseClubPage(houseClubNames[path.split('/').pop()]);
   else if (path.startsWith('/clubs/')) main.innerHTML = leagueClubProfile(decodeURIComponent(path.slice(7)),params);
@@ -1157,6 +1158,7 @@ function render() {
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   if(typeof bindMaykopDashboard==='function')bindMaykopDashboard();
+  if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
   bindLeagueExplorer();
   if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();
   if(typeof hydratePlayerPhotos==='function')hydratePlayerPhotos();
