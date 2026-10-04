@@ -47,8 +47,11 @@ test('club honors include month filtering and the Sandiest Bum headline award',(
   assert.match(source,/function sbHonorData\(players,totalMatches\)/);
   assert.match(source,/id="house-honors-month"/);
   assert.match(source,/Sandiest Bum/);
-  assert.match(source,/Current Sandiest Bum/);
-  assert.match(source,/official Sandiest Bum will be crowned when the month ends/);
+  assert.match(source,/currentTitle=`Current \$\{officialTitle\}`/);
+  assert.match(source,/King of the Mountain/);
+  assert.match(source,/All-Time Summit Leader/);
+  assert.match(source,/honorMark=mountains\?'KM':'SB'/);
+  assert.match(source,/official \$\{officialTitle\} will be crowned when the month ends/);
   assert.match(source,/official monthly result/);
   assert.match(source,/month=\$\{encodeURIComponent\(month\)\}/);
   assert.match(source,/player with the most appearances/);
