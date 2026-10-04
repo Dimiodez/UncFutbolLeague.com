@@ -32,3 +32,13 @@ In Cloudflare Pages → `ufl-major-update-preview` → Settings → Variables an
 ## EA connection
 
 `/ea-clubs.html` provides public club search and recent league/playoff/friendly results via the existing HTTPS relay. It shows the actual returned timestamps, not fabricated fresh games. Signed-in users can save independently verified club selections to their own preview account at `/api/ea/links`. This is not proof of club management/ownership, not EA player claiming, not league registration, and does not add games to standings. Scheduled-fixture matching and verified player identity remain later milestones.
+
+## League workshop — first major-update milestone
+
+`/league-workshop.html` is a no-login planning/test surface, not a replacement for secure admin or manager access. Multiple leagues can be drafted under one season; no leagues are created by default. League creation selects format, players per side, day, first date, kickoff, timezone and spacing between two games. Double round-robin fixtures preserve local kickoff through DST. Odd-team leagues show unavoidable byes.
+
+Drafts save only on the current device when explicitly requested, or as an exported JSON file. They are not shared server records. Imports regenerate/validate schedules rather than trusting arbitrary fixtures. EA candidate checks require both linked club IDs plus the configured kickoff window; ambiguous candidates require review. Even one candidate is not counted automatically. No result acceptance or standings/stat/award publication exists yet.
+
+Public Virtual Arena review on 4 October 2026: inspected competition standings, team list, Roma profile/roster, stats and squads navigation. Observed season-scoped Teams/Players/Matches/Finals/Stats/Standings/TOTW tabs; team profiles separate calendar/history, grouped player positions, per-player stats and formation. No authenticated VA admin controls were inspected. Collaborator screenshots are needed to compare those controls, not to define UFL requirements.
+
+Next: durable season/league/member model with one active team per player per league; admin/manager authorization and invitations; scheduled result review/acceptance; accepted-results-only standings/stats; TOTW/TOTS formation tools. The user's shared planning Doc remains authoritative; this first milestone does not claim those later features are implemented.

@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import {buildLeagueSchedule,fixtureCandidates,zonedTimestamp} from '../league-engine.js';
+const settings={season:'Season 2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:8},(_,i)=>({id:`team-${i+1}`,name:`Team ${i+1}`,eaClubId:String(100+i)}))};
+const schedule=buildLeagueSchedule(settings);
+assert.equal(schedule.fixtures.length,56);assert.equal(schedule.nights.length,7);
+for(const team of settings.teams){const games=schedule.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(games.length,14);for(const night of schedule.nights){const tonight=night.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(tonight.length,2);assert.notEqual(tonight[0].home.id===team.id?tonight[0].away.id:tonight[0].home.id,tonight[1].home.id===team.id?tonight[1].away.id:tonight[1].home.id);}for(const other of settings.teams.filter(other=>other.id!==team.id))assert.equal(games.filter(game=>game.home.id===other.id||game.away.id===other.id).length,2);}
+assert.equal(new Date(zonedTimestamp('2026-10-29','20:00','America/Chicago')).toISOString(),'2026-10-30T01:00:00.000Z');
+assert.equal(new Date(zonedTimestamp('2026-11-05','20:00','America/Chicago')).toISOString(),'2026-11-06T02:00:00.000Z');
+assert.throws(()=>zonedTimestamp('2027-03-14','02:30','America/Chicago'));
+assert.equal(buildLeagueSchedule({...settings,teams:settings.teams.slice(0,5)}).fixtures.length,20);
+assert.throws(()=>buildLeagueSchedule({...settings,teams:settings.teams.slice(0,2)}));
+const fixture=schedule.fixtures[0],game={matchId:'real',timestamp:fixture.startsAt/1000,clubs:{[fixture.home.eaClubId]:{},[fixture.away.eaClubId]:{}}};
+assert.equal(fixtureCandidates(fixture,[game,game]).status,'review');
+assert.equal(fixtureCandidates(fixture,[game,{...game,matchId:'other'}]).status,'ambiguous');
+assert.equal(fixtureCandidates(fixture,[game],{acceptedMatchIds:['real']}).status,'waiting');
+assert.equal(fixtureCandidates(fixture,[{...game,timestamp:game.timestamp+86400}]).status,'waiting');
+assert.equal(fixtureCandidates(fixture,[{...game,clubs:{'999':{},[fixture.away.eaClubId]:{}}}]).status,'waiting');
+console.log('PASS: double round-robin, two distinct opponents/night, odd-team byes, DST, duplicate games, unrelated games and ambiguous-result review.');
