@@ -1,7 +1,22 @@
 // Shared schedule and candidate matching logic. Never treats raw EA games as league results.
+export function validateScheduleSettings(settings){
+ const interval=Number(settings.repeatWeeks??1),weekday=Number(settings.weekday),spacing=Number(settings.spacingMinutes);
+ if(!Number.isInteger(interval)||interval<1||interval>4)throw Error('Repeat games every 1–4 weeks.');
+ if(!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(spacing)||spacing<15||spacing>180)throw Error('Choose a valid matchnight and 15–180 minutes between games.');
+ zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
+ const breaks=settings.breaks??[];
+ if(!Array.isArray(breaks)||breaks.length>100)throw Error('Use at most 100 breaks per league.');
+ for(const pause of breaks){
+  zonedTimestamp(pause.from,'12:00',settings.timeZone);zonedTimestamp(pause.to,'12:00',settings.timeZone);
+  if(pause.from>pause.to)throw Error('A break must end on or after it starts.');
+  if(typeof pause.reason!=='string'||!pause.reason.trim()||pause.reason.length>80)throw Error('Name each break (holiday, cup, or other reason).');
+ }
+ return {...settings,repeatWeeks:interval,breaks};
+}
 export function zonedTimestamp(date,time,timeZone){
  const [year,month,day]=date.split('-').map(Number),[hour,minute]=time.split(':').map(Number);
  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))throw Error('Choose a valid date and time.');
+ if(new Date(Date.UTC(year,month-1,day)).toISOString().slice(0,10)!==date)throw Error('Choose a real calendar date.');
  const target=Date.UTC(year,month-1,day,hour,minute),formatter=new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
  let guess=target;
  const wall=stamp=>{const p=Object.fromEntries(formatter.formatToParts(stamp).map(part=>[part.type,part.value]));return Date.UTC(+p.year,+p.month-1,+p.day,+p.hour,+p.minute);};
@@ -24,6 +39,7 @@ export function registerLeagueTeam(draft,team){
  return {...draft,settings:{...draft.settings,teams:[...teams,{id:`team-${nextId}`,name,eaClubId}]}};
 }
 export function buildLeagueSchedule(settings){
+ settings=validateScheduleSettings(settings);
  const teams=settings.teams||[];
  if(teams.length<3||teams.length>40)throw Error('Choose 3–40 teams. Two different opponents per night need at least three teams.');
  if(new Set(teams.map(team=>team.id)).size!==teams.length)throw Error('A team can only be entered once.');
@@ -44,14 +60,21 @@ export function buildLeagueSchedule(settings){
   rounds.push(fixtures);rotation.splice(1,0,rotation.pop());
  }
  const allRounds=[...rounds,...rounds.map(fixtures=>fixtures.map(game=>({home:game.away,away:game.home})))];
- const fixtures=[],nights=[];
+ const fixtures=[],nights=[],skippedDates=[];
+ const scheduledDates=[],cursor=new Date(startDate);
+ for(let attempt=0;scheduledDates.length<Math.ceil(allRounds.length/2);attempt++){
+  if(attempt>1000)throw Error('Too many skipped dates. Shorten the breaks.');
+  const date=cursor.toISOString().slice(0,10),pauses=settings.breaks.filter(pause=>date>=pause.from&&date<=pause.to);
+  if(pauses.length)skippedDates.push({date,reasons:pauses.map(pause=>pause.reason)});else scheduledDates.push(date);
+  cursor.setUTCDate(cursor.getUTCDate()+settings.repeatWeeks*7);
+ }
  for(let round=0;round<allRounds.length;round++){
-  const night=Math.floor(round/2),date=new Date(startDate);date.setUTCDate(date.getUTCDate()+night*7);const localDate=date.toISOString().slice(0,10);
+  const night=Math.floor(round/2),localDate=scheduledDates[night];
   if(!nights[night])nights[night]={week:night+1,date:localDate,fixtures:[]};
   const timestamp=zonedTimestamp(localDate,settings.time,settings.timeZone)+(round%2)*spacing*60000;
   for(const game of allRounds[round]){const fixture={id:`fixture-${fixtures.length+1}`,week:night+1,round:round+1,date:localDate,startsAt:timestamp,home:game.home,away:game.away,status:'scheduled'};fixtures.push(fixture);nights[night].fixtures.push(fixture);}
  }
- return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
+ return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,skippedDates,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
 }
 export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[]}={}){
  const home=String(fixture.home.eaClubId||''),away=String(fixture.away.eaClubId||'');

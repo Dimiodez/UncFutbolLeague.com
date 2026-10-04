@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp} from '../league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings} from '../league-engine.js';
 const settings={season:'Season 2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:8},(_,i)=>({id:`team-${i+1}`,name:`Team ${i+1}`,eaClubId:String(100+i)}))};
 const schedule=buildLeagueSchedule(settings);
 let empty=createLeagueDraft({...settings,teams:[]});
@@ -16,6 +16,18 @@ assert.equal(buildLeagueSchedule(empty.settings).fixtures.length,6);
 assert.equal(buildLeagueSchedule(empty.settings).registrationOpen,false);
 assert.equal(createLeagueDraft(buildLeagueSchedule(empty.settings).settings).fixtures.length,0);
 assert.equal(schedule.fixtures.length,56);assert.equal(schedule.nights.length,7);
+const paused=buildLeagueSchedule({...settings,breaks:[{from:'2026-10-22',to:'2026-11-05',reason:'Cup / holiday break'}]});
+assert.deepEqual(paused.nights.slice(0,3).map(night=>night.date),['2026-10-15','2026-11-12','2026-11-19']);
+assert.equal(paused.fixtures.length,56);assert.equal(paused.skippedDates.length,3);
+assert.deepEqual(paused.fixtures.map(game=>[game.home.id,game.away.id]),schedule.fixtures.map(game=>[game.home.id,game.away.id]));
+assert.equal(new Date(paused.fixtures.find(game=>game.date==='2026-11-12').startsAt).toISOString(),'2026-11-13T02:00:00.000Z');
+const fortnight=buildLeagueSchedule({...settings,repeatWeeks:2,breaks:[{from:'2026-10-29',to:'2026-10-29',reason:'Holiday'}]});
+assert.deepEqual(fortnight.nights.slice(0,3).map(night=>night.date),['2026-10-15','2026-11-12','2026-11-26']);
+assert.equal(fortnight.fixtures.length,56);
+assert.throws(()=>validateScheduleSettings({...settings,repeatWeeks:0}));
+assert.throws(()=>validateScheduleSettings({...settings,breaks:[{from:'2026-12-10',to:'2026-12-01',reason:'Break'}]}));
+assert.throws(()=>zonedTimestamp('2026-02-30','20:00','America/Chicago'));
+assert.equal(validateScheduleSettings({...settings,teams:[]}).teams.length,0);
 for(const team of settings.teams){const games=schedule.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(games.length,14);for(const night of schedule.nights){const tonight=night.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(tonight.length,2);assert.notEqual(tonight[0].home.id===team.id?tonight[0].away.id:tonight[0].home.id,tonight[1].home.id===team.id?tonight[1].away.id:tonight[1].home.id);}for(const other of settings.teams.filter(other=>other.id!==team.id))assert.equal(games.filter(game=>game.home.id===other.id||game.away.id===other.id).length,2);}
 assert.equal(new Date(zonedTimestamp('2026-10-29','20:00','America/Chicago')).toISOString(),'2026-10-30T01:00:00.000Z');
 assert.equal(new Date(zonedTimestamp('2026-11-05','20:00','America/Chicago')).toISOString(),'2026-11-06T02:00:00.000Z');

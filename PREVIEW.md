@@ -47,6 +47,12 @@ Next: durable season/league/member model with one active team per player per lea
 
 ## VA replacement acceptance checklist
 
+### Draft league administration calendar
+
+The workshop now groups all locally drafted seasons, leagues and competition calendar entries in one overview. Seasons may be created before leagues or teams. Existing league cards expose editable start date, weekday, kickoff, timezone, 1–4-week recurrence and game spacing. Inclusive date-range breaks skip matching recurring nights and push the preserved round-robin matchups into subsequent slots. Adding a cup/playoff calendar draft can reserve its dates across one league or every current league in that season; it does not create brackets or results. Future leagues must have those breaks configured separately. Removing a calendar break explicitly reopens that slot; cup dates remain visible as metadata.
+
+These are preview controls, not a secured owner/admin page. OAuth activation and server-side role enforcement remain prerequisites for shared writes. No production schedules/results change. Version-3 save/export includes seasons, competitions and league calendar settings, with versions 1 and 2 still supported. Admin calendar edits rebuild only local draft schedules after confirmation; live-result-preserving rescheduling must be implemented separately before promotion.
+
 Do not treat the workshop as migration-ready until the complete operational flow is tested:
 
 - Shared, persistent seasons and initially empty leagues; independent registration windows and configurable matchnight settings.

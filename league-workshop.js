@@ -1,7 +1,17 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp} from './league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings} from './league-engine.js';
+import {renderAdministration} from './league-administration.js';
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-const KEY='ufl-v2-workshop-drafts-v1';let drafts=[];
+const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
+let pendingCalendarChange=null;
+function approveCalendarChange(signature,index){
+ if(pendingCalendarChange===signature){pendingCalendarChange=null;return true;}
+ pendingCalendarChange=signature;
+ const target=index===undefined?document.querySelector('#league-overview'):document.querySelector(`#league-${index} .workshop-settings`);
+ document.querySelectorAll('.calendar-confirmation').forEach(notice=>notice.remove());
+ const notice=document.createElement('p');notice.className='calendar-confirmation workshop-warning';notice.setAttribute('role','status');notice.textContent='This will rebuild the draft schedule. Submit the same change again to confirm. Teams and matchups are preserved; no live results are affected.';target.append(notice);
+ message.textContent=notice.textContent;return false;
+}
 form.elements.startDate.value=new Date().toLocaleDateString('en-CA',{timeZone:'America/Chicago'});
 form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom'){form.elements.size.value=form.elements.format.value==='10v10'?10:6;form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';}});
 function settingsFrom(values){
@@ -9,10 +19,11 @@ function settingsFrom(values){
  if(!['6v6','10v10','Custom'].includes(values.format)||!Number.isInteger(Number(values.size))||values.size<1||values.size>11)throw Error('Choose a valid format and team size.');
  if(!Array.isArray(values.teams)||values.teams.some(team=>!team.name?.trim()||team.name.length>80||!/^team-\d+$/.test(team.id)||team.eaClubId&&!/^\d{1,20}$/.test(team.eaClubId)))throw Error('Use valid team names and numeric EA club IDs.');
  const ids=values.teams.map(team=>team.eaClubId).filter(Boolean);if(new Set(ids).size!==ids.length)throw Error('Two teams cannot use the same EA club within this league.');
- return values;
+ return validateScheduleSettings(values);
 }
 function renderDrafts(){
- save.disabled=download.disabled=!drafts.length;
+ pendingCalendarChange=null;
+ save.disabled=download.disabled=!(drafts.length||seasons.length||competitions.length);
  root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">No built-in leagues. Create your first draft to see fixtures here.</p>';
  root.querySelectorAll('[data-fixture]').forEach(button=>button.addEventListener('click',()=>checkFixture(Number(button.dataset.league),button.dataset.fixture,button)));
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
@@ -23,19 +34,52 @@ function renderDrafts(){
  root.querySelectorAll('[data-register]').forEach(teamForm=>teamForm.addEventListener('submit',event=>{event.preventDefault();try{const index=Number(teamForm.dataset.register);drafts[index]=registerLeagueTeam(drafts[index],Object.fromEntries(new FormData(teamForm)));renderDrafts();message.textContent='Team registered in this league draft. Save your drafts to keep the change.';}catch(error){message.textContent=error.message;}}));
  root.querySelectorAll('[data-registration]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.registration),draft=drafts[index];if(!draft.registrationOpen&&draft.scheduleGenerated&&!confirm('Reopen registration and clear this draft schedule? Teams are preserved. No live results are affected.'))return;drafts[index]=draft.registrationOpen?{...draft,registrationOpen:false}:createLeagueDraft(draft.settings);review.hidden=true;renderDrafts();message.textContent='Draft registration updated. Save your drafts to keep the change.';}));
  root.querySelectorAll('[data-generate]').forEach(button=>button.addEventListener('click',()=>{try{const index=Number(button.dataset.generate);drafts[index]=buildLeagueSchedule(drafts[index].settings);renderDrafts();message.textContent='Draft fixtures generated. Nothing was published or counted as an official result.';}catch(error){message.textContent=error.message;}}));
+ renderAdministration({drafts,seasons,competitions,updateLeague,addSeason,addCompetition,report:text=>message.textContent=text});
+}
+function updateLeague(index,values){
+ const settings=settingsFrom(values),draft=drafts[index];
+ if(drafts.some((other,otherIndex)=>otherIndex!==index&&other.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&other.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season.');
+ const updated=draft.scheduleGenerated?buildLeagueSchedule(settings):{...draft,settings};
+ if(draft.scheduleGenerated&&!approveCalendarChange(`league-${index}:${JSON.stringify(settings)}`,index))return;
+ // Keep competition references consistent when a draft league is renamed or moved.
+ competitions=competitions.map(cup=>cup.season===draft.settings.season&&cup.league===draft.settings.league?{...cup,season:settings.season,league:settings.league}:cup);
+ drafts[index]=updated;review.hidden=true;renderDrafts();message.textContent='League calendar updated. Save drafts to keep this change.';
+}
+function addSeason(value){
+ const name=String(value||'').trim();
+ if(!name||name.length>80)throw Error('Enter a season name (up to 80 characters).');
+ if([...seasons,...drafts.map(draft=>draft.settings.season)].some(existing=>existing.toLowerCase()===name.toLowerCase()))throw Error('That season already exists.');
+ if(seasons.length>=50)throw Error('This preview supports up to 50 season drafts.');
+ seasons.push(name);form.elements.season.value=name;renderDrafts();message.textContent='Season created. You can create leagues within it; save drafts to keep it.';
+}
+function addCompetition(fields){
+ const name=String(fields.name||'').trim();
+ if(!name||name.length>80||!['Cup','Playoffs','Other'].includes(fields.type))throw Error('Enter a competition name and type.');
+ if(![...seasons,...drafts.map(draft=>draft.settings.season)].includes(fields.season))throw Error('Choose an existing season.');
+ if(competitions.length>=100)throw Error('This preview supports up to 100 competitions.');
+ if(competitions.some(cup=>cup.season===fields.season&&cup.name.toLowerCase()===name.toLowerCase()))throw Error('That competition name already exists in this season.');
+ zonedTimestamp(fields.from,'12:00','America/Chicago');zonedTimestamp(fields.to,'12:00','America/Chicago');
+ if(fields.from>fields.to)throw Error('Competition end must be on or after its start.');
+ const targets=drafts.map((draft,index)=>({draft,index})).filter(({draft})=>draft.settings.season===fields.season&&(!fields.league||draft.settings.league===fields.league));
+ if(fields.league&&!targets.length)throw Error('Choose a league in this season.');
+ const proposed=fields.pause?targets.map(({draft,index})=>{const settings=settingsFrom({...draft.settings,breaks:[...(draft.settings.breaks||[]),{from:fields.from,to:fields.to,reason:name}]});return {index,draft:draft.scheduleGenerated?buildLeagueSchedule(settings):{...draft,settings}};}):[];
+ if(fields.pause&&targets.some(({draft})=>draft.scheduleGenerated)&&!approveCalendarChange(`competition:${JSON.stringify(fields)}`))return;
+ if(fields.pause)for(const change of proposed)drafts[change.index]=change.draft;
+ competitions.push({...fields,name});renderDrafts();message.textContent='Competition calendar draft added. Cup draws/results are not connected yet. Save drafts to keep it.';
 }
 form.addEventListener('submit',event=>{event.preventDefault();try{
  const fields=Object.fromEntries(new FormData(form));
  const settings=settingsFrom({...fields,size:Number(fields.size),teams:[]});
+ if(drafts.length>=20)throw Error('This preview supports up to 20 league drafts.');
  zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
  if(drafts.some(draft=>draft.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&draft.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season draft. Use another name.');
  drafts.push(createLeagueDraft(settings));renderDrafts();message.textContent='League created with registration open. Add teams whenever they are known. Save your drafts to keep it.';
  }catch(error){message.textContent=error.message;}});
-function draftFile(){return {version:2,leagues:drafts.map(draft=>({settings:draft.settings,registrationOpen:draft.registrationOpen,scheduleGenerated:draft.scheduleGenerated}))};}
+function draftFile(){return {version:3,seasons,competitions,leagues:drafts.map(draft=>({settings:draft.settings,registrationOpen:draft.registrationOpen,scheduleGenerated:draft.scheduleGenerated}))};}
 function restoreDrafts(data){
  if(Array.isArray(data))data={version:1,leagues:data};
- if(!data||![1,2].includes(data.version)||!Array.isArray(data.leagues)||data.leagues.length>20)throw Error('Not a supported UFL draft file.');
- return data.leagues.map(entry=>{
+ if(!data||![1,2,3].includes(data.version)||!Array.isArray(data.leagues)||data.leagues.length>20)throw Error('Not a supported UFL draft file.');
+ const loaded=data.leagues.map(entry=>{
   const settings=settingsFrom(data.version===1?entry:entry.settings);
   zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
   let validated=createLeagueDraft({...settings,teams:[]});
@@ -43,6 +87,14 @@ function restoreDrafts(data){
   if(data.version===1||entry.scheduleGenerated)return buildLeagueSchedule(validated.settings);
   return {...validated,registrationOpen:entry.registrationOpen!==false};
  });
+ const savedSeasons=data.version===3?data.seasons:[],savedCups=data.version===3?data.competitions:[];
+ if(!Array.isArray(savedSeasons)||savedSeasons.length>50||savedSeasons.some(name=>typeof name!=='string'||!name.trim()||name.length>80)||!Array.isArray(savedCups)||savedCups.length>100)throw Error('Invalid season or competition drafts.');
+ const seasonNames=[...savedSeasons,...loaded.map(draft=>draft.settings.season)];
+ for(const cup of savedCups){
+  if(!cup||typeof cup.name!=='string'||!cup.name.trim()||cup.name.length>80||!seasonNames.includes(cup.season)||!['Cup','Playoffs','Other'].includes(cup.type)||cup.league&&!loaded.some(draft=>draft.settings.season===cup.season&&draft.settings.league===cup.league))throw Error('Invalid competition draft.');
+  zonedTimestamp(cup.from,'12:00','America/Chicago');zonedTimestamp(cup.to,'12:00','America/Chicago');if(cup.from>cup.to)throw Error('Invalid competition dates.');
+ }
+ seasons=savedSeasons;competitions=savedCups;return loaded;
 }
 save.addEventListener('click',()=>{try{localStorage.setItem(KEY,JSON.stringify(draftFile()));message.textContent='Saved on this device only. Download the draft file to share or move to another PC.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
 download.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(draftFile(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ufl-league-drafts.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
