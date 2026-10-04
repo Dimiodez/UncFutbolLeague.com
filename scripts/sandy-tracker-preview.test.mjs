@@ -38,3 +38,10 @@ test('Sandy match archive keeps every result but initially windows the latest te
   assert.match(css,/\.sandy-scroll-list\{max-height/);
   assert.match(css,/overflow-y:auto/);
 });
+
+test('mobile analytics stay within the viewport and keep club tabs under the site header',()=>{
+  assert.match(css,/\.sandy-dashboard-preview\{[^}]*overflow-x:clip/);
+  assert.match(css,/\.sandy-dashboard-preview \.analytics-match-card\{overflow:hidden\}/);
+  assert.match(css,/\.sandy-dashboard-preview \.club-dashboard-tabs\{position:sticky;top:82px/);
+  assert.match(css,/grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+});
