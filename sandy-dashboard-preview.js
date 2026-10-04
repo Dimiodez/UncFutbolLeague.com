@@ -67,23 +67,20 @@ function sbPairData(matches){
   };
 }
 
-function sbHonorData(matches){
-  const players=new Map();
-  matches.forEach(match=>{
-    const club=sbOwnClub(match);if(!club)return;
-    (club.players||[]).filter(player=>player.human!==false&&sbPlayerId(player)).forEach(player=>{
-      const id=sbPlayerId(player),row=players.get(id)||{id,name:player.name||id,apps:0,wins:0,goals:0,assists:0,motm:0,ratings:[],saves:0,interceptions:0,cleanSheets:0,positions:{}};
-      const position=sbPlayerPosition(player),rating=sbPlayerRating(player);row.name=player.name||row.name;row.apps++;if(sbResult(match)==='W')row.wins++;row.goals+=sbNum(player.stats?.[2]);row.assists+=sbNum(player.stats?.[4]);row.motm+=player.motm?1:0;row.saves+=sbNum(player.stats?.[13]);row.interceptions+=sbNum(player.stats?.[11]);row.positions[position]=(row.positions[position]||0)+1;if(rating!==null)row.ratings.push(rating);if(sbNum(match.goals_against)===0&&['DEF','GK'].includes(position))row.cleanSheets++;players.set(id,row);
-    });
-  });
-  const rows=[...players.values()].map(row=>({...row,rating:sbAverage(row.ratings),position:Object.entries(row.positions).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—'}));
+function sbHonorData(players,totalMatches){
+  const rows=(players||[]).map(player=>({
+    id:String(player.player_id||player.latest_name||''),name:player.latest_name||'Unknown player',apps:sbNum(player.appearances),
+    goals:sbNum(player.goals),assists:sbNum(player.assists),rating:sbNum(player.average_rating),totalMatches,
+    ratingTotal:sbNum(player.average_rating)*sbNum(player.appearances)
+  })).filter(row=>row.id&&row.apps>0);
   const pick=(filter,sort)=>[...rows].filter(filter).sort(sort)[0]||null;
+  const regularMinimum=Math.max(1,Math.ceil(totalMatches*.25));
   return {
-    sandiest:pick(row=>row.apps>0,(a,b)=>(b.rating*10+b.goals*4+b.assists*3+b.motm*3+b.wins*1.5)-(a.rating*10+a.goals*4+a.assists*3+a.motm*3+a.wins*1.5)||b.apps-a.apps),
+    sandiest:pick(row=>row.apps>0,(a,b)=>(b.ratingTotal+b.goals*4+b.assists*3)-(a.ratingTotal+a.goals*4+a.assists*3)||b.apps-a.apps),
     boot:pick(row=>row.apps>0,(a,b)=>b.goals-a.goals||b.assists-a.assists||b.rating-a.rating),
     assists:pick(row=>row.apps>0,(a,b)=>b.assists-a.assists||b.goals-a.goals||b.rating-a.rating),
-    anchor:pick(row=>['DEF','GK'].includes(row.position),(a,b)=>b.rating-a.rating||b.cleanSheets-a.cleanSheets||b.interceptions-a.interceptions),
-    gloves:pick(row=>row.position==='GK',(a,b)=>b.cleanSheets-a.cleanSheets||b.saves-a.saves||b.rating-a.rating),
+    contributions:pick(row=>row.apps>0,(a,b)=>(b.goals+b.assists)-(a.goals+a.assists)||b.goals-a.goals||b.apps-a.apps),
+    rated:pick(row=>row.apps>=regularMinimum,(a,b)=>b.rating-a.rating||b.apps-a.apps),
     iron:pick(row=>row.apps>0,(a,b)=>b.apps-a.apps||b.rating-a.rating)
   };
 }
@@ -182,17 +179,27 @@ function sbHonorCard(mark,title,player,value,detail,headline=false){
   return `<article class="house-honor-card ${headline?'is-headline':''}"><span>${mark}</span><div><small>${title}</small><h3>${sbEsc(player.name)}</h3><strong>${value(player)}</strong><p>${detail(player)}</p></div></article>`;
 }
 
-function sbHonors(data,month=data.months[0]||'all'){
-  const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month),honors=sbHonorData(matches);
+function sbHonors(data,allData,month=allData.months[0]||'all'){
+  const matches=data.matches||[],honors=sbHonorData(data.players,matches.length);
   const monthName=month==='all'?'All recorded matches':new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${month}-01T12:00:00Z`));
-  return `<div class="club-panel-heading"><div><span class="section-kicker">House-club awards</span><h2>UFL Club Honors</h2><p>Recognition generated from the selected month’s recorded performances.</p></div><label>Award period<select id="house-honors-month"><option value="all" ${month==='all'?'selected':''}>All recorded matches</option>${data.months.map(value=>`<option value="${value}" ${value===month?'selected':''}>${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><div class="house-honors-period"><span>${monthName}</span><strong>${matches.length} match${matches.length===1?'':'es'}</strong></div><div class="house-honor-grid">
-    ${sbHonorCard('SB','Sandiest Bum',honors.sandiest,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.goals} goals · ${player.assists} assists · ${player.wins} wins`,true)}
+  const periodCopy=month==='all'?'Every archived club match is included.':`Every recorded ${monthName} match from the 1st through the latest sync is included.`;
+  return `<div class="club-panel-heading"><div><span class="section-kicker">House-club awards</span><h2>UFL Club Honors</h2><p>${periodCopy}</p></div><label>Award period<select id="house-honors-month"><option value="all" ${month==='all'?'selected':''}>All recorded matches</option>${allData.months.map(value=>`<option value="${value}" ${value===month?'selected':''}>${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><div class="house-honors-period"><span>${monthName} · complete ongoing period</span><strong>${matches.length} club match${matches.length===1?'':'es'}</strong></div><div class="house-honor-grid">
+    ${sbHonorCard('SB','Sandiest Bum',honors.sandiest,player=>`${player.apps} of ${player.totalMatches} matches`,player=>`${player.goals} goals · ${player.assists} assists · ${player.rating.toFixed(2)} average rating`,true)}
     ${sbHonorCard('GB','Golden Boot',honors.boot,player=>`${player.goals} goals`,player=>`${player.assists} assists in ${player.apps} appearances`)}
     ${sbHonorCard('AL','Assist Leader',honors.assists,player=>`${player.assists} assists`,player=>`${player.goals} goals in ${player.apps} appearances`)}
-    ${sbHonorCard('DA','Defensive Anchor',honors.anchor,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.cleanSheets} clean sheets · ${player.interceptions} interceptions`)}
-    ${sbHonorCard('GG','Golden Gloves',honors.gloves,player=>`${player.cleanSheets} clean sheets`,player=>`${player.saves} saves in ${player.apps} appearances`)}
-    ${sbHonorCard('IU','Iron Unc',honors.iron,player=>`${player.apps} appearances`,player=>`${player.wins} wins · ${player.goals+player.assists} goal contributions`)}
-  </div><p class="house-feature-note"><strong>Sandiest Bum:</strong> a transparent monthly form score using average rating, goals, assists, Player of the Match awards, wins, and appearances.</p>`;
+    ${sbHonorCard('GC','Goal Contribution Leader',honors.contributions,player=>`${player.goals+player.assists} G + A`,player=>`${player.goals} goals · ${player.assists} assists in ${player.apps} appearances`)}
+    ${sbHonorCard('TR','Top Rated Regular',honors.rated,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.apps} of ${player.totalMatches} matches`)}
+    ${sbHonorCard('IU','Iron Unc',honors.iron,player=>`${player.apps} appearances`,player=>`${Math.round(player.apps/Math.max(player.totalMatches,1)*100)}% of the club’s matches`)}
+  </div><p class="house-feature-note"><strong>Sandiest Bum:</strong> the month-long impact leader, calculated from every appearance’s rating plus all goals and assists. One strong night cannot outweigh a full month by average rating alone.</p>`;
+}
+
+async function sbLoadHonors(root,allData,month){
+  const panel=root.querySelector('[data-sandy-panel="honors"]');
+  panel.innerHTML='<div class="sandy-loading">Loading the complete monthly totals…</div>';
+  try{
+    const response=await fetch(`/api/house-clubs/${sandyTrackerState.club.slug}?month=${encodeURIComponent(month)}`);if(!response.ok)throw new Error();
+    const periodData=await response.json();panel.innerHTML=sbHonors(periodData,allData,month);
+  }catch{panel.innerHTML='<p class="match-prototype-note">The complete monthly totals could not be loaded. Please try again.</p>';}
 }
 
 function sbBindMatchInteractions(root){
@@ -233,10 +240,10 @@ async function hydrateSandyTrackerPreview(){
     root.querySelector('[data-sandy-panel="matches"]').innerHTML=sbMatches(data);
     root.querySelector('[data-sandy-panel="analytics"]').innerHTML=sbAnalytics(data,totals);
     root.querySelector('[data-sandy-panel="partnerships"]').innerHTML=sbPartnerships(data);
-    root.querySelector('[data-sandy-panel="honors"]').innerHTML=sbHonors(data);
+    sbLoadHonors(root,data,data.months[0]||'all');
     root.querySelector('#sandy-player-sort')?.addEventListener('change',event=>{const grid=root.querySelector('#sandy-squad-grid'),key=event.target.value;[...grid.children].sort((a,b)=>Number(b.dataset[key])-Number(a.dataset[key])).forEach(card=>grid.append(card));});
     root.querySelector('#sandy-month-filter')?.addEventListener('change',event=>{const month=event.target.value,list=root.querySelector('#sandy-match-list'),hint=root.querySelector('#sandy-match-scroll-hint');const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month);list.innerHTML=matches.map(sbMatchCard).join('')||'<p>No matches in this month.</p>';hint.hidden=matches.length<=10;hint.textContent=`Latest 10 are in view · scroll for ${Math.max(0,matches.length-10)} older matches.`;sbBindMatchInteractions(root);sbApplyMatchWindow(list);});
-    root.querySelector('[data-sandy-panel="honors"]')?.addEventListener('change',event=>{if(event.target.id!=='house-honors-month')return;root.querySelector('[data-sandy-panel="honors"]').innerHTML=sbHonors(data,event.target.value);});
+    root.querySelector('[data-sandy-panel="honors"]')?.addEventListener('change',event=>{if(event.target.id!=='house-honors-month')return;sbLoadHonors(root,data,event.target.value);});
     root.querySelector('#sandy-compare-a')?.addEventListener('change',()=>sbRenderComparison(root));root.querySelector('#sandy-compare-b')?.addEventListener('change',()=>sbRenderComparison(root));sbRenderComparison(root);sbBindMatchInteractions(root);sbApplyMatchWindow(root.querySelector('#sandy-match-list'));
   }catch{
     root.querySelector('#sandy-link-status').textContent='Stats temporarily unavailable';root.querySelectorAll('.sandy-loading').forEach(panel=>panel.innerHTML='<p>Club results could not be reached. Please reload the page to try again.</p>');

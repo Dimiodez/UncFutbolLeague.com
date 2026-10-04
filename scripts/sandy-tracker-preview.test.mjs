@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
 
 const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
@@ -40,11 +41,23 @@ test('partnerships are calculated from shared detailed match appearances',()=>{
 });
 
 test('club honors include month filtering and the Sandiest Bum headline award',()=>{
-  assert.match(source,/function sbHonorData\(matches\)/);
+  assert.match(source,/function sbHonorData\(players,totalMatches\)/);
   assert.match(source,/id="house-honors-month"/);
   assert.match(source,/Sandiest Bum/);
-  assert.match(source,/Player of the Match awards/);
+  assert.match(source,/complete ongoing period/);
+  assert.match(source,/month=\$\{encodeURIComponent\(month\)\}/);
+  assert.match(source,/every appearance’s rating plus all goals and assists/);
   assert.match(source,/data-sandy-panel="honors"/);
+});
+
+test('Sandiest Bum rewards the complete monthly body of work instead of a small rating sample',()=>{
+  const context={};runInNewContext(`${source}\nthis.testHonorData=sbHonorData;`,context);
+  const honors=context.testHonorData([
+    {player_id:'small',latest_name:'Four Games',appearances:4,goals:0,assists:0,average_rating:8.5},
+    {player_id:'month',latest_name:'Full Month',appearances:12,goals:4,assists:3,average_rating:7.4}
+  ],27);
+  assert.equal(honors.sandiest.name,'Full Month');
+  assert.equal(honors.sandiest.totalMatches,27);
 });
 
 test('Sandy match archive keeps every result but initially windows the latest ten',()=>{
