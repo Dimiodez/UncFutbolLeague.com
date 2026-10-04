@@ -18,10 +18,10 @@ function houseClubTrackerPage(slug){
       <div class="club-dashboard-form"><span>Recent form</span><div id="sandy-form"><b>…</b></div><small id="sandy-form-copy">Loading saved results…</small></div>
     </header>
     <nav class="club-dashboard-tabs" role="tablist" aria-label="${club.name} sections">
-      ${[['overview','Overview'],['squad','Players'],['matches','Matches'],['analytics','Analytics']].map(([id,label],index)=>`<button type="button" role="tab" aria-selected="${index===0}" aria-controls="sandy-panel-${id}" id="sandy-tab-${id}" data-sandy-tab="${id}">${label}</button>`).join('')}
+      ${[['overview','Overview'],['squad','Players'],['matches','Matches'],['analytics','Analytics'],['partnerships','Partnerships'],['honors','Honors']].map(([id,label],index)=>`<button type="button" role="tab" aria-selected="${index===0}" aria-controls="sandy-panel-${id}" id="sandy-tab-${id}" data-sandy-tab="${id}">${label}</button>`).join('')}
     </nav>
     <div class="club-dashboard-panels">
-      ${['overview','squad','matches','analytics'].map((id,index)=>`<section role="tabpanel" id="sandy-panel-${id}" aria-labelledby="sandy-tab-${id}" data-sandy-panel="${id}" ${index?'hidden':''}><div class="sandy-loading">Loading club history…</div></section>`).join('')}
+      ${['overview','squad','matches','analytics','partnerships','honors'].map((id,index)=>`<section role="tabpanel" id="sandy-panel-${id}" aria-labelledby="sandy-tab-${id}" data-sandy-panel="${id}" ${index?'hidden':''}><div class="sandy-loading">Loading club history…</div></section>`).join('')}
     </div>
     <footer class="club-dashboard-foot"><span>UFL House Club</span><code>${club.name}</code><p>Results and player stats update from the club’s EA match history.</p></footer>
   </section>`;
@@ -38,6 +38,55 @@ function sbTotals(matches){
 function sbResult(match){const gf=sbNum(match.goals_for),ga=sbNum(match.goals_against);return gf>ga?'W':gf===ga?'D':'L';}
 function sbAverage(values){const valid=values.filter(value=>Number.isFinite(value));return valid.length?valid.reduce((sum,value)=>sum+value,0)/valid.length:0;}
 function sbFraction(value){const match=String(value||'').match(/(\d+)\s*\/\s*(\d+)/);return match?[Number(match[1]),Number(match[2])]:[0,0];}
+function sbOwnClub(match){return (match.details?.clubs||[]).find(club=>String(club.id)===sandyTrackerState.club.clubId);}
+function sbPlayerPosition(player){return String(player.stats?.[0]||'—').toUpperCase();}
+function sbPlayerRating(player){const rating=Number(player.stats?.[1]);return Number.isFinite(rating)&&rating!==3?rating:null;}
+function sbPlayerId(player){return String(player.id||player.name||'');}
+
+function sbPairData(matches){
+  const pairs=new Map();
+  matches.forEach(match=>{
+    const club=sbOwnClub(match);if(!club)return;
+    const players=(club.players||[]).filter(player=>player.human!==false&&sbPlayerId(player));
+    for(let i=0;i<players.length;i++)for(let j=i+1;j<players.length;j++){
+      const ordered=[players[i],players[j]].sort((a,b)=>sbPlayerId(a).localeCompare(sbPlayerId(b))),key=ordered.map(sbPlayerId).join('|');
+      const row=pairs.get(key)||{players:ordered.map(player=>({id:sbPlayerId(player),name:player.name||sbPlayerId(player)})),matches:0,wins:0,contributions:0,defensiveMatches:0,cleanSheets:0};
+      row.players=ordered.map(player=>({id:sbPlayerId(player),name:player.name||sbPlayerId(player)}));row.matches++;if(sbResult(match)==='W')row.wins++;
+      row.contributions+=ordered.reduce((sum,player)=>sum+sbNum(player.stats?.[2])+sbNum(player.stats?.[4]),0);
+      if(ordered.every(player=>['DEF','GK'].includes(sbPlayerPosition(player)))){row.defensiveMatches++;if(sbNum(match.goals_against)===0)row.cleanSheets++;}
+      pairs.set(key,row);
+    }
+  });
+  const rows=[...pairs.values()].map(row=>({...row,winRate:Math.round(row.wins/Math.max(row.matches,1)*100),cleanSheetRate:Math.round(row.cleanSheets/Math.max(row.defensiveMatches,1)*100)}));
+  const best=(eligible,sort)=>[...rows].filter(eligible).sort(sort)[0]||null;
+  return {
+    attack:best(row=>row.matches>=2,(a,b)=>b.contributions-a.contributions||b.matches-a.matches),
+    defense:best(row=>row.defensiveMatches>=2,(a,b)=>b.cleanSheetRate-a.cleanSheetRate||b.defensiveMatches-a.defensiveMatches),
+    winners:best(row=>row.matches>=3,(a,b)=>b.winRate-a.winRate||b.wins-a.wins||b.matches-a.matches),
+    together:best(row=>row.matches>=1,(a,b)=>b.matches-a.matches||b.wins-a.wins)
+  };
+}
+
+function sbHonorData(matches){
+  const players=new Map();
+  matches.forEach(match=>{
+    const club=sbOwnClub(match);if(!club)return;
+    (club.players||[]).filter(player=>player.human!==false&&sbPlayerId(player)).forEach(player=>{
+      const id=sbPlayerId(player),row=players.get(id)||{id,name:player.name||id,apps:0,wins:0,goals:0,assists:0,motm:0,ratings:[],saves:0,interceptions:0,cleanSheets:0,positions:{}};
+      const position=sbPlayerPosition(player),rating=sbPlayerRating(player);row.name=player.name||row.name;row.apps++;if(sbResult(match)==='W')row.wins++;row.goals+=sbNum(player.stats?.[2]);row.assists+=sbNum(player.stats?.[4]);row.motm+=player.motm?1:0;row.saves+=sbNum(player.stats?.[13]);row.interceptions+=sbNum(player.stats?.[11]);row.positions[position]=(row.positions[position]||0)+1;if(rating!==null)row.ratings.push(rating);if(sbNum(match.goals_against)===0&&['DEF','GK'].includes(position))row.cleanSheets++;players.set(id,row);
+    });
+  });
+  const rows=[...players.values()].map(row=>({...row,rating:sbAverage(row.ratings),position:Object.entries(row.positions).sort((a,b)=>b[1]-a[1])[0]?.[0]||'—'}));
+  const pick=(filter,sort)=>[...rows].filter(filter).sort(sort)[0]||null;
+  return {
+    sandiest:pick(row=>row.apps>0,(a,b)=>(b.rating*10+b.goals*4+b.assists*3+b.motm*3+b.wins*1.5)-(a.rating*10+a.goals*4+a.assists*3+a.motm*3+a.wins*1.5)||b.apps-a.apps),
+    boot:pick(row=>row.apps>0,(a,b)=>b.goals-a.goals||b.assists-a.assists||b.rating-a.rating),
+    assists:pick(row=>row.apps>0,(a,b)=>b.assists-a.assists||b.goals-a.goals||b.rating-a.rating),
+    anchor:pick(row=>['DEF','GK'].includes(row.position),(a,b)=>b.rating-a.rating||b.cleanSheets-a.cleanSheets||b.interceptions-a.interceptions),
+    gloves:pick(row=>row.position==='GK',(a,b)=>b.cleanSheets-a.cleanSheets||b.saves-a.saves||b.rating-a.rating),
+    iron:pick(row=>row.apps>0,(a,b)=>b.apps-a.apps||b.rating-a.rating)
+  };
+}
 
 function sbTeamStats(club){
   const players=club?.players||[];
@@ -113,6 +162,39 @@ function sbAnalytics(data,totals){
   </div>`;
 }
 
+function sbPairCard(kicker,title,pair,value,detail){
+  if(!pair)return `<article class="house-pair-card is-empty"><span class="section-kicker">${kicker}</span><h3>${title}</h3><p>More shared appearances are needed before this partnership can be awarded.</p></article>`;
+  return `<article class="house-pair-card"><span class="section-kicker">${kicker}</span><h3>${title}</h3><div class="house-pair-names"><b>${sbEsc(pair.players[0].name)}</b><i>+</i><b>${sbEsc(pair.players[1].name)}</b></div><strong>${value(pair)}</strong><p>${detail(pair)}</p></article>`;
+}
+
+function sbPartnerships(data){
+  const pairs=sbPairData(data.matches);
+  return `<div class="club-panel-heading"><div><span class="section-kicker">Better together</span><h2>UFL Partnerships</h2><p>These honors use matches where both players appeared for ${sandyTrackerState.club.name}.</p></div><span class="season-chip season-chip-live">${data.matches.length} matches</span></div><div class="house-pair-grid">
+    ${sbPairCard('Attacking partnership','Sandcastle Architects',pairs.attack,pair=>`${pair.contributions} G + A`,pair=>`${pair.matches} matches together · ${pair.wins} wins`)}
+    ${sbPairCard('Defensive partnership','Lock the Cabin',pairs.defense,pair=>`${pair.cleanSheetRate}% clean sheets`,pair=>`${pair.cleanSheets} clean sheets in ${pair.defensiveMatches} defensive appearances together`)}
+    ${sbPairCard('Winning partnership','Two Uncs, One Mission',pairs.winners,pair=>`${pair.winRate}% win rate`,pair=>`${pair.wins} wins in ${pair.matches} matches together`)}
+    ${sbPairCard('Most experienced','Always on the Teamsheet',pairs.together,pair=>`${pair.matches} matches together`,pair=>`${pair.wins} shared wins · ${pair.contributions} combined goal contributions`)}
+  </div><p class="house-feature-note">Partnerships require shared appearances. Defensive honors require both players to be recorded at DEF or GK.</p>`;
+}
+
+function sbHonorCard(mark,title,player,value,detail,headline=false){
+  if(!player)return `<article class="house-honor-card is-empty ${headline?'is-headline':''}"><span>${mark}</span><div><small>${title}</small><h3>Still up for grabs</h3><p>No eligible appearance has been recorded in this period.</p></div></article>`;
+  return `<article class="house-honor-card ${headline?'is-headline':''}"><span>${mark}</span><div><small>${title}</small><h3>${sbEsc(player.name)}</h3><strong>${value(player)}</strong><p>${detail(player)}</p></div></article>`;
+}
+
+function sbHonors(data,month=data.months[0]||'all'){
+  const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month),honors=sbHonorData(matches);
+  const monthName=month==='all'?'All recorded matches':new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${month}-01T12:00:00Z`));
+  return `<div class="club-panel-heading"><div><span class="section-kicker">House-club awards</span><h2>UFL Club Honors</h2><p>Recognition generated from the selected month’s recorded performances.</p></div><label>Award period<select id="house-honors-month"><option value="all" ${month==='all'?'selected':''}>All recorded matches</option>${data.months.map(value=>`<option value="${value}" ${value===month?'selected':''}>${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><div class="house-honors-period"><span>${monthName}</span><strong>${matches.length} match${matches.length===1?'':'es'}</strong></div><div class="house-honor-grid">
+    ${sbHonorCard('SB','Sandiest Bum',honors.sandiest,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.goals} goals · ${player.assists} assists · ${player.wins} wins`,true)}
+    ${sbHonorCard('GB','Golden Boot',honors.boot,player=>`${player.goals} goals`,player=>`${player.assists} assists in ${player.apps} appearances`)}
+    ${sbHonorCard('AL','Assist Leader',honors.assists,player=>`${player.assists} assists`,player=>`${player.goals} goals in ${player.apps} appearances`)}
+    ${sbHonorCard('DA','Defensive Anchor',honors.anchor,player=>`${player.rating.toFixed(2)} average rating`,player=>`${player.cleanSheets} clean sheets · ${player.interceptions} interceptions`)}
+    ${sbHonorCard('GG','Golden Gloves',honors.gloves,player=>`${player.cleanSheets} clean sheets`,player=>`${player.saves} saves in ${player.apps} appearances`)}
+    ${sbHonorCard('IU','Iron Unc',honors.iron,player=>`${player.apps} appearances`,player=>`${player.wins} wins · ${player.goals+player.assists} goal contributions`)}
+  </div><p class="house-feature-note"><strong>Sandiest Bum:</strong> a transparent monthly form score using average rating, goals, assists, Player of the Match awards, wins, and appearances.</p>`;
+}
+
 function sbBindMatchInteractions(root){
   root.querySelectorAll('.sandy-match-card').forEach(card=>{
     card.addEventListener('toggle',async()=>{
@@ -150,8 +232,11 @@ async function hydrateSandyTrackerPreview(){
     root.querySelector('[data-sandy-panel="squad"]').innerHTML=sbSquad(data);
     root.querySelector('[data-sandy-panel="matches"]').innerHTML=sbMatches(data);
     root.querySelector('[data-sandy-panel="analytics"]').innerHTML=sbAnalytics(data,totals);
+    root.querySelector('[data-sandy-panel="partnerships"]').innerHTML=sbPartnerships(data);
+    root.querySelector('[data-sandy-panel="honors"]').innerHTML=sbHonors(data);
     root.querySelector('#sandy-player-sort')?.addEventListener('change',event=>{const grid=root.querySelector('#sandy-squad-grid'),key=event.target.value;[...grid.children].sort((a,b)=>Number(b.dataset[key])-Number(a.dataset[key])).forEach(card=>grid.append(card));});
     root.querySelector('#sandy-month-filter')?.addEventListener('change',event=>{const month=event.target.value,list=root.querySelector('#sandy-match-list'),hint=root.querySelector('#sandy-match-scroll-hint');const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month);list.innerHTML=matches.map(sbMatchCard).join('')||'<p>No matches in this month.</p>';hint.hidden=matches.length<=10;hint.textContent=`Latest 10 are in view · scroll for ${Math.max(0,matches.length-10)} older matches.`;sbBindMatchInteractions(root);sbApplyMatchWindow(list);});
+    root.querySelector('[data-sandy-panel="honors"]')?.addEventListener('change',event=>{if(event.target.id!=='house-honors-month')return;root.querySelector('[data-sandy-panel="honors"]').innerHTML=sbHonors(data,event.target.value);});
     root.querySelector('#sandy-compare-a')?.addEventListener('change',()=>sbRenderComparison(root));root.querySelector('#sandy-compare-b')?.addEventListener('change',()=>sbRenderComparison(root));sbRenderComparison(root);sbBindMatchInteractions(root);sbApplyMatchWindow(root.querySelector('#sandy-match-list'));
   }catch{
     root.querySelector('#sandy-link-status').textContent='Stats temporarily unavailable';root.querySelectorAll('.sandy-loading').forEach(panel=>panel.innerHTML='<p>Club results could not be reached. Please reload the page to try again.</p>');
