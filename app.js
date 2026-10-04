@@ -1127,10 +1127,8 @@ function render() {
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
-  else if (path === '/test/maykop') main.innerHTML = maykopClubDashboardPage();
-  else if (path === '/test/sandy-bums') main.innerHTML = sandyBumsTrackerPreviewPage();
   else if (path === routes.teams || path === '/clubs') main.innerHTML = leagueClubsPage(params);
-  else if (path === '/teams/house/fc-sandy-bums' || path === '/teams/house/fc-mountains') main.innerHTML = houseClubPage(houseClubNames[path.split('/').pop()]);
+  else if (path === '/teams/house/fc-sandy-bums' || path === '/teams/house/fc-mountains') main.innerHTML = houseClubTrackerPage(path.split('/').pop());
   else if (path.startsWith('/clubs/')) main.innerHTML = leagueClubProfile(decodeURIComponent(path.slice(7)),params);
   else if (path === '/players') main.innerHTML = leaguePlayersPage(params);
   else if (path.startsWith('/players/')) main.innerHTML = leaguePlayerProfile(path.slice(9),params);
@@ -1157,7 +1155,6 @@ function render() {
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
-  if(typeof bindMaykopDashboard==='function')bindMaykopDashboard();
   if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
   bindLeagueExplorer();
   if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();
@@ -1168,7 +1165,6 @@ function render() {
   renderAggregateByotBoard();
   hydrateUsersDirectory();
   hydrateHomeCalendar();
-  if(path==='/teams/house/fc-sandy-bums'||path==='/teams/house/fc-mountains')hydrateHouseClub(path.split('/').pop());
   window.scrollTo({ ...scrollPosition, behavior: 'instant' });
 }
 

@@ -7,24 +7,26 @@ const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const source=readFileSync(new URL('../sandy-dashboard-preview.js',import.meta.url),'utf8');
 const css=readFileSync(new URL('../sandy-dashboard-preview.css',import.meta.url),'utf8');
 
-test('Sandy Bums test route loads the isolated permanent tracker dashboard',()=>{
-  assert.match(app,/path === '\/test\/sandy-bums'/);
+test('both live house-club routes load the public tracker dashboard',()=>{
+  assert.match(app,/houseClubTrackerPage\(path\.split\('\/'\)\.pop\(\)\)/);
+  assert.match(source,/'fc-sandy-bums'/);
+  assert.match(source,/'fc-mountains'/);
   assert.match(app,/bindSandyTrackerPreview/);
   assert.match(html,/sandy-dashboard-preview\.js/);
   assert.match(html,/sandy-dashboard-preview\.css/);
 });
 
-test('Sandy dashboard reads the existing archive and preserves match drilldowns',()=>{
-  assert.match(source,/fetch\('\/api\/house-clubs\/fc-sandy-bums\?month=all&details=2'\)/);
+test('house dashboard reads the selected club and preserves match drilldowns',()=>{
+  assert.match(source,/api\/house-clubs\/\$\{sandyTrackerState\.club\.slug\}/);
   assert.match(source,/data-match-id/);
   assert.match(source,/data-sandy-match-view="stats"/);
   assert.match(source,/data-sandy-match-view="players"/);
-  assert.match(source,/match-ID dedupe/);
+  assert.match(source,/complete match report/);
 });
 
-test('Sandy dashboard exposes players, analytics, tracker status and responsive styling',()=>{
-  for(const label of ['Players','Matches','Analytics','Tracker'])assert.match(source,new RegExp(`'${label}'`));
-  assert.match(source,/20-minute rollout target/);
+test('house dashboard exposes clean public players, matches and analytics without internal tracker copy',()=>{
+  for(const label of ['Players','Matches','Analytics'])assert.match(source,new RegExp(`'${label}'`));
+  assert.doesNotMatch(source,/Permanent|permanent|TEST REALM|20-minute rollout target|Tracker status/);
   assert.match(css,/\.sandy-dual-chart/);
   assert.match(css,/@media\(max-width:760px\)/);
 });
