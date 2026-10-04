@@ -39,7 +39,7 @@ In Cloudflare Pages → `ufl-major-update-preview` → Settings → Variables an
 
 Create leagues with zero teams. Each league has separate draft team registration; close registration before generating fixtures (3–40 teams for this two-opponent format). Reopening registration preserves teams but clears draft fixtures after confirmation. League creation never requires a minimum team count. EA IDs entered manually are explicitly unverified.
 
-Drafts save only on the current device when explicitly requested, or as an exported version-2 JSON file. They are not shared server records. Version-1 files remain supported. Imports validate teams and regenerate only schedules previously generated, rather than trusting arbitrary fixtures. EA candidate checks require both linked club IDs plus the configured kickoff window; ambiguous candidates require review. Even one candidate is not counted automatically. No result acceptance or standings/stat/award publication exists yet.
+Drafts save only on the current device when explicitly requested, or as an exported version-3 JSON file. They are not shared server records. Version-1 and version-2 files remain supported. Imports validate teams and regenerate only schedules previously generated, rather than trusting arbitrary fixtures. EA candidate checks require both linked club IDs plus the configured kickoff window; ambiguous candidates require review. Even one candidate is not counted automatically. No result acceptance or standings/stat/award publication exists yet.
 
 Public Virtual Arena review on 4 October 2026: inspected competition standings, team list, Roma profile/roster, stats and squads navigation. Observed season-scoped Teams/Players/Matches/Finals/Stats/Standings/TOTW tabs; team profiles separate calendar/history, grouped player positions, per-player stats and formation. No authenticated VA admin controls were inspected. Collaborator screenshots are needed to compare those controls, not to define UFL requirements.
 
@@ -68,3 +68,11 @@ Do not treat the workshop as migration-ready until the complete operational flow
 - Import/reconciliation dry run against VA: identities, rosters, fixtures, results, standings and stat totals agree; permissions, rollback, backups and image preservation verified before switching the official site.
 
 Implementation order: persistent league/registration and permissions first; scheduling and accepted-result pipeline second; public views and awards third; migration rehearsal last. The initial local builder covers only draft league registration, schedules and EA candidate review.
+
+## Saved handoff — 4 October 2026
+
+- League administration and calendar work is deployed at https://ufl-major-update-preview.pages.dev/league-workshop and committed on this preview branch. Tested empty league creation, subsequent registration, recurring schedule edits, cup/break reservations, DST, preserved matchups, and save/reload.
+- The user is independently testing Maykop club changes at https://ufl-maykop-club-preview.pages.dev/test/maykop?v=analytics-204dd43 before approving them for production. This chat did not modify, deploy or verify that preview; the web reader could not access it.
+- The user may edit live team pages during league development. At promotion, start from the latest production revision and reconcile approved Maykop work, team edits, shared identities and portraits. Never replace production with this older clone or deploy its isolated infrastructure to the live project.
+- Remaining major work: shared database-backed seasons/leagues/registration, real owner/admin/manager enforcement, rosters and invitations, accepted-result pipeline, league views/statistics, awards, then a VA migration rehearsal.
+- Browser-created league drafts are separate from Git: use “Save drafts on this device” before closing; download a draft file to move them to another PC. Do not claim unsaved browser entries are backed up by committing code.
