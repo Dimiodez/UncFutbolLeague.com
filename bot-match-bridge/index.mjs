@@ -45,8 +45,21 @@ export async function handleBridge(request,env,fetcher=fetch) {
   if(request.method!=='GET')return json({error:'Read-only service.'},405);
   if(url.hostname!=='ufb.internal'||request.headers.get('x-ufl-channel-id')!==guild||url.searchParams.get('channelId')!==guild)return json({error:'Invalid private service scope.'},403);
   const match=url.pathname.match(/^\/admin\/linked-clubs\/(\d{1,16})\/matches$/);
-  if(url.pathname!=='/admin/linked-clubs'&&!match)return json({error:'Not found.'},404);
+  const access=url.pathname.match(/^\/club-access\/(\d{1,16})$/);
+  if(url.pathname!=='/admin/linked-clubs'&&!match&&!access)return json({error:'Not found.'},404);
   try {
+    if(access){
+      const discordId=url.searchParams.get('discordId')||'';
+      if(!/^\d{15,22}$/.test(discordId))return json({error:'Invalid Discord identity.'},400);
+      const row=await env.BOT_DB.prepare(`${query} AND t.ea_club_id=? AND (
+        t.manager_discord_id=? OR
+        EXISTS(SELECT 1 FROM team_managers mgr WHERE mgr.team_id=t.id AND mgr.discord_id=?) OR
+        EXISTS(SELECT 1 FROM team_members member WHERE member.team_id=t.id AND member.discord_id=?)
+      ) LIMIT 1`).bind(guild,...slugs,access[1],discordId,discordId,discordId).first();
+      if(!row)return json({allowed:false},403);
+      const manager=await env.BOT_DB.prepare('SELECT 1 AS yes FROM teams t WHERE t.id=? AND t.manager_discord_id=? UNION SELECT 1 AS yes FROM team_managers m WHERE m.team_id=? AND m.discord_id=? LIMIT 1').bind(row.id,discordId,row.id,discordId).first();
+      return json({allowed:true,role:manager?'manager':'player',club:clubView(row)});
+    }
     const prepared=env.BOT_DB.prepare(query+(match?' AND t.id=?':' ORDER BY l.squad_size,t.name'));
     if(!match){const rows=await prepared.bind(guild,...slugs).all();return json({clubs:rows.results.map(clubView)});}
     const row=await prepared.bind(guild,...slugs,match[1]).first();
