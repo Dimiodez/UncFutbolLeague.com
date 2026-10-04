@@ -77,7 +77,19 @@ function sbSquad(data){
 }
 
 function sbMatches(data){
-  return `<div class="club-panel-heading"><div><span class="section-kicker">Permanent EA result archive</span><h2>Every saved match</h2><p>Open a result for the same detailed stat fields used by the UFB match report.</p></div><label>Month<select id="sandy-month-filter"><option value="all">All recorded months</option>${data.months.map(month=>`<option value="${month}">${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${month}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><div class="club-match-list" id="sandy-match-list">${data.matches.map(sbMatchCard).join('')}</div>`;
+  return `<div class="club-panel-heading"><div><span class="section-kicker">Permanent EA result archive</span><h2>Every saved match</h2><p>Open a result for the same detailed stat fields used by the UFB match report.</p></div><label>Month<select id="sandy-month-filter"><option value="all">All recorded months</option>${data.months.map(month=>`<option value="${month}">${new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${month}-01T12:00:00Z`))}</option>`).join('')}</select></label></div><p class="sandy-match-scroll-hint" id="sandy-match-scroll-hint" ${data.matches.length<=10?'hidden':''}>Latest 10 are in view · scroll for ${Math.max(0,data.matches.length-10)} older matches.</p><div class="club-match-list" id="sandy-match-list" aria-describedby="sandy-match-scroll-hint">${data.matches.map(sbMatchCard).join('')}</div>`;
+}
+
+function sbApplyMatchWindow(list){
+  if(!list)return;
+  const cards=[...list.querySelectorAll(':scope > .sandy-match-card')],scrollable=cards.length>10;
+  list.classList.toggle('sandy-scroll-list',scrollable);
+  if(!scrollable){list.style.removeProperty('--sandy-match-window');return;}
+  requestAnimationFrame(()=>{
+    const gap=parseFloat(getComputedStyle(list).rowGap)||0;
+    const height=cards.slice(0,10).reduce((sum,card)=>sum+card.getBoundingClientRect().height,0)+(gap*9)+2;
+    list.style.setProperty('--sandy-match-window',`${Math.ceil(height)}px`);
+  });
 }
 
 function sbAnalytics(data,totals){
@@ -137,8 +149,8 @@ async function hydrateSandyTrackerPreview(){
     root.querySelector('[data-sandy-panel="analytics"]').innerHTML=sbAnalytics(data,totals);
     root.querySelector('[data-sandy-panel="tracker"]').innerHTML=sbTracker(data);
     root.querySelector('#sandy-player-sort')?.addEventListener('change',event=>{const grid=root.querySelector('#sandy-squad-grid'),key=event.target.value;[...grid.children].sort((a,b)=>Number(b.dataset[key])-Number(a.dataset[key])).forEach(card=>grid.append(card));});
-    root.querySelector('#sandy-month-filter')?.addEventListener('change',event=>{const month=event.target.value,list=root.querySelector('#sandy-match-list');const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month);list.innerHTML=matches.map(sbMatchCard).join('')||'<p>No archived matches in this month.</p>';sbBindMatchInteractions(root);});
-    root.querySelector('#sandy-compare-a')?.addEventListener('change',()=>sbRenderComparison(root));root.querySelector('#sandy-compare-b')?.addEventListener('change',()=>sbRenderComparison(root));sbRenderComparison(root);sbBindMatchInteractions(root);
+    root.querySelector('#sandy-month-filter')?.addEventListener('change',event=>{const month=event.target.value,list=root.querySelector('#sandy-match-list'),hint=root.querySelector('#sandy-match-scroll-hint');const matches=month==='all'?data.matches:data.matches.filter(match=>sbMonth(match.played_at)===month);list.innerHTML=matches.map(sbMatchCard).join('')||'<p>No archived matches in this month.</p>';hint.hidden=matches.length<=10;hint.textContent=`Latest 10 are in view · scroll for ${Math.max(0,matches.length-10)} older matches.`;sbBindMatchInteractions(root);sbApplyMatchWindow(list);});
+    root.querySelector('#sandy-compare-a')?.addEventListener('change',()=>sbRenderComparison(root));root.querySelector('#sandy-compare-b')?.addEventListener('change',()=>sbRenderComparison(root));sbRenderComparison(root);sbBindMatchInteractions(root);sbApplyMatchWindow(root.querySelector('#sandy-match-list'));
   }catch{
     root.querySelector('#sandy-link-status').textContent='Archive temporarily unavailable';root.querySelectorAll('.sandy-loading').forEach(panel=>panel.innerHTML='<p>The permanent archive could not be reached. Saved matches are safe; reload this test page to try again.</p>');
   }

@@ -28,3 +28,11 @@ test('Sandy dashboard exposes players, analytics, tracker status and responsive 
   assert.match(css,/\.sandy-dual-chart/);
   assert.match(css,/@media\(max-width:760px\)/);
 });
+
+test('Sandy match archive keeps every result but initially windows the latest ten',()=>{
+  assert.match(source,/Latest 10 are in view/);
+  assert.match(source,/cards\.slice\(0,10\)/);
+  assert.match(source,/sbApplyMatchWindow/);
+  assert.match(css,/\.sandy-scroll-list\{max-height/);
+  assert.match(css,/overflow-y:auto/);
+});
