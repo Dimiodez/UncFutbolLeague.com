@@ -37,8 +37,28 @@ In Cloudflare Pages → `ufl-major-update-preview` → Settings → Variables an
 
 `/league-workshop.html` is a no-login planning/test surface, not a replacement for secure admin or manager access. Multiple leagues can be drafted under one season; no leagues are created by default. League creation selects format, players per side, day, first date, kickoff, timezone and spacing between two games. Double round-robin fixtures preserve local kickoff through DST. Odd-team leagues show unavoidable byes.
 
-Drafts save only on the current device when explicitly requested, or as an exported JSON file. They are not shared server records. Imports regenerate/validate schedules rather than trusting arbitrary fixtures. EA candidate checks require both linked club IDs plus the configured kickoff window; ambiguous candidates require review. Even one candidate is not counted automatically. No result acceptance or standings/stat/award publication exists yet.
+Create leagues with zero teams. Each league has separate draft team registration; close registration before generating fixtures (3–40 teams for this two-opponent format). Reopening registration preserves teams but clears draft fixtures after confirmation. League creation never requires a minimum team count. EA IDs entered manually are explicitly unverified.
+
+Drafts save only on the current device when explicitly requested, or as an exported version-2 JSON file. They are not shared server records. Version-1 files remain supported. Imports validate teams and regenerate only schedules previously generated, rather than trusting arbitrary fixtures. EA candidate checks require both linked club IDs plus the configured kickoff window; ambiguous candidates require review. Even one candidate is not counted automatically. No result acceptance or standings/stat/award publication exists yet.
 
 Public Virtual Arena review on 4 October 2026: inspected competition standings, team list, Roma profile/roster, stats and squads navigation. Observed season-scoped Teams/Players/Matches/Finals/Stats/Standings/TOTW tabs; team profiles separate calendar/history, grouped player positions, per-player stats and formation. No authenticated VA admin controls were inspected. Collaborator screenshots are needed to compare those controls, not to define UFL requirements.
 
 Next: durable season/league/member model with one active team per player per league; admin/manager authorization and invitations; scheduled result review/acceptance; accepted-results-only standings/stats; TOTW/TOTS formation tools. The user's shared planning Doc remains authoritative; this first milestone does not claim those later features are implemented.
+
+## VA replacement acceptance checklist
+
+Do not treat the workshop as migration-ready until the complete operational flow is tested:
+
+- Shared, persistent seasons and initially empty leagues; independent registration windows and configurable matchnight settings.
+- Discord identity and tested administrator/manager permissions: managers edit only assigned teams/players; administrators manage seasons, standings and awards. Do not simulate authentication in the public preview.
+- Team registration after league creation, display name separate from EA club name, verified EA lookup/recheck, assigned managers and roster invitation links.
+- Stable player identities across leagues, PSN/Origin/Xbox identifiers (never credentials), one active team per player per league, shared portraits preserved.
+- Schedule generation after registration, two opponents per night, home/away round-robin, configurable weekdays/timezones, byes and explicit rescheduling rules.
+- Scheduled-game ingestion, duplicate prevention, ambiguous-game staff review, acceptance/correction history; unrelated club games never count toward the league.
+- Accepted-results-only standings and player/team statistics, with goals, assists, goals against, defender clean sheets, ratings and successful tackles where supported by verified data.
+- Team calendar/history, rosters grouped by position, player profiles and formations; separate concurrent 6v6 and 10v10 views.
+- Administrator-selected TOTW/TOTS formations, position eligibility, week/season filters, average-rating candidates, player portraits/team crests and downloadable award images.
+- Season cups with knockout/random draws; later top/bottom finals and division-combination rules. Calendar/attendance integration remains optional until specified.
+- Import/reconciliation dry run against VA: identities, rosters, fixtures, results, standings and stat totals agree; permissions, rollback, backups and image preservation verified before switching the official site.
+
+Implementation order: persistent league/registration and permissions first; scheduling and accepted-result pipeline second; public views and awards third; migration rehearsal last. The initial local builder covers only draft league registration, schedules and EA candidate review.

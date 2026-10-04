@@ -9,6 +9,20 @@ export function zonedTimestamp(date,time,timeZone){
  if(wall(guess)!==target)throw Error('That local time does not exist because the clocks change. Choose another time.');
  return guess;
 }
+export function createLeagueDraft(settings){
+ return {settings:{...settings,teams:[...(settings.teams||[])]},registrationOpen:true,scheduleGenerated:false,fixtures:[],nights:[],warnings:[]};
+}
+export function registerLeagueTeam(draft,team){
+ if(!draft.registrationOpen)throw Error('Registration is closed for this league.');
+ if(draft.scheduleGenerated)throw Error('Reopen registration before changing teams. This clears the draft schedule.');
+ const name=String(team.name||'').trim(),eaClubId=String(team.eaClubId||'').trim();
+ if(!name||name.length>80||eaClubId&&!/^\d{1,20}$/.test(eaClubId))throw Error('Enter a team name and, optionally, a numeric EA club ID.');
+ const teams=draft.settings.teams;
+ if(teams.length>=40)throw Error('This draft supports up to 40 teams.');
+ if(teams.some(existing=>existing.name.trim().toLowerCase()===name.toLowerCase()||eaClubId&&existing.eaClubId===eaClubId))throw Error('That team name or EA club is already registered in this league.');
+ const nextId=Math.max(0,...teams.map(existing=>Number(existing.id.replace('team-',''))))+1;
+ return {...draft,settings:{...draft.settings,teams:[...teams,{id:`team-${nextId}`,name,eaClubId}]}};
+}
 export function buildLeagueSchedule(settings){
  const teams=settings.teams||[];
  if(teams.length<3||teams.length>40)throw Error('Choose 3–40 teams. Two different opponents per night need at least three teams.');
@@ -37,7 +51,7 @@ export function buildLeagueSchedule(settings){
   const timestamp=zonedTimestamp(localDate,settings.time,settings.timeZone)+(round%2)*spacing*60000;
   for(const game of allRounds[round]){const fixture={id:`fixture-${fixtures.length+1}`,week:night+1,round:round+1,date:localDate,startsAt:timestamp,home:game.home,away:game.away,status:'scheduled'};fixtures.push(fixture);nights[night].fixtures.push(fixture);}
  }
- return {settings,fixtures,nights,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
+ return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
 }
 export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[]}={}){
  const home=String(fixture.home.eaClubId||''),away=String(fixture.away.eaClubId||'');

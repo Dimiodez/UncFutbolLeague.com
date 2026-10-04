@@ -1,7 +1,20 @@
 import assert from 'node:assert/strict';
-import {buildLeagueSchedule,fixtureCandidates,zonedTimestamp} from '../league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp} from '../league-engine.js';
 const settings={season:'Season 2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:8},(_,i)=>({id:`team-${i+1}`,name:`Team ${i+1}`,eaClubId:String(100+i)}))};
 const schedule=buildLeagueSchedule(settings);
+let empty=createLeagueDraft({...settings,teams:[]});
+assert.equal(empty.settings.teams.length,0);assert.equal(empty.fixtures.length,0);assert.equal(empty.registrationOpen,true);
+empty=registerLeagueTeam(empty,{name:'Roma'});
+assert.equal(empty.settings.teams.length,1);assert.equal(empty.scheduleGenerated,false);
+assert.throws(()=>registerLeagueTeam(empty,{name:' ROMA '}));
+assert.throws(()=>registerLeagueTeam({...empty,registrationOpen:false},{name:'Toluca'}));
+assert.equal(registerLeagueTeam(createLeagueDraft({...settings,league:'10v10',teams:[]}),{name:'Roma'}).settings.teams.length,1);
+assert.throws(()=>buildLeagueSchedule(empty.settings));
+empty=registerLeagueTeam(registerLeagueTeam(empty,{name:'Toluca',eaClubId:'123'}),{name:'Bayern'});
+assert.throws(()=>registerLeagueTeam(empty,{name:'Other',eaClubId:'123'}));
+assert.equal(buildLeagueSchedule(empty.settings).fixtures.length,6);
+assert.equal(buildLeagueSchedule(empty.settings).registrationOpen,false);
+assert.equal(createLeagueDraft(buildLeagueSchedule(empty.settings).settings).fixtures.length,0);
 assert.equal(schedule.fixtures.length,56);assert.equal(schedule.nights.length,7);
 for(const team of settings.teams){const games=schedule.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(games.length,14);for(const night of schedule.nights){const tonight=night.fixtures.filter(game=>game.home.id===team.id||game.away.id===team.id);assert.equal(tonight.length,2);assert.notEqual(tonight[0].home.id===team.id?tonight[0].away.id:tonight[0].home.id,tonight[1].home.id===team.id?tonight[1].away.id:tonight[1].home.id);}for(const other of settings.teams.filter(other=>other.id!==team.id))assert.equal(games.filter(game=>game.home.id===other.id||game.away.id===other.id).length,2);}
 assert.equal(new Date(zonedTimestamp('2026-10-29','20:00','America/Chicago')).toISOString(),'2026-10-30T01:00:00.000Z');
