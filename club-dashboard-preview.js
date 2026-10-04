@@ -28,11 +28,85 @@ const maykopDashboardData = {
     { result:'W', score:'5–0', opponent:'FC FENIX', players:8, note:'aaaa111aaaaa (4) · Odez' },
     { result:'W', score:'3–1', opponent:'Trendy Lions', players:9, note:'IffyPopcorn3914 (3)' },
     { result:'W', score:'2–0', opponent:'Los Timidos', players:9, note:'llzoll · IffyPopcorn3914' }
-  ]
+  ],
+  analytics: {
+    ratingSeries: {
+      'Schwein':[7.4,8.1,7.8,8.4,8.0,9.3,7.9,8.2,8.5,8.1],
+      'D. Dezhimoviç':[7.1,7.6,7.2,8.0,7.8,8.1,7.3,7.9,7.7,7.5],
+      'B. Papi':[7.6,8.0,8.2,7.8,8.4,8.1,7.9,8.3,7.7,8.0],
+      'f. last':[7.0,7.4,7.8,7.6,7.2,8.0,7.5,7.7,7.3,7.5]
+    },
+    matchMetrics: {
+      rating:[7.1,7.4,7.8,7.6,7.9,7.7,7.2,8.1,7.8,7.6],
+      tackles:[5,8,7,9,6,7,10,5,8,7],
+      passing:[77,81,84,80,83,85,78,86,82,84],
+      contributions:[0,1,2,1,3,2,0,3,2,1]
+    }
+  }
 };
 
 function maykopCrest() {
   return `<div class="maykop-crest" role="img" aria-label="UFL Maykop crest"><span class="maykop-ball">◆</span><strong>UM</strong></div>`;
+}
+
+const maykopSamplePlayers = [
+  {name:'Schweinslap',position:'CM',rating:9.3,goals:0,assists:0,shots:2,passes:36,tackles:4,motm:true},
+  {name:'Odez',position:'ST',rating:8.1,goals:1,assists:0,shots:3,passes:24,tackles:2},
+  {name:'IffyPopcorn3914',position:'ST',rating:7.9,goals:1,assists:1,shots:2,passes:16,tackles:0},
+  {name:'Empyre7737',position:'CB',rating:7.2,goals:0,assists:0,shots:0,passes:14,tackles:1},
+  {name:'aaaa111aaaaa',position:'ST',rating:6.7,goals:0,assists:0,shots:3,passes:14,tackles:0},
+  {name:'Bruceybistro',position:'CM',rating:6.3,goals:0,assists:0,shots:0,passes:12,tackles:0}
+];
+
+function maykopStatBar(label,home,away,suffix='') {
+  const max=Math.max(Number(home)||0,Number(away)||0,1);
+  const homeWidth=Math.round((Number(home)||0)/max*100);
+  const awayWidth=Math.round((Number(away)||0)/max*100);
+  return `<div class="match-stat-line"><div><strong>${home}${suffix}</strong><span>${label}</span><strong>${away}${suffix}</strong></div><div class="match-stat-tracks"><i style="width:${homeWidth}%"></i><i style="width:${awayWidth}%"></i></div></div>`;
+}
+
+function maykopMatchDetails(match,index) {
+  const isFeatured=match.opponent==='A2Touch';
+  const [homeScore,awayScore]=match.score.split('–').map(Number);
+  const stats=isFeatured
+    ? [['Goals',2,0,''],['Shots',10,3,''],['Shot accuracy',20,0,'%'],['Passes',116,114,''],['Pass accuracy',85,79,'%'],['Assists',1,0,''],['Tackles',7,6,''],['Tackle success',35,23,'%'],['Saves',0,6,''],['Average rating',7.6,6.6,'']]
+    : [['Goals',homeScore,awayScore,''],['Shots',Math.max(homeScore*3+2,4),Math.max(awayScore*3+2,3),''],['Pass accuracy',78+index%7,74+index%6,'%'],['Passes',102+index*4,96+index*3,''],['Tackles',5+index%6,4+(index*2)%7,''],['Average rating',(match.result==='W'?7.7:6.5),(match.result==='W'?6.6:7.6),'']];
+  const players=isFeatured?maykopSamplePlayers:maykopSamplePlayers.slice(0,Math.min(match.players,6)).map((player,row)=>({...player,rating:Math.max(5.8,Number((player.rating-(index%3)*.2+row*.03).toFixed(1)))}));
+  return `<div class="club-match-details">
+    <div class="match-detail-tabs" role="tablist" aria-label="${match.opponent} match details">
+      <button type="button" class="is-active" data-match-view="stats" aria-selected="true">Match stats</button>
+      <button type="button" data-match-view="players" aria-selected="false">Player stats</button>
+    </div>
+    <section data-match-panel="stats" class="match-detail-panel"><div class="match-stat-sheet"><div class="match-stat-clubs"><strong>UFL Maykop</strong><b>${match.score}</b><strong>${match.opponent}</strong></div>${stats.map(row=>maykopStatBar(...row)).join('')}</div></section>
+    <section data-match-panel="players" class="match-detail-panel" hidden>
+      <div class="match-player-callout"><span>UNC player of the match</span><strong>${players.find(player=>player.motm)?.name||players[0].name}</strong><b>${players.find(player=>player.motm)?.rating||players[0].rating}</b></div>
+      <div class="match-player-table-wrap"><table class="match-player-table"><thead><tr><th>Player</th><th>Pos</th><th>Rating</th><th>G</th><th>A</th><th>Shots</th><th>Passes</th><th>Tackles</th></tr></thead><tbody>${players.map(player=>`<tr><td>${player.motm?'★ ':''}${player.name}</td><td>${player.position}</td><td><b>${player.rating}</b></td><td>${player.goals||'—'}</td><td>${player.assists||'—'}</td><td>${player.shots||'—'}</td><td>${player.passes||'—'}</td><td>${player.tackles||'—'}</td></tr>`).join('')}</tbody></table></div>
+    </section>
+    ${isFeatured?'':`<p class="match-prototype-note">Interaction preview. Exact match fields will come from the archived EA response when this club is connected.</p>`}
+  </div>`;
+}
+
+function maykopMatchCard(match,index,clubName) {
+  return `<details class="club-match-card"><summary class="club-match-row"><b class="club-form-${match.result.toLowerCase()}">${match.result}</b><div><small>${index<6?'Today':'Yesterday'} · League</small><strong>${clubName} <em>${match.score}</em> ${match.opponent}</strong><span>${match.players} Maykop players · ${match.note}</span></div><span class="club-match-action">Full stats</span></summary>${maykopMatchDetails(match,index)}</details>`;
+}
+
+function maykopBars(values,{suffix='',max=Math.max(...values),decimals=1}={}) {
+  return values.map((value,index)=>`<div class="analytics-bar"><i style="height:${Math.max(10,Math.round(value/max*100))}%"></i><b>${Number(value).toFixed(decimals)}${suffix}</b><small>${index+1}</small></div>`).join('');
+}
+
+function maykopAnalyticsPanel() {
+  const {players,analytics}=maykopDashboardData;
+  const initial='Schwein';
+  const series=analytics.ratingSeries[initial];
+  return `<div class="club-panel-heading"><div><span class="section-kicker">Ten-match intelligence</span><h2>Maykop analytics</h2><p>UFL-built trends from archived EA match fields. The production version will grow past EA’s recent-match window.</p></div><span class="season-chip season-chip-live">Test data</span></div>
+    <div class="analytics-grid">
+      <article class="club-dashboard-card analytics-form-card"><div class="analytics-card-head"><div><span class="section-kicker">Player form</span><h3>Rating trend</h3></div><select id="maykop-form-player" aria-label="Select player for rating trend">${Object.keys(analytics.ratingSeries).map(name=>`<option ${name===initial?'selected':''}>${name}</option>`).join('')}</select></div><div class="analytics-chart" id="maykop-form-chart">${maykopBars(series,{max:10})}</div><div class="analytics-summary"><span>10-match average <strong id="maykop-form-average">${(series.reduce((a,b)=>a+b,0)/series.length).toFixed(1)}</strong></span><span>Latest <strong id="maykop-form-latest">${series.at(-1).toFixed(1)}</strong></span></div></article>
+      <article class="club-dashboard-card analytics-rank-card"><span class="section-kicker">Current form</span><h3>Maykop power five</h3><ol>${[...players].sort((a,b)=>b.rating-a.rating).slice(0,5).map((player,index)=>`<li><b>${index+1}</b><span>${player.name}<small>${player.games} appearances</small></span><strong>${player.rating}</strong></li>`).join('')}</ol></article>
+      <article class="club-dashboard-card analytics-match-card"><div class="analytics-card-head"><div><span class="section-kicker">Match by match</span><h3>Club performance</h3></div><div class="analytics-metric-buttons" role="group" aria-label="Select match metric">${[['rating','Rating'],['tackles','Tackles'],['passing','Pass %'],['contributions','G + A']].map(([key,label],index)=>`<button type="button" data-analytics-metric="${key}" class="${index===0?'is-active':''}">${label}</button>`).join('')}</div></div><div class="analytics-chart analytics-wide-chart" id="maykop-match-chart">${maykopBars(analytics.matchMetrics.rating,{max:10})}</div><p id="maykop-match-caption">Average team rating across the latest ten archived results.</p></article>
+      <article class="club-dashboard-card analytics-pulse-card"><span class="section-kicker">Club pulse</span><h3>What the numbers say</h3><div class="analytics-pulse-grid"><div><b>50%</b><span>Clean-sheet rate</span><small>5 in the latest 10</small></div><div><b>1.3</b><span>Goals conceded</span><small>per match</small></div><div><b>85%</b><span>Pass leader</span><small>B. Papi</small></div><div><b>+12</b><span>Goal difference</span><small>latest 10</small></div></div></article>
+      <article class="club-dashboard-card analytics-compare-card"><div class="analytics-card-head"><div><span class="section-kicker">Side by side</span><h3>Player comparison</h3></div><div class="analytics-compare-selects"><select id="maykop-compare-a" aria-label="First player">${players.map((player,index)=>`<option ${index===1?'selected':''}>${player.name}</option>`).join('')}</select><span>vs</span><select id="maykop-compare-b" aria-label="Second player">${players.map((player,index)=>`<option ${index===2?'selected':''}>${player.name}</option>`).join('')}</select></div></div><div id="maykop-player-comparison"></div></article>
+      <article class="club-dashboard-card analytics-archive-card"><span class="section-kicker">Permanent match history</span><h3>Built beyond the recent 10</h3><div class="archive-flow"><b>EA results</b><i>20 min</i><b>UFB archive</b><i>dedupe</i><b>Club page</b></div><p>Each linked club will be checked every 20 minutes. Match, team and player rows are stored once by EA match ID, so older results remain available as the season grows.</p><small>Architecture ready in this test branch · polling is not enabled for Maykop yet.</small></article>
+    </div>`;
 }
 
 function maykopClubDashboardPage() {
@@ -53,7 +127,7 @@ function maykopClubDashboardPage() {
       <div class="club-dashboard-form"><span>Recent form</span><div>${form}</div><small>Last 8 · 5W · 0D · 3L</small></div>
     </header>
     <nav class="club-dashboard-tabs" role="tablist" aria-label="UFL Maykop dashboard sections">
-      ${[['overview','Overview'],['squad','Squad'],['matches','Matches'],['honors','UNC Honors']].map(([id,label],index)=>`<button type="button" role="tab" aria-selected="${index===0}" aria-controls="club-panel-${id}" id="club-tab-${id}" data-club-dashboard-tab="${id}">${label}</button>`).join('')}
+      ${[['overview','Overview'],['squad','Squad'],['matches','Matches'],['analytics','Analytics'],['honors','UNC Honors']].map(([id,label],index)=>`<button type="button" role="tab" aria-selected="${index===0}" aria-controls="club-panel-${id}" id="club-tab-${id}" data-club-dashboard-tab="${id}">${label}</button>`).join('')}
     </nav>
     <div class="club-dashboard-panels">
       <section role="tabpanel" id="club-panel-overview" aria-labelledby="club-tab-overview" data-club-dashboard-panel="overview">
@@ -68,10 +142,11 @@ function maykopClubDashboardPage() {
         <div class="club-squad-grid" id="maykop-squad-grid">${players.map(player=>maykopPlayerCard(player)).join('')}</div>
       </section>
       <section role="tabpanel" id="club-panel-matches" aria-labelledby="club-tab-matches" data-club-dashboard-panel="matches" hidden>
-        <div class="club-panel-heading"><div><span class="section-kicker">EA result feed</span><h2>Recent matches</h2></div><span class="season-chip season-chip-live">Post-match data</span></div>
-        <div class="club-match-list">${matches.map((match,index)=>`<article class="club-match-row"><b class="club-form-${match.result.toLowerCase()}">${match.result}</b><div><small>${index<6?'Today':'Yesterday'} · League</small><strong>${club.name} <em>${match.score}</em> ${match.opponent}</strong><span>${match.players} Maykop players · ${match.note}</span></div><button type="button" title="Full stat sheet will use the UFB match format">Full stats</button></article>`).join('')}</div>
-        <p class="club-data-note">The connected version would expand each result into the same complete player stat sheet used by the UFB <code>/matches</code> command.</p>
+        <div class="club-panel-heading"><div><span class="section-kicker">EA result archive</span><h2>All matches</h2><p>Open any result for team and player stats. Formations are intentionally excluded.</p></div><span class="season-chip season-chip-live">20-minute archive plan</span></div>
+        <div class="club-match-list">${matches.map((match,index)=>maykopMatchCard(match,index,club.name)).join('')}</div>
+        <p class="club-data-note"><strong>Test scope:</strong> the ten source matches are shown here now. When connected, the UFB archive will keep every new match instead of replacing history when EA’s recent-match window moves on.</p>
       </section>
+      <section role="tabpanel" id="club-panel-analytics" aria-labelledby="club-tab-analytics" data-club-dashboard-panel="analytics" hidden>${maykopAnalyticsPanel()}</section>
       <section role="tabpanel" id="club-panel-honors" aria-labelledby="club-tab-honors" data-club-dashboard-panel="honors" hidden>
         <div class="club-panel-heading"><div><span class="section-kicker">Our own clubhouse awards</span><h2>UNC Honors</h2><p>Original UFL recognition built from verified match totals—not copied award names.</p></div></div>
         <div class="club-honor-grid">${leaders.map(([title,name,value,copy],index)=>`<article><span>0${index+1}</span><div><small>${title}</small><h3>${name}</h3><strong>${value}</strong><p>${copy}</p></div></article>`).join('')}</div>
@@ -97,4 +172,34 @@ function bindMaykopDashboard() {
     const key=event.target.value,grid=root.querySelector('#maykop-squad-grid');
     [...grid.children].sort((a,b)=>Number(b.dataset[key])-Number(a.dataset[key])).forEach(card=>grid.append(card));
   });
+  root.querySelectorAll('.club-match-card').forEach(card=>{
+    card.querySelectorAll('[data-match-view]').forEach(button=>button.addEventListener('click',()=>{
+      const view=button.dataset.matchView;
+      card.querySelectorAll('[data-match-view]').forEach(item=>{const active=item.dataset.matchView===view;item.classList.toggle('is-active',active);item.setAttribute('aria-selected',String(active));});
+      card.querySelectorAll('[data-match-panel]').forEach(panel=>{panel.hidden=panel.dataset.matchPanel!==view;});
+    }));
+  });
+  const renderForm=name=>{
+    const series=maykopDashboardData.analytics.ratingSeries[name];
+    root.querySelector('#maykop-form-chart').innerHTML=maykopBars(series,{max:10});
+    root.querySelector('#maykop-form-average').textContent=(series.reduce((a,b)=>a+b,0)/series.length).toFixed(1);
+    root.querySelector('#maykop-form-latest').textContent=series.at(-1).toFixed(1);
+  };
+  root.querySelector('#maykop-form-player')?.addEventListener('change',event=>renderForm(event.target.value));
+  const metricConfig={rating:{max:10,decimals:1,copy:'Average team rating across the latest ten archived results.'},tackles:{max:12,decimals:0,copy:'Successful tackles recorded in each of the latest ten matches.'},passing:{max:100,decimals:0,suffix:'%',copy:'Team pass completion across the latest ten matches.'},contributions:{max:5,decimals:0,copy:'Goals plus assists credited to Maykop players in each result.'}};
+  root.querySelectorAll('[data-analytics-metric]').forEach(button=>button.addEventListener('click',()=>{
+    const key=button.dataset.analyticsMetric,config=metricConfig[key];
+    root.querySelectorAll('[data-analytics-metric]').forEach(item=>item.classList.toggle('is-active',item===button));
+    root.querySelector('#maykop-match-chart').innerHTML=maykopBars(maykopDashboardData.analytics.matchMetrics[key],config);
+    root.querySelector('#maykop-match-caption').textContent=config.copy;
+  }));
+  const renderComparison=()=>{
+    const find=name=>maykopDashboardData.players.find(player=>player.name===name);
+    const a=find(root.querySelector('#maykop-compare-a').value),b=find(root.querySelector('#maykop-compare-b').value);
+    const row=(label,key,suffix='')=>`<div><strong>${a[key]}${suffix}</strong><span>${label}</span><strong>${b[key]}${suffix}</strong></div>`;
+    root.querySelector('#maykop-player-comparison').innerHTML=`<div class="compare-names"><b>${a.name}</b><b>${b.name}</b></div><div class="compare-rows">${row('Rating','rating')}${row('Appearances','games')}${row('Goals','goals')}${row('Assists','assists')}${row('MOTM','motm')}${row('Pass accuracy','pass','%')}${row('Win rate','winRate','%')}</div>`;
+  };
+  root.querySelector('#maykop-compare-a')?.addEventListener('change',renderComparison);
+  root.querySelector('#maykop-compare-b')?.addEventListener('change',renderComparison);
+  if(root.querySelector('#maykop-player-comparison'))renderComparison();
 }
