@@ -86,6 +86,7 @@ function sbApplyMatchWindow(list){
   list.classList.toggle('sandy-scroll-list',scrollable);
   if(!scrollable){list.style.removeProperty('--sandy-match-window');return;}
   requestAnimationFrame(()=>{
+    if(!list.getBoundingClientRect().height){list.style.setProperty('--sandy-match-window','1080px');return;}
     const gap=parseFloat(getComputedStyle(list).rowGap)||0;
     const height=cards.slice(0,10).reduce((sum,card)=>sum+card.getBoundingClientRect().height,0)+(gap*9)+2;
     list.style.setProperty('--sandy-match-window',`${Math.ceil(height)}px`);
@@ -158,6 +159,6 @@ async function hydrateSandyTrackerPreview(){
 
 function bindSandyTrackerPreview(){
   const root=document.querySelector('.sandy-dashboard-preview');if(!root)return;
-  root.querySelectorAll('[data-sandy-tab]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.sandyTab;root.querySelectorAll('[data-sandy-tab]').forEach(item=>{const active=item===button;item.setAttribute('aria-selected',String(active));});root.querySelectorAll('[data-sandy-panel]').forEach(panel=>{panel.hidden=panel.dataset.sandyPanel!==id;});}));
+  root.querySelectorAll('[data-sandy-tab]').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.sandyTab;root.querySelectorAll('[data-sandy-tab]').forEach(item=>{const active=item===button;item.setAttribute('aria-selected',String(active));});root.querySelectorAll('[data-sandy-panel]').forEach(panel=>{panel.hidden=panel.dataset.sandyPanel!==id;});if(id==='matches')sbApplyMatchWindow(root.querySelector('#sandy-match-list'));}));
   hydrateSandyTrackerPreview();
 }
