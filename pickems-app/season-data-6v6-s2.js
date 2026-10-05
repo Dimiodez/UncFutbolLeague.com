@@ -11,10 +11,14 @@ window.UFL_SEASON_6V6_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-  "syncedAt": "2026-10-02T15:03:34.000Z",
-  "statsFetchedAt": "2026-10-02T15:03:34.000Z",
+  "syncedAt": "2026-10-04T21:27:52.000Z",
+  "statsFetchedAt": "2026-10-04T21:27:52.000Z",
   "statsStatus": "available",
   "teams": {
+    "TK": [
+      "UFL Ta6ascoKids",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png"
+    ],
     "PHN": [
       "Place Holder Name",
       null
@@ -29,6 +33,15 @@ window.UFL_SEASON_6V6_S2 = {
     ]
   },
   "teamDetails": [
+    {
+      "key": "TK",
+      "name": "UFL Ta6ascoKids",
+      "abbreviation": "TK",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
+      "rosterSize": 1,
+      "stats": []
+    },
     {
       "key": "PHN",
       "name": "Place Holder Name",
@@ -82,6 +95,17 @@ window.UFL_SEASON_6V6_S2 = {
     ],
     [
       "PHN",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "TK",
       0,
       0,
       0,
@@ -170,6 +194,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -201,6 +234,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "Place Holder Name",
               "image": null,
               "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
             },
             "team": null,
             "stat": 0
@@ -238,6 +280,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -269,6 +320,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "Place Holder Name",
               "image": null,
               "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
             },
             "team": null,
             "stat": 0
@@ -306,6 +366,15 @@ window.UFL_SEASON_6V6_S2 = {
             },
             "team": null,
             "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
+            },
+            "team": null,
+            "stat": 0
           }
         ]
       },
@@ -337,6 +406,15 @@ window.UFL_SEASON_6V6_S2 = {
               "name": "Place Holder Name",
               "image": null,
               "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Ta6ascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
             },
             "team": null,
             "stat": 0
