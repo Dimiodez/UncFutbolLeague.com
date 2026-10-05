@@ -57,6 +57,10 @@ test('club honors include month filtering and the Sandiest Bum headline award',(
   assert.match(source,/player with the most appearances/);
   assert.match(source,/Top Rated/);
   assert.match(source,/minimum 25% participation/);
+  assert.match(source,/player=>`\$\{player\.goals\} goals in \$\{player\.apps\} appearances`/);
+  assert.match(source,/player=>`\$\{player\.assists\} assists in \$\{player\.apps\} appearances`/);
+  assert.doesNotMatch(source,/honors\.boot,player=>`\$\{player\.goals\} goals`,player=>`\$\{player\.assists\}/);
+  assert.doesNotMatch(source,/honors\.assists,player=>`\$\{player\.assists\} assists`,player=>`\$\{player\.goals\}/);
   assert.match(source,/data-sandy-panel="honors"/);
 });
 
