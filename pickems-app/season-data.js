@@ -1789,7 +1789,7 @@ window.UFL_SEASONS = {
         "abbreviation": "ACM",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
-        "rosterSize": 9,
+        "rosterSize": 11,
         "stats": []
       },
       {
