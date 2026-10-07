@@ -1189,10 +1189,14 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-07T01:14:29.000Z",
-    "statsFetchedAt": "2026-10-07T01:14:29.000Z",
+    "syncedAt": "2026-10-07T03:52:18.000Z",
+    "statsFetchedAt": "2026-10-07T03:52:18.000Z",
     "statsStatus": "available",
     "teams": {
+      "ITA": [
+        "UFL Italia",
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
+      ],
       "LA": [
         "UFL LA FC",
         null
@@ -1227,6 +1231,15 @@ window.UFL_SEASONS = {
       ]
     },
     "teamDetails": [
+      {
+        "key": "ITA",
+        "name": "UFL Italia",
+        "abbreviation": "ITA",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
+        "url": "https://ufl.virtualarena.app/teams/UFL%20Italia",
+        "rosterSize": 0,
+        "stats": []
+      },
       {
         "key": "LA",
         "name": "UFL LA FC",
@@ -1380,6 +1393,17 @@ window.UFL_SEASONS = {
       ],
       [
         "LA",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        "ITA",
         0,
         0,
         0,
@@ -1765,10 +1789,14 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-10-04T18:09:46.000Z",
-    "statsFetchedAt": "2026-10-04T18:09:46.000Z",
+    "syncedAt": "2026-10-07T10:44:52.000Z",
+    "statsFetchedAt": "2026-10-07T10:44:52.000Z",
     "statsStatus": "available",
     "teams": {
+      "MAY": [
+        "UFL Maykop",
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+      ],
       "RM": [
         "Real Madrid",
         "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
@@ -1791,10 +1819,19 @@ window.UFL_SEASONS = {
       ],
       "NOB": [
         "UFL Newell's OB",
-        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png"
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png"
       ]
     },
     "teamDetails": [
+      {
+        "key": "MAY",
+        "name": "UFL Maykop",
+        "abbreviation": "MAY",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+        "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
+        "rosterSize": 0,
+        "stats": []
+      },
       {
         "key": "RM",
         "name": "Real Madrid",
@@ -1844,7 +1881,7 @@ window.UFL_SEASONS = {
         "key": "NOB",
         "name": "UFL Newell's OB",
         "abbreviation": "NOB",
-        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
         "rosterSize": 6,
         "stats": []
@@ -1875,6 +1912,17 @@ window.UFL_SEASONS = {
       ],
       [
         "TFC",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        "MAY",
         0,
         0,
         0,
@@ -1982,7 +2030,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -1999,18 +2047,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0
@@ -2034,7 +2082,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -2051,18 +2099,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0
@@ -2086,7 +2134,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -2103,18 +2151,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0
@@ -2138,7 +2186,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -2155,18 +2203,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0
@@ -2190,7 +2238,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -2207,18 +2255,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0
@@ -2242,7 +2290,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1790699626.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
@@ -2259,18 +2307,18 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
               "stat": 0
             },
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
               "stat": 0

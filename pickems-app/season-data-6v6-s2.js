@@ -11,10 +11,14 @@ window.UFL_SEASON_6V6_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-  "syncedAt": "2026-10-07T01:14:29.000Z",
-  "statsFetchedAt": "2026-10-07T01:14:29.000Z",
+  "syncedAt": "2026-10-07T03:52:18.000Z",
+  "statsFetchedAt": "2026-10-07T03:52:18.000Z",
   "statsStatus": "available",
   "teams": {
+    "ITA": [
+      "UFL Italia",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
+    ],
     "LA": [
       "UFL LA FC",
       null
@@ -49,6 +53,15 @@ window.UFL_SEASON_6V6_S2 = {
     ]
   },
   "teamDetails": [
+    {
+      "key": "ITA",
+      "name": "UFL Italia",
+      "abbreviation": "ITA",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Italia",
+      "rosterSize": 0,
+      "stats": []
+    },
     {
       "key": "LA",
       "name": "UFL LA FC",
@@ -202,6 +215,17 @@ window.UFL_SEASON_6V6_S2 = {
     ],
     [
       "LA",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "ITA",
       0,
       0,
       0,
