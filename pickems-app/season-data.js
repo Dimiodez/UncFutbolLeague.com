@@ -1189,10 +1189,18 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-05T17:46:44.000Z",
-    "statsFetchedAt": "2026-10-05T17:46:44.000Z",
+    "syncedAt": "2026-10-07T01:14:29.000Z",
+    "statsFetchedAt": "2026-10-07T01:14:29.000Z",
     "statsStatus": "available",
     "teams": {
+      "LA": [
+        "UFL LA FC",
+        null
+      ],
+      "FCB": [
+        "UFL Bayern",
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png"
+      ],
       "PUM": [
         "UFL Pumas UNAM",
         "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
@@ -1219,6 +1227,24 @@ window.UFL_SEASONS = {
       ]
     },
     "teamDetails": [
+      {
+        "key": "LA",
+        "name": "UFL LA FC",
+        "abbreviation": "LA",
+        "logo": null,
+        "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC",
+        "rosterSize": 4,
+        "stats": []
+      },
+      {
+        "key": "FCB",
+        "name": "UFL Bayern",
+        "abbreviation": "FCB",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+        "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
+        "rosterSize": 3,
+        "stats": []
+      },
       {
         "key": "PUM",
         "name": "UFL Pumas UNAM",
@@ -1275,6 +1301,17 @@ window.UFL_SEASONS = {
       }
     ],
     "standings": [
+      [
+        "FCB",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
       [
         "PUM",
         0,
@@ -1340,6 +1377,17 @@ window.UFL_SEASONS = {
         0,
         0,
         0
+      ],
+      [
+        "LA",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ]
     ],
     "weeks": [],
@@ -1396,6 +1444,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1426,15 +1483,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1448,6 +1496,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1478,15 +1535,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1500,6 +1548,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1530,15 +1587,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1552,6 +1600,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1582,15 +1639,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1604,6 +1652,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1634,15 +1691,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1656,6 +1704,15 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Bayern",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
+              },
+              "team": null,
+              "stat": 0
+            },
+            {
+              "data": {
                 "name": "UFL Pumas UNAM",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
@@ -1686,15 +1743,6 @@ window.UFL_SEASONS = {
                 "name": "UFL Roma",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-              },
-              "team": null,
-              "stat": 0
-            },
-            {
-              "data": {
-                "name": "Place Holder Name",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name"
               },
               "team": null,
               "stat": 0
@@ -1780,7 +1828,7 @@ window.UFL_SEASONS = {
         "abbreviation": "TFC",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
-        "rosterSize": 7,
+        "rosterSize": 11,
         "stats": []
       },
       {
