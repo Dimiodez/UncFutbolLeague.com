@@ -1199,7 +1199,7 @@ window.UFL_SEASONS = {
       ],
       "LA": [
         "UFL LA FC",
-        null
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-la-fc-1791384437.png"
       ],
       "FCB": [
         "UFL Bayern",
@@ -1218,7 +1218,7 @@ window.UFL_SEASONS = {
         "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png"
       ],
       "PHN": [
-        "Place Holder Name",
+        "UFL Rippettes",
         null
       ],
       "ROM": [
@@ -1244,7 +1244,7 @@ window.UFL_SEASONS = {
         "key": "LA",
         "name": "UFL LA FC",
         "abbreviation": "LA",
-        "logo": null,
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-la-fc-1791384437.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC",
         "rosterSize": 4,
         "stats": []
@@ -1287,10 +1287,10 @@ window.UFL_SEASONS = {
       },
       {
         "key": "PHN",
-        "name": "Place Holder Name",
+        "name": "UFL Rippettes",
         "abbreviation": "PHN",
         "logo": null,
-        "url": "https://ufl.virtualarena.app/teams/Place%20Holder%20Name",
+        "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes",
         "rosterSize": 3,
         "stats": []
       },
