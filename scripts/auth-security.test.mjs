@@ -35,7 +35,7 @@ test('provider failures fail closed without exposing secrets and prohibit redire
   try {
     globalThis.fetch=async (url,options) => {
       assert.equal(url,'https://discord.com/api/v10/oauth2/token');
-      assert.equal(options.redirect,'error');
+      assert.equal(options.redirect,'manual');
       assert.ok(options.signal instanceof AbortSignal);
       throw new Error('sensitive-provider-token');
     };

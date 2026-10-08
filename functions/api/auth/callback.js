@@ -22,7 +22,7 @@ export async function onRequestGet({ request, env }) {
   try {
   const tokenResponse = await fetch('https://discord.com/api/v10/oauth2/token', {
     method: 'POST',
-    redirect: 'error',
+    redirect: 'manual',
     signal: AbortSignal.timeout(10000),
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({ client_id: env.DISCORD_CLIENT_ID, client_secret: env.DISCORD_CLIENT_SECRET, grant_type: 'authorization_code', code, redirect_uri: redirectUri })
@@ -30,7 +30,7 @@ export async function onRequestGet({ request, env }) {
   if (!tokenResponse.ok) return json({ error: 'Discord could not complete the login.' }, 502, { 'set-cookie': clearOauthCookie });
   const tokens = await tokenResponse.json();
   if (typeof tokens.access_token !== 'string' || !tokens.access_token || tokens.access_token.length > 4096 || /[\r\n]/.test(tokens.access_token)) throw new Error('Invalid provider response');
-  const profileResponse = await fetch('https://discord.com/api/v10/users/@me', { redirect: 'error', signal: AbortSignal.timeout(10000), headers: { authorization: `Bearer ${tokens.access_token}` } });
+  const profileResponse = await fetch('https://discord.com/api/v10/users/@me', { redirect: 'manual', signal: AbortSignal.timeout(10000), headers: { authorization: `Bearer ${tokens.access_token}` } });
   if (!profileResponse.ok) return json({ error: 'Discord profile lookup failed.' }, 502, { 'set-cookie': clearOauthCookie });
   const profile = await profileResponse.json();
   if (!/^\d{15,22}$/.test(String(profile.id || '')) || typeof profile.username !== 'string' || !profile.username || profile.username.length > 100) throw new Error('Invalid provider profile');

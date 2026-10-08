@@ -53,7 +53,7 @@ test('only server-verified tokens issue signed state and redirect to official Di
   const original=globalThis.fetch;
   try{
     globalThis.fetch=async(url,options)=>{
-      assert.equal(url,'https://challenges.cloudflare.com/turnstile/v0/siteverify');assert.equal(options.redirect,'error');
+      assert.equal(url,'https://challenges.cloudflare.com/turnstile/v0/siteverify');assert.equal(options.redirect,'manual');
       assert.equal(options.body.get('secret'),'test-turnstile-secret');
       return Response.json({success:true,hostname:host,action:'discord-login'});
     };

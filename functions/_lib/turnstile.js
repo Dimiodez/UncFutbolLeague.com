@@ -56,7 +56,7 @@ export async function verifyTurnstile(token, env, hostname) {
   if (!token || !env.TURNSTILE_SECRET_KEY || !LOGIN_HOSTS.includes(hostname)) return false;
   try {
     const response=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
-      method:'POST',redirect:'error',signal:AbortSignal.timeout(10000),
+      method:'POST',redirect:'manual',signal:AbortSignal.timeout(10000),
       headers:{'content-type':'application/x-www-form-urlencoded'},
       body:new URLSearchParams({secret:env.TURNSTILE_SECRET_KEY,response:token})
     });
