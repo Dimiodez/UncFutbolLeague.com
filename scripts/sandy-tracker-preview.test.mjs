@@ -38,8 +38,8 @@ test('partnerships are calculated from shared detailed match appearances',()=>{
   assert.match(source,/missing\.slice\(offset,offset\+4\)/);
   assert.match(source,/match=\$\{encodeURIComponent\(match\.match_id\)\}/);
   assert.match(source,/row\.matches>=2/);
-  assert.match(source,/row\.defensiveMatches>=2/);
-  assert.match(source,/row\.matches>=3/);
+  assert.match(source,/row\.defensiveMatches>=5/);
+  assert.match(source,/row\.matches>=5/);
   for(const title of ['Sandcastle Architects','Lock the Cabin','Two Uncs, One Mission','Always on the Teamsheet'])assert.match(source,new RegExp(title));
 });
 
@@ -59,6 +59,38 @@ test('attacking partnerships count team goals only in shared matches for both ho
     const higherTeamScore=[...matches,match('6',6,0,['c','d']),match('7',6,0,['c','d'])];
     assert.equal(context.pairs(higherTeamScore).attack.teamGoals,12,'Ranking follows team goals, not individual contributions or appearance count');
   }
+});
+
+test('rate partnerships require five qualifying appearances and incomplete history is disclosed',()=>{
+ const context={};runInNewContext(`${source}\nthis.pairs=sbPairData;this.renderPairs=sbPartnerships;`,context);
+ const match=(id,players)=>({match_id:id,goals_for:1,goals_against:0,details:{clubs:[{id:'43521',players:players.map(([id,pos])=>({id,name:id,stats:[pos]}))}]}});
+ const four=Array.from({length:4},(_,i)=>match(String(i),[['a','DEF'],['b','GK']]));
+ assert.equal(context.pairs(four).defense,null);assert.equal(context.pairs(four).winners,null);
+ const five=[...four,match('5',[['a','DEF'],['b','GK']])];
+ assert.equal(context.pairs(five).defense.cleanSheets,5);assert.equal(context.pairs(five).winners.wins,5);
+ const roleChange=[...four,match('5',[['a','MID'],['b','GK']])];
+ assert.equal(context.pairs(roleChange).defense,null,'Both players must be defensive in five matches');
+ const partial=context.renderPairs({matches:[...five,{match_id:'missing',goals_for:99}]});
+ assert.ok(partial.includes('Provisional rankings'));assert.ok(partial.includes('5 of 6 matches'));assert.ok(partial.includes('data-partnership-retry'));
+ const full=context.renderPairs({matches:five});assert.ok(full.includes('all 5 recorded matches'));assert.ok(!full.includes('Provisional rankings'));
+});
+
+test('partnership loading keeps successes, retries failures, and stops on rate limits',async()=>{
+ let mode='limited',calls=0;const listeners=[];
+ const panel={innerHTML:'',querySelector:()=>({addEventListener:(type,listener)=>listeners.push(listener),setAttribute(){}})};
+ const root={isConnected:true,querySelector:()=>panel};
+ const detail=id=>({match_id:id,goals_for:1,goals_against:0,details:{clubs:[{id:'43521',players:[{id:'a',name:'A',stats:['DEF']},{id:'b',name:'B',stats:['GK']}]}]}});
+ const data={matches:Array.from({length:9},(_,i)=>({match_id:String(i),goals_for:1,goals_against:0}))};
+ const context={AbortSignal,Date,setTimeout:resolve=>resolve(),fetch:async url=>{calls++;const id=new URL(url,'https://example.com').searchParams.get('match');if(mode==='limited'&&id==='0')return {status:429,ok:false};return {status:200,ok:true,json:async()=>({matches:[detail(id)]})};}};
+ runInNewContext(`${source}\nthis.load=sbLoadPartnerships;this.state=sandyTrackerState;`,context);
+ context.state.data=data;
+ await context.load(root,data);assert.equal(calls,4,'Stop after the first rate-limited batch');
+ assert.equal(context.state.partnershipDetails.filter(m=>m.details).length,3);assert.ok(panel.innerHTML.includes('Provisional rankings'));
+ await context.load(root,data);assert.equal(calls,4,'Cooldown prevents immediate repeat requests');
+ context.state.partnershipRetryAt=0;mode='success';await context.load(root,data);
+ assert.equal(calls,10,'Only the six still-missing matches are retried');
+ assert.ok(panel.innerHTML.includes('all 9 recorded matches'));assert.ok(!panel.innerHTML.includes('Provisional rankings'));
+ assert.equal(context.state.partnershipPromise,null);assert.ok(listeners.length>0);
 });
 
 test('club honors include month filtering and the Sandiest Bum headline award',()=>{

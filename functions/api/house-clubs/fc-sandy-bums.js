@@ -14,6 +14,7 @@ export async function onRequestGet({request}){
     const fresh=new URL(request.url).searchParams.get('fresh');
     if(fresh)url.searchParams.set('fresh',fresh.slice(0,20));
     const response=await fetch(url,{headers:{accept:'application/json'},signal:AbortSignal.timeout(10000)});
+    if(response.status===429)return Response.json({error:'Match service is busy. Please retry in a minute.'},{status:429,headers:{'cache-control':'no-store','retry-after':'60'}});
     if(!response.ok)throw new Error(`Club archive returned ${response.status}`);
     return new Response(response.body,{headers:{'content-type':'application/json; charset=utf-8','cache-control':fresh?'no-store':'public, max-age=60'}});
   }catch(error){

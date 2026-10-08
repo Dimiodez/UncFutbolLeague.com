@@ -61,8 +61,8 @@ function sbPairData(matches){
   const best=(eligible,sort)=>[...rows].filter(eligible).sort(sort)[0]||null;
   return {
     attack:best(row=>row.matches>=2,(a,b)=>b.teamGoals-a.teamGoals||b.matches-a.matches),
-    defense:best(row=>row.defensiveMatches>=2,(a,b)=>b.cleanSheetRate-a.cleanSheetRate||b.defensiveMatches-a.defensiveMatches),
-    winners:best(row=>row.matches>=3,(a,b)=>b.winRate-a.winRate||b.wins-a.wins||b.matches-a.matches),
+    defense:best(row=>row.defensiveMatches>=5,(a,b)=>(b.cleanSheets/b.defensiveMatches)-(a.cleanSheets/a.defensiveMatches)||b.defensiveMatches-a.defensiveMatches),
+    winners:best(row=>row.matches>=5,(a,b)=>(b.wins/b.matches)-(a.wins/a.matches)||b.wins-a.wins||b.matches-a.matches),
     together:best(row=>row.matches>=1,(a,b)=>b.matches-a.matches||b.wins-a.wins)
   };
 }
@@ -157,36 +157,56 @@ function sbAnalytics(data,totals){
   </div>`;
 }
 
-function sbPairCard(kicker,title,pair,value,detail){
-  if(!pair)return `<article class="house-pair-card is-empty"><span class="section-kicker">${kicker}</span><h3>${title}</h3><p>More shared appearances are needed before this partnership can be awarded.</p></article>`;
+function sbPairCard(kicker,title,pair,value,detail,requirement='More shared appearances are needed before this partnership can be awarded.'){
+  if(!pair)return `<article class="house-pair-card is-empty"><span class="section-kicker">${kicker}</span><h3>${title}</h3><p>${requirement}</p></article>`;
   return `<article class="house-pair-card"><span class="section-kicker">${kicker}</span><h3>${title}</h3><div class="house-pair-names"><b>${sbEsc(pair.players[0].name)}</b><i>+</i><b>${sbEsc(pair.players[1].name)}</b></div><strong>${value(pair)}</strong><p>${detail(pair)}</p></article>`;
 }
 
 function sbPartnerships(data){
   const pairs=sbPairData(data.matches);
-  return `<div class="club-panel-heading"><div><span class="section-kicker">Better together</span><h2>UFL Partnerships</h2><p>These honors use matches where both players appeared for ${sandyTrackerState.club.name}.</p></div><span class="season-chip season-chip-live">${data.matches.length} matches</span></div><div class="house-pair-grid">
+  const covered=data.matches.filter(match=>sbOwnClub(match)?.players?.length).length,missing=data.matches.length-covered;
+  const coverage=missing?`<div class="house-feature-note" role="status"><strong>Provisional rankings · ${covered} of ${data.matches.length} matches have player details.</strong> ${missing} matches are not included yet. Rankings may change when those details load. <button type="button" class="tab" data-partnership-retry>Retry missing match details</button></div>`:`<p class="house-feature-note">Player details available for all ${covered} recorded matches.</p>`;
+  return `<div class="club-panel-heading"><div><span class="section-kicker">Better together</span><h2>UFL Partnerships</h2><p>These honors use matches where both players appeared for ${sandyTrackerState.club.name}. Shared appearances describe team results, not proof that either player caused them.</p></div><span class="season-chip season-chip-live">${covered} matches included</span></div>${coverage}<div class="house-pair-grid">
     ${sbPairCard('Attacking partnership','Sandcastle Architects',pairs.attack,pair=>`${pair.teamGoals} team goals`,pair=>`${pair.matches} matches together · ${pair.wins} wins. Goals scored by the whole team in matches both players appeared in—not their individual goals + assists.`)}
-    ${sbPairCard('Defensive partnership','Lock the Cabin',pairs.defense,pair=>`${pair.cleanSheetRate}% clean sheets`,pair=>`${pair.cleanSheets} clean sheets in ${pair.defensiveMatches} defensive appearances together`)}
-    ${sbPairCard('Winning partnership','Two Uncs, One Mission',pairs.winners,pair=>`${pair.winRate}% win rate`,pair=>`${pair.wins} wins in ${pair.matches} matches together`)}
+    ${sbPairCard('Defensive partnership','Lock the Cabin',pairs.defense,pair=>`${pair.cleanSheetRate}% team clean-sheet rate`,pair=>`${pair.cleanSheets} team clean sheets in ${pair.defensiveMatches} matches where both played DEF or GK. Minimum 5 qualifying matches.`,'Requires at least 5 shared matches with both players recorded at DEF or GK.')}
+    ${sbPairCard('Winning partnership','Two Uncs, One Mission',pairs.winners,pair=>`${pair.winRate}% team win rate`,pair=>`${pair.wins} team wins in ${pair.matches} matches together. Minimum 5 shared matches.`,'Requires at least 5 shared matches before a winning partnership can be ranked.')}
     ${sbPairCard('Most experienced','Always on the Teamsheet',pairs.together,pair=>`${pair.matches} matches together`,pair=>`${pair.wins} shared wins · ${pair.teamGoals} team goals in those matches`)}
-  </div><p class="house-feature-note">Partnerships require shared appearances. Defensive honors require both players to be recorded at DEF or GK.</p>`;
+  </div><p class="house-feature-note">Attacking rankings use total team goals across at least 2 shared matches. Defensive and winning rankings require at least 5 qualifying matches; larger samples break equal rates. Most experienced counts shared appearances, with shared wins breaking ties. All figures use the available recorded history.</p>`;
 }
 
 async function sbLoadPartnerships(root,data){
   const panel=root.querySelector('[data-sandy-panel="partnerships"]');
-  if(sandyTrackerState.partnershipDetails){panel.innerHTML=sbPartnerships({...data,matches:sandyTrackerState.partnershipDetails});return;}
   if(sandyTrackerState.partnershipPromise)return sandyTrackerState.partnershipPromise;
-  sandyTrackerState.partnershipPromise=(async()=>{
-    const matches=[...data.matches],missing=matches.map((match,index)=>({match,index})).filter(({match})=>!sbOwnClub(match)?.players?.length);
+  const club=sandyTrackerState.club,slug=club.slug;
+  const current=()=>root.isConnected!==false&&sandyTrackerState.club===club&&sandyTrackerState.data===data;
+  const matches=[...(sandyTrackerState.partnershipDetails||data.matches)];
+  const draw=(message='')=>{
+    if(!current())return;
+    panel.innerHTML=sbPartnerships({...data,matches})+(message?`<p class="house-feature-note" role="status">${sbEsc(message)}</p>`:'');
+    panel.querySelector('[data-partnership-retry]')?.addEventListener('click',()=>sbLoadPartnerships(root,data));
+  };
+  draw();
+  if(Date.now()<(sandyTrackerState.partnershipRetryAt||0)){draw(`Match service is cooling down. Please retry in ${Math.ceil((sandyTrackerState.partnershipRetryAt-Date.now())/1000)} seconds.`);return;}
+  const task=(async()=>{
+    const missing=matches.map((match,index)=>({match,index})).filter(({match})=>!sbOwnClub(match)?.players?.length);
+    let limited=false;
     for(let offset=0;offset<missing.length;offset+=4){
-      panel.innerHTML=`<div class="sandy-loading">Loading complete partnership history… ${Math.min(offset,missing.length)} of ${missing.length}</div>`;
+      if(!current())return;
+      draw(`Loading missing player details… ${offset} of ${missing.length} checked.`);
+      panel.querySelector('[data-partnership-retry]')?.setAttribute('disabled','');
       await Promise.all(missing.slice(offset,offset+4).map(async({match,index})=>{
-        try{const response=await fetch(`/api/house-clubs/${sandyTrackerState.club.slug}?match=${encodeURIComponent(match.match_id)}`);if(!response.ok)return;const payload=await response.json(),full=payload.matches?.find(item=>String(item.match_id)===String(match.match_id));if(full?.details)matches[index]=full;}catch{}
+        try{const response=await fetch(`/api/house-clubs/${slug}?match=${encodeURIComponent(match.match_id)}`,{signal:AbortSignal.timeout(10000)});if(response.status===429){limited=true;if(current())sandyTrackerState.partnershipRetryAt=Date.now()+60000;return;}if(!response.ok)return;const payload=await response.json(),full=payload.matches?.find(item=>String(item.match_id)===String(match.match_id));if(full?.details)matches[index]=full;}catch{}
       }));
+      if(!current())return;
+      sandyTrackerState.partnershipDetails=matches;
+      if(limited)break;
+      // Pace archive reads instead of bursting the upstream match service.
+      if(offset+4<missing.length)await new Promise(resolve=>setTimeout(resolve,5000));
     }
-    sandyTrackerState.partnershipDetails=matches;panel.innerHTML=sbPartnerships({...data,matches});
-  })().finally(()=>{sandyTrackerState.partnershipPromise=null;});
-  return sandyTrackerState.partnershipPromise;
+    if(current()){sandyTrackerState.partnershipDetails=matches;draw(limited?'The match service asked us to slow down. Loaded details are kept; wait a minute, then retry the remaining matches.':'');}
+  })();
+  sandyTrackerState.partnershipPromise=task;
+  try{await task;}finally{if(sandyTrackerState.partnershipPromise===task)sandyTrackerState.partnershipPromise=null;}
 }
 
 function sbHonorCard(mark,title,player,value,detail,headline=false){
