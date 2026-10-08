@@ -276,7 +276,7 @@ const LEVEL_SEVEN_PLATFORMS = Object.freeze([
 const LEVEL_SEVEN_LADDERS = Object.freeze([
   { id: 'l7-ladder-0', x: 170, top: 590, bottom: 690, fromIndex: 0, toIndex: 1 },
   { id: 'l7-ladder-1', x: 760, top: 490, bottom: 590, fromIndex: 1, toIndex: 2 },
-  { id: 'l7-ladder-2', x: 210, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
+  { id: 'l7-ladder-2', x: 380, top: 390, bottom: 490, fromIndex: 2, toIndex: 3 },
   { id: 'l7-ladder-3', x: 720, top: 290, bottom: 390, fromIndex: 3, toIndex: 4 },
   { id: 'l7-ladder-4', x: 260, top: 190, bottom: 290, fromIndex: 4, toIndex: 5 },
 ]);
@@ -284,7 +284,7 @@ const LEVEL_SEVEN_LADDERS = Object.freeze([
 const LEVEL_SEVEN_GAPS = Object.freeze([
   Object.freeze({ platformIndex: 5, gapX: 600, gapWidth: 76 }),
   Object.freeze({ platformIndex: 4, gapX: 330, gapWidth: 76 }),
-  Object.freeze({ platformIndex: 3, gapX: 300, gapWidth: 76 }),
+  Object.freeze({ platformIndex: 3, gapX: 470, gapWidth: 76 }),
   Object.freeze({ platformIndex: 2, gapX: 670, gapWidth: 76 }),
   Object.freeze({ platformIndex: 1, gapX: 650, gapWidth: 76 }),
 ]);
@@ -605,6 +605,9 @@ export const STAGES = Object.freeze([
     route: LEVEL_SEVEN_ROUTE,
     gaps: LEVEL_SEVEN_GAPS,
     ballBumpers: [
+      // Catch the leftward chute on the short shelf before balls leave the map.
+      // The return roll crosses its gap and feeds the lower ice/jump lanes.
+      { platformIndex: 3, x: 125, direction: 1 },
       { platformIndex: 2, x: 70, direction: 1 },
       { platformIndex: 1, x: 860, direction: -1 },
       { platformIndex: 0, x: 80, direction: 1 },

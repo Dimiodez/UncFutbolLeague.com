@@ -8,12 +8,12 @@ import {
   ballHitLine,
   GAMEPLAY_NOTICES,
   LEVEL_SIX_CUTSCENE,
+  LEVEL_TEN_CUTSCENE,
   openingLineForLevel,
   pickLine,
   SCHWEIN_BALL_LINES,
   SCHWEIN_BRUCE_SWEAT_LINE,
   SCHWEIN_FALL_LINES,
-  SCHWEIN_RED_CARD_LINES,
   SCHWEIN_SALMON_LINES,
   SCHWEIN_SUMMIT_LINES,
   SCHWEIN_TANTRUM_LINES,
@@ -644,6 +644,7 @@ export class MountainScene extends Phaser.Scene {
   win() {
     if (!this.state.isPlaying()) return;
     this.state.phase = 'won';
+    this.events.emit('level-finished');
     this.state.issueYellowCard();
     const outcome = this.state.summitOutcome();
     this.player.setVelocity(0, 0).body.setAllowGravity(false);
@@ -651,12 +652,17 @@ export class MountainScene extends Phaser.Scene {
     this.bruce.clear();
     this.bizzie.clear();
     this.tantrumTimer?.remove(false);
+    this.tweens.killTweensOf(this.schwein);
     this.events.emit('state-change');
     if (outcome === 'yellow-card') {
       this.playYellowCardCutscene(outcome);
       return;
     }
-    this.say(pickLine(outcome === 'red-card' ? SCHWEIN_RED_CARD_LINES : SCHWEIN_SUMMIT_LINES));
+    if (outcome === 'red-card') {
+      this.playRedCardCutscene(outcome);
+      return;
+    }
+    this.events.emit('speech-final', pickLine(SCHWEIN_SUMMIT_LINES));
     this.runSchweinOff(outcome);
   }
 
@@ -739,7 +745,108 @@ export class MountainScene extends Phaser.Scene {
     ];
   }
 
+  playRedCardCutscene(outcome) {
+    this.state.phase = 'cutscene';
+    this.events.emit('cutscene-start');
+    this.events.emit('state-change');
+    this.schwein.setVisible(false);
+    this.playerArt.setVisible(false);
+    const shade = this.add.rectangle(480, 360, 960, 720, 0x071421, 0.86);
+    const panel = this.add.rectangle(480, 365, 820, 590, 0xe8eee4)
+      .setStrokeStyle(8, 0x142f45);
+    const heading = this.add.text(480, 115, 'THE FINAL WHISTLE', {
+      fontFamily: 'Impact, Arial Black, sans-serif', fontSize: '44px', color: '#15344d',
+    }).setOrigin(0.5);
+    const speaker = this.add.text(120, 165, '', {
+      fontFamily: 'Courier New, monospace', fontSize: '22px', fontStyle: 'bold', color: '#15344d',
+    });
+    // Reserve the upper half for dialogue, above both characters' heads.
+    const bubble = this.add.graphics();
+    const line = this.add.text(480, 270, '', {
+      fontFamily: 'Courier New, monospace', fontSize: '25px', fontStyle: 'bold',
+      color: '#17202b', align: 'center', wordWrap: { width: 670 },
+    }).setOrigin(0.5);
+    const referee = this.add.sprite(270, 595, ASSETS.playerFrames[0].key)
+      .setOrigin(0.5, 1).setDisplaySize(225, 225);
+    const pig = this.add.sprite(665, 595, ASSETS.schweinFrames[0].key)
+      .setOrigin(0.5, 1).setDisplaySize(230, 230);
+    const card = this.add.rectangle(335, 470, 51, 74, 0xe43c32)
+      .setStrokeStyle(5, 0x17202b).setAngle(-9).setVisible(false);
+    const progress = this.add.text(120, 625, '', {
+      fontFamily: 'Courier New, monospace', fontSize: '17px', color: '#15344d',
+    }).setOrigin(0, 0.5);
+    const next = this.add.text(825, 625, 'Next →', {
+      fontFamily: 'Courier New, monospace', fontSize: '22px', fontStyle: 'bold',
+      backgroundColor: '#15344d', color: '#ffffff', padding: { x: 16, y: 10 },
+    }).setOrigin(1, 0.5).setInteractive({ useHandCursor: true });
+    this.summitCutscene = this.add.container(0, 0, [
+      shade, panel, heading, referee, pig, card, speaker, bubble, line, progress, next,
+    ]).setDepth(50);
+    this.finalSceneTweens = [];
+    let index = 0;
+    let ending = false;
+    const showLine = () => {
+      const beat = LEVEL_TEN_CUTSCENE[index];
+      const isReferee = beat.speaker === 'referee';
+      speaker.setText(isReferee ? 'REFEREE' : 'SCHWEIN');
+      line.setText(`“${beat.line}”`);
+      progress.setText(`${index + 1} / ${LEVEL_TEN_CUTSCENE.length} · SPACE / TAP NEXT`);
+      next.setText(index === LEVEL_TEN_CUTSCENE.length - 1 ? 'Send him off →' : 'Next →');
+      bubble.clear().fillStyle(0xffffff).fillRoundedRect(105, 198, 750, 145, 14);
+      bubble.lineStyle(5, 0x17202b).strokeRoundedRect(105, 198, 750, 145, 14);
+      const tailX = isReferee ? 270 : 665;
+      bubble.fillTriangle(tailX - 24, 341, tailX + 24, 341, tailX, 367);
+      bubble.lineBetween(tailX - 24, 341, tailX, 367).lineBetween(tailX, 367, tailX + 24, 341);
+      this.finalSceneTweens.forEach((tween) => tween.stop());
+      referee.setY(595);
+      pig.setY(595);
+      this.finalSceneTweens = [this.tweens.add({
+        targets: isReferee ? referee : pig, y: 588, duration: 180, yoyo: true, repeat: 1,
+      })];
+      if (index === 5) pig.setFlipX(true);
+      if (index >= 7) {
+        card.setVisible(true);
+        heading.setText('SECOND YELLOW. RED CARD!');
+        if (index === 7) {
+          card.setY(510);
+          this.finalSceneTweens.push(this.tweens.add({ targets: card, y: 470, duration: 350, ease: 'Quad.Out' }));
+        }
+      }
+    };
+    const advance = () => {
+      if (ending) return;
+      if (index < LEVEL_TEN_CUTSCENE.length - 1) {
+        index += 1;
+        showLine();
+        return;
+      }
+      ending = true;
+      next.disableInteractive().setVisible(false);
+      line.setVisible(false);
+      bubble.setVisible(false);
+      speaker.setVisible(false);
+      progress.setText('SENT OFF THE MOUNTAIN.');
+      this.finalSceneTweens.forEach((tween) => tween.stop());
+      pig.play('schwein-run', true).setFlipX(false);
+      this.finalSceneTweens = [this.tweens.add({
+        targets: pig, x: WORLD.width + 170, duration: 1150, ease: 'Linear',
+        onComplete: () => {
+          this.clearSummitCutscene();
+          this.emitWinOutcome(outcome);
+        },
+      })];
+    };
+    next.on('pointerdown', advance);
+    this.finalSceneKeyHandler = (event) => { if (!event.repeat) advance(); };
+    this.input.keyboard.on('keydown-SPACE', this.finalSceneKeyHandler);
+    showLine();
+  }
+
   clearSummitCutscene() {
+    if (this.finalSceneKeyHandler) this.input.keyboard.off('keydown-SPACE', this.finalSceneKeyHandler);
+    this.finalSceneKeyHandler = null;
+    this.finalSceneTweens?.forEach((tween) => tween?.stop());
+    this.finalSceneTweens = [];
     this.yellowCardTimers?.forEach((timer) => timer?.remove(false));
     this.yellowCardTimers = [];
     this.summitCutscene?.destroy(true);
@@ -747,6 +854,7 @@ export class MountainScene extends Phaser.Scene {
   }
 
   emitWinOutcome(outcome) {
+    this.state.phase = 'won';
     const event = outcome === 'red-card' ? 'red-card-won' : 'game-won';
     this.events.emit(event, {
       level: this.state.level,
@@ -758,5 +866,8 @@ export class MountainScene extends Phaser.Scene {
     });
   }
 
-  say(line) { this.events.emit('speech', line); }
+  say(line) {
+    if (['won', 'over', 'cutscene'].includes(this.state.phase)) return;
+    this.events.emit('speech', line);
+  }
 }

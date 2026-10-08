@@ -1,6 +1,6 @@
 import { MountainScene } from './game/MountainScene.js?v=run-leaderboard-1';
 import { hasStage, TUNING, WORLD } from './game/level.js?v=run-leaderboard-1';
-import { formatRunTime, saveLeaderboardEntry } from './game/leaderboard.js?v=run-leaderboard-1';
+import { formatRunTime, loadLeaderboard, saveLeaderboardEntry } from './game/leaderboard.js?v=run-leaderboard-1';
 import { endScreenForLevel } from './game/Dialogue.js?v=end-screen-copy-1';
 
 const $ = (selector) => document.querySelector(selector);
@@ -79,7 +79,7 @@ function start() {
     scene.state.cardedLevels = [6];
   }
   if (previewPractice && level === previewLevel) scene.startPracticeArea(previewPractice);
-  if (previewCutscene && level === 6) {
+  if (previewCutscene && [6, 10].includes(level)) {
     window.setTimeout(() => {
       if (scene?.state.isPlaying()) scene.win();
     }, 350);
@@ -117,7 +117,7 @@ $('#action').addEventListener('click', () => {
 $('#pause').addEventListener('click', pause);
 window.addEventListener('keydown', (event) => {
   if (event.code === 'KeyP' && !event.repeat) pause();
-  if (event.code === 'Space' && ['intro', 'over', 'won'].includes(scene?.state.phase)) start();
+  if (event.code === 'Space' && !$('#overlay').hidden && ['intro', 'over', 'won'].includes(scene?.state.phase)) start();
 });
 window.addEventListener('blur', () => { if (scene?.state.phase === 'playing') pause(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && scene?.state.phase === 'playing') pause(); });
@@ -156,6 +156,12 @@ function bindScene(activeScene) {
     window.setTimeout(syncHud, 900);
   });
   scene.events.on('speech', (line) => {
+    if (['won', 'over', 'cutscene'].includes(scene.state.phase)) return;
+    queueSpeech(line);
+  });
+  scene.events.on('level-finished', clearSpeech);
+  scene.events.on('speech-final', (line) => {
+    clearSpeech();
     queueSpeech(line);
   });
   scene.events.on('speech-side', (side) => {
@@ -163,6 +169,7 @@ function bindScene(activeScene) {
   });
   scene.events.on('cutscene-start', clearSpeech);
   scene.events.on('game-over', () => {
+    clearSpeech();
     queuedLevel = scene.state.level;
     carryCampaign = true;
     showOverlay(
@@ -172,16 +179,22 @@ function bindScene(activeScene) {
       `Retry Level ${scene.state.level} ↗`,
     );
   });
-  scene.events.on('game-won', ({ level, nextLevel }) => {
+  scene.events.on('game-won', ({ level, nextLevel, stats }) => {
     queuedLevel = nextLevel || level;
     carryCampaign = Boolean(nextLevel);
-    const screen = endScreenForLevel(level);
+    const totals = stats || scene.state.runSummary();
+    const screen = endScreenForLevel(level, {
+      activeTime: formatRunTime(totals.activePlayMs),
+      totalDeaths: totals.totalDeaths,
+    });
     showOverlay(screen.kicker, screen.title, screen.text, screen.button);
   });
   scene.events.on('red-card-won', ({ stats }) => {
     queuedLevel = 1;
     carryCampaign = false;
-    const result = saveLeaderboardEntry(stats);
+    const result = previewCutscene || previewWin
+      ? { entry: { ...stats, completedAt: 'preview' }, entries: loadLeaderboard() }
+      : saveLeaderboardEntry(stats);
     const screen = endScreenForLevel(10, {
       activeTime: formatRunTime(stats.activePlayMs),
       totalDeaths: stats.totalDeaths,

@@ -562,7 +562,7 @@ test('Level 7 keeps its ice, gaps, and ladders readable while balls descend ever
   const falls = [
     { from: 5, direction: -1, startX: 600 },
     { from: 4, direction: -1, startX: 330 },
-    { from: 3, direction: -1, startX: 300 },
+    { from: 3, direction: 1, startX: 470 },
     { from: 2, direction: 1, startX: 670 },
     { from: 1, direction: -1, startX: 650 },
   ];
@@ -572,6 +572,17 @@ test('Level 7 keeps its ice, gaps, and ladders readable while balls descend ever
     assert.ok(landing > target.x - target.width / 2 + radius);
     assert.ok(landing < target.x + target.width / 2 - radius);
   });
+  const shelf = stage.platforms[3];
+  const shelfTurn = stage.ballBumpers.find((bumper) => bumper.platformIndex === 3);
+  const shelfLanding = projectedBallLandingX(stage, 4, -1, stage.tuning.ballSpeed, TUNING.gravity, 330);
+  assert.ok(shelfTurn, 'the short left shelf needs a physical return pillar');
+  assert.equal(shelfTurn.direction, 1);
+  assert.ok(shelfTurn.x > shelf.x - shelf.width / 2 + 15, 'pillar must stand on the shelf');
+  assert.ok(shelfTurn.x < shelfLanding - radius, 'ball must land to the right of its return pillar');
+  const approachLadder = stage.ladders.find((ladder) => ladder.id === 'l7-ladder-2');
+  const shelfGap = stage.gaps.find((gap) => gap.platformIndex === 3);
+  assert.ok(approachLadder.x > shelfLanding + radius + 30, 'ladder exits beyond the incoming ball chute');
+  assert.ok(approachLadder.x < shelfGap.gapX - shelfGap.gapWidth / 2 - 20, 'ladder exits on solid platform before the new gap');
   const maximumJumpTravel = TUNING.moveSpeed * ((2 * TUNING.jumpSpeed) / TUNING.gravity);
   stage.gaps.forEach(({ gapX, gapWidth, platformIndex }) => {
     assert.ok(gapWidth < maximumJumpTravel);
