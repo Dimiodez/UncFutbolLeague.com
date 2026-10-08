@@ -1,5 +1,15 @@
 # UFL major-update preview
 
+## Full-XI TOTW / TOTS workbench — 8 October 2026
+
+The Awards tab is now `TOTW / TOTS`, with a full eleven-player formation including GK regardless of 6v6/10v10 match size or keeper rules. It replaces the earlier format-sized award settings. Available formations: 3-4-3, 4-3-3, 4-4-2, 4-2-3-1, 3-5-2 and 4-1-2-1-2. Each individual winning slot has editable qualifying recorded positions; GK remains GK-only. A CB slot may include CDM, or CM/ST may include CAM.
+
+One screen filters a seven-day local-time window or the full league season, minimum qualifying appearances, and highest average valid rating. Accepted appearance records must match the exact league and season, carry an exact position, and deduplicate by match/player. The configured 3.0-rating exclusion keeps appearances but excludes that rating. Candidates support drag/drop or Select-then-slot placement, duplicate-player prevention, individual removal, portraits/badges with fallback initials, and PNG download. Incomplete real lineups are labelled DRAFT. Weekly and seasonal selections save separately within each local league draft, and survive draft export/import. Tab navigation warns about unsaved selection changes.
+
+Important: the workshop still has no accepted league appearance feed or secured shared admin permissions. Its real candidate list is empty, not substituted with VA aggregates or current roster data. Explicit sample mode exists for interaction testing only: fabricated players, disabled award saving, and watermarked exports. Do not describe this as live automatic awards. Before shared launch, connect verified accepted-match appearances and canonical league/player IDs, authenticated owner/admin authorization, shared saved lineups, and available player artwork. No live website, player portraits or bot records were changed.
+
+Verification: five Node suites passed, including full-XI formation invariants, eligibility, league/season isolation, accepted-only input, deduplication, disconnect rating handling, timezone/date boundaries, duplicate-player guards and saved-board validation. Deployed-browser QA verified eleven slots, custom CB/CDM eligibility and reload persistence, highest-first sample rankings, click-to-place, unsaved-tab warning, full-season switching and separate saving. PNG downloaded successfully and was visually checked; browser warning/error logs were empty. Native drag/drop is implemented but was not exercised end-to-end by the DOM-only browser driver. The user's existing stable-preview draft/tab was left untouched.
+
 Separate development branch and Pages project: `codex/ufl-major-update-preview` / `ufl-major-update-preview`.
 Cloned from official website commit `33e2020` on 4 October 2026. This is not the collaborator's Firebase ZIP.
 

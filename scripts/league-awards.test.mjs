@@ -1,0 +1,28 @@
+import assert from 'node:assert/strict';
+import {AWARD_FORMATIONS,awardSlots,defaultAwardBoard,validateAwardBoard,awardLeagueKey,awardBoardKey,rankAwardCandidates,assignAwardCandidate,awardPeriod} from '../league-awards-model.js';
+import {updatePageSettings} from '../league-page-model.js';
+const settings={season:'S2',league:'6v6 League',format:'6v6',keepersEnabled:false,startDate:'2026-10-08',timeZone:'America/Chicago'};
+for(const formation of Object.keys(AWARD_FORMATIONS)){assert.equal(awardSlots(formation).length,11);assert.equal(awardSlots(formation).filter(slot=>slot.position==='GK').length,1);assert.equal(new Set(awardSlots(formation).map(slot=>slot.id)).size,11);}
+let board=validateAwardBoard(defaultAwardBoard(settings));assert.equal(board.formation,'3-4-3');assert.equal(awardSlots(defaultAwardBoard({...settings,format:'10v10'}).formation).length,11);
+const row=(overrides={})=>({status:'accepted',leagueKey:awardLeagueKey(settings),season:'S2',matchId:'1',playerId:'p1',name:'Player One',teamId:'team-1',teamName:'Roma',position:'CDM',rating:9,timestamp:Date.parse('2026-10-09T01:00:00Z'),...overrides});
+const opts={leagueKey:awardLeagueKey(settings),season:'S2',timeZone:settings.timeZone,board,slotId:'CB-1'};
+assert.equal(rankAwardCandidates([row()],opts).length,0);
+board.eligibility['CB-1'].push('CDM');
+const records=[row(),row(),row({matchId:'2',rating:7}),row({matchId:'3',rating:3}),row({matchId:'4',rating:null}),row({matchId:'x',rating:10,leagueKey:'other'}),row({matchId:'y',rating:10,status:'pending'}),row({matchId:'z',rating:10,season:'S1'}),row({matchId:'q',rating:10,timestamp:Date.parse('2026-11-01T12:00:00Z')})];
+let ranked=rankAwardCandidates(records,{...opts,board});assert.equal(ranked.length,1);assert.equal(ranked[0].averageRating,8);assert.equal(ranked[0].appearances,4);assert.equal(ranked[0].ratingCount,2);
+assert.equal(rankAwardCandidates(records,{...opts,board,excludeDisconnectRatings:false})[0].averageRating,19/3);
+assert.equal(rankAwardCandidates([row({position:'midfielder'})],{...opts,board}).length,0);
+board=assignAwardCandidate(board,'CB-1',ranked[0]);assert.throws(()=>assignAwardCandidate(board,'CB-2',ranked[0]));
+assert.throws(()=>assignAwardCandidate(board,'GK-1',ranked[0]));
+assert.throws(()=>validateAwardBoard({...board,formation:'2-2-2'}));
+assert.throws(()=>validateAwardBoard({...board,weekDate:'2026-02-30'}));
+assert.throws(()=>validateAwardBoard({...board,eligibility:{...board.eligibility,'GK-1':['CB']}}));
+const saved=updatePageSettings(settings,'awards',{workbench:board,savedBoards:[board]});assert.deepEqual(saved.pageContent.awards.workbench,board);
+assert.deepEqual(updatePageSettings(settings,'awards',JSON.parse(JSON.stringify(saved.pageContent.awards))).pageContent.awards,saved.pageContent.awards);
+assert.throws(()=>updatePageSettings(settings,'awards',{savedBoards:[board,board]}));
+const seasonBoard={...board,type:'season'};assert.notEqual(awardBoardKey(board),awardBoardKey(seasonBoard));
+assert.equal(rankAwardCandidates([row({timestamp:Date.parse('2026-11-01T12:00:00Z')})],{...opts,board:seasonBoard}).length,1);
+assert.deepEqual(awardPeriod({...board,weekDate:'2026-12-29'}),{from:'2026-12-29',to:'2027-01-04'});
+const boundary=[row({matchId:'early',timestamp:Date.parse('2026-10-08T04:59:00Z')}),row({matchId:'start',timestamp:Date.parse('2026-10-08T05:00:00Z')}),row({matchId:'end',timestamp:Date.parse('2026-10-15T04:59:00Z')}),row({matchId:'late',timestamp:Date.parse('2026-10-15T05:00:00Z')})];
+assert.equal(rankAwardCandidates(boundary,{...opts,board})[0].appearances,2);
+console.log('PASS: full XI in both formats, eligibility remapping, accepted league/season/date scope, deduplication, rating exclusions, unique selections and saved TOTW/TOTS isolation.');

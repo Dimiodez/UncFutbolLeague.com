@@ -1,4 +1,5 @@
-export const LEAGUE_TABS=[['overview','Overview'],['rules','Rules'],['videos','Videos'],['teams','Teams'],['players','Players'],['matches','Matches'],['finals','Finals'],['stats','Stats'],['standings','Standings'],['awards','Team of the Week']];
+import {validateAwardBoard,awardBoardKey} from './league-awards-model.js';
+export const LEAGUE_TABS=[['overview','Overview'],['rules','Rules'],['videos','Videos'],['teams','Teams'],['players','Players'],['matches','Matches'],['finals','Finals'],['stats','Stats'],['standings','Standings'],['awards','TOTW / TOTS']];
 export const STAT_METRICS=[['goals','Goals'],['assists','Assists'],['rating','Average rating'],['shots','Shots'],['passes','Passing success'],['tackles','Successful tackles'],['interceptions','Interceptions'],['saves','Saves']];
 export const TIEBREAKERS=[['goalDifference','Goal difference'],['goalsFor','Goals scored'],['wins','Wins'],['headToHead','Head-to-head']];
 export const FORMATIONS=['2-2-1','3-1-1','2-1-2','2-2-2','3-2-1','4-3-2','4-2-3','3-4-2','4-3-3','4-2-3-1','4-4-2','3-5-2','Custom'];
@@ -43,6 +44,10 @@ export function updatePageSettings(settings,section,values){
  }
  if(section==='awards'&&values.formation!==undefined){
   content.formation=choice(values.formation,FORMATIONS,'formation');content.minAppearances=integer(values.minAppearances,1,100,'Minimum appearances');content.ranking=choice(values.ranking,['rating','goals','assists','tackles'],'ranking statistic');
+ }
+ if(section==='awards'){
+  if(values.workbench!==undefined)content.workbench=validateAwardBoard(values.workbench);
+  if(values.savedBoards!==undefined){if(!Array.isArray(values.savedBoards)||values.savedBoards.length>100)throw Error('Save up to 100 award selections per league.');content.savedBoards=values.savedBoards.map(validateAwardBoard);if(new Set(content.savedBoards.map(awardBoardKey)).size!==content.savedBoards.length)throw Error('Keep one saved award selection per period.');}
  }
  return {...settings,pageContent:{...settings.pageContent,[section]:content}};
 }

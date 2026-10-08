@@ -20,7 +20,7 @@ function openEditor(host,title,description){
 }
 
 export function renderSectionTools({host,admin,body,tab,settings,onSettings,onReport}){
- if(!names[tab])return;
+ if(!names[tab]||tab==='awards')return;
  const content=settings.pageContent?.[tab]||{},summary=document.createElement('div');summary.className='league-config-summary';
  const badge=text=>`<span class="config-chip">${escape(text)}</span>`;
  if(tab==='rules'){
