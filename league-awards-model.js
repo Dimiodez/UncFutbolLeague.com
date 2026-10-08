@@ -30,7 +30,9 @@ export function validateAwardBoard(board){
   seen.add(player.id);selections[slot.id]={id:player.id,name:player.name,teamId:player.teamId,teamName:player.teamName,positions:[...player.positions],averageRating:player.averageRating,appearances:player.appearances,portraitUrl:safeImage(player.portraitUrl),badgeUrl:safeImage(player.badgeUrl)};
  }
  if(Object.keys(board.selections).some(id=>!slots.some(slot=>slot.id===id)))throw Error('Saved positions do not match the award formation.');
- return {formationVersion:FORMATION_CATALOGUE_VERSION,type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections};
+ const aiKeeper=board.aiKeeper??null;
+ if(aiKeeper!==null&&(typeof aiKeeper!=='object'||typeof aiKeeper.name!=='string'||!aiKeeper.name.trim()||aiKeeper.name.length>80||selections['GK-1']))throw Error('Enter an AI keeper name, or clear the player keeper first.');
+ return {formationVersion:FORMATION_CATALOGUE_VERSION,type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections,aiKeeper:aiKeeper?{name:aiKeeper.name.trim()}:null};
 }
 export function awardPeriod(board){
  const end=new Date(`${board.weekDate}T12:00:00Z`);end.setUTCDate(end.getUTCDate()+6);
