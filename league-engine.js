@@ -58,6 +58,13 @@ export function zonedTimestamp(date,time,timeZone){
 export function createLeagueDraft(settings){
  return {settings:{...settings,teams:[...(settings.teams||[])]},registrationOpen:true,scheduleGenerated:false,fixtures:[],nights:[],warnings:[]};
 }
+// Upgrade the former UI default once, without moving any accepted fixtures.
+export function upgradeDraftByePolicy(settings,acceptedResults=[]){
+ const odd=settings.teams?.length%2===1,eligible=odd&&settings.teams.length>=5;
+ if(settings.byePolicyRevision===2&&(!eligible||settings.byePolicy==='fullNight'||acceptedResults.length))return settings;
+ const byePolicy=acceptedResults.length?(settings.byePolicy??'split'):eligible?'fullNight':settings.byePolicy??(odd?'split':'fullNight');
+ return {...settings,byePolicy,byePolicyRevision:2};
+}
 export function registerLeagueTeam(draft,team,{now=Date.now(),restoring=false}={}){
  if(!restoring&&!registrationAllowed(draft,now))throw Error('Registration is closed or outside this league’s registration window.');
  if(draft.scheduleGenerated)throw Error('Reopen registration before changing teams. This clears the draft schedule.');

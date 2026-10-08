@@ -23,6 +23,7 @@ export function renderAdministration({drafts,seasons,competitions,updateLeague,a
   section.innerHTML='<summary>League settings & calendar breaks</summary><p>Changing calendar settings rebuilds an existing draft schedule. All matchups are retained; no live results are changed.</p>';
   const settingsForm=document.querySelector('#league-builder').cloneNode(true);settingsForm.removeAttribute('id');settingsForm.querySelector(':scope > small:not([data-team-rules-help])').remove();settingsForm.querySelector('button[type="submit"]').textContent='Save league settings';
   cleanWizardClone(settingsForm);
+  if(settings.byePolicy==='split'&&draft.acceptedResults?.length&&settingsForm.elements.byePolicy){const legacy=document.createElement('option');legacy.value='split';legacy.textContent='Historical split byes — locked because results exist';settingsForm.elements.byePolicy.append(legacy);settingsForm.elements.byePolicy.disabled=true;}
   for(const [key,value] of Object.entries(settings))if(settingsForm.elements.namedItem(key))settingsForm.elements.namedItem(key).value=value;
   settingsForm.elements.repeatWeeks.value=settings.repeatWeeks??1;
   settingsForm.elements.keepersEnabled.checked=settings.keepersEnabled===true;

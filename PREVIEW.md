@@ -8,6 +8,10 @@ The start screen is a compact searchable/filterable league library. Season/event
 
 This changes presentation/navigation only, not storage schema or result rules. Existing v1–v4 imports, current local drafts, accepted results, cup draws and award selections remain on the same storage key. No production website, bot or artwork was touched. Browser QA created a 10v10 league through all four steps, verified Tuesday defaults/review, opened the full cloned settings editor, registered three teams, generated fixtures, switched Calendar/Fixture review, and returned to the league library. Mobile check at 390×844 had no page horizontal overflow (only intentionally scrollable navigation); console warning/error logs were empty. Existing model/schedule/award/team-rule tests passed.
 
+## Full-night bye correction — 8 October 2026
+
+The initial feature left the former split-bye option selected by default. Normal creation/settings now offer full-night byes only. Loading an odd-team draft with at least five teams and no accepted results repairs the former split schedule, retains all teams/calendar settings and saves the correction. The prior local draft file is retained under `ufl-v2-workshop-drafts-v1-before-full-night-byes`. Draft imports apply the same repair in memory. Accepted-result schedules retain their historical bye mode and IDs; the legacy selector is locked in their settings. Three-team full-night scheduling remains impossible and is rejected. A nine-team regression reproduces the reported case and verifies team 1 has zero games while team 8 has two, alongside the full 5–39-team invariant suite.
+
 ## Stream directory, shared invite intake and full-night byes — 8 October 2026
 
 Videos is now labelled Stream Links (the stored `videos` key remains compatible). Streamers have a registered-team ID, display name and HTTPS channel link. Team filtering shows associated streamers, not a fabricated live/offline status. Older video records remain in exports and are not silently reassigned. Removing a draft team removes its directory entries; existing team names are escaped in selectors.

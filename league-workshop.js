@@ -1,4 +1,4 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed} from './league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {renderAdministration} from './league-administration.js';
 import {renderLeaguePage} from './league-page.js';
@@ -10,7 +10,7 @@ const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.hr
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
-let activeLeague=null,activeTab='overview';
+let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
 document.querySelector('.workshop-layout').before(message,pageHost);
 function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));}
@@ -43,7 +43,7 @@ function settingsFrom(values){
   }
   values=validated;
  }
- return validateScheduleSettings(values);
+ return validateScheduleSettings({...values,byePolicyRevision:2});
 }
 function renderDrafts(){
  pendingCalendarChange=null;
@@ -140,10 +140,14 @@ form.addEventListener('submit',event=>{event.preventDefault();try{
  }catch(error){message.textContent=error.message;}});
 function draftFile(){return {version:4,seasons,competitions,leagues:drafts.map(draft=>({settings:draft.settings,registrationOpen:draft.registrationOpen,scheduleGenerated:draft.scheduleGenerated,acceptedResults:draft.acceptedResults||[]}))};}
 function restoreDrafts(data){
+ migratedByeCount=0;
  if(Array.isArray(data))data={version:1,leagues:data};
  if(!data||![1,2,3,4].includes(data.version)||!Array.isArray(data.leagues)||data.leagues.length>20)throw Error('Not a supported UFL draft file.');
  const loaded=data.leagues.map(entry=>{
-  const settings=settingsFrom(data.version===1?entry:entry.settings);
+  const original=data.version===1?entry:entry.settings;
+  const upgraded=upgradeDraftByePolicy(original,entry.acceptedResults||[]);
+  if(upgraded.byePolicy==='fullNight'&&original.byePolicy!=='fullNight'&&original.teams?.length%2===1&&original.teams.length>=5)migratedByeCount++;
+  const settings=settingsFrom(upgraded);
   zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
   let validated=createLeagueDraft({...settings,teams:[]});
   for(const team of settings.teams)validated=registerLeagueTeam(validated,team,{restoring:true});
@@ -165,7 +169,10 @@ function restoreDrafts(data){
 save.addEventListener('click',()=>{try{localStorage.setItem(KEY,JSON.stringify(draftFile()));message.textContent='Saved on this device only. Download the draft file to share or move to another PC.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
 download.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(draftFile(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ufl-league-drafts.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 document.querySelector('#import-drafts').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>1000000)throw Error('Choose a draft file smaller than 1 MB.');const data=JSON.parse(await file.text());const loaded=restoreDrafts(data);drafts=loaded;renderDrafts();message.textContent='Draft file opened. Nothing was registered or published.';}catch(error){message.textContent=error.message;}finally{event.target.value='';}});
-try{const cached=JSON.parse(localStorage.getItem(KEY)||'[]');drafts=restoreDrafts(cached);}catch{/* Leave invalid or older drafts untouched in storage. */}renderDrafts();
+try{
+ const previous=localStorage.getItem(KEY)||'[]';drafts=restoreDrafts(JSON.parse(previous));
+ if(migratedByeCount){localStorage.setItem(KEY+'-before-full-night-byes',previous);persistDrafts();message.textContent=`Corrected ${migratedByeCount} odd-team draft(s) to full-night byes. Existing results were not changed. A pre-update backup is saved on this device.`;}
+}catch{/* Leave invalid or older drafts untouched in storage. */}renderDrafts();
 async function checkFixture(index,id,button){
  const draft=drafts[index],fixture=draft.fixtures.find(game=>game.id===id);button.disabled=true;review.hidden=false;review.innerHTML='<h2>Checking scheduled matchup…</h2>';
  if(activeLeague!==null)pageHost.querySelector('[data-page-body]').append(review);
