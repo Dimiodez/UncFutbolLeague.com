@@ -1,4 +1,4 @@
-import {LEAGUE_TABS,setPagePublished} from './league-page-model.js';
+import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-model.js';
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
 import {renderAwardsWorkbench} from './league-awards.js';
 import {registrationAllowed} from './league-engine.js';
@@ -6,6 +6,8 @@ import {acceptedAppearances,leagueStandings} from './league-results.js';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+// Derived public data pages are not separate league-configuration tasks.
+const LEAGUE_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
 export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onReport}){
@@ -65,4 +67,5 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   const table=document.createElement('table');table.innerHTML=`<caption>Accepted local fixture appearances only</caption><thead><tr><th>Player</th><th>Team</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Rating</th></tr></thead><tbody>${[...rows.values()].map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${p.apps}</td><td>${p.goalsKnown?p.goals:'Unavailable'}</td><td>${p.assistsKnown?p.assists:'Unavailable'}</td><td>${p.ratingCount?(p.ratingSum/p.ratingCount).toFixed(2):'Unavailable'}</td></tr>`).join('')}</tbody>`;body.append(table);
  }
  renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
+ if(tab==='rules')renderSectionTools({host,admin,body:admin,tab:'standings',settings,onSettings,onReport});
 }

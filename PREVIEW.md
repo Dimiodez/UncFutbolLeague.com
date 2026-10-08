@@ -8,6 +8,10 @@ The start screen is a compact searchable/filterable league library. Season/event
 
 This changes presentation/navigation only, not storage schema or result rules. Existing v1–v4 imports, current local drafts, accepted results, cup draws and award selections remain on the same storage key. No production website, bot or artwork was touched. Browser QA created a 10v10 league through all four steps, verified Tuesday defaults/review, opened the full cloned settings editor, registered three teams, generated fixtures, switched Calendar/Fixture review, and returned to the league library. Mobile check at 390×844 had no page horizontal overflow (only intentionally scrollable navigation); console warning/error logs were empty. Existing model/schedule/award/team-rule tests passed.
 
+## Configuration-only navigation — 8 October 2026
+
+Removed duplicate Stats and Standings destinations from league-workspace navigation, including keyboard navigation. The public tab catalogue and saved statistics/scoring settings remain unchanged. Rules now includes the existing Points & tiebreakers editor: regular-time win/loss 3/0 and extra-time win/loss 2/1 by default, with no draws. This does not connect automatic ingestion or change accepted-result calculations.
+
 ## Scheduled-result gate, season calendar and cup planning — 8 October 2026
 
 The EA candidate search requires the scheduled club IDs, kickoff window and league-local calendar date, and excludes already-used match IDs. It is not proof that a same-opponent game is a league game: staff must explicitly approve a candidate and confirm regular time vs extra time. Local acceptance rejects reused games, duplicate fixture results, wrong dates/opponents, missing scores and draws. Penalty/tied-score winner review is not yet supported. Candidate checks alone never change totals.
