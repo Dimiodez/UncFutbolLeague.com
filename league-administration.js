@@ -1,6 +1,7 @@
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {renderLeagueWindows} from './league-window-controls.js';
 import {registrationAllowed} from './league-engine.js';
+import {cleanWizardClone} from './league-workshop-ux.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 
 // Local draft administration only. Authorization and durable records must be wired before promotion.
@@ -21,6 +22,7 @@ export function renderAdministration({drafts,seasons,competitions,updateLeague,a
   const section=document.createElement('details');section.className='workshop-settings';
   section.innerHTML='<summary>League settings & calendar breaks</summary><p>Changing calendar settings rebuilds an existing draft schedule. All matchups are retained; no live results are changed.</p>';
   const settingsForm=document.querySelector('#league-builder').cloneNode(true);settingsForm.removeAttribute('id');settingsForm.querySelector('small:not([data-team-rules-help])').remove();settingsForm.querySelector('button[type="submit"]').textContent='Save league settings';
+  cleanWizardClone(settingsForm);
   for(const [key,value] of Object.entries(settings))if(settingsForm.elements.namedItem(key))settingsForm.elements.namedItem(key).value=value;
   settingsForm.elements.repeatWeeks.value=settings.repeatWeeks??1;
   settingsForm.elements.keepersEnabled.checked=settings.keepersEnabled===true;

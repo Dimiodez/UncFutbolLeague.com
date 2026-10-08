@@ -1,5 +1,13 @@
 # UFL major-update preview
 
+## League-workspace UX redesign — 8 October 2026
+
+Creation is now a four-step guided flow: league details, playing rules, matchnights, then a readable review before creation. Each step validates its own fields; keyboard submission advances instead of prematurely creating a league. Names, fixed/custom pitch size, substitute capacity, keeper rule, timezone/day/time/recurrence and game spacing remain supported. Teams are still optional. The original builder remains the canonical form; cloned league settings explicitly strip wizard-only hiding/review content so all existing editors continue working.
+
+The start screen is a compact searchable/filterable league library. Season/event administration is collapsed into secondary tools; backups are grouped separately. League cards show status, team/fixture counts and a single Manage league action instead of exposing all team forms and fixture lists. Inside a league, desktop sidebar/mobile scrollable navigation replaces the crowded horizontal desktop tab strip. Lifecycle milestones and next-action cards guide setup. Matches separates Calendar from Fixture review and folds configuration/windows/breaks; registering a team has its own disclosure. Cups and existing finals settings remain available under Cups & finals. Detailed preview limitations remain accessible without repeating large warning blocks.
+
+This changes presentation/navigation only, not storage schema or result rules. Existing v1–v4 imports, current local drafts, accepted results, cup draws and award selections remain on the same storage key. No production website, bot or artwork was touched. Browser QA created a 10v10 league through all four steps, verified Tuesday defaults/review, opened the full cloned settings editor, registered three teams, generated fixtures, switched Calendar/Fixture review, and returned to the league library. Mobile check at 390×844 had no page horizontal overflow (only intentionally scrollable navigation); console warning/error logs were empty. Existing model/schedule/award/team-rule tests passed.
+
 ## Scheduled-result gate, season calendar and cup planning — 8 October 2026
 
 The EA candidate search requires the scheduled club IDs, kickoff window and league-local calendar date, and excludes already-used match IDs. It is not proof that a same-opponent game is a league game: staff must explicitly approve a candidate and confirm regular time vs extra time. Local acceptance rejects reused games, duplicate fixture results, wrong dates/opponents, missing scores and draws. Penalty/tied-score winner review is not yet supported. Candidate checks alone never change totals.
