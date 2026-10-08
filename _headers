@@ -8,6 +8,9 @@
   X-Frame-Options: SAMEORIGIN
   X-Permitted-Cross-Domain-Policies: none
 
+/auth-turnstile.js
+  Cache-Control: no-store, max-age=0
+
 /theme-init.js
   Cache-Control: public, max-age=0, must-revalidate
 
