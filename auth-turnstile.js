@@ -25,7 +25,7 @@
     button.disabled=true;status.textContent='Verifying securely…';
     try{
       const response=await fetch(form.action,{method:'POST',credentials:'same-origin',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({'cf-turnstile-response':token}),signal:AbortSignal.timeout(15000)});
-      if(!response.ok)throw new Error('Verification failed');
+      if(!response.ok){console.warn('UFL login verification status',response.status);throw new Error('Verification failed');}
       const data=await response.json(),target=new URL(data.authorizeUrl);
       if(target.origin!=='https://discord.com'||target.pathname!=='/oauth2/authorize')throw new Error('Invalid login destination');
       window.location.assign(target.href);

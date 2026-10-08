@@ -24,7 +24,7 @@ export async function onRequestPost({ request, env }) {
   const rate=await consumeRateLimit(env,{scope:'discord-verify',subject:request.headers.get('cf-connecting-ip') || 'unknown',limit:15});
   if(!rate.success) return json({error:'Too many login attempts. Please wait a minute and try again.'},429,{'retry-after':String(rate.retryAfter)});
   const token=await turnstileToken(request);
-  if(!await verifyTurnstile(token,env,hostname)) return loginChallenge(env,'Human verification failed or expired. Please complete the check again.',403);
+  if(!await verifyTurnstile(token,env,hostname)) return json({error:'Human verification failed or expired. Please complete the check again.'},403);
   const state = randomToken();
   const callback = 'https://www.uncfutbolleague.com/api/auth/callback';
   const authorize = new URL('https://discord.com/oauth2/authorize');

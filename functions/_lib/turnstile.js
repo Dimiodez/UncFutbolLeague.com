@@ -60,8 +60,10 @@ export async function verifyTurnstile(token, env, hostname) {
       headers:{'content-type':'application/x-www-form-urlencoded'},
       body:new URLSearchParams({secret:env.TURNSTILE_SECRET_KEY,response:token})
     });
-    if(!response.ok)return false;
+    if(!response.ok){console.warn('UFL Turnstile verification unavailable',response.status);return false;}
     const result=await response.json();
-    return result.success===true && result.hostname===hostname && result.action===LOGIN_ACTION;
-  } catch {return false;}
+    const valid=result.success===true && result.hostname===hostname && result.action===LOGIN_ACTION;
+    if(!valid)console.warn('UFL Turnstile verification rejected',JSON.stringify({codes:result['error-codes']||[],hostnameMatches:result.hostname===hostname,actionMatches:result.action===LOGIN_ACTION}));
+    return valid;
+  } catch {console.warn('UFL Turnstile verification unavailable');return false;}
 }
