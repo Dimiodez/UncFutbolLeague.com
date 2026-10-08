@@ -1,25 +1,22 @@
 // Award teams are always an XI. League playing size and keeper rules never alter it.
-export const AWARD_POSITIONS=['GK','CB','LB','RB','LWB','RWB','CDM','CM','CAM','LM','RM','LW','RW','CF','ST'];
-export const AWARD_FORMATIONS={
- '3-4-3':[['LW','ST','RW'],['LM','CM','CM','RM'],['CB','CB','CB']],
- '4-3-3':[['LW','ST','RW'],['CM','CM','CM'],['LB','CB','CB','RB']],
- '4-4-2':[['ST','ST'],['LM','CM','CM','RM'],['LB','CB','CB','RB']],
- '4-2-3-1':[['ST'],['LM','CAM','RM'],['CDM','CDM'],['LB','CB','CB','RB']],
- '3-5-2':[['ST','ST'],['LM','CM','CDM','CM','RM'],['CB','CB','CB']],
- '4-1-2-1-2':[['ST','ST'],['CAM'],['CM','CM'],['CDM'],['LB','CB','CB','RB']]
-};
+import {FC27_FORMATIONS,FOOTBALL_POSITIONS,FORMATION_CATALOGUE_VERSION,formationSlots} from './fc27-formations.js';
+export const AWARD_POSITIONS=FOOTBALL_POSITIONS;
+export const AWARD_FORMATIONS=FC27_FORMATIONS;
 const defaults={GK:['GK'],CB:['CB','LB','RB'],LB:['LB','LWB'],RB:['RB','RWB'],CDM:['CDM','CM'],CM:['CM','CDM'],CAM:['CAM','CM'],LM:['LM','LW'],RM:['RM','RW'],LW:['LW','LM'],RW:['RW','RM'],ST:['ST','CF']};
 export function awardSlots(formation){
- const rows=AWARD_FORMATIONS[formation];if(!rows)throw Error('Choose an 11-player award formation.');
- const counts={};return [...rows,['GK']].flatMap((row,rowIndex)=>row.map((position,column)=>({id:`${position}-${counts[position]=(counts[position]||0)+1}`,position,width:Math.min(24,78/row.length),x:(column+1)*100/(row.length+1),y:12+rowIndex*76/rows.length})));
+ return formationSlots(formation);
 }
 export const awardLeagueKey=settings=>settings.id||JSON.stringify([settings.season,settings.league,settings.format]);
 export function defaultAwardBoard(settings){
- return {type:'week',weekDate:settings.startDate,formation:'3-4-3',minAppearances:1,eligibility:Object.fromEntries(awardSlots('3-4-3').map(slot=>[slot.id,[...(defaults[slot.position]||[slot.position])]])),selections:{}};
+ return {formationVersion:FORMATION_CATALOGUE_VERSION,type:'week',weekDate:settings.startDate,formation:'3-4-3',minAppearances:1,eligibility:Object.fromEntries(awardSlots('3-4-3').map(slot=>[slot.id,[...(defaults[slot.position]||[slot.position])]])),selections:{}};
 }
 export function awardBoardKey(board){return `${board.type}:${board.type==='week'?board.weekDate:'season'}`;}
 export function validateAwardBoard(board){
  if(!board||!['week','season'].includes(board.type))throw Error('Choose Team of the Week or Team of the Season.');
+ // Preserve early prototype selections under their actual shape, without silently
+ // reassigning players to new roles when correcting the formation catalogue.
+ if(board.formationVersion===undefined){const legacy={'4-2-3-1':'4-2-3-1 Wide','3-5-2':'3-1-4-2','4-1-2-1-2':'4-1-2-1-2 Narrow'};board={...board,formation:legacy[board.formation]||board.formation};}
+ else if(board.formationVersion!==FORMATION_CATALOGUE_VERSION)throw Error('Unsupported saved formation version.');
  if(typeof board.weekDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(board.weekDate)||!Number.isFinite(Date.parse(board.weekDate))||new Date(board.weekDate).toISOString().slice(0,10)!==board.weekDate)throw Error('Choose a valid week start date.');
  const minAppearances=Number(board.minAppearances);if(!Number.isInteger(minAppearances)||minAppearances<1||minAppearances>100)throw Error('Minimum appearances must be 1–100.');
  const slots=awardSlots(board.formation),eligibility={},selections={},seen=new Set();
@@ -33,7 +30,7 @@ export function validateAwardBoard(board){
   seen.add(player.id);selections[slot.id]={id:player.id,name:player.name,teamId:player.teamId,teamName:player.teamName,positions:[...player.positions],averageRating:player.averageRating,appearances:player.appearances,portraitUrl:safeImage(player.portraitUrl),badgeUrl:safeImage(player.badgeUrl)};
  }
  if(Object.keys(board.selections).some(id=>!slots.some(slot=>slot.id===id)))throw Error('Saved positions do not match the award formation.');
- return {type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections};
+ return {formationVersion:FORMATION_CATALOGUE_VERSION,type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections};
 }
 export function awardPeriod(board){
  const end=new Date(`${board.weekDate}T12:00:00Z`);end.setUTCDate(end.getUTCDate()+6);

@@ -1,5 +1,15 @@
 # UFL major-update preview
 
+## Shared formation catalogue — 8 October 2026
+
+`fc27-formations.js` now holds all 44 named entries from the requested FC27 formation reference, including numbered and descriptive variants, without Kick Off/Ultimate Team designations or source references in the interface. It is a versioned, immutable, dependency-free module for awards and future team/roster screens. `formationSlots(name)` returns independent full-XI slot records (stable positional IDs, positions, percentage x/y and card widths). Attack is top, GK bottom, team-left is screen-left. UI and PNG export use exactly the same geometry. Descriptive/numbered aliases share their appropriate underlying layout. No reference artwork is deployed.
+
+Replaced evenly spaced rows with explicit staggered positions: 3-5-2 now has CAM/two CDMs; wide/narrow diamonds and 4-2-3-1 differ; flat/holding/attack/defend variants have appropriate midfield roles. The reference's Narrow 4-2-3-1 page mistakenly reuses the wide diagram; we use the three-CAM narrow shape. The 4-4-2 Holding/(2) image was unavailable; its double-CDM layout is represented explicitly rather than substituting the flat shape. Five-back positions retain the reference's LB/RB labels and advanced depth. Eligibility remains independently configurable by the admin.
+
+Saved awards carry `formationVersion: 1`. Unversioned prototype 4-2-3-1 boards migrate to Wide, 3-5-2 to 3-1-4-2, and 4-1-2-1-2 to Narrow, preserving their original slot IDs, eligibility and selected players rather than silently relabelling player roles. New selections use the corrected names/roles. Future catalogue changes must migrate old versions, not silently change saved lineups. Team and roster selection consumers are deferred, not implemented by this change.
+
+Verification: catalogue tests cover all 44 entries, unique formation/slot IDs, XI/GK count, coordinate bounds, semantic variants, immutable shared data, non-overlapping export cards and legacy migration; award and league-page regression tests pass. Deployed-browser QA verified all 44 options, visually checked the narrow diamond, and checked five-back slot positions in the rendered DOM. Real candidate feed and authenticated shared admin permissions remain unconnected as noted below. Only the isolated preview is deployed.
+
 ## Full-XI TOTW / TOTS workbench — 8 October 2026
 
 The Awards tab is now `TOTW / TOTS`, with a full eleven-player formation including GK regardless of 6v6/10v10 match size or keeper rules. It replaces the earlier format-sized award settings. Available formations: 3-4-3, 4-3-3, 4-4-2, 4-2-3-1, 3-5-2 and 4-1-2-1-2. Each individual winning slot has editable qualifying recorded positions; GK remains GK-only. A CB slot may include CDM, or CM/ST may include CAM.

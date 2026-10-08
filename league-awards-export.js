@@ -17,9 +17,9 @@ export async function downloadAwardImage({settings,board,demo=false}){
  const artwork=await Promise.all(awardSlots(board.formation).map(async slot=>{const player=board.selections[slot.id];return {slot,player,face:player?await loadArtwork(player.portraitUrl):null,badge:player?await loadArtwork(player.badgeUrl):null};}));
  for(const {slot,player,face,badge} of artwork){
   const x=70+slot.x*14.6,y=285+slot.y*14.1;
-  const width=Math.min(264,slot.width*14.6);context.fillStyle='#0b1b2b';context.fillRect(x-width/2,y-70,width,205);
-  if(face){const side=Math.min(face.width,face.height),sx=(face.width-side)/2;context.drawImage(face,sx,0,side,side,x-62,y-60,124,124);}else{if(player?.portraitUrl)missing++;context.fillStyle='#254c65';context.beginPath();context.arc(x,y,52,0,Math.PI*2);context.fill();text(player?.name.slice(0,2).toUpperCase()||slot.position,x,y+10,30);}
-  text(player?.name||slot.id,x,y+92,23,'#fff',width-12);text(player?`${slot.position} · ${player.averageRating.toFixed(2)}`:'Unfilled',x,y+123,20,'#f5ce6a',width-12);
+  const width=Math.min(264,slot.width*14.6);context.fillStyle='#0b1b2b';context.fillRect(x-width/2,y-70,width,190);
+  if(face){const side=Math.min(face.width,face.height),sx=(face.width-side)/2;context.drawImage(face,sx,0,side,side,x-56,y-60,112,112);}else{if(player?.portraitUrl)missing++;context.fillStyle='#254c65';context.beginPath();context.arc(x,y,48,0,Math.PI*2);context.fill();text(player?.name.slice(0,2).toUpperCase()||slot.position,x,y+10,30);}
+  text(player?.name||slot.id,x,y+78,23,'#fff',width-12);text(player?`${slot.position} · ${player.averageRating.toFixed(2)}`:'Unfilled',x,y+105,20,'#f5ce6a',width-12);
   if(badge)context.drawImage(badge,x+70,y+20,44,44);else if(player?.badgeUrl)missing++;
  }
  text(`${board.formation} · ${settings.format} awards · UNC FÚTBOL LEAGUE`,800,1790,27);
