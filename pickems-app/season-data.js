@@ -1189,10 +1189,14 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-07T03:52:18.000Z",
-    "statsFetchedAt": "2026-10-07T03:52:18.000Z",
+    "syncedAt": "2026-10-08T20:37:24.000Z",
+    "statsFetchedAt": "2026-10-08T20:37:24.000Z",
     "statsStatus": "available",
     "teams": {
+      "ARS": [
+        "UFL Arsenal",
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png"
+      ],
       "ITA": [
         "UFL Italia",
         "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
@@ -1232,6 +1236,19 @@ window.UFL_SEASONS = {
     },
     "teamDetails": [
       {
+        "key": "ARS",
+        "teamId": 26,
+        "participantId": 31,
+        "registered": true,
+        "name": "UFL Arsenal",
+        "abbreviation": "ARS",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png",
+        "cover": null,
+        "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal",
+        "rosterSize": 3,
+        "stats": []
+      },
+      {
         "key": "ITA",
         "teamId": 25,
         "participantId": 29,
@@ -1241,7 +1258,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Italia",
-        "rosterSize": 0,
+        "rosterSize": 5,
         "stats": []
       },
       {
@@ -1254,7 +1271,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-la-fc-1791384437.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC",
-        "rosterSize": 4,
+        "rosterSize": 5,
         "stats": []
       },
       {
@@ -1280,7 +1297,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM",
-        "rosterSize": 5,
+        "rosterSize": 6,
         "stats": []
       },
       {
@@ -1319,7 +1336,7 @@ window.UFL_SEASONS = {
         "logo": null,
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes",
-        "rosterSize": 3,
+        "rosterSize": 6,
         "stats": []
       },
       {
@@ -1332,7 +1349,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
         "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-roma-1790684833.jpg",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Roma",
-        "rosterSize": 7,
+        "rosterSize": 8,
         "stats": []
       },
       {
@@ -1440,6 +1457,17 @@ window.UFL_SEASONS = {
       ],
       [
         "ITA",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        "ARS",
         0,
         0,
         0,
@@ -1825,8 +1853,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-10-07T10:44:52.000Z",
-    "statsFetchedAt": "2026-10-07T10:44:52.000Z",
+    "syncedAt": "2026-10-08T20:34:03.000Z",
+    "statsFetchedAt": "2026-10-08T20:34:03.000Z",
     "statsStatus": "available",
     "teams": {
       "MAY": [
@@ -1947,7 +1975,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-        "rosterSize": 6,
+        "rosterSize": 7,
         "stats": []
       }
     ],

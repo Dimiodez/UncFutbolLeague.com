@@ -11,8 +11,8 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-  "syncedAt": "2026-10-07T10:44:52.000Z",
-  "statsFetchedAt": "2026-10-07T10:44:52.000Z",
+  "syncedAt": "2026-10-08T20:34:03.000Z",
+  "statsFetchedAt": "2026-10-08T20:34:03.000Z",
   "statsStatus": "available",
   "teams": {
     "MAY": [
@@ -133,7 +133,7 @@ window.UFL_SEASON_10V10_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-      "rosterSize": 6,
+      "rosterSize": 7,
       "stats": []
     }
   ],
