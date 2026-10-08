@@ -23,3 +23,11 @@ Run `node --test scripts/auth-security.test.mjs scripts/player-photos.test.mjs s
 Tests cover valid mocked login, invalid state/provider/profile, provider failures, callback limits, security headers and existing roster/photo/admin safeguards. Mock tests do not substitute for a human end-to-end Discord login or an independent security assessment.
 
 Still needed: Search Console owner access and exact Security Issues findings; inspect affected URLs and deployment/account logs accordingly, remediate confirmed findings, then submit a security review. Google controls warning removal. Do not store OAuth callback codes, tokens, cookies or credentials in this document or Git.
+
+## Turnstile follow-up
+
+The owner reports Search Console now says no issues detected. This does not establish the cause of the earlier Chrome warning or amount to a complete security audit.
+
+The owner authorized Cloudflare Turnstile on login. The managed widget is restricted to the official UFL hostnames with no site-wide clearance or paid bot-management changes. Both keys are stored as Cloudflare Pages secrets, never in source. GET `/api/auth/discord` displays the themed challenge; same-origin POST verifies the token server-side, including hostname and action, before redirecting to Discord. The OAuth state cookie is HMAC-signed and expires after ten minutes so direct OAuth initiation cannot bypass verification. Existing in-flight logins must restart after deployment.
+
+Public pages, house-club APIs, bot connections and Discord OAuth callbacks are not blanket-challenged. Callbacks require the signed state issued after successful verification. The privacy page discloses Turnstile use. `scripts/turnstile.test.mjs` covers blocked/bypass paths and mocked successful flow; do not automate solving a real human challenge.

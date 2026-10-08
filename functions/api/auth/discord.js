@@ -1,5 +1,6 @@
-import { json, oauthCookie, randomToken, requireConfiguration } from '../../_lib/auth.js';
+import { json, oauthCookie, randomToken, requireConfiguration, sameOrigin } from '../../_lib/auth.js';
 import { consumeRateLimit } from '../../_lib/rate-limit.js';
+import { LOGIN_HOSTS, loginChallenge, signLoginState, turnstileToken, verifyTurnstile } from '../../_lib/turnstile.js';
 
 export async function onRequestGet({ request, env }) {
   const requestUrl = new URL(request.url);
@@ -12,6 +13,18 @@ export async function onRequestGet({ request, env }) {
   const subject = request.headers.get('cf-connecting-ip') || 'unknown';
   const rate = await consumeRateLimit(env, { scope: 'discord-login', subject, limit: 15 });
   if (!rate.success) return json({ error: 'Too many login attempts. Please wait a minute and try again.' }, 429, { 'retry-after': String(rate.retryAfter) });
+  if (!LOGIN_HOSTS.includes(requestUrl.hostname)) return json({error:'Use the official UFL website to sign in.'},403);
+  return loginChallenge(env);
+}
+
+export async function onRequestPost({ request, env }) {
+  const hostname=new URL(request.url).hostname;
+  if (!sameOrigin(request) || hostname !== 'www.uncfutbolleague.com') return json({error:'Invalid request origin. Start login from the official UFL website.'},403);
+  if (requireConfiguration(env).length || !env.TURNSTILE_SITE_KEY || !env.TURNSTILE_SECRET_KEY) return json({error:'Secure login is temporarily unavailable.'},503);
+  const rate=await consumeRateLimit(env,{scope:'discord-verify',subject:request.headers.get('cf-connecting-ip') || 'unknown',limit:15});
+  if(!rate.success) return json({error:'Too many login attempts. Please wait a minute and try again.'},429,{'retry-after':String(rate.retryAfter)});
+  const token=await turnstileToken(request);
+  if(!await verifyTurnstile(token,env,hostname)) return loginChallenge(env,'Human verification failed or expired. Please complete the check again.',403);
   const state = randomToken();
   const callback = 'https://www.uncfutbolleague.com/api/auth/callback';
   const authorize = new URL('https://discord.com/oauth2/authorize');
@@ -22,5 +35,5 @@ export async function onRequestGet({ request, env }) {
     scope: 'identify',
     state
   });
-  return new Response(null, { status: 302, headers: { location: authorize.toString(), 'set-cookie': oauthCookie(state), 'cache-control': 'no-store' } });
+  return new Response(null, { status: 303, headers: { location: authorize.toString(), 'set-cookie': oauthCookie(await signLoginState(state,env)), 'cache-control': 'no-store' } });
 }

@@ -1,11 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {createHmac} from 'node:crypto';
 import {onRequestGet as callback} from '../functions/api/auth/callback.js';
 import {onRequest as middleware} from '../functions/api/_middleware.js';
 
 const state = 'a'.repeat(43);
-const request = (query = `state=${state}&code=test-code`, cookie = state) => new Request(`https://www.uncfutbolleague.com/api/auth/callback?${query}`, {headers: {cookie: `__Host-ufl_oauth_state=${cookie}`}});
-const environment = (count = 1) => ({DISCORD_CLIENT_ID: 'test', DISCORD_CLIENT_SECRET: 'test-secret', OWNER_DISCORD_ID: '123456789012345678', DB: {prepare() {return {bind() {return {async first() {return {request_count: count};}};}};}}});
+const request = (query = `state=${state}&code=test-code`, cookie = state) => {
+  const payload=`${cookie}.${Math.floor(Date.now()/1000)}`;
+  const signed=`${payload}.${createHmac('sha256','test-turnstile-secret').update(payload).digest('hex')}`;
+  return new Request(`https://www.uncfutbolleague.com/api/auth/callback?${query}`, {headers: {cookie: `__Host-ufl_oauth_state=${signed}`}});
+};
+const environment = (count = 1) => ({DISCORD_CLIENT_ID: 'test', DISCORD_CLIENT_SECRET: 'test-secret', TURNSTILE_SECRET_KEY:'test-turnstile-secret', OWNER_DISCORD_ID: '123456789012345678', DB: {prepare() {return {bind() {return {async first() {return {request_count: count};}};}};}}});
 
 test('callback rejects missing, malformed and mismatched state before any provider request', async () => {
   for (const req of [request('code=x'), request('state=short&code=x','short'), request(undefined,'b'.repeat(43))]) {

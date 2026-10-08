@@ -1,5 +1,6 @@
 import { clearOauthCookie, json, randomToken, readCookie, requireConfiguration, sessionCookie, sha256 } from '../../_lib/auth.js';
 import { consumeRateLimit } from '../../_lib/rate-limit.js';
+import { verifyLoginState } from '../../_lib/turnstile.js';
 
 export async function onRequestGet({ request, env }) {
   const missing = requireConfiguration(env);
@@ -7,7 +8,7 @@ export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
   const state = url.searchParams.get('state') || '';
   const expectedState = readCookie(request, '__Host-ufl_oauth_state');
-  if (!/^[A-Za-z0-9_-]{43}$/.test(state) || !expectedState || state !== expectedState) return json({ error: 'The login request expired or could not be verified.' }, 400, { 'set-cookie': clearOauthCookie });
+  if (!/^[A-Za-z0-9_-]{43}$/.test(state) || !expectedState || !await verifyLoginState(expectedState,state,env)) return json({ error: 'The login request expired or could not be verified. Please start a new login and complete human verification.' }, 400, { 'set-cookie': clearOauthCookie });
   const issuer = url.searchParams.get('iss');
   if (issuer && issuer !== 'https://discord.com') return json({ error: 'Invalid login provider.' }, 400, { 'set-cookie': clearOauthCookie });
   const code = url.searchParams.get('code');
