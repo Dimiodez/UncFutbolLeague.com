@@ -21,7 +21,26 @@ export function validateScheduleSettings(settings){
   if(pause.from>pause.to)throw Error('A break must end on or after it starts.');
   if(typeof pause.reason!=='string'||!pause.reason.trim()||pause.reason.length>80)throw Error('Name each break (holiday, cup, or other reason).');
  }
- return {...settings,repeatWeeks:interval,breaks};
+ const windows=settings.windows??[];
+ if(!Array.isArray(windows)||windows.length>100)throw Error('Use at most 100 league windows.');
+ for(const window of windows){
+  if(!['registration','transfer','bye','holiday','cup','break'].includes(window.type))throw Error('Choose a valid window type.');
+  zonedTimestamp(window.from,'12:00',settings.timeZone);zonedTimestamp(window.to,'12:00',settings.timeZone);
+  if(window.from>window.to)throw Error('The window must end on or after it starts.');
+  if(typeof window.name!=='string'||!window.name.trim()||window.name.length>80)throw Error('Name the window (up to 80 characters).');
+  if(window.type==='registration'&&window.to>=settings.startDate)throw Error('Registration must end before the league start date.');
+  if(window.type==='transfer'&&window.from<settings.startDate)throw Error('Midseason transfers must start on or after the league start date.');
+ }
+ return {...settings,repeatWeeks:interval,breaks,windows};
+}
+export function leagueWindowState(window,timeZone,now=Date.now()){
+ const end=new Date(window.to+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+1);
+ const opens=zonedTimestamp(window.from,'00:00',timeZone),closes=zonedTimestamp(end.toISOString().slice(0,10),'00:00',timeZone);
+ return now<opens?'upcoming':now>=closes?'closed':'open';
+}
+export function registrationAllowed(draft,now=Date.now()){
+ const windows=(draft.settings.windows||[]).filter(window=>window.type==='registration');
+ return draft.registrationOpen&&(!windows.length||windows.some(window=>leagueWindowState(window,draft.settings.timeZone,now)==='open'));
 }
 export function zonedTimestamp(date,time,timeZone){
  const [year,month,day]=date.split('-').map(Number),[hour,minute]=time.split(':').map(Number);
@@ -37,8 +56,8 @@ export function zonedTimestamp(date,time,timeZone){
 export function createLeagueDraft(settings){
  return {settings:{...settings,teams:[...(settings.teams||[])]},registrationOpen:true,scheduleGenerated:false,fixtures:[],nights:[],warnings:[]};
 }
-export function registerLeagueTeam(draft,team){
- if(!draft.registrationOpen)throw Error('Registration is closed for this league.');
+export function registerLeagueTeam(draft,team,{now=Date.now(),restoring=false}={}){
+ if(!restoring&&!registrationAllowed(draft,now))throw Error('Registration is closed or outside this league’s registration window.');
  if(draft.scheduleGenerated)throw Error('Reopen registration before changing teams. This clears the draft schedule.');
  const name=String(team.name||'').trim(),eaClubId=String(team.eaClubId||'').trim();
  if(!name||name.length>80||eaClubId&&!/^\d{1,20}$/.test(eaClubId))throw Error('Enter a team name and, optionally, a numeric EA club ID.');
@@ -71,10 +90,10 @@ export function buildLeagueSchedule(settings){
  }
  const allRounds=[...rounds,...rounds.map(fixtures=>fixtures.map(game=>({home:game.away,away:game.home})))];
  const fixtures=[],nights=[],skippedDates=[];
- const scheduledDates=[],cursor=new Date(startDate);
+ const scheduledDates=[],cursor=new Date(startDate),calendarBreaks=[...settings.breaks,...settings.windows.filter(window=>['bye','holiday','cup','break'].includes(window.type)).map(window=>({from:window.from,to:window.to,reason:window.name}))];
  for(let attempt=0;scheduledDates.length<Math.ceil(allRounds.length/2);attempt++){
   if(attempt>1000)throw Error('Too many skipped dates. Shorten the breaks.');
-  const date=cursor.toISOString().slice(0,10),pauses=settings.breaks.filter(pause=>date>=pause.from&&date<=pause.to);
+  const date=cursor.toISOString().slice(0,10),pauses=calendarBreaks.filter(pause=>date>=pause.from&&date<=pause.to);
   if(pauses.length)skippedDates.push({date,reasons:pauses.map(pause=>pause.reason)});else scheduledDates.push(date);
   cursor.setUTCDate(cursor.getUTCDate()+settings.repeatWeeks*7);
  }

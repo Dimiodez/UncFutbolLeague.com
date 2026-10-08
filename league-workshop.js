@@ -1,4 +1,4 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules} from './league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed} from './league-engine.js';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {renderAdministration} from './league-administration.js';
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
@@ -8,7 +8,7 @@ let pendingCalendarChange=null;
 function approveCalendarChange(signature,index){
  if(pendingCalendarChange===signature){pendingCalendarChange=null;return true;}
  pendingCalendarChange=signature;
- const target=index===undefined?document.querySelector('#league-overview'):document.querySelector(`#league-${index} .workshop-settings`);
+ const target=index===undefined?document.querySelector('#league-overview'):document.querySelector(`#league-${index}`);
  document.querySelectorAll('.calendar-confirmation').forEach(notice=>notice.remove());
  const notice=document.createElement('p');notice.className='calendar-confirmation workshop-warning';notice.setAttribute('role','status');notice.textContent='This will rebuild the draft schedule. Submit the same change again to confirm. Teams and matchups are preserved; no live results are affected.';target.append(notice);
  message.textContent=notice.textContent;return false;
@@ -31,6 +31,7 @@ function renderDrafts(){
   const draft=drafts[index],section=document.createElement('section');section.className='workshop-registration';
   section.innerHTML=`<h3>Teams · Registration ${draft.registrationOpen?'open':'closed'}</h3><p>${draft.scheduleGenerated?'Draft schedule generated. Reopening registration clears it so new teams can be included.':'No schedule yet. Add teams now or return later; at least 3 teams are needed only when generating fixtures.'}</p><ul>${draft.settings.teams.map(team=>`<li><strong>${escape(team.name)}</strong>${team.eaClubId?` · EA club ${escape(team.eaClubId)} (not verified)`:' · EA club not linked'}</li>`).join('')||'<li>No teams registered yet.</li>'}</ul><form data-register="${index}"><div class="workshop-pair"><label>Team name<input name="name" maxlength="80" required ${draft.registrationOpen?'':'disabled'}></label><label>EA club ID (optional)<input name="eaClubId" inputmode="numeric" pattern="[0-9]{1,20}" ${draft.registrationOpen?'':'disabled'}></label></div><button type="submit" ${draft.registrationOpen?'':'disabled'}>Register team in this draft</button></form><div class="workshop-toolbar"><button data-registration="${index}">${draft.registrationOpen?'Close registration':'Reopen registration'}</button><button data-generate="${index}" ${draft.settings.teams.length<3||draft.registrationOpen?'disabled':''}>${draft.scheduleGenerated?'Regenerate':'Generate'} draft fixtures</button></div><small>Close registration when your teams are ready. Names and IDs entered here do not prove EA ownership or grant manager permissions.</small>`;
   card.querySelector('p').after(section);
+  if(!registrationAllowed(draft)){section.querySelectorAll('form input,form button').forEach(control=>control.disabled=true);if(draft.registrationOpen)section.querySelector('h3').textContent='Teams · Outside registration window';}
  });
  root.querySelectorAll('[data-register]').forEach(teamForm=>teamForm.addEventListener('submit',event=>{event.preventDefault();try{const index=Number(teamForm.dataset.register);drafts[index]=registerLeagueTeam(drafts[index],Object.fromEntries(new FormData(teamForm)));renderDrafts();message.textContent='Team registered in this league draft. Save your drafts to keep the change.';}catch(error){message.textContent=error.message;}}));
  root.querySelectorAll('[data-registration]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.registration),draft=drafts[index];if(!draft.registrationOpen&&draft.scheduleGenerated&&!confirm('Reopen registration and clear this draft schedule? Teams are preserved. No live results are affected.'))return;drafts[index]=draft.registrationOpen?{...draft,registrationOpen:false}:createLeagueDraft(draft.settings);review.hidden=true;renderDrafts();message.textContent='Draft registration updated. Save your drafts to keep the change.';}));
@@ -40,8 +41,10 @@ function renderDrafts(){
 function updateLeague(index,values){
  const settings=settingsFrom(values),draft=drafts[index];
  if(drafts.some((other,otherIndex)=>otherIndex!==index&&other.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&other.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season.');
- const updated=draft.scheduleGenerated?buildLeagueSchedule(settings):{...draft,settings};
- if(draft.scheduleGenerated&&!approveCalendarChange(`league-${index}:${JSON.stringify(settings)}`,index))return;
+ const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
+ const calendarChanged=calendarKey(settings)!==calendarKey(draft.settings);
+ const updated=draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
+ if(draft.scheduleGenerated&&calendarChanged&&!approveCalendarChange(`league-${index}:${JSON.stringify(settings)}`,index))return;
  // Keep competition references consistent when a draft league is renamed or moved.
  competitions=competitions.map(cup=>cup.season===draft.settings.season&&cup.league===draft.settings.league?{...cup,season:settings.season,league:settings.league}:cup);
  drafts[index]=updated;review.hidden=true;renderDrafts();message.textContent='League calendar updated. Save drafts to keep this change.';
@@ -85,7 +88,7 @@ function restoreDrafts(data){
   const settings=settingsFrom(data.version===1?entry:entry.settings);
   zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
   let validated=createLeagueDraft({...settings,teams:[]});
-  for(const team of settings.teams)validated=registerLeagueTeam(validated,team);
+  for(const team of settings.teams)validated=registerLeagueTeam(validated,team,{restoring:true});
   if(data.version===1||entry.scheduleGenerated)return buildLeagueSchedule(validated.settings);
   return {...validated,registrationOpen:entry.registrationOpen!==false};
  });

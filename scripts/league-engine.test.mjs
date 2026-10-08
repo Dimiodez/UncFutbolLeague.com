@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules} from '../league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,leagueWindowState,registrationAllowed} from '../league-engine.js';
 assert.equal(validateTeamRules({format:'6v6',size:8,maxTeamSize:12}).size,6);
 assert.equal(validateTeamRules({format:'10v10',size:6,maxTeamSize:15}).size,10);
 assert.equal(validateTeamRules({format:'Custom',size:8,maxTeamSize:13}).size,8);
@@ -12,6 +12,24 @@ assert.throws(()=>validateTeamRules({format:'6v6',keepersEnabled:'false'}));
 assert.equal(validateTeamRules({format:'6v6'}).maxTeamSize,6);
 const settings={season:'Season 2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:8},(_,i)=>({id:`team-${i+1}`,name:`Team ${i+1}`,eaClubId:String(100+i)}))};
 const schedule=buildLeagueSchedule(settings);
+const registration={type:'registration',name:'Preseason registration',from:'2026-10-01',to:'2026-10-14'};
+const windowDraft=createLeagueDraft(validateScheduleSettings({...settings,teams:[],windows:[registration]}));
+assert.equal(registrationAllowed(windowDraft,zonedTimestamp('2026-10-14','23:59',settings.timeZone)),true);
+assert.equal(registrationAllowed(windowDraft,zonedTimestamp('2026-10-15','00:00',settings.timeZone)),false);
+assert.equal(leagueWindowState(registration,settings.timeZone,zonedTimestamp('2026-09-30','23:59',settings.timeZone)),'upcoming');
+assert.throws(()=>registerLeagueTeam(windowDraft,{name:'Too late'},{now:zonedTimestamp('2026-10-15','00:00',settings.timeZone)}));
+assert.equal(registerLeagueTeam(windowDraft,{name:'Archive'},{restoring:true}).settings.teams.length,1);
+assert.throws(()=>validateScheduleSettings({...settings,windows:[{...registration,to:'2026-10-15'}]}));
+assert.throws(()=>validateScheduleSettings({...settings,windows:[{type:'transfer',name:'Too early',from:'2026-10-01',to:'2026-10-14'}]}));
+const withTransfers=buildLeagueSchedule({...settings,windows:[{type:'transfer',name:'Midseason transfers',from:'2026-11-01',to:'2026-11-07'}]});
+assert.deepEqual(withTransfers.fixtures.map(game=>game.startsAt),schedule.fixtures.map(game=>game.startsAt));
+for(const type of ['bye','holiday','cup','break']){
+ const skipped=buildLeagueSchedule({...settings,windows:[{type,name:'Week off',from:'2026-10-22',to:'2026-10-29'}]});
+ assert.deepEqual(skipped.nights.slice(0,2).map(night=>night.date),['2026-10-15','2026-11-05']);assert.equal(skipped.fixtures.length,56);
+}
+const fallWindow={from:'2026-11-01',to:'2026-11-01'};
+assert.equal(leagueWindowState(fallWindow,settings.timeZone,zonedTimestamp('2026-11-01','23:59',settings.timeZone)),'open');
+assert.equal(leagueWindowState(fallWindow,settings.timeZone,zonedTimestamp('2026-11-02','00:00',settings.timeZone)),'closed');
 let empty=createLeagueDraft({...settings,teams:[]});
 assert.equal(empty.settings.teams.length,0);assert.equal(empty.fixtures.length,0);assert.equal(empty.registrationOpen,true);
 empty=registerLeagueTeam(empty,{name:'Roma'});
