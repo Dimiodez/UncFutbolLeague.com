@@ -1,4 +1,5 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings} from './league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules} from './league-engine.js';
+import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {renderAdministration} from './league-administration.js';
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -13,10 +14,10 @@ function approveCalendarChange(signature,index){
  message.textContent=notice.textContent;return false;
 }
 form.elements.startDate.value=new Date().toLocaleDateString('en-CA',{timeZone:'America/Chicago'});
-form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom'){form.elements.size.value=form.elements.format.value==='10v10'?10:6;form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';}});
+bindTeamRuleControls(form);
+form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom')form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';});
 function settingsFrom(values){
  if(!values||typeof values.season!=='string'||typeof values.league!=='string'||!values.season.trim()||!values.league.trim()||values.season.length>80||values.league.length>80)throw Error('Enter a season and league name.');
- if(!['6v6','10v10','Custom'].includes(values.format)||!Number.isInteger(Number(values.size))||values.size<1||values.size>11)throw Error('Choose a valid format and team size.');
  if(!Array.isArray(values.teams)||values.teams.some(team=>!team.name?.trim()||team.name.length>80||!/^team-\d+$/.test(team.id)||team.eaClubId&&!/^\d{1,20}$/.test(team.eaClubId)))throw Error('Use valid team names and numeric EA club IDs.');
  const ids=values.teams.map(team=>team.eaClubId).filter(Boolean);if(new Set(ids).size!==ids.length)throw Error('Two teams cannot use the same EA club within this league.');
  return validateScheduleSettings(values);
@@ -53,6 +54,7 @@ function addSeason(value){
  seasons.push(name);form.elements.season.value=name;renderDrafts();message.textContent='Season created. You can create leagues within it; save drafts to keep it.';
 }
 function addCompetition(fields){
+ fields=validateTeamRules(fields);
  const name=String(fields.name||'').trim();
  if(!name||name.length>80||!['Cup','Playoffs','Other'].includes(fields.type))throw Error('Enter a competition name and type.');
  if(![...seasons,...drafts.map(draft=>draft.settings.season)].includes(fields.season))throw Error('Choose an existing season.');
@@ -68,7 +70,7 @@ function addCompetition(fields){
  competitions.push({...fields,name});renderDrafts();message.textContent='Competition calendar draft added. Cup draws/results are not connected yet. Save drafts to keep it.';
 }
 form.addEventListener('submit',event=>{event.preventDefault();try{
- const fields=Object.fromEntries(new FormData(form));
+ const fields=readTeamRuleControls(form);
  const settings=settingsFrom({...fields,size:Number(fields.size),teams:[]});
  if(drafts.length>=20)throw Error('This preview supports up to 20 league drafts.');
  zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
@@ -93,6 +95,8 @@ function restoreDrafts(data){
  for(const cup of savedCups){
   if(!cup||typeof cup.name!=='string'||!cup.name.trim()||cup.name.length>80||!seasonNames.includes(cup.season)||!['Cup','Playoffs','Other'].includes(cup.type)||cup.league&&!loaded.some(draft=>draft.settings.season===cup.season&&draft.settings.league===cup.league))throw Error('Invalid competition draft.');
   zonedTimestamp(cup.from,'12:00','America/Chicago');zonedTimestamp(cup.to,'12:00','America/Chicago');if(cup.from>cup.to)throw Error('Invalid competition dates.');
+  // Older calendar-only cups had no playing rules; retain that state rather than inventing a format.
+  if(cup.format)Object.assign(cup,validateTeamRules(cup));
  }
  seasons=savedSeasons;competitions=savedCups;return loaded;
 }

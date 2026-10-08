@@ -1,5 +1,15 @@
 // Shared schedule and candidate matching logic. Never treats raw EA games as league results.
+export function validateTeamRules(values){
+ if(!['6v6','10v10','Custom'].includes(values.format))throw Error('Choose a valid format.');
+ const size=values.format==='6v6'?6:values.format==='10v10'?10:Number(values.size);
+ const maxTeamSize=Number(values.maxTeamSize??size);
+ if(!Number.isInteger(size)||size<1||size>11)throw Error('Custom formats need 1–11 players per side.');
+ if(!Number.isInteger(maxTeamSize)||maxTeamSize<size||maxTeamSize>100)throw Error(`Maximum roster size must be ${size}–100, including substitutes.`);
+ if(![undefined,true,false,'on'].includes(values.keepersEnabled))throw Error('Choose whether keepers are enabled.');
+ return {...values,size,maxTeamSize,keepersEnabled:values.keepersEnabled===true||values.keepersEnabled==='on'};
+}
 export function validateScheduleSettings(settings){
+ settings=validateTeamRules(settings);
  const interval=Number(settings.repeatWeeks??1),weekday=Number(settings.weekday),spacing=Number(settings.spacingMinutes);
  if(!Number.isInteger(interval)||interval<1||interval>4)throw Error('Repeat games every 1–4 weeks.');
  if(!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(spacing)||spacing<15||spacing>180)throw Error('Choose a valid matchnight and 15–180 minutes between games.');

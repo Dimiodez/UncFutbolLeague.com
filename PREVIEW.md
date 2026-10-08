@@ -71,6 +71,10 @@ Implementation order: persistent league/registration and permissions first; sche
 
 ## Saved handoff — 4 October 2026
 
+### Team playing rules — 8 October 2026
+
+League creation/editing and cup/event creation now save separate playing and roster rules. 6v6 fixes the on-pitch count at 6; 10v10 fixes it at 10; only Custom permits editing that count (1–11). Maximum roster size includes starters and substitutes, must be at least the on-pitch size, and currently has a validation ceiling of 100. New forms suggest 12 but this is editable, not a published UFL rule. “Keepers enabled” is an explicit independent boolean for each league/cup and does not increase the on-pitch count. It starts unchecked; existing league drafts with no keeper rule also display disabled, and old calendar-only cups retain “Playing rules not set.” Legacy league roster limits default to their playing size rather than inventing substitutes. These rules persist in local saves/exports; shared roster-limit enforcement and EA-based keeper compliance checks are not implemented and must not be claimed.
+
 - League administration and calendar work is deployed at https://ufl-major-update-preview.pages.dev/league-workshop and committed on this preview branch. Tested empty league creation, subsequent registration, recurring schedule edits, cup/break reservations, DST, preserved matchups, and save/reload.
 - The user is independently testing Maykop club changes at https://ufl-maykop-club-preview.pages.dev/test/maykop?v=analytics-204dd43 before approving them for production. This chat did not modify, deploy or verify that preview; the web reader could not access it.
 - The user may edit live team pages during league development. At promotion, start from the latest production revision and reconcile approved Maykop work, team edits, shared identities and portraits. Never replace production with this older clone or deploy its isolated infrastructure to the live project.

@@ -1,5 +1,15 @@
 import assert from 'node:assert/strict';
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings} from '../league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules} from '../league-engine.js';
+assert.equal(validateTeamRules({format:'6v6',size:8,maxTeamSize:12}).size,6);
+assert.equal(validateTeamRules({format:'10v10',size:6,maxTeamSize:15}).size,10);
+assert.equal(validateTeamRules({format:'Custom',size:8,maxTeamSize:13}).size,8);
+assert.equal(validateTeamRules({format:'6v6',keepersEnabled:true}).size,6);
+assert.equal(validateTeamRules({format:'6v6',keepersEnabled:false}).keepersEnabled,false);
+assert.throws(()=>validateTeamRules({format:'10v10',maxTeamSize:9}));
+assert.throws(()=>validateTeamRules({format:'6v6',maxTeamSize:6.5}));
+assert.throws(()=>validateTeamRules({format:'Custom',size:12}));
+assert.throws(()=>validateTeamRules({format:'6v6',keepersEnabled:'false'}));
+assert.equal(validateTeamRules({format:'6v6'}).maxTeamSize,6);
 const settings={season:'Season 2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:8},(_,i)=>({id:`team-${i+1}`,name:`Team ${i+1}`,eaClubId:String(100+i)}))};
 const schedule=buildLeagueSchedule(settings);
 let empty=createLeagueDraft({...settings,teams:[]});

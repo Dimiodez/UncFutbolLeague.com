@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {bindTeamRuleControls} from '../team-rule-controls.js';
+const callbacks={};
+const input=(value,name)=>({value,addEventListener:(event,callback)=>callbacks[`${name}:${event}`]=callback});
+const form={elements:{format:input('6v6','format'),size:input('8','size'),maxTeamSize:input('12','maxTeamSize')}};
+bindTeamRuleControls(form);
+assert.equal(form.elements.size.value,6);assert.equal(form.elements.size.readOnly,true);
+form.elements.format.value='10v10';callbacks['format:change']();
+assert.equal(form.elements.size.value,10);assert.equal(form.elements.maxTeamSize.value,'12');
+assert.equal(form.elements.maxTeamSize.min,10);
+form.elements.format.value='Custom';callbacks['format:change']();assert.equal(form.elements.size.readOnly,false);
+form.elements.size.value='11';form.elements.maxTeamSize.value='8';callbacks['size:input']();
+assert.equal(form.elements.maxTeamSize.value,11);
+console.log('PASS: fixed format sizes, custom size editing, independent substitute roster limit and minimum.');
