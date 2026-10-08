@@ -81,7 +81,7 @@ export function renderSectionTools({host,admin,body,tab,settings,onSettings,onRe
 }
 
 export function renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport}){
- const area=document.createElement('section');area.className='team-manager';area.innerHTML='<div class="section-action-bar"><div><h3>Manage registered teams</h3><p>Edit one team at a time. EA verification and manager accounts are not connected yet.</p></div></div><label>Find a team<input type="search" placeholder="Search team name" data-team-search></label><div class="team-manager-list"></div>';
+ const area=document.createElement('section');area.className='team-manager';area.innerHTML='<div class="section-action-bar"><div><h3>Manage draft teams</h3><p>Edit local scheduling entries here. Use Team registration & managers below for shared registrations, manager access and roster approvals. EA verification is still pending.</p></div></div><label>Find a team<input type="search" placeholder="Search team name" data-team-search></label><div class="team-manager-list"></div>';
  const list=area.querySelector('.team-manager-list');
  const render=()=>{const query=area.querySelector('input').value.toLowerCase(),teams=draft.settings.teams.filter(team=>team.name.toLowerCase().includes(query));list.innerHTML=teams.map(team=>`<article><div><strong>${escape(team.name)}</strong><small>${team.eaClubId?`EA club ${escape(team.eaClubId)} · unverified`:'EA club not linked'}</small></div><button type="button" data-manage="${escape(team.id)}">Edit team</button></article>`).join('')||'<p>No matching teams. Register teams using the form above.</p>';
   list.querySelectorAll('[data-manage]').forEach(button=>button.onclick=()=>{

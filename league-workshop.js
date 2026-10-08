@@ -85,10 +85,10 @@ function renderDrafts(){
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Download draft file in All leagues & seasons to move them to another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
    onImportTeam:(team,{checkOnly=false}={})=>{
-    if(drafts[index].settings.teams.some(t=>t.remoteTeamId===team.id))return;
-    let next=registerLeagueTeam(drafts[index],{name:team.name,eaClubId:team.ea_id});
+    const existing=drafts[index].settings.teams.find(t=>t.remoteTeamId===team.id);
+    let next=existing?editDraftTeam(drafts[index],existing.id,{name:team.name,eaClubId:team.ea_id}):registerLeagueTeam(drafts[index],{name:team.name,eaClubId:team.ea_id});
     if(checkOnly)return;
-    const added=next.settings.teams.at(-1);added.remoteTeamId=team.id;added.managerDiscordId=team.manager_id;
+    const added=existing?next.settings.teams.find(t=>t.id===existing.id):next.settings.teams.at(-1);added.remoteTeamId=team.id;added.managerDiscordId=team.manager_id;added.inGameName=team.in_game_name||'';
     drafts[index]=next;persistDrafts();renderDrafts();
    },
    onTeamRemove:id=>{drafts[index]=removeDraftTeam(drafts[index],id);renderDrafts();persistDrafts();pageReport('Team removed from this draft league only. No live data was changed. Restore an exported draft backup to recover it.');},onReport:pageReport});
