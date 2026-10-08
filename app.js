@@ -807,6 +807,25 @@ async function hydrateUsersDirectory() {
 }
 
 function arcadePage(){return '<section class="section arcade-hub"><span class="section-kicker">The clubhouse</span><h2>Arcade</h2><p class="section-intro">Pick a game. Rep your club. Beat your best.</p><div class="arcade-grid"><a class="card arcade-game-card" href="/arcade/cleat" data-link><img src="/assets/cleat-arcade.png" alt="Cleat pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">13 levels · Soccer breakout</span><h3>Cleat Arcade</h3><p>Break through defenders, dodge the buses, and beat the keeper. One cleat. Three lives.</p><strong>Play Cleat Arcade →</strong></a><a class="card arcade-game-card" href="/arcade/loosey-goosey" data-link><img src="/assets/goose-mode-arcade.png" alt="Goose Mode: Loosey Goosey pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless runner · Goose Mode</span><h3>Loosey Goosey</h3><p>Jump, glide, and honk your way to kickoff. Fuel up on Goose Mode and leave the opposition behind.</p><strong>Play Loosey Goosey →</strong></a><a class="card arcade-game-card" href="/arcade/sandy-uppy" data-link><img src="/assets/sandy-uppy-arcade.png" alt="Sandy Uppy pixel-art beach soccer game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless beach · Keep-ups</span><h3>Sandy Uppy</h3><p>Keep the ball off the sand, tackle castle builders, and watch the skies for a Goose Mode lifeline.</p><strong>Play Sandy Uppy →</strong></a></div></section>';}
+function mountainArcadePage() {
+  const card = '<a class="card arcade-game-card" href="/arcade/mountain-mayhem" data-link><img src="/mountain-app/assets/environment/mountain-final-summit-v1.png" alt="Mountain Mayhem stormy final summit" width="1536" height="1024"><span class="season-chip season-chip-live">10 levels · Mountain chase</span><h3>Mountain Mayhem</h3><p>Chase Schwein to the summit. Dodge soccer balls, salmon, Bruce, and Bizzie—and deliver the red card.</p><strong>Play Mountain Mayhem →</strong></a>';
+  return arcadePage().replace('</div></section>', `${card}</div></section>`) + '<section class="section mountain-shared-board"><span class="section-kicker">FC Mountains · Full campaign</span><h2>Mountain Mayhem leaderboard</h2><p>Ranked by active play time, then total deaths. One personal best per Discord player.</p><p id="mountain-board-status" role="status">Loading shared leaderboard…</p><div class="mountain-board-scroll"><table><thead><tr><th>#</th><th>Player</th><th>Active time</th><th>Deaths</th><th>Balls to face</th><th>Salmon strikes</th><th>Bruce knocks</th><th>Bizzie interruptions</th></tr></thead><tbody id="mountain-board-body"></tbody></table></div></section>';
+}
+
+async function hydrateMountainBoard() {
+  const body = document.querySelector('#mountain-board-body');
+  const status = document.querySelector('#mountain-board-status');
+  if (!body || !status) return;
+  try {
+    const response = await fetch('/api/mountain/leaderboard');
+    if (!response.ok) throw Error();
+    const { entries } = await response.json();
+    const { renderMountainBoard } = await import('/mountain-app/game/OnlineLeaderboard.js');
+    renderMountainBoard(body, entries);
+    status.textContent = entries.length ? 'Complete all ten levels to claim your spot.' : 'No completed runs yet. Be the first to send Schwein off!';
+  } catch { status.textContent = 'Leaderboard temporarily unavailable. You can still play Mountain Mayhem.'; }
+}
+
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
 function wheelPage() {
   return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260928-aggregate-tab" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
@@ -1119,7 +1138,8 @@ function render() {
   const main = document.querySelector('main');
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
-  if (path === routes.arcade) main.innerHTML = arcadePage();
+  if (path === routes.arcade) main.innerHTML = mountainArcadePage();
+  else if (path === '/arcade/mountain-mayhem') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Mountain Mayhem"><iframe class="integrated-app-frame" src="/mountain-app/" title="Mountain Mayhem mountain chase game" scrolling="no"></iframe></section>';
   else if (path === routes.utility) main.innerHTML = utilityHubPage();
   else if (path === routes.fun) main.innerHTML = funPage();
   else if (path === routes.league) main.innerHTML = leaguePage();
@@ -1155,6 +1175,7 @@ function render() {
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
+  hydrateMountainBoard();
   if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
   bindLeagueExplorer();
   if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();

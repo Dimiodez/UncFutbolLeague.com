@@ -1,6 +1,6 @@
-# Mountain Mayhem prototype
+# Mountain Mayhem
 
-This directory is intentionally isolated from the UNC Futbol League website. It has no public route, arcade card, remote leaderboard service, or production documentation entry. Its leaderboard is browser-local prototype data only.
+Published through the website Arcade at `/arcade/mountain-mayhem`, with its shared leaderboard on `/arcade` and below the game. Discord members save their best complete ten-level campaign through `/api/mountain/run`; guests can play without saving a shared score.
 
 ## Run locally
 
@@ -24,8 +24,7 @@ Phaser 3.90 is pinned in `vendor/` so this prototype has no install step or runt
 
 The game is a ten-level referee chase. Schwein escapes at the summit of Levels
 1–9; the referee gives him the red card at the end of Level 10. All ten mountain
-layouts now exist in the standalone prototype, while the final red-card
-cutscene remains deliberately deferred until Level 10's playfield is approved.
+layouts and the scripted final red-card cutscene are implemented.
 
 Soccer-ball pressure follows one predictable campaign curve: each level adds
 10 to rolling speed and removes 200 ms from the throw interval, matching the
@@ -71,8 +70,7 @@ extra-life race.
 Levels 7 and 9 reserve the ice mechanic. Jumping remains available, but steering
 locks to the entry direction while sliding. Level 7 introduces three bright,
 partial ice patches across an alternating gap-and-ladder route; ordinary control
-returns as soon as the referee leaves the ice. Level 9 remains reserved for exactly
-one fully iced platform and is not built yet.
+returns as soon as the referee leaves the ice. Level 9 has exactly one fully iced platform.
 
 Level 6 returns to Schwein's tantrum sabotage in a cold dawn cirque. The impact
 breaks seven small, jumpable openings across five ledges. The first falling chunk
@@ -105,8 +103,7 @@ All current Schwein, Bruce, referee, and gameplay-notice copy is centralized in
 `game/Dialogue.js` so future script passes do not require editing gameplay code.
 The ten authored level-clear overlays are centralized there as well, including
 the final screen's dynamic active-time and total-deaths placeholders.
-The complete Level 10 red-card exchange is stored there now, but remains inactive
-until the final cutscene implementation is approved.
+The complete Level 10 red-card exchange plays in an interactive comic scene, advanced with Space or Next. Characters stay below the bubbles. The referee presents the red card and Schwein runs off before the final results.
 
 ## Level 8: Bizzie's defensive detour
 
@@ -190,14 +187,14 @@ the same platform seams as the referee. The stage uses
 `mountain-final-summit-v1.png`, the storm-ringed final-peak background generated
 specifically for this encounter.
 
-## Run timing and local leaderboard
+## Run timing and shared leaderboard
 
 The campaign clock advances only while `GameState.phase === 'playing'`. Pausing,
 switching away from the tab, hit/respawn delays, three-life reset overlays,
 level-complete overlays, and card cutscenes do not add time. Stats carry between
 levels and through same-level resets, then clear only when a new campaign begins.
 
-Finishing Level 10 stores a browser-local Top 10 ordered by active play time,
-with total deaths as the tie-breaker. Each result also shows balls taken to the
+Finishing Level 10 shows the campaign summary and saves eligible signed-in runs,
+with total deaths as the time tie-breaker. Each result also shows balls taken to the
 face, salmon strikes, Bruce collisions or sweat slips, and Bizzie interruptions.
-There is no score or remote/public leaderboard in this standalone realm.
+The public leaderboard keeps one best completed campaign per signed-in member, sorted by active time then deaths. Sequential authenticated summit checkpoints, monotonic bounded stats, wall-time checks, rate limits, and atomic completion protect saves. This is casual ranking, not server-side collision replay. Practice/preview runs cannot save shared scores. Public builds ignore development level and cutscene query overrides.

@@ -8,6 +8,11 @@
 .run-results{width:100%;max-width:900px}
 .run-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:10px}
 .run-summary>div{padding:7px 9px;border:2px solid #b9d5cf;background:rgba(8,25,39,.82)}
+.online-board{margin-top:24px;padding:20px;border:4px solid #15344d;background:#e7eee3;color:#15344d}
+.online-board h2{font-family:Impact,"Arial Black",sans-serif;font-size:30px;margin:0 0 10px}
+.online-board a{color:#15344d}.online-board .leaderboard-scroll{border-color:#15344d;background:#fff}
+.online-board table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}
+.online-board th,.online-board td{padding:10px;border-bottom:1px solid #b9d5cf;white-space:nowrap}
 .run-summary span{display:block;color:#a8d9d2;font-size:10px;letter-spacing:.08em}
 .run-summary strong{font-size:18px;color:#fff}
 .run-results h3{margin:7px 0 4px;font-size:14px;letter-spacing:.1em;color:#a8d9d2}

@@ -26,6 +26,9 @@ export class OnlineLeaderboard {
     const response = await fetch('/api/mountain/run', {
       method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
     });
+    if (!response.headers.get('content-type')?.includes('application/json')) {
+      throw Error('Shared leaderboard unavailable. Your game is still playable.');
+    }
     if (!response.ok) {
       const result = await response.json().catch(() => ({}));
       throw Error(result.error || 'Could not save this run.');

@@ -1,10 +1,12 @@
 import { MountainScene } from './game/MountainScene.js?v=run-leaderboard-1';
 import { hasStage, TUNING, WORLD } from './game/level.js?v=run-leaderboard-1';
-import { formatRunTime, loadLeaderboard, saveLeaderboardEntry } from './game/leaderboard.js?v=run-leaderboard-1';
+import { formatRunTime } from './game/leaderboard.js?v=run-leaderboard-1';
 import { endScreenForLevel } from './game/Dialogue.js?v=end-screen-copy-1';
+import { OnlineLeaderboard } from './game/OnlineLeaderboard.js';
 
 const $ = (selector) => document.querySelector(selector);
-const previewParams = new URLSearchParams(window.location.search);
+const isLocalPreview = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
+const previewParams = new URLSearchParams(isLocalPreview ? window.location.search : '');
 const previewLevel = Number(previewParams.get('level'));
 const previewCutscene = previewParams.get('cutscene') === '1';
 const previewWin = previewParams.get('win') === '1';
@@ -15,6 +17,8 @@ let speechQueue = [];
 let speechActive = false;
 let queuedLevel = hasStage(previewLevel) ? previewLevel : 1;
 let carryCampaign = false;
+const onlineBoard = new OnlineLeaderboard($('#online-status'), $('#online-leaderboard-body'));
+onlineBoard.refresh();
 
 function showOverlay(kicker, title, copy, action) {
   $('#overlay').hidden = false;
@@ -73,6 +77,7 @@ function start() {
   scene.scene.resume();
   const level = queuedLevel || scene.state.level || 1;
   const directFinalPreview = level === 10 && !carryCampaign && scene.state.yellowCards === 0;
+  if (!carryCampaign) onlineBoard.begin(level === 1 && !previewCutscene && !previewWin && !previewPractice);
   scene.startRun(level, !carryCampaign);
   if (directFinalPreview) {
     scene.state.yellowCards = 1;
@@ -183,6 +188,7 @@ function bindScene(activeScene) {
     queuedLevel = nextLevel || level;
     carryCampaign = Boolean(nextLevel);
     const totals = stats || scene.state.runSummary();
+    onlineBoard.checkpoint(level, totals);
     const screen = endScreenForLevel(level, {
       activeTime: formatRunTime(totals.activePlayMs),
       totalDeaths: totals.totalDeaths,
@@ -190,27 +196,23 @@ function bindScene(activeScene) {
     showOverlay(screen.kicker, screen.title, screen.text, screen.button);
   });
   scene.events.on('red-card-won', ({ stats }) => {
+    onlineBoard.checkpoint(10, stats);
     queuedLevel = 1;
     carryCampaign = false;
-    const result = previewCutscene || previewWin
-      ? { entry: { ...stats, completedAt: 'preview' }, entries: loadLeaderboard() }
-      : saveLeaderboardEntry(stats);
     const screen = endScreenForLevel(10, {
       activeTime: formatRunTime(stats.activePlayMs),
       totalDeaths: stats.totalDeaths,
     });
     showOverlay(screen.kicker, screen.title, screen.text, screen.button);
-    renderLeaderboard(result);
+    renderRunSummary(stats);
   });
   syncHud();
 }
 
-function renderLeaderboard({ entry, entries }) {
+function renderRunSummary(entry) {
   const results = $('#run-results');
   const summary = $('#run-summary');
-  const body = $('#leaderboard-body');
   summary.replaceChildren();
-  body.replaceChildren();
   const labels = [
     ['ACTIVE TIME', formatRunTime(entry.activePlayMs)],
     ['DEATHS', entry.totalDeaths],
@@ -227,24 +229,6 @@ function renderLeaderboard({ entry, entries }) {
     score.textContent = value;
     cell.append(name, score);
     summary.append(cell);
-  });
-  entries.forEach((run, index) => {
-    const row = document.createElement('tr');
-    if (run.completedAt === entry.completedAt) row.className = 'current-run';
-    [
-      index + 1,
-      formatRunTime(run.activePlayMs),
-      run.totalDeaths,
-      run.ballsTakenToFace,
-      run.salmonStrikes,
-      run.bruceSockKnocks,
-      run.bizzieInterruptions,
-    ].forEach((value) => {
-      const cell = document.createElement('td');
-      cell.textContent = value;
-      row.append(cell);
-    });
-    body.append(row);
   });
   results.hidden = false;
   $('#overlay').classList.add('overlay--results');

@@ -15,7 +15,7 @@
         <img src="assets/fc-mountains.png" alt="FC Mountains">
         <div><span class="eyebrow">THE CLUBHOUSE ARCADE</span><h1>MOUNTAIN <em>MAYHEM</em></h1></div>
       </div>
-      <span class="prototype-badge">LOCAL PROTOTYPE</span>
+      <span class="prototype-badge">FC MOUNTAINS</span>
     </header>
 
     <section class="game-shell" aria-label="Mountain Mayhem game">
@@ -35,15 +35,8 @@
           <span id="overlay-kicker" class="eyebrow">FC MOUNTAINS PRESENTS</span>
           <h2 id="overlay-title">CLIMB.<br>DODGE.<br>SURVIVE.</h2>
           <p id="overlay-copy">Ten mountains. One final summit. Read the routes, survive Schwein's hazards, outrun Bruce, beat Bizzie's defensive trap, and deliver the red card.</p>
-          <section id="run-results" class="run-results" hidden aria-label="Local run leaderboard">
+          <section id="run-results" class="run-results" hidden aria-label="Your campaign results">
             <div id="run-summary" class="run-summary"></div>
-            <h3>LOCAL TOP 10</h3>
-            <div class="leaderboard-scroll">
-              <table>
-                <thead><tr><th>#</th><th>TIME</th><th>DEATHS</th><th>BALLS</th><th>SALMON</th><th>BRUCE</th><th>BIZZIE</th></tr></thead>
-                <tbody id="leaderboard-body"></tbody>
-              </table>
-            </div>
           </section>
           <button id="action" type="button">Start climbing ↗</button>
         </div>
@@ -64,9 +57,19 @@
         <span>LEVELS 1–10 OF 10 · CATCH SCHWEIN</span>
       </footer>
     </section>
+    <section class="online-board" aria-label="Mountain Mayhem shared leaderboard">
+      <h2>MOUNTAIN MAYHEM LEADERBOARD</h2>
+      <p>Fastest full ten-level campaign wins. Total deaths break time ties.</p>
+      <p><a href="/account" target="_top">Sign in with Discord</a> before starting to save your best run. Guests can play freely.</p>
+      <p id="online-status" role="status">Loading shared leaderboard…</p>
+      <div class="leaderboard-scroll"><table>
+        <thead><tr><th>#</th><th>PLAYER</th><th>ACTIVE TIME</th><th>DEATHS</th><th>BALLS TO FACE</th><th>SALMON STRIKES</th><th>BRUCE KNOCKS</th><th>BIZZIE INTERRUPTIONS</th></tr></thead>
+        <tbody id="online-leaderboard-body"></tbody>
+      </table></div>
+    </section>
   </main>
 
   <script src="vendor/phaser.min.js"></script>
-  <script type="module" src="game.js?v=end-screen-copy-1"></script>
+  <script type="module" src="game.js?v=20261007-release"></script>
 </body>
 </html>

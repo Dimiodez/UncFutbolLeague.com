@@ -5,3 +5,15 @@ migrations/
 preview-*.png
 wrangler.toml
 dev-server.mjs
+mountain-app/assets/sprites/raw/
+mountain-app/assets/sprites/source/
+mountain-app/assets/sprites/bizzie/source/
+mountain-app/tests/
+mountain-app/scripts/
+mountain-app/server.mjs
+mountain-app/package.json
+mountain-app/README.md
+mountain-app/assets/sprites/schwein/
+mountain-app/assets/sprites/schwein-run/
+mountain-app/assets/sprites/schwein-salmon/
+mountain-app/assets/sprites/schwein-tantrum/

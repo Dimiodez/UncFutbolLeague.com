@@ -11,6 +11,9 @@
 /theme-init.js
   Cache-Control: public, max-age=0, must-revalidate
 
+/mountain-app/*
+  Cache-Control: public, max-age=0, must-revalidate
+
 /sandy-app/assets/*
   Cache-Control: public, max-age=31536000, immutable
 

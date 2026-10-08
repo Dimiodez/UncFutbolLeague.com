@@ -68,6 +68,10 @@ FUNC card master layouts use the same `DB` binding and Discord Owner identity. A
 
 `OWNER_DISCORD_ID` must be the owner's numeric Discord user ID. The backend derives the owner role from this server-side value on every authenticated request, so another site administrator cannot demote the configured owner. Never commit `.dev.vars`, the Discord client secret, session cookies, or exported member data.
 
+## Mountain Mayhem
+
+Mountain Mayhem is available at `/arcade/mountain-mayhem`. Its public leaderboard appears on `/arcade` and beneath the game. Signed-in Discord members save one best full ten-level run, ordered by active play time and then total deaths, with ball, salmon, Bruce, and Bizzie incident counters. Guests can play without saving. The existing D1 `DB` binding is reused; Mountain tables provision idempotently. Run `node --test scripts/mountain.test.mjs mountain-app/tests/*.test.mjs` before release. Development level/cutscene overrides work only on localhost. Source artwork remains archived in Git and is excluded from Pages assets.
+
 ## UFB Discord bot guide
 
 The permanent bot guide lives at `/ufb` (without a trailing slash). Its content is committed in `ufb-docs.js`, rendered by the shared `app.js` router, and linked from `index.html`. Keep these files, `functions/ufb.js`, the UFB images in `assets/`, and `_redirects` together in every website publish, including arcade releases from another computer. Update `ufb-docs.js` when bot commands change, then run `node scripts/check-ufb.mjs` before publishing. The GitHub UFB workflow also checks every push and pull request to `master` for accidental removal.
