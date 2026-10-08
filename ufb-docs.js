@@ -6,7 +6,7 @@ window.UFB_DOCS = [
     "commands": [
       {
         "name": "/ufb",
-        "description": "Open your private UFB control panel for My Team, Free Agents and Stats. Existing league-focused slash commands remain available as shortcuts.",
+        "description": "Open your private UFB control panel for My Team and Stats. Existing league-focused slash commands remain available as shortcuts.",
         "examples": [
           "/ufb"
         ],
@@ -1213,7 +1213,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/matches",
-        "description": "Show the selected linked club’s three most recent verified FC27 results with real-player scorers, assists and human-player totals. Preview any full image sheet privately, then choose a Discord text or announcement channel if you want to publish it. Nothing posts publicly before that final selection.",
+        "description": "Show the selected linked club’s 3, 6 or 9 most recent verified FC27 results with real-player scorers, assists and human-player totals. EA may return fewer than requested; the bot cannot recover matches missing from its live feed. Preview a full image sheet privately, then choose a channel if you want to publish it. Nothing posts publicly before that final selection.",
         "status": "FC27 live",
         "options": [
           {
@@ -1222,10 +1222,22 @@ window.UFB_DOCS = [
             "type": 3,
             "required": true,
             "autocomplete": true
+          },
+          {
+            "name": "count",
+            "description": "How many recent games to show (default 3; EA may return fewer)",
+            "type": 4,
+            "required": false,
+            "choices": [
+              {"name":"3 games","value":3},
+              {"name":"6 games","value":6},
+              {"name":"9 games","value":9}
+            ]
           }
         ],
         "examples": [
-          "/matches team:UFL Como — Unassigned"
+          "/matches team:UFL Como — Unassigned",
+          "/matches team:UFL Como — Unassigned count:9"
         ],
         "preview": {
           "src": "/assets/ufb-example-match-sheet.png",
@@ -1364,33 +1376,41 @@ window.UFB_DOCS = [
     "description": "Post availability RSVPs and select official leagues. Some league data integrations are still planned.",
     "commands": [
       {
-        "name": "/matchnight",
-        "description": "The team’s manager posts a match-night RSVP with Yes, Tentative and No buttons. Include an understandable date, time and timezone in starts_at.",
-        "options": [
-          {
-            "name": "league",
-            "description": "Choose the registered competition before selecting a team",
-            "type": 3,
-            "required": true,
-            "autocomplete": true
-          },
-          {
-            "name": "team",
-            "description": "Select the team and competition from suggestions",
-            "type": 3,
-            "required": true,
-            "autocomplete": true
-          },
-          {
-            "name": "starts_at",
-            "description": "Example: Tonight 8:30 PM CT",
-            "type": 3,
-            "required": true
-          }
-        ],
+        "name": "/rsvp create",
+        "description": "A team manager or UFB Moderator/Administrator chooses a registered team, weekday, local time and timezone. The first event uses the next occurrence of that weekday (or next week if today's time passed); repeat can make it daily, weekly or biweekly. Enter time as 7pm, 7:30pm or 19:00. Discord displays the start in each member’s timezone. The first post and each recurring post ping @everyone, but changing a Yes/Tentative/No response never pings again. Choose 24-hour and/or 1-hour reminders. With thread enabled, reminder details stay in the event thread and a short @everyone link goes to the main channel so members are notified. If the thread is unavailable or off, the full reminder goes in the channel. The bot needs Mention Everyone permission there; existing servers may need to grant it to the bot role. Older /matchnight posts still work. Position signup and formations are future additions.",
         "examples": [
-          "/matchnight league:unc-6v6 team:UFL Como starts_at:Friday 8:30 PM CT"
+          "/rsvp create name:Roma Practice team:Roma FC day:Tuesday time:7pm timezone:Central repeat:weekly occurrences:8 reminders:both thread:true",
+          "/rsvp create name:One Match Night team:Roma FC day:Friday time:7:30pm timezone:Central reminders:1h"
+        ],
+        "options": [
+          {"name":"name","description":"Event name","type":3,"required":true},
+          {"name":"team","description":"Choose the registered team playing","type":3,"required":true,"autocomplete":true},
+          {"name":"day","description":"Next occurrence of this weekday","type":3,"required":true,"choices":[
+            {"name":"Monday","value":"monday"},{"name":"Tuesday","value":"tuesday"},{"name":"Wednesday","value":"wednesday"},{"name":"Thursday","value":"thursday"},{"name":"Friday","value":"friday"},{"name":"Saturday","value":"saturday"},{"name":"Sunday","value":"sunday"}
+          ]},
+          {"name":"time","description":"Local time, e.g. 7pm or 7:30pm","type":3,"required":true},
+          {"name":"timezone","description":"Choose Central, Eastern, Pacific, or another timezone","type":3,"required":true,"autocomplete":true},
+          {"name":"repeat","description":"Repeat and post each next occurrence automatically","type":3,"required":false,"choices":[
+            {"name":"One time","value":"none"},{"name":"Daily","value":"daily"},{"name":"Weekly","value":"weekly"},{"name":"Every two weeks","value":"biweekly"}
+          ]},
+          {"name":"occurrences","description":"Total dates for recurring events (2–52; default 8)","type":4,"required":false,"min_value":2,"max_value":52},
+          {"name":"reminders","description":"Optional reminder posts before each event","type":3,"required":false,"choices":[
+            {"name":"No reminders","value":"none"},{"name":"1 hour before","value":"1h"},{"name":"24 hours before","value":"24h"},{"name":"24 hours and 1 hour before","value":"both"}
+          ]},
+          {"name":"thread","description":"Keep reminder details and discussion in a thread","type":5,"required":false}
         ]
+      },
+      {
+        "name": "/rsvp list",
+        "description": "Privately list upcoming RSVP events in this Discord server, including their event IDs and next start times.",
+        "examples": ["/rsvp list"],
+        "options": []
+      },
+      {
+        "name": "/rsvp cancel",
+        "description": "The creator or a UFB Administrator stops an event and all future recurring posts. Its old Discord post remains visible but no longer accepts responses.",
+        "examples": ["/rsvp cancel event_id:12"],
+        "options": [{"name":"event_id","description":"ID shown on the post or in /rsvp list","type":4,"required":true,"min_value":1}]
       },
       {
         "name": "/standings",
@@ -1474,7 +1494,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup panel",
-        "description": "Discord Administrator or configured UFB Administrator: open the private setup panel for staff roles, competition defaults, free-agent publishing channels, Help Center and current EA feed configuration.",
+        "description": "Discord Administrator or configured UFB Administrator: open the private setup panel for staff roles, competition defaults, Help Center and current EA feed configuration.",
         "examples": [
           "/setup panel"
         ],
@@ -1482,7 +1502,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup roles",
-        "description": "Post-install onboarding: choose separate Discord roles for UFB Administrator, Moderator and Team Manager from guided role selectors. UFB Administrators control bot setup; Moderators receive league-oversight access; Team Managers handle teams, rosters and recruiting. Only a real Discord server Administrator can assign or replace the UFB Administrator role.",
+        "description": "Post-install onboarding: choose separate Discord roles for UFB Administrator, Moderator and Team Manager from guided role selectors. UFB Administrators control bot setup; Moderators receive league-oversight access; Team Managers handle club registration and EA linking. Player signing and recruiting are in the workspace. Only a real Discord server Administrator can assign or replace the UFB Administrator role.",
         "examples": [
           "/setup roles"
         ],
@@ -1490,7 +1510,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup helpcenter",
-        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with six simple-language threads covering Start Here, Teams & Rosters, Free Agents, FC27 Matches & Images, Official League and Administrator Setup. Run it again after command changes to refresh the same channel and threads without duplicates. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
+        "description": "Discord Administrator or configured UFB Administrator: create a read-only #ufb-help channel with five simple-language threads covering Start Here, Teams & Rosters, FC27 Matches & Images, Official League and Administrator Setup. The bot refreshes existing help centers when its guide changes; run this command to create or repair one manually without duplicate threads. New installations request Manage Channels, View Channel, Send Messages, Embed Links, Read Message History, Create Public Threads, Manage Threads and Send Messages in Threads.",
         "examples": [
           "/setup helpcenter"
         ],
@@ -1722,7 +1742,7 @@ window.UFB_DOCS = [
       },
       {
         "name": "/setup health",
-        "description": "Server owner/administrator: run a private readiness check covering EA club links, live FC27 feeds, pending match watchers, failed stat deliveries and free-agent publishing channels.",
+        "description": "Server owner/administrator: run a private readiness check covering EA club links, live FC27 feeds, pending match watchers and failed stat deliveries.",
         "examples": [
           "/setup health"
         ],

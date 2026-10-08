@@ -1,5 +1,5 @@
 import { json } from '../../_lib/auth.js';
-import { ensurePickemCompetitionSchema, validPickemCompetition } from '../../_lib/pickems.js';
+import { ensurePickemCompetitionSchema, syncPickemMatchesFromAsset, validPickemCompetition } from '../../_lib/pickems.js';
 
 export async function onRequestGet({ request, env }) {
   const url = new URL(request.url);
@@ -9,10 +9,11 @@ export async function onRequestGet({ request, env }) {
   if (!competition) return json({ error: 'Invalid Pick’em competition.' }, 400);
   await ensurePickemCompetitionSchema(env);
 
-  const seasonAsset = competition === 's1-6v6' ? '/pickems-app/season-data.json' : `/pickems-app/seasons/${competition}.json`;
+  const seasonAsset = `/pickems-app/seasons/${competition}.json`;
   const seasonResponse = await env.ASSETS.fetch(new URL(seasonAsset, request.url));
   if (!seasonResponse.ok) return json({ error: 'Official UFL results are temporarily unavailable.' }, 503);
   const season = await seasonResponse.json();
+  await syncPickemMatchesFromAsset(request, env, competition);
   const officialResults = new Map();
   let featuredTotal = null;
   for (const week of season.weeks ?? []) {

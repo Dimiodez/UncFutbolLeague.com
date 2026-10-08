@@ -1,18 +1,38 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#071b36" />
     <meta name="description" content="UNC Futbol League — an online EA SPORTS FC community for competitive 6v6 and 10v10 play." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="UNC Futbol League" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content="UNC Futbol League" />
+    <meta property="og:description" content="An online EA SPORTS FC community for competitive 6v6 and 10v10 play." />
+    <meta property="og:url" content="https://www.uncfutbolleague.com/" />
+    <meta property="og:image" content="https://www.uncfutbolleague.com/assets/ufl-banner.jpg?v=20260930" />
+    <meta property="og:image:secure_url" content="https://www.uncfutbolleague.com/assets/ufl-banner.jpg?v=20260930" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1456" />
+    <meta property="og:image:height" content="720" />
+    <meta property="og:image:alt" content="UNC Futbol League — Older. Wiser. Still pressing." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="UNC Futbol League" />
+    <meta name="twitter:description" content="An online EA SPORTS FC community for competitive 6v6 and 10v10 play." />
+    <meta name="twitter:image" content="https://www.uncfutbolleague.com/assets/ufl-banner.jpg?v=20260930" />
+    <meta name="twitter:image:alt" content="UNC Futbol League — Older. Wiser. Still pressing." />
     <link rel="canonical" href="https://www.uncfutbolleague.com/" />
     <title>UNC Futbol League</title>
-    <script src="/theme-init.js"></script>
+    <script src="/theme-init.js?v=20261002-dark-default"></script>
     <link rel="icon" href="/assets/ufl-mark.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/styles.css?v=20260923-ufb-restored" />
+    <link rel="stylesheet" href="/styles.css?v=20261003-navigation-spacing" />
+    <link rel="stylesheet" href="/league-pages.css?v=20261002-dual-teams" />
+    <link rel="stylesheet" href="/club-dashboard-preview.css?v=20261004-house-live" />
+    <link rel="stylesheet" href="/sandy-dashboard-preview.css?v=20261004-mountain-honor" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -23,43 +43,50 @@
       </a><span class="brand-divider" aria-hidden="true"></span><a class="ufb-brand" href="/ufb" data-link aria-label="Open UFB bot documentation"><img src="/assets/ufb-mark.svg" alt="" /><span>UFB</span></a></div>
       <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menu</b></button>
       <nav id="main-nav" class="main-nav" aria-label="Main navigation">
-        <a href="/" data-link>Home</a>
-        <a href="/rules" data-link>Rules</a>
-        <div class="nav-group">
-          <button aria-expanded="false">Teams <span>⌄</span></button>
-          <div class="nav-menu">
-            <a href="/teams?division=6v6" data-link>6v6</a>
-            <a href="/teams?division=10v10" data-link>10v10</a>
-            <a href="/teams?division=house" data-link>House Teams</a>
+        <div class="nav-hubs" aria-label="UFL sections">
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="utility">
+            <a class="nav-group-link nav-hub-link" href="/utility" data-link aria-label="Utility"><strong>U</strong><span>tility</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Utility menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/utility" data-link><b>Utility hub</b><small>Tools for drafts, teams and game nights</small></a>
+              <a href="/wheel" data-link><b>Unc Wheel</b><small>Draft, randomize and decide</small></a>
+              <a href="/wheel/aggregate-byot" data-link><b>Aggregate BYOT</b><small>Build a four-team aggregate bracket</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="fun">
+            <a class="nav-group-link nav-hub-link" href="/fun" data-link aria-label="Fun"><strong>F</strong><span>un</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Fun menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/fun" data-link><b>Fun hub</b><small>Cards, predictions and arcade games</small></a>
+              <a href="/func" data-link><b>FUNC Card Studio</b><small>Create your novelty player card</small></a>
+              <a href="/arcade" data-link><b>UFL Arcade</b><small>Play games and chase the boards</small></a>
+              <a href="/pickems" data-link><b>Pick’ems</b><small>Predict every matchweek</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="league">
+            <a class="nav-group-link nav-hub-link" href="/league" data-link aria-label="League"><strong>L</strong><span>eague</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open League menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu nav-league-menu">
+              <a class="nav-menu-lead" href="/league" data-link><b>League hub</b><small>Everything official in one place</small></a>
+              <a href="/clubs?division=6v6" data-link><b>Clubs</b><small>Club identities and squads</small></a>
+              <a href="/players" data-link><b>Players</b><small>Meet the league’s lineup</small></a>
+              <a href="/schedules" data-link><b>Schedules</b><small>Fixtures, results and events</small></a>
+              <a href="/standings" data-link><b>Standings</b><small>Current and archived tables</small></a>
+              <a href="/stats" data-link><b>Stats</b><small>Goals, assists and award races</small></a>
+            </div>
           </div>
         </div>
-        <div class="nav-group nav-split-group">
-          <a class="nav-group-link" href="/schedules" data-link>Schedules</a>
-          <button class="nav-group-caret" aria-expanded="false" aria-label="Open Schedules menu"><span>⌄</span></button>
-          <div class="nav-menu">
-            <a href="/schedules?type=6v6" data-link>6v6 League</a>
-            <a href="/schedules?type=10v10" data-link>10v10 League</a>
-            <a href="/schedules/community-events" data-link>Community Events</a>
-            <a href="/schedules/league-cup" data-link>League Cup</a>
-            <a href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a>
-            <a href="/schedules/aggregate-byot" data-link>Aggregate BYOT</a>
+        <div class="nav-actions">
+          <a href="/rules" data-link>Rules</a>
+          <a href="/users" data-link>Users</a>
+          <a href="/account" data-link id="account-nav">Sign in</a>
+          <div class="theme-switcher" role="group" aria-label="Choose site theme">
+            <button type="button" data-theme-choice="classic" title="Classic red, white, and blue"><i></i><span>Classic</span></button>
+            <button type="button" data-theme-choice="dark" title="Dark navy theme"><i></i><span>Dark</span></button>
+            <button type="button" data-theme-choice="vintage" title="Vintage beige theme"><i></i><span>Vintage</span></button>
           </div>
+          <a class="nav-cta" href="/contact" data-link>Join Discord</a>
         </div>
-        <a href="/standings" data-link>Standings</a>
-        <span class="nav-divider" aria-hidden="true"></span>
-        <a href="/pickems" data-link>Pick’ems</a>
-        <a href="/func" data-link>FUNC</a>
-        <a href="/wheel" data-link>Unc Wheel</a>
-        <a href="/arcade" data-link>Arcade</a>
-        <span class="nav-divider" aria-hidden="true"></span>
-        <a href="/users" data-link>Users</a>
-        <a href="/account" data-link id="account-nav">Sign in</a>
-        <div class="theme-switcher" role="group" aria-label="Choose site theme">
-          <button type="button" data-theme-choice="classic" title="Classic red, white, and blue"><i></i><span>Classic</span></button>
-          <button type="button" data-theme-choice="dark" title="Dark navy theme"><i></i><span>Dark</span></button>
-          <button type="button" data-theme-choice="vintage" title="Vintage beige theme"><i></i><span>Vintage</span></button>
-        </div>
-        <a class="nav-cta" href="/contact" data-link>Join Discord</a>
       </nav>
     </header>
     <main id="main" tabindex="-1"></main>
@@ -76,8 +103,17 @@
       <nav class="footer-links" aria-label="Legal and support"><a href="/privacy" data-link>Privacy</a><a href="/contact" data-link>Contact</a></nav>
       <p>Community-run EA SPORTS FC league. Not affiliated with Electronic Arts Inc.</p>
     </footer>
-    <script src="/pickems-app/season-data.js?v=20260922-cache1" defer></script>
-    <script src="/ufb-docs.js?v=20260923-ufb-restored" defer></script>
-    <script src="/app.js?v=20260923-ufb-restored" defer></script>
+    <script src="/pickems-app/season-data.js?v=20261003-10v10-season5" defer></script>
+    <script src="/ufb-docs.js?v=20260928-league-only-v2" defer></script>
+    <script src="/league-season2.js?v=20261002-dual-teams" defer></script>
+    <script src="/player-portraits.js?v=20261002-dual-teams" defer></script>
+    <link rel="stylesheet" href="/player-photo-review.css?v=20261003" />
+    <script src="/player-photo-review.js?v=20261003" defer></script>
+    <link rel="stylesheet" href="/league-roster-admin.css?v=20261003-merges" />
+    <script src="/league-roster-admin.js?v=20261003-merges" defer></script>
+    <script src="/league-pages.js?v=20261003-player-merges" defer></script>
+    <script src="/featured-club.js?v=20261002-alternating" defer></script>
+    <script src="/sandy-dashboard-preview.js?v=20261005-award-stat-copy" defer></script>
+    <script src="/app.js?v=20261004-mountain-honor" defer></script>
   </body>
 </html>

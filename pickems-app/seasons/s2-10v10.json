@@ -1,0 +1,552 @@
+{
+  "key": "s2-10v10",
+  "division": "10v10",
+  "uflSeason": 2,
+  "game": "FC27",
+  "status": "registration",
+  "competitionId": 3,
+  "seasonId": 5,
+  "seriesSource": "https://ufl.virtualarena.app/competitions/3/seasons/5",
+  "source": "https://ufl.virtualarena.app/competitions/3/seasons/5/matches",
+  "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
+  "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
+  "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
+  "syncedAt": "2026-10-07T10:44:52.000Z",
+  "statsFetchedAt": "2026-10-07T10:44:52.000Z",
+  "statsStatus": "available",
+  "teams": {
+    "MAY": [
+      "UFL Maykop",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+    ],
+    "RM": [
+      "Real Madrid",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+    ],
+    "PALA": [
+      "Palace",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
+    ],
+    "TK": [
+      "UFL TabascoKids",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png"
+    ],
+    "TFC": [
+      "UFL Timbers",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+    ],
+    "ACM": [
+      "UFL Milan",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
+    ],
+    "NOB": [
+      "UFL Newell's OB",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png"
+    ]
+  },
+  "teamDetails": [
+    {
+      "key": "MAY",
+      "name": "UFL Maykop",
+      "abbreviation": "MAY",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
+      "rosterSize": 0,
+      "stats": []
+    },
+    {
+      "key": "RM",
+      "name": "Real Madrid",
+      "abbreviation": "RM",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
+      "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
+      "rosterSize": 1,
+      "stats": []
+    },
+    {
+      "key": "PALA",
+      "name": "Palace",
+      "abbreviation": "PALA",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+      "url": "https://ufl.virtualarena.app/teams/Palace",
+      "rosterSize": 8,
+      "stats": []
+    },
+    {
+      "key": "TK",
+      "name": "UFL TabascoKids",
+      "abbreviation": "T K",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
+      "rosterSize": 6,
+      "stats": []
+    },
+    {
+      "key": "TFC",
+      "name": "UFL Timbers",
+      "abbreviation": "TFC",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
+      "rosterSize": 11,
+      "stats": []
+    },
+    {
+      "key": "ACM",
+      "name": "UFL Milan",
+      "abbreviation": "ACM",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
+      "rosterSize": 11,
+      "stats": []
+    },
+    {
+      "key": "NOB",
+      "name": "UFL Newell's OB",
+      "abbreviation": "NOB",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
+      "rosterSize": 6,
+      "stats": []
+    }
+  ],
+  "standings": [
+    [
+      "TK",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "NOB",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "TFC",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "MAY",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "PALA",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "ACM",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      "RM",
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  ],
+  "weeks": [],
+  "leaderboards": {
+    "players": {
+      "goals": {
+        "name": "Boot",
+        "stat": "Goals",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/goals",
+        "records": []
+      },
+      "assists": {
+        "name": "Playmaker",
+        "stat": "Assists",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/assists",
+        "records": []
+      },
+      "goals_and_assists": {
+        "name": "Ball",
+        "stat": "Goals And Assists",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/goals_and_assists",
+        "records": []
+      },
+      "tackles_per_game": {
+        "name": "Enforcer",
+        "stat": "Tackles Per Game",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/tackles_per_game",
+        "records": []
+      },
+      "goalkeeper_cleansheet": {
+        "name": "Glove",
+        "stat": "Goalkeeper Cleansheets",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/goalkeeper_cleansheet",
+        "records": []
+      },
+      "defender_cleansheet": {
+        "name": "Shield",
+        "stat": "Defender Cleansheets",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/defender_cleansheet",
+        "records": []
+      },
+      "average_match_rating": {
+        "name": "Most Valuable Player",
+        "stat": "Average Match Rating",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/players/average_match_rating",
+        "records": []
+      }
+    },
+    "teams": {
+      "wins": {
+        "name": "Wins",
+        "stat": "Wins",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/wins",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "draws": {
+        "name": "Draws",
+        "stat": "Draws",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/draws",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "losses": {
+        "name": "Losses",
+        "stat": "Losses",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/losses",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goals_for": {
+        "name": "Goals Scored",
+        "stat": "Goals Scored",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/goals_for",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goals_against": {
+        "name": "Goals Conceded",
+        "stat": "Goals Conceded",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/goals_against",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      },
+      "goal_difference": {
+        "name": "Goal Difference",
+        "stat": "Goal Difference",
+        "url": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats/teams/goal_difference",
+        "records": [
+          {
+            "data": {
+              "name": "UFL TabascoKids",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Newell's OB",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Timbers",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
+            },
+            "team": null,
+            "stat": 0
+          },
+          {
+            "data": {
+              "name": "Palace",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+              "url": "https://ufl.virtualarena.app/teams/Palace"
+            },
+            "team": null,
+            "stat": 0
+          }
+        ]
+      }
+    }
+  }
+}

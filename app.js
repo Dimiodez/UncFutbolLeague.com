@@ -1,21 +1,52 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
-  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb'
+  standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb',
+  utility: '/utility', fun: '/fun', league: '/league'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 
 const virtualArena = {
   '6v6': {
+    series: 'https://ufl.virtualarena.app/competition-series/1/seasons/2',
+    schedule: 'https://ufl.virtualarena.app/competitions/1/seasons/2/matches',
+    standings: 'https://ufl.virtualarena.app/competitions/1/seasons/2/standings',
+    teams: 'https://ufl.virtualarena.app/competitions/1/seasons/2/teams',
+    stats: 'https://ufl.virtualarena.app/competitions/1/seasons/2/stats'
+  },
+  '10v10': {
+    series: 'https://ufl.virtualarena.app/competitions/3/seasons/5',
+    schedule: 'https://ufl.virtualarena.app/competitions/3/seasons/5/matches',
+    standings: 'https://ufl.virtualarena.app/competitions/3/seasons/5/standings',
+    teams: 'https://ufl.virtualarena.app/competitions/3/seasons/5/teams',
+    stats: 'https://ufl.virtualarena.app/competitions/3/seasons/5/stats'
+  },
+  '6v6Season1': {
     schedule: 'https://ufl.virtualarena.app/competitions/1/seasons/1/matches',
     standings: 'https://ufl.virtualarena.app/competitions/1/seasons/1/standings',
     teams: 'https://ufl.virtualarena.app/competitions/1/seasons/1/teams'
   }
 };
 
-const leagueSeason = window.UFL_SEASON;
-const leagueTeam = key => leagueSeason?.teams?.[key] || [key, ''];
+const leagueSeasons = window.UFL_SEASONS || { 's1-6v6': window.UFL_SEASON };
+const leagueSeasonOptions = [
+  { id: '2', label: 'Season 2', game: 'FC27', current: true, divisions: { '6v6': 's2-6v6', '10v10': 's2-10v10' } },
+  { id: '1', label: 'Season 1', game: 'FC26', archived: true, divisions: { '6v6': 's1-6v6' } }
+];
+const selectedLeagueSeason = params => leagueSeasonOptions.find(option => option.id === params.get('season')) || leagueSeasonOptions[0];
+const leagueSeasonFor = (division, seasonId = '2') => leagueSeasons[leagueSeasonOptions.find(option => option.id === seasonId)?.divisions?.[division]];
+const leagueTeam = (key, season) => season?.teams?.[key] || [key, ''];
 const signed = value => Number(value) > 0 ? `+${value}` : String(value);
+
+function leagueSeasonTabs(path, selected, viewKey, viewValue) {
+  return `<nav class="tabs league-season-tabs" aria-label="League season">${leagueSeasonOptions.map(option => `<a class="tab league-season-tab ${option.id===selected?'active':''}" href="${path}?season=${option.id}&${viewKey}=${encodeURIComponent(viewValue)}" data-link ${option.id===selected?'aria-current="page"':''}><strong>${option.label}</strong><small>${option.game} · ${option.archived?'Archive':'Current'}</small></a>`).join('')}</nav>`;
+}
+
+function leagueDivisionTabs(path, selectedSeason, active, includeHouse = false) {
+  const choices = includeHouse ? Object.entries(divisions) : Object.entries(divisions).filter(([key]) => key !== 'house');
+  const viewKey = path === '/schedules' ? 'type' : 'division';
+  return `<nav class="tabs league-division-tabs" aria-label="League division">${choices.map(([key,value]) => `<a class="tab ${key===active?'active':''}" href="${path}?season=${selectedSeason}&${viewKey}=${key}" data-link ${key===active?'aria-current="page"':''}>${value.title.replace(' Teams','')}</a>`).join('')}</nav>`;
+}
 
 const divisions = {
   '6v6': { title: '6v6 Teams', intro: 'Fast, technical, and just chaotic enough. Meet the squads competing in the six-a-side division.' },
@@ -28,8 +59,7 @@ const scheduleTypes = {
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
   'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
-  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.'],
-  'aggregate-byot': ['Aggregate BYOT','Four games, one aggregate score, and golden goal when level.']
+  byot: ['BYOT Tournaments','Bring your own squad and chase the recurring BYOT crown.']
 };
 
 const locations = [
@@ -60,22 +90,160 @@ function emptyState(title, copy, action = '') {
   return `<div class="empty-state"><img src="/assets/ufl-mark.webp" alt=""><h2>${title}</h2><p>${copy}</p>${action}</div>`;
 }
 
-function tenVTenComingSoon(area) {
-  return pageHero('FC27 forecast', '10v10 is coming', `${area} will arrive when the next big-pitch era begins.`) +
-    `<section class="section"><div class="status-row status-row-center"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('Coming Soon to an FC27 Beach Near You', 'The 10v10 Uncs are still finding their sandals, tactics board, and enough players who promise they can make kickoff. The first 10v10 season is planned for late October in FC27.','<a class="button button-primary" href="/" data-link>Return to the clubhouse →</a>')}</section>`;
+function houseTeamsContent() {
+  return `<div class="house-team-callout"><span class="section-kicker">Open pickup nights</span><h2>Free to join. Pickup games almost every night.</h2><p>Choose a house, meet the community, and jump in whenever a lobby opens.</p></div><div class="house-team-grid"><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-sandy-bums.png" alt="FC Sandy Bums crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p><a href="/teams/house/fc-sandy-bums" data-link>View results and players →</a></article><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-mountains.png" alt="FC Mountains crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p><a href="/teams/house/fc-mountains" data-link>View results and players →</a></article></div>`;
 }
 
-function houseTeamsPage() {
-  return pageHero('House teams', 'From the beach to the mountains, find your house.', 'Two houses. One community. Plenty of opportunities to blame the connection.') +
-    `<section class="section"><div class="house-team-callout"><span class="section-kicker">Open pickup nights</span><h2>Free to join. Pickup games almost every night.</h2><p>Choose a house, meet the community, and jump in whenever a lobby opens.</p></div><div class="house-team-grid"><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-sandy-bums.png" alt="FC Sandy Bums crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Sandy Bums</h2><p>Sun, sand, questionable tan lines, and football played with the confidence of an Unc holding a beverage.</p></article><article class="card house-team-card"><img class="house-team-logo" src="/assets/fc-mountains.png" alt="FC Mountains crest" loading="lazy" decoding="async"><span class="season-chip season-chip-live">House Team</span><h2>FC Mountains</h2><p>Higher elevation, lower oxygen, and absolutely no excuse for losing your runner at the back post.</p></article></div></section>`;
+const houseClubNames={'fc-sandy-bums':'FC Sandy Bums','fc-mountains':'FC Mountains'};
+function houseClubPage(clubName){
+  return pageHero('House teams · FC27', clubName, 'Results and player statistics from games recorded by our FC27 tracker.') +
+    `<section class="section house-club-history"><a href="/teams?division=house" data-link>← All house teams</a><div class="house-club-toolbar"><label for="house-club-month">Month (Central time)</label><select id="house-club-month"><option value="all">All recorded games</option></select><button type="button" class="button button-secondary" id="house-club-check">Check for new matches</button><span id="house-club-sync" aria-live="polite">Loading club history…</span></div><p id="house-club-check-result" class="house-club-note" role="status"></p><div id="house-club-content" aria-live="polite"></div></section>`;
+}
+
+const sandyBumsColumns=[['latest_name','Player'],['appearances','Apps'],['goals','Goals'],['assists','Assists'],['average_rating','Avg rating']];
+const sandyBumsSort={key:'appearances',direction:'desc'};
+const sandyBumsNameOrder=new Intl.Collator(undefined,{numeric:true,sensitivity:'base'});
+
+function sortedSandyBumsPlayers(players){
+  const {key,direction}=sandyBumsSort;
+  return [...players].sort((left,right)=>{
+    if(key==='average_rating'&&(left.average_rating===null||right.average_rating===null)){
+      if(left.average_rating===null&&right.average_rating!==null)return 1;
+      if(right.average_rating===null&&left.average_rating!==null)return -1;
+    }
+    const comparison=key==='latest_name'
+      ? sandyBumsNameOrder.compare(left.latest_name,right.latest_name)
+      : Number(left[key])-Number(right[key]);
+    return (direction==='asc'?comparison:-comparison)||sandyBumsNameOrder.compare(left.latest_name,right.latest_name);
+  });
+}
+
+function sandyBumsPlayerRows(players){
+  return sortedSandyBumsPlayers(players).map(player=>`<tr><th scope="row">${escapeHtml(player.latest_name)}</th><td>${Number(player.appearances)||0}</td><td>${Number(player.goals)||0}</td><td>${Number(player.assists)||0}</td><td>${player.average_rating===null?'—':Number(player.average_rating).toFixed(2)}</td></tr>`).join('');
+}
+
+function sandyBumsPlayerHead(){
+  return sandyBumsColumns.map(([key,label])=>{
+    const active=sandyBumsSort.key===key;
+    const next=active?(sandyBumsSort.direction==='desc'?'asc':'desc'):(key==='latest_name'?'asc':'desc');
+    return `<th scope="col" aria-sort="${active?(sandyBumsSort.direction==='asc'?'ascending':'descending'):'none'}"><button type="button" data-house-sort="${key}" aria-label="Sort by ${label}, ${next==='asc'?'ascending':'descending'}">${label}<span aria-hidden="true">${active?(sandyBumsSort.direction==='asc'?'↑':'↓'):'↕'}</span></button></th>`;
+  }).join('');
+}
+
+function houseMatchDetails(match){
+  if(!match.details)return '<p>Detailed stats have not been archived for this game yet.</p>';
+  const columns=[[0,'Position'],[1,'Rating'],[2,'Goals'],[3,'Shots'],[4,'Assists'],[9,'Passes'],[10,'Tackles'],[11,'Interceptions'],[13,'Saves']];
+  return `${match.details.partial?'<p>Only the original saved stats are available for this older game.</p>':''}${match.details.clubs.map(club=>{
+    const players=club.players||[];
+    const available=columns.filter(([index])=>players.some(player=>player.stats?.[index]!=null&&player.stats[index]!=='—'));
+    return `<section class="house-match-sheet"><h3>${escapeHtml(club.name)}</h3>${players.length?`<p>${players.length} human players · ★ EA Man of the Match</p><div class="table-wrap" role="region" tabindex="0" aria-label="${escapeHtml(club.name)} match stats"><table><thead><tr><th scope="col">Player</th>${available.map(([,label])=>`<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${players.map(player=>`<tr><th scope="row">${player.motm?'★ ':''}${escapeHtml(player.name)}</th>${available.map(([index])=>`<td>${escapeHtml(player.stats?.[index]??'—')}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`:'<p>No human player stats were returned for this team.</p>'}</section>`;
+  }).join('')}<p class="house-club-note">Passes: completed / attempted. Tackles: won / attempted. A 3.0 match rating is excluded from monthly averages; other stats still count.</p>`;
+}
+
+async function hydrateHouseClub(slug,month='all',fresh=false){
+  const clubName=houseClubNames[slug];
+  if(!clubName)return;
+  const container=document.querySelector('#house-club-content');
+  if(!container)return;
+  const selector=document.querySelector('#house-club-month');
+  const status=document.querySelector('#house-club-sync');
+  const check=document.querySelector('#house-club-check');
+  check.onclick=async()=>{
+    const result=document.querySelector('#house-club-check-result');
+    check.disabled=true;check.textContent='Checking EA…';
+    result.textContent='Checking for new games. This may take a few seconds…';
+    try{
+      const response=await fetch(`/api/house-clubs/${slug}`,{method:'POST'});
+      const payload=await response.json();
+      if(!response.ok)throw new Error(payload.error||'The check could not be completed.');
+      await hydrateHouseClub(slug,selector.value,true);
+      result.textContent=payload.message;
+    }catch(error){result.textContent=error.message||'Could not check for new matches. Please try again shortly.';}
+    finally{check.disabled=false;check.textContent='Check for new matches';}
+  };
+  container.innerHTML='<p>Loading results and player stats…</p>';
+  try{
+    const response=await fetch(`/api/house-clubs/${slug}?month=${encodeURIComponent(month)}&details=2${fresh?`&fresh=${Date.now()}`:''}`);
+    if(!response.ok)throw new Error('Club history unavailable');
+    const data=await response.json();
+    if(document.querySelector('#house-club-content')!==container||selector.value!==month)return;
+    selector.innerHTML='<option value="all">All recorded games</option>'+data.months.map(value=>`<option value="${escapeHtml(value)}">${escapeHtml(new Intl.DateTimeFormat('en-US',{month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(`${value}-01T12:00:00Z`)))}</option>`).join('');
+    selector.value=month;
+    selector.onchange=()=>hydrateHouseClub(slug,selector.value);
+    status.textContent=data.lastSyncedAt?`Last checked ${new Date(data.lastSyncedAt).toLocaleString()}${data.syncDelayed?' · Feed delayed':''}`:'First sync pending';
+    const players=data.players;
+    const matches=[...data.matches].sort((left,right)=>new Date(right.played_at)-new Date(left.played_at)).slice(0,5).map(match=>`<li><details class="house-match-details" data-match-id="${escapeHtml(match.match_id)}"><summary><time datetime="${new Date(match.played_at).toISOString()}">${escapeHtml(new Date(match.played_at).toLocaleString(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}))}</time><strong>${escapeHtml(clubName)} ${Number(match.goals_for)}–${Number(match.goals_against)} ${escapeHtml(match.opponent_name)}</strong><span class="house-match-hint">View full match stats</span></summary><div class="house-match-report">${match.details?houseMatchDetails(match):'<p>Open this result to load its saved match stats.</p>'}</div></details></li>`).join('');
+    container.innerHTML=`<p class="house-club-note">Tracking began when this archive was enabled. Earlier games may not be included; players remain listed after leaving the club.</p><div class="house-club-grid"><section><h2>Players</h2>${players.length?`<div class="table-wrap house-club-player-scroll" role="region" aria-label="${escapeHtml(clubName)} player statistics" tabindex="0"><table><thead><tr>${sandyBumsPlayerHead()}</tr></thead><tbody>${sandyBumsPlayerRows(players)}</tbody></table></div>${players.length>20?'<p class="house-club-scroll-hint">Scroll within the player table to see more.</p>':''}`:'<p>No players recorded yet.</p>'}</section><section><h2>Most recent 5 matches</h2>${matches?`<ol class="house-club-results">${matches}</ol>`:'<p>No games recorded for this month yet.</p>'}</section></div>`;
+    container.querySelectorAll('.house-match-details').forEach(card=>card.addEventListener('toggle',async()=>{
+      if(!card.open||card.dataset.loaded||card.dataset.loading)return;
+      const report=card.querySelector('.house-match-report');
+      card.dataset.loading='true';
+      try{
+        const response=await fetch(`/api/house-clubs/${slug}?match=${encodeURIComponent(card.dataset.matchId)}&details=2`);
+        if(!response.ok)throw new Error('Match unavailable');
+        const payload=await response.json();
+        const selected=payload.matches?.find(match=>String(match.match_id)===card.dataset.matchId);
+        if(!selected?.details)throw new Error('Match details unavailable');
+        report.innerHTML=houseMatchDetails(selected);
+        card.dataset.loaded='true';
+      }catch{
+        if(!report.querySelector('table'))report.innerHTML='<p>We could not load this match right now. Close and reopen it to retry.</p>';
+      }finally{delete card.dataset.loading;}
+    }));
+    container.querySelector('thead')?.addEventListener('click',event=>{
+      const key=event.target.closest('[data-house-sort]')?.dataset.houseSort;
+      if(!key)return;
+      if(sandyBumsSort.key===key)sandyBumsSort.direction=sandyBumsSort.direction==='asc'?'desc':'asc';
+      else{sandyBumsSort.key=key;sandyBumsSort.direction=key==='latest_name'?'asc':'desc';}
+      container.querySelector('thead tr').innerHTML=sandyBumsPlayerHead();
+      container.querySelector('tbody').innerHTML=sandyBumsPlayerRows(players);
+      container.querySelector('.house-club-player-scroll').scrollTop=0;
+      container.querySelector(`[data-house-sort="${key}"]`)?.focus();
+    });
+  }catch{
+    if(document.querySelector('#house-club-content')!==container)return;
+    status.textContent='History temporarily unavailable';
+    container.innerHTML='<p>We could not load FC Sandy Bums history right now. Please try again shortly.</p>';
+  }
 }
 
 function homePage() {
   return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Join the league →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
+  ${featuredClubSection()}
   <section class="section home-calendar" id="home-calendar"><span class="section-kicker">Coming up</span><h2>From the clubhouse calendar</h2><div class="home-calendar-grid"><p>Checking the schedule…</p></div></section>
-  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC26 Season 1 · In Progress</span><span class="season-chip season-chip-upcoming">FC27 Season 2 · Late October</span></div><h3>6v6 League</h3><p>Quick matches, tight spaces, and nowhere to hide.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div><h3>10v10 League</h3><p>The full tactical experience for organized clubs.</p><a href="/teams?division=10v10" data-link>Coming in FC27 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
+  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>6v6 League</h3><p>Registration is underway. Teams, standings, and fixtures update from Virtual Arena as they are published.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>10v10 League</h3><p>The full tactical experience is now part of UFL Season 2, with clubs and fixtures arriving soon.</p><a href="/teams?division=10v10" data-link>Open 10v10 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.webp" alt="Animated UNC Futbol League crest" decoding="async"></div></div></section>`;
+}
+
+const hubCard = ({mark,title,copy,href,label,status=''}) => `<a class="hub-card" href="${href}" data-link><span class="hub-card-mark">${mark}</span><div>${status?`<span class="season-chip season-chip-live">${status}</span>`:''}<h2>${title}</h2><p>${copy}</p><strong>${label} <i aria-hidden="true">→</i></strong></div></a>`;
+
+function utilityHubPage() {
+  return pageHero('UFL · Utility', 'Make game night easy', 'Useful tools for sorting teams, settling debates and running custom competition formats.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">U</span><div><span class="section-kicker">Utility</span><h2>Less setup.<br>More football.</h2><p class="section-intro">Open a tool and get the group moving. Everything here is designed to work quickly on desktop or mobile.</p></div></div><div class="hub-card-grid">${[
+      {mark:'W',title:'Unc Wheel',copy:'Build player pools, randomize teams and let the wheel handle the decision nobody wants to make.',href:'/wheel',label:'Open the wheel'},
+      {mark:'A',title:'Aggregate BYOT',copy:'Set four squads, manage ten-player rosters and track the complete multi-format aggregate bracket.',href:'/wheel/aggregate-byot',label:'Build a bracket'}
+    ].map(hubCard).join('')}</div></section>`;
+}
+
+function funPage() {
+  return pageHero('UFL · Fun', 'The clubhouse playground', 'Create, predict and compete when the final whistle is not the end of the night.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">F</span><div><span class="section-kicker">Fun</span><h2>Built for bragging rights.</h2><p class="section-intro">Make a player card, call the next result or climb an arcade leaderboard. Serious prizes are not required.</p></div></div><div class="hub-card-grid">${[
+      {mark:'FC',title:'FUNC Card Studio',copy:'Create a Futbol Unc Novelty Card with your portrait, club, position and custom attributes.',href:'/func',label:'Create a card'},
+      {mark:'P',title:'Pick’ems',copy:'Predict matchweek results, save picks to your Discord account and chase the season leaderboard.',href:'/pickems',label:'Make your picks',status:'Season 2'},
+      {mark:'AR',title:'UFL Arcade',copy:'Play Cleat, Loosey Goosey and Sandy Uppy, then put your best run on the community boards.',href:'/arcade',label:'Enter the arcade'}
+    ].map(hubCard).join('')}</div></section>`;
+}
+
+function leaguePage() {
+  return pageHero('UFL · League', 'The official match centre', 'Teams, fixtures, tables, rules and every route to a UFL trophy.') +
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
+      {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
+      {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
+      {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Match data will be connected later.',href:'/stats',label:'Explore the numbers'},
+      {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
+      {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
+    ].map(hubCard).join('')}</div></section>`;
 }
 
 function rulesPage() {
@@ -120,32 +288,53 @@ function rulesPage() {
 }
 
 function teamsPage(params) {
-  const division = params.get('division') || '6v6';
-  if (division === '10v10') return tenVTenComingSoon('Teams and rosters');
-  if (division === 'house') return houseTeamsPage();
-  const data = divisions[division] || divisions['6v6'];
-  const tabs = Object.entries(divisions).map(([key,val]) => key === '6v6'
-    ? `<a class="tab active" href="/teams?division=6v6" data-link>${val.title}</a>`
-    : `<a class="tab ${key===division?'active':''}" href="/teams?division=${key}" data-link>${val.title}</a>`).join('');
-  const cards = leagueSeason?.teamDetails?.map(team => `<a class="league-team-card" href="${escapeHtml(team.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(team.logo)}" alt="${escapeHtml(team.name)} crest" loading="lazy"><div><span>${escapeHtml(team.abbreviation)}</span><h2>${escapeHtml(team.name)}</h2><p>${team.stats.wins ?? 0}W · ${team.stats.draws ?? 0}D · ${team.stats.losses ?? 0}L${team.rosterSize!==null?` · ${team.rosterSize} players`:''}</p></div><b>View team ↗</b></a>`).join('');
-  return pageHero('The clubs',data.title,data.intro) + `<section class="section"><div class="tabs">${tabs}</div><p class="sync-note">Synced from Virtual Arena · ${leagueSeason?new Date(leagueSeason.syncedAt).toLocaleString():'data unavailable'}</p>${cards?`<div class="league-team-grid">${cards}</div>`:emptyState('Squads assembling','Official team data is temporarily unavailable.')}</section>`;
+  const division = Object.hasOwn(divisions, params.get('division')) ? params.get('division') : '6v6';
+  const selectedSeason = selectedLeagueSeason(params);
+  const data = divisions[division];
+  const seasonNavigation = leagueSeasonTabs('/teams', selectedSeason.id, 'division', division);
+  const divisionNavigation = leagueDivisionTabs('/teams', selectedSeason.id, division, true);
+  const navigation = `<div class="league-tab-stack">${seasonNavigation}${divisionNavigation}</div>`;
+  if (division === 'house') {
+    const content = selectedSeason.id === '2'
+      ? houseTeamsContent()
+      : emptyState('House teams were not part of Season 1', 'House teams are a Season 2 community program, so there is no Season 1 roster to archive.');
+    return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`, 'House Teams', data.intro) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div>${content}</section>`;
+  }
+  const season = leagueSeasonFor(division, selectedSeason.id);
+  const cards = season?.teamDetails?.map(team => `<a class="league-team-card" href="${escapeHtml(team.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(team.logo)}" alt="${escapeHtml(team.name)} crest" loading="lazy"><div><span>${escapeHtml(team.abbreviation)}</span><h2>${escapeHtml(team.name)}</h2><p>${team.stats.wins ?? 0}W · ${team.stats.draws ?? 0}D · ${team.stats.losses ?? 0}L${team.rosterSize!==null?` · ${team.rosterSize} players`:''}</p></div><b>View team ↗</b></a>`).join('');
+  const sourceGroup = selectedSeason.id === '1' ? (division === '6v6' ? virtualArena['6v6Season1'] : null) : virtualArena[division];
+  const source = sourceGroup?.teams;
+  const unavailable = selectedSeason.archived && !selectedSeason.divisions[division];
+  const empty = unavailable
+    ? emptyState(`${division} was not contested in ${selectedSeason.label}`, `There is no official ${division} team archive for ${selectedSeason.label}.`)
+    : emptyState(selectedSeason.archived ? `${selectedSeason.label} archive unavailable` : `${selectedSeason.label} registration in progress`, selectedSeason.archived ? 'The archived team list is temporarily unavailable.' : `The ${division} club list is ready and will fill automatically as teams register on Virtual Arena.`, source?`<a class="button button-secondary" href="${source}" target="_blank" rel="noopener noreferrer">Open Virtual Arena ↗</a>`:'');
+  return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,data.title,data.intro) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div><p class="sync-note">Synced from Virtual Arena${season?.syncedAt?` · ${new Date(season.syncedAt).toLocaleString()}`:''}</p>${cards?`<div class="league-team-grid">${cards}</div>`:empty}</section>`;
 }
 
 function schedulesPage(params) {
   const requestedType = params.get('type');
   if (!requestedType) {
-    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments'],['aggregate-byot','Aggregate BYOT','1v1, 3v3, 6v6 and 10v10 combined into one knockout score.','/schedules/aggregate-byot']];
-    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':key==='aggregate-byot'?'AB':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
+    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?season=2&type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?season=2&type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
+    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
   }
-  if (requestedType === '10v10') return pageHero('Match centre','10v10 League Schedule','Full-squad fixtures will appear here when the FC27 10v10 season begins.')+`<section class="section">${scheduleLandingTabs('10v10')}<div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('10v10 schedule coming soon','The complete schedule will remain inside this tab when the division begins.')}</section>`;
-  const type = '6v6';
+  const type = requestedType === '10v10' ? '10v10' : '6v6';
   const data = scheduleTypes[type];
-  const weeks = leagueSeason?.weeks?.map(week => `<section class="schedule-week"><div class="schedule-week-head"><span class="section-kicker">Matchweek</span><h2>Week ${week.week}</h2><p>${escapeHtml(week.date)}</p></div><div class="table-wrap"><table><thead><tr><th>Match</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${week.matches.map(([id,home,away,homeScore,awayScore],matchIndex)=>{const played=homeScore!==null&&awayScore!==null;return `<tr><td><strong>Match ${matchIndex+1}</strong></td><td>${escapeHtml(leagueTeam(home)[0])}</td><td>${escapeHtml(leagueTeam(away)[0])}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;}).join('')}</tbody></table></div></section>`).join('');
-  return pageHero('Match centre',data[0],data[1]) + `<section class="section">${scheduleLandingTabs(type)}<p class="sync-note">Official fixtures and results · synced from Virtual Arena</p><div class="schedule-weeks">${weeks || emptyState('Schedule temporarily unavailable','The official 6v6 fixtures could not be loaded.')}</div></section>`;
+  const selectedSeason = selectedLeagueSeason(params);
+  const season = leagueSeasonFor(type, selectedSeason.id);
+  const unavailable = selectedSeason.archived && !selectedSeason.divisions[type];
+  const weeks = season?.weeks?.map(week => `<section class="schedule-week"><div class="schedule-week-head"><span class="section-kicker">Matchweek</span><h2>Week ${week.week}</h2><p>${escapeHtml(week.date)}</p></div><div class="table-wrap"><table><thead><tr><th>Match</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${week.matches.map(([id,home,away,homeScore,awayScore],matchIndex)=>{const played=homeScore!==null&&awayScore!==null;return `<tr><td><strong>Match ${matchIndex+1}</strong></td><td>${escapeHtml(leagueTeam(home,season)[0])}</td><td>${escapeHtml(leagueTeam(away,season)[0])}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;}).join('')}</tbody></table></div></section>`).join('');
+  const official = selectedSeason.id === '1' ? (type === '6v6' ? virtualArena['6v6Season1'] : null) : virtualArena[type];
+  const sourceUrl = official?.schedule || official?.series;
+  const action = sourceUrl ? `<a class="button button-secondary" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Open official season ↗</a>` : '';
+  const empty = unavailable
+    ? emptyState(`${type} was not contested in ${selectedSeason.label}`, `There is no official ${type} schedule for ${selectedSeason.label}.`)
+    : emptyState(selectedSeason.archived ? `${selectedSeason.label} archive unavailable` : `${selectedSeason.label} schedule not published yet`, selectedSeason.archived ? 'The archived fixtures are temporarily unavailable.' : `The ${type} schedule is connected and will appear here automatically when Virtual Arena publishes its matchweeks.`, action);
+  const navigation = `<div class="league-tab-stack">${leagueSeasonTabs('/schedules',selectedSeason.id,'type',type)}${scheduleLandingTabs(type,selectedSeason.id)}</div>`;
+  return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,data[0],data[1]) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div><p class="sync-note">Official fixtures and results · synced from Virtual Arena</p><div class="schedule-weeks">${weeks || empty}</div></section>`;
 }
 
-function scheduleLandingTabs(active) {
-  return `<div class="tabs schedule-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a><a class="tab ${active==='aggregate-byot'?'active':''}" href="/schedules/aggregate-byot" data-link>Aggregate BYOT</a></div>`;
+function scheduleLandingTabs(active, seasonId = '2') {
+  return `<div class="tabs schedule-tabs league-division-tabs"><a class="tab ${active==='6v6'?'active':''}" href="/schedules?season=${seasonId}&type=6v6" data-link>6v6</a><a class="tab ${active==='10v10'?'active':''}" href="/schedules?season=${seasonId}&type=10v10" data-link>10v10</a><a class="tab ${active==='events'?'active':''}" href="/schedules/community-events" data-link>Community Events</a><a class="tab ${active==='league-cup'?'active':''}" href="/schedules/league-cup" data-link>League Cup</a><a class="tab ${active==='byot'?'active':''}" href="/schedules/byot-tournaments" data-link>BYOT Tournaments</a></div>`;
 }
 
 function communityEventsPage() {
@@ -162,17 +351,22 @@ function byotBuilder() {
   return `<section class="byot-builder" id="byot-builder" hidden><div class="byot-builder-head"><div><span class="section-kicker">Owner / admin tools</span><h2>Create the next BYOT tournament</h2><p>Set the field, groups, bracket and local kickoff time, then publish it directly to this schedule.</p></div><span class="season-chip season-chip-live">Protected</span></div><div class="byot-presets" aria-label="Reusable tournament configurations"><div><span class="section-kicker">Quick setup</span><strong>Reusable configurations</strong></div><button class="byot-preset" type="button" data-byot-preset="groups-8"><b>8 teams</b><span>2 groups of 4 · top 2 advance · semifinals</span></button><button class="byot-preset" type="button" data-byot-preset="league-12"><b>12 teams</b><span>4 league games · top 6 direct · next 4 play in</span></button></div><form id="byot-form"><div class="byot-fields"><label>Tournament name<input name="title" value="BYOT Tournament" maxlength="120" required></label><label>Date and kickoff<input name="startsAt" type="datetime-local" required></label><label>Team count<select name="teamCount"><option>4</option><option>6</option><option selected>8</option><option>9</option><option>12</option><option>15</option><option>16</option></select></label><label>Group count<select name="groupCount"><option value="1">1 · League phase</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label><label>Format<select name="format"><option value="groups">Groups + knockout</option><option value="league">League phase + knockout</option><option value="knockout">Straight knockout</option></select></label><label>Advance per group<select name="qualifiers"><option>1</option><option selected>2</option></select></label><label>League games per team<select name="leagueGames"></select></label><label>League qualification<select name="qualificationPlan"></select></label></div><p class="byot-format-help">Group format supports balanced groups of two to four. League phase puts everyone in one table with the same guaranteed game count; the top teams qualify directly, the next teams enter seeded play-ins, and every available split produces a clean knockout bracket.</p><label class="byot-team-label">Team names <small>One per line. The list automatically follows the selected team count.</small><textarea name="teams" rows="8" placeholder="Pistoleros CF&#10;UFL Lyon&#10;Team 3&#10;Team 4" required></textarea></label><div class="button-row"><button class="button button-primary" type="submit">Save + publish BYOT →</button><button class="button button-secondary" type="button" id="byot-preview">Preview format</button></div><p class="byot-message" id="byot-message" aria-live="polite"></p><div id="byot-preview-board"></div></form></section>`;
 }
 
-const inauguralByotDefaults = {id:'inaugural',title:'Pistoleros CF lift the first crown',eventDate:'2026-09-04',lifecycleStatus:'completed',champion:'Pistoleros CF',finalist:'UFL Lyon',championScore:5,finalistScore:2,roster:['Dez','Gucci','Dloww','Luis']};
+const completedByotDefaults = [
+  {id:'season-2-aggregate-preseason',title:'Finger Poppers FC win the Aggregate BYOT crown',eventDate:'2026-09-29',lifecycleStatus:'completed',champion:'Finger Poppers FC',finalist:'Swamp City FC',championScore:4,finalistScore:1,roster:['Luis','Bravo','John','LoTech','Klee','Cam','London','Bigs','DirtBradley','Ripp'],kicker:'Season 2 Preseason · Aggregate BYOT',image:'/assets/finger-poppers-fc-aggregate-champions.png',imageAlt:'Finger Poppers FC celebrating the Season 2 Aggregate BYOT Preseason Cup championship',imageKind:'photo',resultCopy:'Finger Poppers FC defeated Swamp City FC 4–1 to become the first Aggregate BYOT Preseason Cup champions of UFL Season 2.'},
+  {id:'inaugural',title:'Pistoleros CF lift the first crown',eventDate:'2026-09-04',lifecycleStatus:'completed',champion:'Pistoleros CF',finalist:'UFL Lyon',championScore:5,finalistScore:2,roster:['Dez','Gucci','Dloww','Luis'],kicker:'Inaugural BYOT Tournament',image:'/assets/pistoleros-cf-byot-champions.png',imageAlt:'Pistoleros CF celebrating their inaugural 4v4 BYOT championship',imageKind:'photo'}
+];
 
-function inauguralByot(record=inauguralByotDefaults, editable=false) {
-  const item={...inauguralByotDefaults,...record},date=new Date(`${item.eventDate}T12:00:00`),shortDate=date.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'}),longDate=date.toLocaleDateString([],{month:'long',day:'numeric',year:'numeric'});
-  const editor=editable?`<form class="byot-history-editor" data-byot-history="${escapeHtml(item.id)}"><h3>Edit completed-event details</h3><div><label>Display title<input name="title" value="${escapeHtml(item.title)}" required></label><label>Date<input name="eventDate" type="date" value="${escapeHtml(item.eventDate)}" required></label><label>Status<select name="lifecycleStatus">${['upcoming','live','completed','archived'].map(status=>`<option value="${status}" ${status===item.lifecycleStatus?'selected':''}>${status}</option>`).join('')}</select></label><label>Champion<input name="champion" value="${escapeHtml(item.champion)}" required></label><label>Champion score<input name="championScore" type="number" min="0" max="99" value="${escapeHtml(item.championScore)}" required></label><label>Finalist<input name="finalist" value="${escapeHtml(item.finalist)}" required></label><label>Finalist score<input name="finalistScore" type="number" min="0" max="99" value="${escapeHtml(item.finalistScore)}" required></label><label>Winning roster<input name="roster" value="${escapeHtml((item.roster||[]).join(', '))}"></label></div><button class="button button-primary" type="submit">Save event details</button><span data-byot-history-message aria-live="polite"></span></form>`:'';
-  return `<details class="published-event byot-inaugural" data-published-event="inaugural" open><summary class="published-event-head"><div><span class="section-kicker">Inaugural BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2><strong class="event-winner">🏆 Champion: ${escapeHtml(item.champion)}</strong></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(shortDate)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventShareTools({id:'inaugural',snapshot:{series:'byot'}},new URLSearchParams(window.location.search).get('event')==='inaugural')}<div class="byot-champion"><img src="/assets/pistoleros-cf.png" alt="Pistoleros CF crest" loading="lazy" decoding="async"><div><span class="section-kicker">Final · ${escapeHtml(longDate)}</span><h3>${escapeHtml(item.champion)} <b>${escapeHtml(item.championScore)}–${escapeHtml(item.finalistScore)}</b> ${escapeHtml(item.finalist)}</h3><p><strong>Winning team:</strong> ${(item.roster||[]).map(escapeHtml).join(' · ')}</p></div></div>${editor}</div></details>`;
+function completedByot(record=completedByotDefaults[0], editable=false) {
+  const defaults=completedByotDefaults.find(item=>item.id===record.id)||record,item={...defaults,...record},date=new Date(`${item.eventDate}T12:00:00`),shortDate=date.toLocaleDateString([],{month:'short',day:'numeric',year:'numeric'}),longDate=date.toLocaleDateString([],{month:'long',day:'numeric',year:'numeric'});
+  const editorId=`byot-history-${item.id}`;
+  const editor=editable?`<div class="byot-history-tools"><button class="tab" type="button" data-toggle-byot-history aria-expanded="false" aria-controls="${escapeHtml(editorId)}">Edit result</button></div><form class="byot-history-editor" id="${escapeHtml(editorId)}" data-byot-history="${escapeHtml(item.id)}" hidden><h3>Edit completed-event details</h3><div><label>Display title<input name="title" value="${escapeHtml(item.title)}" required></label><label>Date<input name="eventDate" type="date" value="${escapeHtml(item.eventDate)}" required></label><label>Status<select name="lifecycleStatus">${['upcoming','live','completed','archived'].map(status=>`<option value="${status}" ${status===item.lifecycleStatus?'selected':''}>${status}</option>`).join('')}</select></label><label>Champion<input name="champion" value="${escapeHtml(item.champion)}" required></label><label>Champion score<input name="championScore" type="number" min="0" max="99" value="${escapeHtml(item.championScore)}" required></label><label>Finalist<input name="finalist" value="${escapeHtml(item.finalist)}" required></label><label>Finalist score<input name="finalistScore" type="number" min="0" max="99" value="${escapeHtml(item.finalistScore)}" required></label><label>Winning roster<input name="roster" value="${escapeHtml((item.roster||[]).join(', '))}"></label></div><div class="button-row"><button class="button button-primary" type="submit">Save event details</button><button class="button button-secondary" type="button" data-cancel-byot-history>Cancel</button><span data-byot-history-message aria-live="polite"></span></div></form>`:'';
+  const detail=`${item.resultCopy?`<p>${escapeHtml(item.resultCopy)}</p>`:''}${(item.roster||[]).length?`<p><strong>Winning roster:</strong> ${item.roster.map(escapeHtml).join(' · ')}</p>`:''}`;
+  return `<details class="published-event byot-inaugural" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">${escapeHtml(item.kicker||'BYOT Tournament')}</span><h2>${escapeHtml(item.title)}</h2><strong class="event-winner">🏆 Champion: ${escapeHtml(item.champion)}</strong></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(shortDate)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventShareTools({id:item.id,snapshot:{series:'byot'}},new URLSearchParams(window.location.search).get('event')===item.id)}<div class="byot-champion byot-champion-${escapeHtml(item.imageKind||'crest')}"><img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.imageAlt||`${item.champion} champions`)}" loading="lazy" decoding="async"><div><span class="section-kicker">Final · ${escapeHtml(longDate)}</span><h3>${escapeHtml(item.champion)} <b>${escapeHtml(item.championScore)}–${escapeHtml(item.finalistScore)}</b> ${escapeHtml(item.finalist)}</h3>${detail}</div></div>${editor}</div></details>`;
 }
 
 function byotTournamentsPage() {
   return pageHero('Recurring tournament series','BYOT Tournaments','Bring your own team, choose the format, and play from group stage to trophy night.') +
-    `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>Your squad. Your format. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events">${inauguralByot()}</div></section>`;
+    `<section class="section schedule-landing">${scheduleLandingTabs('byot')}<div class="byot-series-intro"><div><span class="section-kicker">Bring Your Own Team</span><h2>Your squad. Your format. One champion.</h2></div><p>Published draws, local kickoff times, live brackets and completed champions all stay together here.</p></div>${byotBuilder()}<div id="byot-events"><div class="published-event-list">${completedByotDefaults.map(item=>completedByot(item)).join('')}</div></div></section>`;
 }
 
 const makeAggregateSeries = (id,home,away) => ({id,home,away,sideWinners:{one:'',three:'',six:''},tenHome:'',tenAway:'',goldenWinner:''});
@@ -204,8 +398,9 @@ function aggregateSeriesCard(series,title) {
 }
 
 function aggregateByotPage() {
+  const embedded = new URLSearchParams(window.location.search).get('embed') === '1';
   const rosters=aggregateByotState.teams.map((team,teamIndex)=>`<article><label class="aggregate-team-name"><span>Team name</span><input aria-label="Team ${teamIndex+1} name" value="${escapeHtml(team)}" data-aggregate-team="${teamIndex}"></label><div class="aggregate-player-list">${aggregateByotState.rosters[teamIndex].map((name,index)=>`<label><span>${String(index+1).padStart(2,'0')}</span><input aria-label="Team ${teamIndex+1} player ${index+1}" value="${escapeHtml(name)}" data-aggregate-player="${teamIndex}:${index}"></label>`).join('')}</div><small>1 to 1v1 · 3 to 3v3 · 6 to 6v6 · all return for 10v10</small></article>`).join('');
-  return pageHero('Four-match knockout format','Aggregate BYOT','Side-event wins and the 10v10 score combine to decide who advances.')+`<section class="section schedule-landing aggregate-byot-page">${scheduleLandingTabs('aggregate-byot')}<div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
+  return (embedded?'':pageHero('Unc Wheel · game-night tools','Aggregate BYOT','A custom four-match knockout format—not an official end-of-season tournament.'))+`<section class="section aggregate-byot-page">${embedded?'':'<a class="button button-secondary" href="/wheel" data-link>← Back to Unc Wheel</a>'}<div class="aggregate-intro"><div><span class="section-kicker">Four-team pilot</span><h2>40 players. Four games per matchup. One aggregate winner.</h2></div><button class="button button-secondary" type="button" id="aggregate-reset">Reset bracket</button></div><div class="aggregate-rules"><span><b>1</b> 1v1, 3v3 and 6v6 wins are each worth one goal.</span><span><b>2</b> Every 10v10 goal counts directly.</span><span><b>3</b> A level aggregate creates a golden-goal match.</span></div><div class="aggregate-rosters"><header><span class="section-kicker">Four squads</span><strong>10 players per team · 40 total</strong></header>${rosters}</div><div id="aggregate-byot-board"></div></section>`;
 }
 
 function findAggregateSeries(id) {
@@ -499,17 +694,18 @@ async function hydrateByotPage() {
   const eventsRoot=document.querySelector('#byot-events');
   if(!eventsRoot) return;
   const state=await getAuthState(),mayEdit=state.authenticated&&['owner','admin'].includes(state.user.role);
-  let history=inauguralByotDefaults;
+  let history=completedByotDefaults;
   let events=[];
   try {
     const [response,historyResponse]=await Promise.all([fetch('/api/events?destination=community-events'),fetch('/api/byot-history')]),data=await response.json(),historyData=await historyResponse.json();
     events=response.ok?data.events.filter(event=>event.snapshot?.series==='byot'):[];
-    if(historyResponse.ok&&historyData.records?.length) history=historyData.records.find(record=>record.id==='inaugural')||historyData.records[0];
+    if(historyResponse.ok&&historyData.records?.length) history=completedByotDefaults.map(defaults=>({...defaults,...(historyData.records.find(record=>record.id===defaults.id)||{})}));
     const resultControls=item=>mayEdit?`<div class="event-results-actions"><button class="button button-primary" type="button" data-save-event-results="${escapeHtml(item.id)}">Save live results</button><button class="button button-secondary danger-action" type="button" data-delete-byot-event="${escapeHtml(item.id)}">Delete event</button><span data-event-results-message aria-live="polite">Enter scores above; tables and winners recalculate automatically.</span></div>`:'';
     const requested=new URLSearchParams(window.location.search).get('event'),view=requestedEvent(events);
-    const showInaugural=!requested||requested==='inaugural';
-    const cards=(requested==='inaugural'?[]:view.events).map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventShareTools(item,view.focused)}${eventBoard(item.snapshot,mayEdit)}${resultControls(item)}</div></details>`;}).join('');
-    eventsRoot.innerHTML=`<div class="published-event-list">${cards}${showInaugural?inauguralByot(history,mayEdit):''}</div>`;
+    const historyIds=new Set(history.map(item=>item.id)),showHistory=!requested||historyIds.has(requested);
+    const cards=(historyIds.has(requested)?[]:view.events).map(item=>{const date=item.startsAt?new Date(item.startsAt).toLocaleString([],{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced';return `<details class="published-event" data-published-event="${escapeHtml(item.id)}" open><summary class="published-event-head"><div><span class="section-kicker">BYOT Tournament</span><h2>${escapeHtml(item.title)}</h2></div><div><span class="season-chip event-status-${escapeHtml(item.lifecycleStatus)}">${escapeHtml(item.lifecycleStatus)}</span><span class="season-chip season-chip-live">${escapeHtml(date)}</span><i aria-hidden="true"></i></div></summary><div class="published-event-body">${eventShareTools(item,view.focused)}${eventBoard(item.snapshot,mayEdit)}${resultControls(item)}</div></details>`;}).join('');
+    const historyCards=showHistory?history.filter(item=>!requested||item.id===requested).map(item=>completedByot(item,mayEdit)).join(''):'';
+    eventsRoot.innerHTML=`<div class="published-event-list">${cards}${historyCards}</div>`;
     wireEventShareButtons(eventsRoot);
     const wireCard=(card,item)=>{
       card.querySelectorAll('[data-event-score]').forEach(input=>input.addEventListener('change',()=>{
@@ -532,11 +728,12 @@ async function hydrateByotPage() {
       });
     };
     events.forEach(item=>{const card=eventsRoot.querySelector(`[data-published-event="${item.id}"]`);if(card)wireCard(card,item);});
-  } catch { eventsRoot.innerHTML=`<div class="published-event-list">${inauguralByot(history,mayEdit)}</div>`; }
+  } catch { eventsRoot.innerHTML=`<div class="published-event-list">${history.map(item=>completedByot(item,mayEdit)).join('')}</div>`; }
   wireEventShareButtons(eventsRoot);
 
-  const historyForm=document.querySelector('[data-byot-history]');
-  historyForm?.addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,button=form.querySelector('button'),message=form.querySelector('[data-byot-history-message]');button.disabled=true;message.textContent='Saving…';const payload={id:form.dataset.byotHistory,title:form.elements.title.value,eventDate:form.elements.eventDate.value,lifecycleStatus:form.elements.lifecycleStatus.value,champion:form.elements.champion.value,championScore:Number(form.elements.championScore.value),finalist:form.elements.finalist.value,finalistScore:Number(form.elements.finalistScore.value),roster:form.elements.roster.value.split(',').map(name=>name.trim()).filter(Boolean)};try{const response=await fetch('/api/byot-history',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}),result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to save event details.');message.textContent='Saved.';window.setTimeout(render,250);}catch(error){message.textContent=error.message;button.disabled=false;}});
+  document.querySelectorAll('[data-toggle-byot-history]').forEach(button=>button.addEventListener('click',()=>{const form=button.closest('.published-event-body').querySelector('[data-byot-history]'),opening=form.hidden;form.hidden=!opening;button.setAttribute('aria-expanded',String(opening));button.textContent=opening?'Close editor':'Edit result';if(opening)form.querySelector('input')?.focus();}));
+  document.querySelectorAll('[data-cancel-byot-history]').forEach(button=>button.addEventListener('click',()=>{const form=button.closest('[data-byot-history]'),toggle=form.closest('.published-event-body').querySelector('[data-toggle-byot-history]');form.reset();form.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.textContent='Edit result';}));
+  document.querySelectorAll('[data-byot-history]').forEach(historyForm=>historyForm.addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,button=form.querySelector('[type="submit"]'),message=form.querySelector('[data-byot-history-message]');button.disabled=true;message.textContent='Saving…';const payload={id:form.dataset.byotHistory,title:form.elements.title.value,eventDate:form.elements.eventDate.value,lifecycleStatus:form.elements.lifecycleStatus.value,champion:form.elements.champion.value,championScore:Number(form.elements.championScore.value),finalist:form.elements.finalist.value,finalistScore:Number(form.elements.finalistScore.value),roster:form.elements.roster.value.split(',').map(name=>name.trim()).filter(Boolean)};try{const response=await fetch('/api/byot-history',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify(payload)}),result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to save event details.');message.textContent='Saved.';window.setTimeout(render,250);}catch(error){message.textContent=error.message;button.disabled=false;}}));
 
   const builder=document.querySelector('#byot-builder');
   if(!builder || !mayEdit) return;
@@ -564,23 +761,29 @@ async function hydrateByotPage() {
 async function hydrateHomeCalendar() {
   const root=document.querySelector('#home-calendar .home-calendar-grid');
   if(!root) return;
-  const nextLeagueWeek=leagueSeason?.weeks?.find(week=>week.matches.some(([, , ,homeScore,awayScore])=>homeScore===null||awayScore===null));
-  const leagueCard=nextLeagueWeek?`<a class="home-event-card home-matchweek-card" href="/schedules?type=6v6" data-link><span class="season-chip season-chip-live">6v6 schedule</span><h3>Matchweek ${nextLeagueWeek.week}</h3><p>${escapeHtml(nextLeagueWeek.date)} · ${nextLeagueWeek.matches.length} fixtures</p><small>Open official schedule →</small></a>`:'';
+  const leagueCards=['6v6','10v10'].map(division=>{const season=leagueSeasonFor(division),week=season?.weeks?.find(item=>item.matches.some(([, , ,homeScore,awayScore])=>homeScore===null||awayScore===null));return week?`<a class="home-event-card home-matchweek-card" href="/schedules?type=${division}" data-link><span class="season-chip season-chip-live">${division} · Season 2</span><h3>Matchweek ${week.week}</h3><p>${escapeHtml(week.date)} · ${week.matches.length} fixtures</p><small>Open official schedule →</small></a>`:'';}).join('');
   try {
     const response=await fetch('/api/events?calendar=1'),data=await response.json();
     if(!response.ok) throw new Error();
     const eventCards=data.events.map(event=>{const byot=event.snapshot?.series==='byot',label=byot?'BYOT Tournament':event.destination==='league-cup'?'League Cup':'Community Event';return `<a class="home-event-card" href="${escapeHtml(eventSharePath(event))}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${label} →</small></a>`;}).join('');
-    root.innerHTML=leagueCard+eventCards||'<p class="admin-empty">No upcoming fixtures, community events, or cups yet.</p>';
-  } catch { root.innerHTML=leagueCard||'<p class="admin-empty">Calendar temporarily unavailable.</p>'; }
+    root.innerHTML=leagueCards+eventCards||'<p class="admin-empty">Season 2 registration is open. Fixtures and community events will appear here when published.</p>';
+  } catch { root.innerHTML=leagueCards||'<p class="admin-empty">Calendar temporarily unavailable.</p>'; }
 }
 
 function standingsPage(params) {
   const division = params.get('division') === '10v10' ? '10v10' : '6v6';
-  const hero = pageHero('Race for the title','Standings','Form, points, goal difference, and the weekly reminder that the table never lies.');
-  const tabs = `<div class="tabs"><a class="tab ${division==='6v6'?'active':''}" href="/standings" data-link>6v6</a><a class="tab ${division==='10v10'?'active':''}" href="/standings?division=10v10" data-link>10v10</a></div>`;
-  if (division === '10v10') return hero + `<section class="section">${tabs}<div class="status-row"><span class="season-chip season-chip-upcoming">FC27 · Late October</span></div>${emptyState('10v10 standings coming soon','The table will appear in this tab when the FC27 10v10 season begins.')}</section>`;
-  const rows = leagueSeason?.standings?.map(([key,played,wins,draws,losses,gf,ga,gd,points], index) => { const [name,logo]=leagueTeam(key); return `<tr><td><strong>${index+1}</strong></td><td><a class="table-team" href="${virtualArena['6v6'].standings}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(logo)}" alt="" loading="lazy"><strong>${escapeHtml(name)}</strong></a></td><td>${played}</td><td>${wins}</td><td>${draws}</td><td>${losses}</td><td>${signed(gd)}</td><td><strong>${points}</strong></td></tr>`; }).join('');
-  return hero + `<section class="section">${tabs}<p class="sync-note">Official table · synced from Virtual Arena</p><div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows || '<tr><td colspan="8">Standings temporarily unavailable.</td></tr>'}</tbody></table></div></section>`;
+  const selectedSeason = selectedLeagueSeason(params);
+  const unavailable = selectedSeason.archived && !selectedSeason.divisions[division];
+  const hero = pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,'Standings',selectedSeason.archived ? 'Completed tables preserved as league history.' : 'Separate 6v6 and 10v10 tables, both part of the same official UFL season.');
+  const navigation = `<div class="league-tab-stack">${leagueSeasonTabs('/standings',selectedSeason.id,'division',division)}${leagueDivisionTabs('/standings',selectedSeason.id,division)}</div>`;
+  const season = leagueSeasonFor(division, selectedSeason.id);
+  const source = selectedSeason.id === '1' ? (division === '6v6' ? virtualArena['6v6Season1'] : null) : virtualArena[division];
+  const rows = season?.standings?.map(([key,played,wins,draws,losses,gf,ga,gd,points], index) => { const [name,logo]=leagueTeam(key,season); const teamCell=source?.standings?`<a class="table-team" href="${source.standings}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(logo)}" alt="" loading="lazy"><strong>${escapeHtml(name)}</strong></a>`:`<span class="table-team"><img src="${escapeHtml(logo)}" alt="" loading="lazy"><strong>${escapeHtml(name)}</strong></span>`; return `<tr><td><strong>${index+1}</strong></td><td>${teamCell}</td><td>${played}</td><td>${wins}</td><td>${draws}</td><td>${losses}</td><td>${signed(gd)}</td><td><strong>${points}</strong></td></tr>`; }).join('');
+  const action = source?.standings ? `<a class="button button-secondary" href="${source.standings}" target="_blank" rel="noopener noreferrer">Open Virtual Arena ↗</a>` : '';
+  const table = rows
+    ? `<div class="table-wrap"><table><thead><tr><th>#</th><th>Club</th><th>Played</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead><tbody>${rows}</tbody></table></div>`
+    : unavailable ? emptyState(`${division} was not contested in ${selectedSeason.label}`, `There is no official ${division} table for ${selectedSeason.label}.`) : emptyState(selectedSeason.archived ? `${selectedSeason.label} archive unavailable` : `${selectedSeason.label} table ready`, selectedSeason.archived ? 'The archived table is temporarily unavailable.' : `The ${division} standings will populate automatically as clubs register and results are posted.`, action);
+  return hero + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${division} · ${selectedSeason.game} · ${selectedSeason.archived?'Archived':selectedSeason.label}</span></div><p class="sync-note">Official table · synced from Virtual Arena${season?.syncedAt?` · ${new Date(season.syncedAt).toLocaleString()}`:''}</p>${table}</section>`;
 }
 
 function utilityPage(kind) {
@@ -606,7 +809,7 @@ async function hydrateUsersDirectory() {
 function arcadePage(){return '<section class="section arcade-hub"><span class="section-kicker">The clubhouse</span><h2>Arcade</h2><p class="section-intro">Pick a game. Rep your club. Beat your best.</p><div class="arcade-grid"><a class="card arcade-game-card" href="/arcade/cleat" data-link><img src="/assets/cleat-arcade.png" alt="Cleat pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">13 levels · Soccer breakout</span><h3>Cleat Arcade</h3><p>Break through defenders, dodge the buses, and beat the keeper. One cleat. Three lives.</p><strong>Play Cleat Arcade →</strong></a><a class="card arcade-game-card" href="/arcade/loosey-goosey" data-link><img src="/assets/goose-mode-arcade.png" alt="Goose Mode: Loosey Goosey pixel-art game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless runner · Goose Mode</span><h3>Loosey Goosey</h3><p>Jump, glide, and honk your way to kickoff. Fuel up on Goose Mode and leave the opposition behind.</p><strong>Play Loosey Goosey →</strong></a><a class="card arcade-game-card" href="/arcade/sandy-uppy" data-link><img src="/assets/sandy-uppy-arcade.png" alt="Sandy Uppy pixel-art beach soccer game cover" width="1536" height="1024"><span class="season-chip season-chip-live">Endless beach · Keep-ups</span><h3>Sandy Uppy</h3><p>Keep the ball off the sand, tackle castle builders, and watch the skies for a Goose Mode lifeline.</p><strong>Play Sandy Uppy →</strong></a></div></section>';}
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260904-live-drawings5" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20260928-aggregate-tab" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function funcPage() {
@@ -614,7 +817,7 @@ function funcPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260922-cache1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260929-season-navigation1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
@@ -639,14 +842,16 @@ function adminPage() {
 function ufbPage() {
   const examples=command=>command.examples?.length?`<section class="ufb-examples" aria-label="Usage examples for ${escapeHtml(command.name)}"><h4>${command.status==='Planned'?'Reserved syntax — not available yet':'Usage examples'}</h4>${command.examples.map(example=>`<pre><code>${escapeHtml(example)}</code></pre>`).join('')}</section>`:'';
   const preview=command=>command.preview?.src?`<figure class="ufb-preview"><a href="${escapeHtml(command.preview.src)}" target="_blank" rel="noopener"><img src="${escapeHtml(command.preview.src)}" alt="${escapeHtml(command.preview.alt||'Example command output')}" loading="lazy" decoding="async"></a>${command.preview.caption?`<figcaption>${escapeHtml(command.preview.caption)} <span>Open full size ↗</span></figcaption>`:''}</figure>`:'';
-  const hiddenTitles=new Set(['Draft nights','Cups & BYOT']);
-  const visibleDocs=(window.UFB_DOCS||[]).filter(group=>!hiddenTitles.has(group.title)).map(group=>group.title==='Upcoming features'?{...group,commands:[
+  const hiddenTitles=new Set(['Draft nights','Cups & BYOT','Recruiting & free agents']);
+  const workshopCommands=new Set(['/sign','/release','/setup channel']);
+  const visibleDocs=(window.UFB_DOCS||[]).filter(group=>!hiddenTitles.has(group.title)).map(group=>({...group,commands:group.commands.filter(command=>!workshopCommands.has(command.name))})).map(group=>group.title==='Upcoming features'?{...group,commands:[
     {name:'Draft nights',status:'Workshop',description:'Draft pools, captain controls, exclusive player selection and squad recaps are preserved for continued development but are not currently published in Discord.',examples:[],options:[]},
     {name:'Cups & BYOT',status:'Workshop',description:'Cup registration, brackets, delegated organizers, result confirmation and BYOT formats are preserved for continued development but are not currently published on the bot or website.',examples:[],options:[]},
+    {name:'Free agents & player signing',status:'Workshop',description:'Free-agent listings, club recruiting, player signing and release are preserved in the development workspace but are not published in the live bot.',examples:[],options:[]},
     ...group.commands
   ]}:group);
   const groups=visibleDocs.map(group=>`<details class="ufb-category"><summary>${escapeHtml(group.title)}</summary><p>${escapeHtml(group.description)}</p>${group.commands.map(command=>`<article class="ufb-command"><div><code>${escapeHtml(command.name)}</code><span class="season-chip">${escapeHtml(command.status||'Available')}</span></div><p>${escapeHtml(command.description)}</p>${command.options?.length?`<small>Options: ${command.options.map(o=>escapeHtml(o.name)+(o.required?' (required)':' (optional)')).join(' · ')}</small>`:''}${examples(command)}${preview(command)}</article>`).join('')}</details>`).join('');
-  return pageHero('UFL · Discord operations','Unc Futból Bot','The official command guide for league teams, players, recruiting and FC27 match reporting.')+`<section class="section ufb-reference"><div class="card"><h2>Command reference</h2><p>Use these slash commands in Discord. The examples are templates: replace names, contacts and channels with your own. Select leagues and teams from Discord’s suggestions; select @players and #channels with Discord’s picker. Required options must be filled in; optional ones can be left out.</p><p>Team actions belong to the registered manager. Use /setup panel for owner/administrator settings. Free-agent channel assignments require Discord server owner or administrator permission.</p><p>For multi-league free-agent signup, choose league_1 and optionally league_2, then enter your pitch_availability with days, times and timezone. All active leagues must be selected by itself. Listings expire after seven days. /recruit renew bumps your post and restarts the timer; /recruit edit updates it. A successful /recruit sign removes availability for that league only. Players cannot join two teams in the same league, but can play separately in 6v6 and 10v10. Open /ufb for private button-based navigation.</p><p class="sync-note">EA FC 27 club search, recent matches, separate two-team game sheets and automatic match monitoring are connected for testing. Cups, BYOT competitions and draft nights are retained in the workshop for later development. Guide updated September 23, 2026.</p></div>${groups}</section>`;
+  return pageHero('UFL · Discord operations','Unc Futból Bot','The official command guide for league teams, players and FC27 match reporting.')+`<section class="section ufb-reference"><div class="card"><h2>Command reference</h2><p>Use these slash commands in Discord. The examples are templates: replace names and channels with your own. Select leagues and teams from Discord’s suggestions. Required options must be filled in; optional ones can be left out.</p><p>Register and link clubs for EA match reporting. Use /setup panel for owner/administrator settings. Free-agent listings, club recruiting, player signing and release are kept in the development workspace and are not live bot commands.</p><p>Official 6v6 and 10v10 are both UFL Season 2. Virtual Arena uses season ID 2 for 6v6 and competition 3 / season ID 5 for 10v10; both sync into separate website data feeds. Each Discord server still chooses which of those feeds to link to its own leagues. Open /ufb for private button-based navigation.</p><p class="sync-note">EA FC 27 club search, recent matches, separate two-team game sheets and automatic match monitoring are connected for testing. /schedule remains league fixtures; /rsvp handles separate attendance events. Cups, BYOT competitions, draft nights and recruiting remain in the workshop for later development. Guide updated September 29, 2026.</p></div>${groups}</section>`;
 }
 
 async function getAuthState() {
@@ -666,7 +871,8 @@ function userCard(user) {
 }
 
 const assignableTeams = [...new Set([
-  ...Object.values(leagueSeason?.teams || {}).map(team => team[0]),
+  ...Object.values(leagueSeasons['s2-6v6']?.teams || {}).map(team => team[0]),
+  ...Object.values(leagueSeasons['s2-10v10']?.teams || {}).map(team => team[0]),
   'FC Sandy Bums', 'FC Mountains'
 ])].sort((a,b) => a.localeCompare(b));
 
@@ -717,6 +923,35 @@ function adminAudit(entries) {
   return `<div class="admin-audit-list">${entries.length?entries.map(entry=>`<article><strong>${escapeHtml(entry.actorName || 'System')}</strong><span>${escapeHtml(entry.action.replaceAll('_',' '))}${entry.targetName?` · ${escapeHtml(entry.targetName)}`:''}</span><time>${new Date(entry.createdAt+'Z').toLocaleString()}</time></article>`).join(''):'<p class="admin-empty">No recorded actions yet.</p>'}</div>`;
 }
 
+function adminEaMatchCenter(data) {
+  const channelId=String(data?.channelId||'1520080337806299181');
+  const clubs=Array.isArray(data?.clubs)?data.clubs:[];
+  const status=data?.connection==='connected'?'Connected':data?.connection==='unavailable'?'Unavailable':'Waiting for bot';
+  const statusClass=data?.connection==='connected'?'season-chip-live':'season-chip-upcoming';
+  const clubList=clubs.length?`<div class="ea-club-grid">${clubs.map(club=>`<button type="button" class="ea-club-card" data-ea-club="${escapeHtml(club.id)}"><span>${escapeHtml(club.league||'Linked club')}</span><strong>${escapeHtml(club.name)}</strong><small>${escapeHtml(club.eaClubName||club.name)} · ${escapeHtml(club.platform)}</small><b>Open recent matches →</b></button>`).join('')}</div>`:`<div class="ea-awaiting-state"><span class="section-kicker">Connection reserved</span><h3>Waiting for UFB in the Discord channel</h3><p>Once the bot is present and its private Worker binding is connected, clubs linked with <code>/linkclub</code> will appear here automatically.</p><dl><div><dt>Discord channel</dt><dd><code>${escapeHtml(channelId)}</code></dd></div><div><dt>Website path</dt><dd><code>/admin?tab=ea-matches</code></dd></div></dl></div>`;
+  return `<div class="admin-section-heading"><div><h2>EA Match Center</h2><p>Owner/admin recovery tools for recent EA league and playoff results when Virtual Arena needs manual entry.</p></div><span class="season-chip ${statusClass}">${status}</span></div><div class="ea-match-notice"><strong>Post-match data</strong><span>EA results may be delayed. Selecting a club never confirms a result as an official UFL fixture.</span></div>${clubList}<div id="ea-match-results" class="ea-match-results" aria-live="polite"></div>`;
+}
+
+function eaMatchPlayerRow(player) {
+  const stats=Array.isArray(player.stats)?player.stats:[];
+  // The old bridge returned four fields. Never interpret its assists as shots.
+  const indices=stats.length===4?[0,1,2,null,3,null,null,null,null]:[0,1,2,3,4,9,10,11,13];
+  return `<tr><td><strong>${player.motm?'<span title="Man of the Match">★</span> ':''}${escapeHtml(player.name||'Player')}</strong></td><td>${escapeHtml(player.club||'')}</td>${indices.map(index=>`<td>${escapeHtml(index===null?'—':stats[index]??'—')}</td>`).join('')}</tr>`;
+}
+
+function adminEaMatchResults(payload) {
+  const matches=Array.isArray(payload?.matches)?payload.matches:[];
+  const clubName=payload?.club?.name||'Linked club';
+  const partial=payload?.partial?'<p class="ea-match-notice">One EA match feed is unavailable. These results may be incomplete.</p>':'';
+  if(!matches.length)return `${partial}<div class="ea-awaiting-state"><h3>No recent matches returned</h3><p>EA may still be processing the result, or this club has not played a league or playoff match recently.</p></div>`;
+  return `${partial}<div class="ea-results-heading"><div><span class="section-kicker">Recent EA results</span><h3>${escapeHtml(clubName)}</h3></div><small>${matches.length} match${matches.length===1?'':'es'} · newest first</small></div><div class="ea-match-list">${matches.map(match=>{
+    const clubs=Array.isArray(match.clubs)?match.clubs:[],home=clubs[0]||{},away=clubs[1]||{},played=Number(match.playedAt);
+    const players=clubs.flatMap(club=>(Array.isArray(club.players)?club.players:[]).filter(player=>player?.human!==false).map(player=>({...player,club:club.name})));
+    const table=players.length?`<div class="table-wrap" role="region" aria-label="Match player statistics" tabindex="0"><table class="ea-player-table"><caption>UFB match-sheet stats · ★ Man of the Match · — not supplied by EA</caption><thead><tr><th scope="col">Player</th><th scope="col">Club</th><th scope="col">Pos</th><th scope="col">Rating</th><th scope="col">Goals</th><th scope="col">Shots</th><th scope="col">Assists</th><th scope="col">Passes <small>completed / attempted</small></th><th scope="col">Tackles <small>won / attempted</small></th><th scope="col">Interceptions</th><th scope="col">Saves</th></tr></thead><tbody>${players.map(eaMatchPlayerRow).join('')}</tbody></table></div>`:'<p class="admin-empty">EA did not return human-player rows for this match.</p>';
+    return `<article class="ea-match-card"><header><span>${escapeHtml(match.type||'EA club match')}</span><time>${Number.isFinite(played)?new Date(played).toLocaleString():'Time unavailable'}</time></header><div class="ea-scoreline"><strong>${escapeHtml(home.name||'Club A')}</strong><b>${Number.isFinite(Number(home.score))?Number(home.score):'–'}–${Number.isFinite(Number(away.score))?Number(away.score):'–'}</b><strong>${escapeHtml(away.name||'Club B')}</strong></div><small class="ea-match-id">EA match ID · ${escapeHtml(match.id||'unavailable')}</small>${table}</article>`;
+  }).join('')}</div>`;
+}
+
 async function hydrateAccount() {
   const state = await getAuthState();
   const nav = document.querySelector('#account-nav');
@@ -743,22 +978,38 @@ async function hydrateAccount() {
   if (!state.configured) return void (adminRoot.innerHTML = '<h2>Backend setup required</h2><p>Connect Discord OAuth and the UFL database before using the admin clubhouse.</p>');
   if (!state.authenticated) return void (adminRoot.innerHTML = '<h2>Sign in required</h2><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>');
   if (!['owner','admin'].includes(state.user.role)) return void (adminRoot.innerHTML = '<h2>Administrator access required</h2><p>Your account is registered, but it does not have permission to open this page.</p>');
-  const [membersResponse,eventsResponse,chatResponse,auditResponse] = await Promise.all([
+  const [membersResponse,eventsResponse,chatResponse,auditResponse,eaClubsResponse] = await Promise.all([
     fetch('/api/admin/users',{credentials:'same-origin'}),fetch('/api/admin/events',{credentials:'same-origin'}),
-    fetch('/api/admin/chat',{credentials:'same-origin'}),fetch('/api/admin/audit',{credentials:'same-origin'})
+    fetch('/api/admin/chat',{credentials:'same-origin'}),fetch('/api/admin/audit',{credentials:'same-origin'}),
+    fetch('/api/admin/ea-clubs',{credentials:'same-origin'})
   ]);
   if (!membersResponse.ok) return void (adminRoot.innerHTML = '<h2>Unable to load the admin panel</h2><p>Please sign in again or try later.</p>');
   const data = await membersResponse.json();
   const events = eventsResponse.ok ? (await eventsResponse.json()).events : [];
   const messages = chatResponse.ok ? (await chatResponse.json()).messages : [];
   const audit = auditResponse.ok ? (await auditResponse.json()).entries : [];
-  const adminParams=new URLSearchParams(window.location.search),activeAdminTab=adminParams.get('tab')==='control-room'?'control-room':'competitions',selectedControlEvent=adminParams.get('event');
+  const eaClubs = await eaClubsResponse.json().catch(()=>({connection:'unavailable',channelId:'1520080337806299181',clubs:[]}));
+  const adminParams=new URLSearchParams(window.location.search),requestedAdminTab=adminParams.get('tab'),allowedAdminTabs=new Set(['competitions','control-room','ea-matches','members','chat','audit']),activeAdminTab=allowedAdminTabs.has(requestedAdminTab)?requestedAdminTab:'competitions',selectedControlEvent=adminParams.get('event');
   const active=tab=>activeAdminTab===tab?' active':'';
-  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>League operations</h2><p class="admin-note">Manage competitions and staff titles here. Captain and Manager remain display titles only; only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="admin-tabs" role="tablist"><button class="tab${active('competitions')}" data-admin-tab="competitions">Competitions</button><button class="tab${active('control-room')}" data-admin-tab="control-room">Night Control Room</button><button class="tab" data-admin-tab="members">Members (${data.users.length})</button><button class="tab" data-admin-tab="chat">Staff chat</button><button class="tab" data-admin-tab="audit">Audit history</button></div><section class="admin-panel${active('competitions')}" data-admin-panel="competitions"><div class="admin-section-heading"><div><h2>Competition manager</h2><p>Draft, publish, update status, duplicate, archive, or remove events and cups.</p></div><a class="button button-primary" href="/wheel" data-link>Create in Unc Wheel →</a></div><div class="admin-event-list">${events.length?events.map(adminCompetitionCard).join(''):'<p class="admin-empty">No saved competitions yet.</p>'}</div></section><section class="admin-panel${active('control-room')}" data-admin-panel="control-room" id="control-room-panel">${adminControlRoom(events,selectedControlEvent)}</section><section class="admin-panel" data-admin-panel="members"><div class="member-list">${data.users.map(user => adminMemberRow(user,data.canManageRoles)).join('')}</div></section><section class="admin-panel" data-admin-panel="chat"><div class="admin-section-heading"><div><h2>Staff chat</h2><p>Private to owners and administrators.</p></div><button class="tab" id="refresh-admin-chat">Refresh</button></div>${adminChat(messages)}</section><section class="admin-panel" data-admin-panel="audit"><div class="admin-section-heading"><div><h2>Audit history</h2><p>The latest protected administrative actions.</p></div></div>${adminAudit(audit)}</section>`;
+  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>League operations</h2><p class="admin-note">Manage competitions and staff titles here. Captain and Manager remain display titles only; only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="admin-tabs" role="tablist"><button class="tab${active('competitions')}" data-admin-tab="competitions">Competitions</button><button class="tab${active('control-room')}" data-admin-tab="control-room">Night Control Room</button><button class="tab${active('ea-matches')}" data-admin-tab="ea-matches">EA Match Center</button><button class="tab${active('members')}" data-admin-tab="members">Members (${data.users.length})</button><button class="tab${active('chat')}" data-admin-tab="chat">Staff chat</button><button class="tab${active('audit')}" data-admin-tab="audit">Audit history</button></div><section class="admin-panel${active('competitions')}" data-admin-panel="competitions"><div class="admin-section-heading"><div><h2>Competition manager</h2><p>Draft, publish, update status, duplicate, archive, or remove events and cups.</p></div><a class="button button-primary" href="/wheel" data-link>Create in Unc Wheel →</a></div><div class="admin-event-list">${events.length?events.map(adminCompetitionCard).join(''):'<p class="admin-empty">No saved competitions yet.</p>'}</div></section><section class="admin-panel${active('control-room')}" data-admin-panel="control-room" id="control-room-panel">${adminControlRoom(events,selectedControlEvent)}</section><section class="admin-panel${active('ea-matches')}" data-admin-panel="ea-matches">${adminEaMatchCenter(eaClubs)}</section><section class="admin-panel${active('members')}" data-admin-panel="members"><div class="member-list">${data.users.map(user => adminMemberRow(user,data.canManageRoles)).join('')}</div></section><section class="admin-panel${active('chat')}" data-admin-panel="chat"><div class="admin-section-heading"><div><h2>Staff chat</h2><p>Private to owners and administrators.</p></div><button class="tab" id="refresh-admin-chat">Refresh</button></div>${adminChat(messages)}</section><section class="admin-panel${active('audit')}" data-admin-panel="audit"><div class="admin-section-heading"><div><h2>Audit history</h2><p>The latest protected administrative actions.</p></div></div>${adminAudit(audit)}</section>`;
+  allowedAdminTabs.add('players');
+  adminRoot.querySelector('.admin-tabs').insertAdjacentHTML('beforeend',`<button class="tab${requestedAdminTab==='players'?' active':''}" data-admin-tab="players">Players & rosters</button>`);
+  adminRoot.insertAdjacentHTML('beforeend',`<section class="admin-panel${requestedAdminTab==='players'?' active':''}" data-admin-panel="players" id="admin-players-root"></section>`);
+  if(requestedAdminTab==='players'){adminRoot.querySelector('[data-admin-tab="competitions"]').classList.remove('active');adminRoot.querySelector('[data-admin-panel="competitions"]').classList.remove('active');}
+  hydrateAdminPlayers(adminRoot.querySelector('#admin-players-root'));
   wireEventShareButtons(adminRoot);
   document.querySelectorAll('[data-admin-tab]').forEach(button=>button.addEventListener('click',()=>{
     document.querySelectorAll('[data-admin-tab]').forEach(tab=>tab.classList.toggle('active',tab===button));
     document.querySelectorAll('[data-admin-panel]').forEach(panel=>panel.classList.toggle('active',panel.dataset.adminPanel===button.dataset.adminTab));
+    const url=new URL(window.location.href);url.searchParams.set('tab',button.dataset.adminTab);url.searchParams.delete('event');history.replaceState({},'',url);
+  }));
+  document.querySelectorAll('[data-ea-club]').forEach(button=>button.addEventListener('click',async()=>{
+    const results=document.querySelector('#ea-match-results');
+    document.querySelectorAll('[data-ea-club]').forEach(clubButton=>clubButton.classList.toggle('active',clubButton===button));
+    button.disabled=true;results.innerHTML='<p class="admin-empty">Loading recent EA matches…</p>';
+    const response=await fetch(`/api/admin/ea-clubs/${encodeURIComponent(button.dataset.eaClub)}/matches`,{credentials:'same-origin'}),payload=await response.json().catch(()=>({error:'Unable to read the match response.'}));
+    results.innerHTML=response.ok?adminEaMatchResults(payload):`<div class="ea-awaiting-state"><h3>Recent matches unavailable</h3><p>${escapeHtml(payload.error||'Please try again later.')}</p></div>`;
+    button.disabled=false;
   }));
   const wireControlRoom=()=>{
     const panel=document.querySelector('#control-room-panel');if(!panel)return;
@@ -855,44 +1106,66 @@ async function hydrateAccount() {
 }
 
 function render() {
-  const path = window.location.pathname.replace(/\/$/, '') || '/';
+  // Keep the viewport steady while replacing route content. The old DOM can
+  // temporarily shorten the page, so capture the position before changing it.
+  const scrollPosition = { left: window.scrollX, top: window.scrollY };
+  let path = window.location.pathname.replace(/\/$/, '') || '/';
+  if (path === '/schedules/aggregate-byot') {
+    history.replaceState({}, '', `/wheel/aggregate-byot${window.location.search}${window.location.hash}`);
+    path = '/wheel/aggregate-byot';
+  }
   const params = new URLSearchParams(window.location.search);
+  document.body.classList.toggle('aggregate-embed', path === '/wheel/aggregate-byot' && params.get('embed') === '1');
   const main = document.querySelector('main');
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = arcadePage();
+  else if (path === routes.utility) main.innerHTML = utilityHubPage();
+  else if (path === routes.fun) main.innerHTML = funPage();
+  else if (path === routes.league) main.innerHTML = leaguePage();
   else if (path === '/arcade/loosey-goosey') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Loosey Goosey"><iframe class="integrated-app-frame" src="/goose-app/" title="Loosey Goosey soccer runner" scrolling="no"></iframe></section>';
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
   else if (path === routes.rules) main.innerHTML = rulesPage();
-  else if (path === routes.teams) main.innerHTML = teamsPage(params);
+  else if (path === routes.teams || path === '/clubs') main.innerHTML = leagueClubsPage(params);
+  else if (path === '/teams/house/fc-sandy-bums' || path === '/teams/house/fc-mountains') main.innerHTML = houseClubTrackerPage(path.split('/').pop());
+  else if (path.startsWith('/clubs/')) main.innerHTML = leagueClubProfile(decodeURIComponent(path.slice(7)),params);
+  else if (path === '/players') main.innerHTML = leaguePlayersPage(params);
+  else if (path.startsWith('/players/')) main.innerHTML = leaguePlayerProfile(path.slice(9),params);
+  else if (path === '/stats') main.innerHTML = leagueStatsPage(params);
   else if (path === '/schedules/community-events') main.innerHTML = communityEventsPage();
   else if (path === '/schedules/league-cup') main.innerHTML = leagueCupPage();
   else if (path === '/schedules/byot-tournaments') main.innerHTML = byotTournamentsPage();
-  else if (path === '/schedules/aggregate-byot') main.innerHTML = aggregateByotPage();
   else if (path === routes.schedules) main.innerHTML = schedulesPage(params);
-  else if (path === routes.standings) main.innerHTML = standingsPage(params);
+  else if (path === routes.standings) main.innerHTML = leagueStandingsPage(params);
   else if (path === routes.users) main.innerHTML = usersPage();
   else if (path === routes.pickems) main.innerHTML = pickemsPage();
   else if (path === routes.func) main.innerHTML = funcPage();
   else if (path === routes.wheel) main.innerHTML = wheelPage();
+  else if (path === '/wheel/aggregate-byot') main.innerHTML = aggregateByotPage();
   else if (path === routes.contact) main.innerHTML = contactPage();
   else if (path === routes.privacy) main.innerHTML = privacyPage();
   else if (path === routes.account) main.innerHTML = accountPage();
   else if (path === routes.ufb) main.innerHTML = ufbPage();
   else if (path === routes.admin) main.innerHTML = adminPage();
   else main.innerHTML = homePage();
-  document.querySelectorAll('.main-nav > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path || (new URL(a.href).pathname === '/arcade' && path.startsWith('/arcade/'))));
+  document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
+  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
+  document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
+  if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
+  bindLeagueExplorer();
+  if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();
+  if(typeof hydratePlayerPhotos==='function')hydratePlayerPhotos();
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();
   renderAggregateByotBoard();
   hydrateUsersDirectory();
   hydrateHomeCalendar();
-  window.scrollTo(0,0);
+  window.scrollTo({ ...scrollPosition, behavior: 'instant' });
 }
 
 function randomLocation() { return locations[Math.floor(Math.random() * locations.length)]; }
@@ -964,7 +1237,7 @@ document.querySelectorAll('.nav-group').forEach(group => {
 });
 document.querySelector('#reroll-location').addEventListener('click', setLocation);
 function setTheme(theme) {
-  const validTheme = ['classic','dark','vintage'].includes(theme) ? theme : 'classic';
+  const validTheme = ['classic','dark','vintage'].includes(theme) ? theme : 'dark';
   document.documentElement.dataset.theme = validTheme;
   localStorage.setItem('ufl-theme', validTheme);
   document.querySelectorAll('[data-theme-choice]').forEach(button => {

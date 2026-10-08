@@ -1,0 +1,14 @@
+name = "unc-ufl-match-bridge"
+main = "index.mjs"
+compatibility_date = "2026-10-02"
+workers_dev = false
+preview_urls = false
+
+[vars]
+UFL_GUILD_ID = "1520080337806299181"
+EA_API_BASE_URL = "https://proclubs-api.onrender.com/api"
+
+[[d1_databases]]
+binding = "BOT_DB"
+database_name = "unc-futbol-bot"
+database_id = "9882207f-a8b0-4be9-a387-bd3c04a53500"
