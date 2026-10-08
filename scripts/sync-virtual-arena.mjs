@@ -63,7 +63,13 @@ async function buildSeason(config) {
     pageProps(config, 'matches'), pageProps(config, 'standings'), pageProps(config, 'teams'), pageProps(config, 'stats', { allowMissing: true })
   ]);
   const seasonBase = `${BASE}/competitions/${config.competitionId}/seasons/${config.seasonId}`;
-  const teamRows = teamProps.teams?.data || [];
+  const teamRows = [...(teamProps.teams?.data || [])];
+  const lastTeamPage=Number(teamProps.teams?.last_page||1);
+  if(!Number.isInteger(lastTeamPage)||lastTeamPage<1||lastTeamPage>100)throw new Error('Invalid VA team pagination');
+  for(let page=2;page<=lastTeamPage;page++){
+    const more=await pageProps(config,`teams?page=${page}`);
+    teamRows.push(...(more.teams?.data||[]));
+  }
   const usedKeys = new Set();
   const keysByName = new Map();
   const ensureTeamKey = (name, abbreviation = '') => {
@@ -76,9 +82,13 @@ async function buildSeason(config) {
   const teams = Object.fromEntries(teamRows.map(row => [ensureTeamKey(row.name, row.team?.abbr), [row.name, row.image]]));
   const teamDetails = teamRows.map(row => ({
     key: ensureTeamKey(row.name, row.team?.abbr),
+    teamId: row.team?.id ?? row.participant_id ?? null,
+    participantId: row.id,
+    registered: true,
     name: row.name,
     abbreviation: row.team?.abbr || ensureTeamKey(row.name),
     logo: row.image,
+    cover: row.team?.cover_display || null,
     url: row.url,
     rosterSize: row.users_count ?? null,
     stats: row.stats || {}
@@ -148,6 +158,20 @@ async function buildSeason(config) {
   };
 }
 
+// A provider disappearance is not authorization to delete a UFL team/page.
+// Keep prior entries in the directory, but not in the current registration count.
+function retainExistingTeams(current, previous) {
+  if (!previous) return current;
+  const ids = new Set(current.teamDetails.map(team => team.teamId).filter(Boolean));
+  for (const [key, team] of Object.entries(previous.teams || {})) {
+    const detail = previous.teamDetails?.find(row => row.key === key);
+    if (current.teams[key] || (detail?.teamId && ids.has(detail.teamId))) continue;
+    current.teams[key] = team;
+    if (detail) current.teamDetails.push({ ...detail, registered: false });
+  }
+  return current;
+}
+
 const archivedSeason = JSON.parse(await readFile('pickems-app/season-data.json', 'utf8'));
 archivedSeason.key = 's1-6v6';
 archivedSeason.division = '6v6';
@@ -162,8 +186,16 @@ if (syncResults.every(result => result.status === 'rejected')) {
   throw new Error(`All Virtual Arena divisions failed: ${syncResults.map(result => result.reason.message).join('; ')}`);
 }
 const liveSeasons = await Promise.all(syncResults.map(async (result, index) => {
-  if (result.status === 'fulfilled') return result.value;
   const config = seasons[index];
+  if (result.status === 'fulfilled') {
+    let previous;
+    try { previous = JSON.parse(await readFile(`pickems-app/seasons/${config.key}.json`, 'utf8')); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    if (previous && (previous.competitionId !== config.competitionId || previous.seasonId !== config.seasonId)) {
+      throw new Error(`Refusing to merge a mismatched snapshot for ${config.key}`);
+    }
+    return retainExistingTeams(result.value, previous);
+  }
   console.warn(`::warning::${config.key} refresh failed; retaining last good snapshot. ${result.reason.message}`);
   const previous = JSON.parse(await readFile(`pickems-app/seasons/${config.key}.json`, 'utf8'));
   if (previous.competitionId !== config.competitionId || previous.seasonId !== config.seasonId) {

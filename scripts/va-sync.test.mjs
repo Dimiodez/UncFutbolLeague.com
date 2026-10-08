@@ -24,8 +24,8 @@ const recoverySource=completeSource.slice(completeSource.indexOf('const syncResu
 function recover({allFail=false,wrongPrevious=false}={}) {
   const context=vm.createContext({console:{warn(){}},seasons:[{key:'six',competitionId:1,seasonId:2},{key:'ten',competitionId:2,seasonId:4}],buildSeason:async config=>{
     if(config.key==='ten'||allFail) throw new Error('VA unavailable');
-    return {...config,fresh:true};
-  },readFile:async()=>JSON.stringify({key:'ten',competitionId:2,seasonId:wrongPrevious?3:4,retained:true})});
+    return {...config,fresh:true,teams:{},teamDetails:[]};
+  },retainExistingTeams:(current)=>current,readFile:async path=>JSON.stringify(path.includes('six')?{competitionId:1,seasonId:2}:{key:'ten',competitionId:2,seasonId:wrongPrevious?3:4,retained:true})});
   return vm.runInContext(`(async()=>{${recoverySource};return liveSeasons;})()`,context);
 }
 test('one failed division retains its snapshot while the other refreshes',async()=>{
@@ -36,4 +36,12 @@ test('one failed division retains its snapshot while the other refreshes',async(
 test('all feeds failing or a mismatched backup never publish replacements',async()=>{
   await assert.rejects(recover({allFail:true}),/All Virtual Arena divisions failed/);
   await assert.rejects(recover({wrongPrevious:true}),/mismatched snapshot/);
+});
+
+test('a removed VA entry remains available without being marked currently registered',()=>{
+  const run=setup(200,{});
+  const result=run(`retainExistingTeams({teams:{NEW:['New','']},teamDetails:[{key:'NEW',teamId:2}]},{teams:{OLD:['Old',''],LEGACY:['Legacy','']},teamDetails:[{key:'OLD',teamId:2},{key:'LEGACY',teamId:3}]})`);
+  assert.ok(result.teams.LEGACY);
+  assert.equal(result.teamDetails.find(team=>team.key==='LEGACY').registered,false);
+  assert.equal(result.teams.OLD,undefined,'a renamed entry is not duplicated');
 });

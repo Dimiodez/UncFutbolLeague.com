@@ -2,6 +2,28 @@
  * Source: https://ufl-simple-site.web.app/ · observed 2026-10-02.
  * The source's first 10v10 season belongs to UFL Season 2.
  */
+// Reviewed VA registrations -> stable existing UFL pages. Never infer player identity
+// from a renamed team. Old VA abbreviations continue to resolve through aliases.
+const leagueOfficialClubLinks = {
+  '6v6': {
+    ITA:{teamId:25,key:'ITA'}, LA:{teamId:24,key:'LA'},
+    FCB:{teamId:5,key:'club-1790623010463'},
+    PUM:{teamId:7,key:'club-1790182560035'},
+    DRU:{teamId:8,key:'club-1790181684396-429'},
+    TK:{teamId:23,key:'club-1790181828884'},
+    PHN:{teamId:18,key:'club-1790182556439'},
+    ROM:{teamId:16,key:'ROM'}, TLC:{teamId:14,key:'TLC'}
+  },
+  '10v10': {
+    MAY:{teamId:19,key:'club-1790120967830'},
+    RM:{teamId:22,key:'club-1790121392083'},
+    PALA:{teamId:20,key:'PALA'},
+    TK:{teamId:11,key:'club-1790121397312'},
+    TFC:{teamId:17,key:'TFC'},
+    ACM:{teamId:21,key:'club-1790121273837'},
+    NOB:{teamId:15,key:'NOB'}
+  }
+};
 const leagueProvisionalSeasons = {
   "6v6": {
     "clubs": [

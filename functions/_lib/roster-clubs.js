@@ -2,6 +2,14 @@
 export const ROSTER_CLUBS = {
   "6v6": [
     {
+      "key": "ITA",
+      "name": "UFL Italia"
+    },
+    {
+      "key": "LA",
+      "name": "UFL LA FC"
+    },
+    {
       "key": "PHN",
       "name": "Place Holder Name"
     },
@@ -31,29 +39,29 @@ export const ROSTER_CLUBS = {
     },
     {
       "key": "club-1790182560035",
-      "name": "UFL Pumas"
+      "name": "UFL Pumas UNAM"
     },
     {
       "key": "club-1790182556439",
-      "name": "UFL Ripp and the Rippettes"
+      "name": "UFL Rippettes"
     },
     {
       "key": "club-1790181828884",
-      "name": "UFL Tabasco Kids"
+      "name": "UFL Ta6ascoKids"
     }
   ],
   "10v10": [
     {
       "key": "PALA",
-      "name": "UFL Palace"
+      "name": "Palace"
     },
     {
       "key": "club-1790121397312",
-      "name": "UFL Tabasco Kids"
+      "name": "UFL TabascoKids"
     },
     {
       "key": "TFC",
-      "name": "UFL Timbers FC"
+      "name": "UFL Timbers"
     },
     {
       "key": "club-1790121273837",
@@ -61,7 +69,7 @@ export const ROSTER_CLUBS = {
     },
     {
       "key": "NOB",
-      "name": "UFL Newell's Old Boys"
+      "name": "UFL Newell's OB"
     },
     {
       "key": "club-1790120967830",
@@ -69,7 +77,7 @@ export const ROSTER_CLUBS = {
     },
     {
       "key": "club-1790121392083",
-      "name": "UFL Real Madrid"
+      "name": "Real Madrid"
     }
   ]
 };

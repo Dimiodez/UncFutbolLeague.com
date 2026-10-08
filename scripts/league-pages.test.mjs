@@ -10,6 +10,23 @@ vm.runInContext(read('pickems-app/season-data.js'),context);
 vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
 
+test('all 16 VA registrations resolve to club pages while every provisional team stays',()=>{
+  for(const [division,count] of [['6v6',9],['10v10',7]]){
+    const query=`season=2&division=${division}`;
+    const view=render(`leagueViewContext(new URLSearchParams('${query}'))`);
+    assert.equal(view.season.teamDetails.filter(team=>team.registered!==false).length,count);
+    assert.equal(new Set(view.season.teamDetails.map(team=>team.key)).size,count);
+    for(const club of view.provisional.clubs) assert.ok(view.season.teams[club.key],club.name);
+    for(const key of Object.keys(view.clubAliases)){
+      const html=render(`leagueClubProfile('${key}',new URLSearchParams('${query}'))`);
+      assert.doesNotMatch(html,/Club not found/);
+      assert.match(html,/VA registered/);
+    }
+  }
+  assert.equal(render("leagueViewContext(new URLSearchParams('season=2&division=6v6')).players.length"),51);
+  assert.equal(render("leagueViewContext(new URLSearchParams('season=2&division=10v10')).players.length"),65);
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
