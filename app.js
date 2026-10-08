@@ -814,7 +814,43 @@ function arcadeCreatorCredits(html, creators = {'Cleat Arcade':'Dimiodez','Loose
 }
 function mountainArcadePage() {
   const card = '<a class="card arcade-game-card" href="/arcade/mountain-mayhem" data-link><img src="/mountain-app/assets/mountain-mayhem-cover-v1.png" alt="Mountain Mayhem pixel-art cover: the referee chases Schwein through flying soccer balls and salmon" width="1536" height="1024"><span class="season-chip season-chip-live">10 levels · Mountain chase</span><h3>Mountain Mayhem</h3><p>Chase Schwein to the summit. Dodge soccer balls, salmon, Bruce, and Bizzie—and deliver the red card.</p><strong>Play Mountain Mayhem →</strong></a>';
-  return arcadeCreatorCredits(arcadePage().replace('</div></section>', `${card}</div></section>`));
+  const invitation = '<aside class="arcade-create-callout" aria-label="Community game submissions"><div><span class="section-kicker">Made by the community</span><h3>Your idea could be next.</h3><p>Pitch a game or share something you have built for the UFL Arcade.</p></div><a class="button button-primary" href="/arcade/submit" data-link>Want to add your own game?</a></aside>';
+  return arcadeCreatorCredits(arcadePage().replace('</div></section>', `${card}</div>${invitation}</section>`));
+}
+
+function arcadeSubmissionPage() {
+  return `<section class="section arcade-submissions">
+    <a class="arcade-back-link" href="/arcade" data-link>Back to Arcade</a>
+    <span class="section-kicker">Community creators</span>
+    <h2>Want to add your own game?</h2>
+    <p class="section-intro">Have an idea or a game ready to share? Message <strong>@dimio11 on Discord</strong>. You do not need to be a developer to get involved.</p>
+    <div class="arcade-submission-grid">
+      <article class="card"><span class="section-kicker">Pitch an idea</span><h3>Tell me what you want to play</h3>
+        <p>Send @dimio11 a short description of your idea, how it would play, and what would make it fun for the UFL community. Sketches, examples, or a quick mockup are welcome.</p>
+        <p>Dimiodez may be able to help turn it into a game, depending on the idea and available time. A suggestion is welcome, but it is not a promise that it will be built.</p>
+      </article>
+      <article class="card"><span class="section-kicker">Build your own</span><h3>Create it, then share it</h3>
+        <p>Use the tools you enjoy. Codex can help with coding, and GitHub is a useful place to keep and share your project. Neither is required.</p>
+        <p>Make a browser-playable game with clear controls. Aim for desktop and mobile support, and keep the first version self-contained without its own login, payments, or tracking.</p>
+        <p>Send @dimio11 a GitHub repository link or a source-code ZIP. Include the project files, not the hidden .git folder. If the repository is private, arrange reviewer access first.</p>
+      </article>
+    </div>
+    <aside class="arcade-leaderboard-note"><span class="section-kicker">A little friendly competition</span><h3>Give players a reason to come back</h3>
+      <p>Most arcade games should have a leaderboard: it keeps them fun, engaging, and just a little competitive. Think about a clear personal best—highest score, fastest time, or longest survival—and explain how it is earned.</p>
+      <p>You do not need to build a separate account system. We can review how an approved game could connect to UFL's existing login and leaderboards. Scores will need validation before they count on an official board.</p>
+    </aside>
+    <article class="card arcade-submission-checklist"><span class="section-kicker">Before you send it</span><h3>Your submission checklist</h3>
+      <ul>
+        <li>Game title, a short description, and the creator name you want credited.</li>
+        <li>A repository link or source-code ZIP, plus instructions for running and building the game.</li>
+        <li>A playable preview if available, controls, and any known bugs or device limitations.</li>
+        <li>A cover image or screenshot, and credits and permission details for artwork, music, fonts, and other assets.</li>
+        <li>Your leaderboard idea and an explanation of scoring or win conditions.</li>
+      </ul>
+      <p>Do not include passwords, API keys, tokens, or other private information.</p>
+    </article>
+    <div class="arcade-review-note"><h3>Review first. Publish after approval.</h3><p>Every submission is reviewed and tested before publishing, including security, asset permissions, performance, controls, and mobile usability. Changes may be requested, and submission does not guarantee publication. Approved games will show their creator credit in the Arcade.</p><p><strong>Ready? Send your idea or submission to @dimio11 on Discord.</strong></p></div>
+  </section>`;
 }
 
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
@@ -1131,6 +1167,7 @@ function render() {
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = mountainArcadePage();
+  else if (path === '/arcade/submit') main.innerHTML = arcadeSubmissionPage();
   else if (path === '/arcade/mountain-mayhem') main.innerHTML = '<nav class="arcade-return" aria-label="Game navigation"><a class="button button-primary" href="/arcade" data-link>← Back to Arcade</a></nav><section class="integrated-app arcade-host" aria-label="Mountain Mayhem"><iframe class="integrated-app-frame" src="/mountain-app/" title="Mountain Mayhem mountain chase game" scrolling="no"></iframe></section>';
   else if (path === routes.utility) main.innerHTML = utilityHubPage();
   else if (path === routes.fun) main.innerHTML = funPage();
@@ -1165,7 +1202,7 @@ function render() {
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
   const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
-  if (path === '/arcade' || path.startsWith('/arcade/')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
+  if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
   bindLeagueExplorer();
