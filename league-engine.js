@@ -10,6 +10,8 @@ export function validateTeamRules(values){
 }
 export function validateScheduleSettings(settings){
  settings=validateTeamRules(settings);
+ const byePolicy=settings.byePolicy??'split';
+ if(!['split','fullNight'].includes(byePolicy))throw Error('Choose split byes or a full-night double bye.');
  const interval=Number(settings.repeatWeeks??1),weekday=Number(settings.weekday),spacing=Number(settings.spacingMinutes);
  if(!Number.isInteger(interval)||interval<1||interval>4)throw Error('Repeat games every 1–4 weeks.');
  if(!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(spacing)||spacing<15||spacing>180)throw Error('Choose a valid matchnight and 15–180 minutes between games.');
@@ -31,7 +33,7 @@ export function validateScheduleSettings(settings){
   if(window.type==='registration'&&window.to>=settings.startDate)throw Error('Registration must end before the league start date.');
   if(window.type==='transfer'&&window.from<settings.startDate)throw Error('Midseason transfers must start on or after the league start date.');
  }
- return {...settings,repeatWeeks:interval,breaks,windows};
+ return {...settings,byePolicy,repeatWeeks:interval,breaks,windows};
 }
 export function leagueWindowState(window,timeZone,now=Date.now()){
  const end=new Date(window.to+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+1);
@@ -88,7 +90,21 @@ export function buildLeagueSchedule(settings){
   }
   rounds.push(fixtures);rotation.splice(1,0,rotation.pop());
  }
- const allRounds=[...rounds,...rounds.map(fixtures=>fixtures.map(game=>({home:game.away,away:game.home})))];
+ let allRounds=[...rounds,...rounds.map(fixtures=>fixtures.map(game=>({home:game.away,away:game.home})))];
+ if(teams.length%2&&settings.byePolicy==='fullNight'){
+  if(teams.length<5)throw Error('A full-night bye needs at least 5 teams so everyone else has two different opponents. Use split byes for 3 teams.');
+  // Rotations of this graceful cycle cover every pair twice, omitting one
+  // team per night. Alternating edges give two clash-free kickoff slots.
+  const half=(teams.length-1)/2,graceful=[];
+  for(let low=1,high=half;low<=high;low++,high--){graceful.push(low);if(low!==high)graceful.push(high);}
+  const cycle=[...graceful,...[...graceful].reverse().map(value=>value+half)],seen=new Set();allRounds=[];
+  for(let bye=0;bye<teams.length;bye++){
+   const slots=[[],[]];
+   cycle.forEach((value,i)=>{const a=teams[(value+bye)%teams.length],b=teams[(cycle[(i+1)%cycle.length]+bye)%teams.length],key=[a.id,b.id].sort().join('|');
+    const ordered=a.id<b.id?[a,b]:[b,a],home=seen.has(key)?ordered[1]:ordered[0],away=seen.has(key)?ordered[0]:ordered[1];seen.add(key);slots[i%2].push({home,away});});
+   allRounds.push(...slots);
+  }
+ }
  const fixtures=[],nights=[],skippedDates=[];
  const scheduledDates=[],cursor=new Date(startDate),calendarBreaks=[...settings.breaks,...settings.windows.filter(window=>['bye','holiday','cup','break'].includes(window.type)).map(window=>({from:window.from,to:window.to,reason:window.name})),...(settings.pageContent?.finals?.cupPlans||[]).flatMap(cup=>cup.fixtures.map(f=>({from:f.date,to:f.date,reason:cup.name})))];
  for(let attempt=0;scheduledDates.length<Math.ceil(allRounds.length/2);attempt++){
@@ -103,7 +119,8 @@ export function buildLeagueSchedule(settings){
   const timestamp=zonedTimestamp(localDate,settings.time,settings.timeZone)+(round%2)*spacing*60000;
   for(const game of allRounds[round]){const fixture={id:`fixture-${fixtures.length+1}`,week:night+1,round:round+1,date:localDate,startsAt:timestamp,home:game.home,away:game.away,status:'scheduled'};fixtures.push(fixture);nights[night].fixtures.push(fixture);}
  }
- return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,skippedDates,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
+ for(const night of nights)night.byes=teams.filter(team=>!night.fixtures.some(f=>f.home.id===team.id||f.away.id===team.id));
+ return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,skippedDates,warnings:teams.length%2?[settings.byePolicy==='fullNight'?'Full-night double byes: each team has one night off and two different opponents on every playing night. Byes award no points or appearances.':'An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
 }
 export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[],timeZone}={}){
  const home=String(fixture.home.eaClubId||''),away=String(fixture.away.eaClubId||'');

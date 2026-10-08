@@ -5,12 +5,13 @@ import {registrationAllowed} from './league-engine.js';
 import {acceptedAppearances,leagueStandings} from './league-results.js';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
+import {renderRegistrationInvites} from './league-registration-invites.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
 const LEAGUE_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
-export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onReport}){
+export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onReport}){
  const settings=draft.settings,content=settings.pageContent?.[tab]||{};
  let awardController=null;
  const guard=action=>{
@@ -47,6 +48,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  if(tab==='teams'){
   body.append(card.querySelector('.workshop-registration'));
   renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
+  renderRegistrationInvites({host:admin,draft,onSettings,onImport:onImportTeam,onReport});
  }
  if(tab==='matches'){
   renderSeasonCalendar({host:body,draft});
@@ -57,7 +59,11 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   if(draft.scheduleGenerated)note('Only explicitly accepted scheduled fixtures count in this local preview. EA candidates remain uncounted until reviewed. Exact positions missing from EA cannot qualify for TOTW automatically.');
  }
  if(tab==='finals')renderCupPlanner({host:body,draft,allDrafts,onSettings});
- if(tab==='videos')for(const video of (content.videos||(content.links||[]).map((url,index)=>({title:`Video ${index+1}`,url})))){const p=document.createElement('p'),a=document.createElement('a');p.className='video-card';a.href=video.url;a.textContent=video.title;a.target='_blank';a.rel='noopener noreferrer';p.append(a);body.append(p);}
+ if(tab==='videos'){
+  body.replaceChildren();const directory=document.createElement('section');directory.innerHTML=`<p>Choose a team to find its streamers.</p><label>Team<select><option value="">All teams</option>${settings.teams.map(t=>`<option value="${escape(t.id)}">${escape(t.name)}</option>`).join('')}</select></label><div data-streamers></div>`;
+  const render=()=>{const teamId=directory.querySelector('select').value,list=directory.querySelector('[data-streamers]');list.replaceChildren();for(const stream of content.streams||[]){const team=settings.teams.find(t=>t.id===stream.teamId);if(!team||teamId&&teamId!==team.id)continue;const card=document.createElement('article');card.className='rule-card';const title=document.createElement('h3'),name=document.createElement('p'),link=document.createElement('a');title.textContent=stream.name;name.textContent=team.name;link.href=stream.url;link.textContent='Open stream ↗';link.target='_blank';link.rel='noopener noreferrer';card.append(title,name,link);list.append(card);}if(!list.children.length){const p=document.createElement('p');p.textContent='No streamers added for this selection yet.';list.append(p);}};directory.querySelector('select').onchange=render;render();body.append(directory);
+  if(content.videos?.length||content.links?.length)note('Previous video links are preserved in your draft backup. Add team-linked streamers using Manage stream links.');
+ }
  if(tab==='standings'){
   note(`Regular-time win/loss: ${content.win??3}/${content.loss??0} points · Extra-time win/loss: ${content.extraTimeWin??2}/${content.extraTimeLoss??1} · No draws. Accepted local test fixtures only.`);
   const table=document.createElement('table');table.innerHTML=`<caption>Local preview standings · ${(draft.acceptedResults||[]).length} accepted fixtures</caption><thead><tr><th>Team</th><th>P</th><th>W</th><th>ET W</th><th>ET L</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead><tbody>${leagueStandings(draft).map(t=>`<tr><td>${escape(t.name)}</td><td>${t.played}</td><td>${t.regularWins}</td><td>${t.extraWins}</td><td>${t.extraLosses}</td><td>${t.regularLosses}</td><td>${t.goalsFor}</td><td>${t.goalsAgainst}</td><td>${t.points}</td></tr>`).join('')}</tbody>`;body.append(table);

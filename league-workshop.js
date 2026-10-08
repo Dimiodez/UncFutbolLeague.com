@@ -5,6 +5,7 @@ import {renderLeaguePage} from './league-page.js';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
+import {registrationRequest} from './league-registration-invites.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css';document.head.append(uxStyle);
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
@@ -27,6 +28,8 @@ form.elements.startDate.value=new Date().toLocaleDateString('en-CA',{timeZone:'A
 bindTeamRuleControls(form);
 form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom')form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';});
 function settingsFrom(values){
+ if(values?.inviteBoardId!==undefined&&(typeof values.inviteBoardId!=='string'||!/^[A-Za-z0-9_-]{24}$/.test(values.inviteBoardId)))throw Error('Invalid shared registration board.');
+ if(values?.managerInviteUrl!==undefined&&(typeof values.managerInviteUrl!=='string'||!/^https:\/\/(?:[a-zA-Z0-9-]+\.)?ufl-major-update-preview\.pages\.dev\/league-join\.html#[A-Za-z0-9_-]{43}$/.test(values.managerInviteUrl)))throw Error('Invalid preview registration invitation URL.');
  if(!values||typeof values.season!=='string'||typeof values.league!=='string'||!values.season.trim()||!values.league.trim()||values.season.length>80||values.league.length>80)throw Error('Enter a season and league name.');
  if(!Array.isArray(values.teams)||values.teams.some(team=>!team.name?.trim()||team.name.length>80||!/^team-\d+$/.test(team.id)||team.eaClubId&&!/^\d{1,20}$/.test(team.eaClubId)))throw Error('Use valid team names and numeric EA club IDs.');
  const ids=values.teams.map(team=>team.eaClubId).filter(Boolean);if(new Set(ids).size!==ids.length)throw Error('Two teams cannot use the same EA club within this league.');
@@ -55,7 +58,13 @@ function renderDrafts(){
   if(!registrationAllowed(draft)){section.querySelectorAll('form input,form button').forEach(control=>control.disabled=true);if(draft.registrationOpen)section.querySelector('h3').textContent='Teams · Outside registration window';}
  });
  root.querySelectorAll('[data-register]').forEach(teamForm=>teamForm.addEventListener('submit',event=>{event.preventDefault();try{const index=Number(teamForm.dataset.register);drafts[index]=registerLeagueTeam(drafts[index],Object.fromEntries(new FormData(teamForm)));renderDrafts();message.textContent='Team registered in this league draft. Save your drafts to keep the change.';}catch(error){message.textContent=error.message;}}));
- root.querySelectorAll('[data-registration]').forEach(button=>button.addEventListener('click',()=>{const index=Number(button.dataset.registration),draft=drafts[index];if(!draft.registrationOpen&&draft.scheduleGenerated&&!confirm('Reopen registration and clear this draft schedule? Teams are preserved. No live results are affected.'))return;drafts[index]=draft.registrationOpen?{...draft,registrationOpen:false}:createLeagueDraft(draft.settings);review.hidden=true;renderDrafts();message.textContent='Draft registration updated. Save your drafts to keep the change.';}));
+ root.querySelectorAll('[data-registration]').forEach(button=>button.addEventListener('click',async()=>{
+  const index=Number(button.dataset.registration),draft=drafts[index];if(!draft.registrationOpen&&draft.scheduleGenerated&&!confirm('Reopen registration and clear this draft schedule? Teams are preserved. No live results are affected.'))return;
+  button.disabled=true;try{
+   if(draft.settings.inviteBoardId)await registrationRequest({action:'update',boardId:draft.settings.inviteBoardId,settings:draft.settings,open:!draft.registrationOpen});
+   drafts[index]=draft.registrationOpen?{...draft,registrationOpen:false}:createLeagueDraft(draft.settings);review.hidden=true;persistDrafts();renderDrafts();pageReport('Registration updated and saved, including the shared invitation when connected.');
+  }catch(error){button.disabled=false;pageReport(`Registration was not changed: ${error.message}`);}
+ }));
  root.querySelectorAll('[data-generate]').forEach(button=>button.addEventListener('click',()=>{try{const index=Number(button.dataset.generate);drafts[index]=buildLeagueSchedule(drafts[index].settings);renderDrafts();message.textContent='Draft fixtures generated. Nothing was published or counted as an official result.';}catch(error){message.textContent=error.message;}}));
  renderAdministration({drafts,seasons,competitions,updateLeague,addSeason,addCompetition,report:text=>message.textContent=text});
  root.querySelectorAll('[data-registration],[data-generate]').forEach(button=>{const index=Number(button.dataset.registration??button.dataset.generate);if(drafts[index].acceptedResults?.length){button.disabled=true;button.title='Accepted results exist. Export a backup before starting a new season draft.';}});
@@ -73,6 +82,13 @@ function renderDrafts(){
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Download draft file in All leagues & seasons to move them to another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
+   onImportTeam:(team,{checkOnly=false}={})=>{
+    if(drafts[index].settings.teams.some(t=>t.remoteTeamId===team.id))return;
+    let next=registerLeagueTeam(drafts[index],{name:team.name,eaClubId:team.ea_id});
+    if(checkOnly)return;
+    const added=next.settings.teams.at(-1);added.remoteTeamId=team.id;added.managerDiscordId=team.manager_id;
+    drafts[index]=next;persistDrafts();renderDrafts();
+   },
    onTeamRemove:id=>{drafts[index]=removeDraftTeam(drafts[index],id);renderDrafts();persistDrafts();pageReport('Team removed from this draft league only. No live data was changed. Restore an exported draft backup to recover it.');},onReport:pageReport});
  }
  enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost});
@@ -80,7 +96,7 @@ function renderDrafts(){
 function updateLeague(index,values){
  const settings=settingsFrom(values),draft=drafts[index];
  if(drafts.some((other,otherIndex)=>otherIndex!==index&&other.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&other.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season.');
- const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
+ const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.byePolicy??'split',value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
  const calendarChanged=calendarKey(settings)!==calendarKey(draft.settings);
  if(calendarChanged&&draft.acceptedResults?.length)throw Error('Accepted test results exist. Export a backup and create a new league draft instead of rebuilding its fixtures.');
  const updated=draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
@@ -88,6 +104,7 @@ function updateLeague(index,values){
  // Keep competition references consistent when a draft league is renamed or moved.
  competitions=competitions.map(cup=>cup.season===draft.settings.season&&cup.league===draft.settings.league?{...cup,season:settings.season,league:settings.league}:cup);
  drafts[index]=updated;review.hidden=true;renderDrafts();message.textContent='League calendar updated. Save drafts to keep this change.';
+ if(settings.inviteBoardId)registrationRequest({action:'update',boardId:settings.inviteBoardId,settings,open:updated.registrationOpen}).then(()=>pageReport('League settings and shared invitation updated.')).catch(error=>pageReport(`Local settings saved; shared invitation was not updated: ${error.message}. Use Teams → Update invite settings before sharing.`));
 }
 function addSeason(value){
  const name=String(value||'').trim();

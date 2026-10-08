@@ -1,6 +1,6 @@
 import {validateAwardBoard,awardBoardKey} from './league-awards-model.js';
 import {validateCupPlans} from './league-cups.js';
-export const LEAGUE_TABS=[['overview','Overview'],['rules','Rules'],['videos','Videos'],['teams','Teams'],['players','Players'],['matches','Matches'],['finals','Finals'],['stats','Stats'],['standings','Standings'],['awards','TOTW / TOTS']];
+export const LEAGUE_TABS=[['overview','Overview'],['rules','Rules'],['videos','Stream Links'],['teams','Teams'],['players','Players'],['matches','Matches'],['finals','Finals'],['stats','Stats'],['standings','Standings'],['awards','TOTW / TOTS']];
 export const STAT_METRICS=[['goals','Goals'],['assists','Assists'],['rating','Average rating'],['shots','Shots'],['passes','Passing success'],['tackles','Successful tackles'],['interceptions','Interceptions'],['saves','Saves']];
 export const TIEBREAKERS=[['goalDifference','Goal difference'],['goalsFor','Goals scored'],['wins','Wins'],['headToHead','Head-to-head']];
 export const FORMATIONS=['2-2-1','3-1-1','2-1-2','2-2-2','3-2-1','4-3-2','4-2-3','3-4-2','4-3-3','4-2-3-1','4-4-2','3-5-2','Custom'];
@@ -16,6 +16,13 @@ export function updatePageSettings(settings,section,values){
  if(text.length>10000)throw Error('Keep section text under 10,000 characters.');
  const content={text};
  if(section==='videos'){
+  if(values.streams!==undefined){
+   if(!Array.isArray(values.streams)||values.streams.length>120)throw Error('Add up to 120 stream links.');
+   content.streams=values.streams.map(stream=>{
+    if(!stream||typeof stream.name!=='string'||!stream.name.trim()||stream.name.length>120||typeof stream.url!=='string'||!settings.teams.some(t=>t.id===stream.teamId))throw Error('Select a registered team and give each streamer a name and HTTPS link.');
+    return {teamId:stream.teamId,name:stream.name.trim(),url:https(stream.url.trim())};
+   });
+  }
   const videos=values.videos??String(values.links??'').split('\n').map(line=>line.trim()).filter(Boolean).map(url=>({title:'Video',url}));
   if(!Array.isArray(videos)||videos.length>20)throw Error('Add up to 20 videos.');
   content.videos=videos.map(video=>{if(!video||typeof video.title!=='string'||!video.title.trim()||video.title.length>120||typeof video.url!=='string')throw Error('Give each video a title and link.');return {title:video.title.trim(),url:https(video.url.trim())};});
@@ -72,5 +79,7 @@ export function editDraftTeam(draft,id,values){
 export function removeDraftTeam(draft,id){
  if(draft.scheduleGenerated)throw Error('Reopen registration before removing teams so fixtures can be regenerated.');
  if(!draft.settings.teams.some(team=>team.id===id))throw Error('Team not found.');
- return {...draft,settings:{...draft.settings,teams:draft.settings.teams.filter(team=>team.id!==id)}};
+ const settings={...draft.settings,teams:draft.settings.teams.filter(team=>team.id!==id)};
+ if(settings.pageContent?.videos?.streams)settings.pageContent={...settings.pageContent,videos:{...settings.pageContent.videos,streams:settings.pageContent.videos.streams.filter(s=>s.teamId!==id)}};
+ return {...draft,settings};
 }
