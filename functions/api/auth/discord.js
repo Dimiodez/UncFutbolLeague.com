@@ -35,5 +35,5 @@ export async function onRequestPost({ request, env }) {
     scope: 'identify',
     state
   });
-  return new Response(null, { status: 303, headers: { location: authorize.toString(), 'set-cookie': oauthCookie(await signLoginState(state,env)), 'cache-control': 'no-store' } });
+  return json({authorizeUrl:authorize.toString()},200,{'set-cookie':oauthCookie(await signLoginState(state,env))});
 }

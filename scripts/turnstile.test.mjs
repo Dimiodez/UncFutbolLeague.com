@@ -58,8 +58,8 @@ test('only server-verified tokens issue signed state and redirect to official Di
       return Response.json({success:true,hostname:host,action:'discord-login'});
     };
     const response=await onRequestPost({request:request(),env:environment()});
-    assert.equal(response.status,303);
-    const redirect=new URL(response.headers.get('location'));assert.equal(redirect.origin,'https://discord.com');
+    assert.equal(response.status,200);
+    const redirect=new URL((await response.json()).authorizeUrl);assert.equal(redirect.origin,'https://discord.com');
     assert.equal(redirect.searchParams.get('scope'),'identify');
     const cookie=decodeURIComponent(response.headers.get('set-cookie').split(';')[0].split('=')[1]);
     assert.equal(await verifyLoginState(cookie,redirect.searchParams.get('state'),environment()),true);
