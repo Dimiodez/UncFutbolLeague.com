@@ -58,6 +58,17 @@ test('owner-confirmed Inter Miami rebrand keeps two players and stadium under LA
   assert.equal(Object.keys(view.season.teams).length,9);
 });
 
+test('uploaded team images flow through club pages, directories and team cards without changing archives',()=>{
+  vm.runInContext(app.slice(app.indexOf('function teamsPage('),app.indexOf('function schedulesPage(')),context);
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:ROM':{logo:'/api/team-media/images/test-logo',image:'/api/team-media/images/test-stadium'}}}");
+  try{
+    for(const fn of ['leagueClubsPage','teamsPage'])assert.match(render(`${fn}(new URLSearchParams('season=2&division=6v6'))`),/\/api\/team-media\/images\/test-logo/);
+    const html=render("leagueClubProfile('ROM',new URLSearchParams('season=2&division=6v6'))");
+    assert.match(html,/test-stadium/);assert.match(html,/test-logo/);
+    assert.doesNotMatch(render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))"),/team-media\/images/);
+  }finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");

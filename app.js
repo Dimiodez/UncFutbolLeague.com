@@ -300,7 +300,9 @@ function teamsPage(params) {
       : emptyState('House teams were not part of Season 1', 'House teams are a Season 2 community program, so there is no Season 1 roster to archive.');
     return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`, 'House Teams', data.intro) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div>${content}</section>`;
   }
-  const season = leagueSeasonFor(division, selectedSeason.id);
+  const sourceSeason = leagueSeasonFor(division, selectedSeason.id);
+  const clubContext = typeof leagueViewContext==='function'?leagueViewContext(params):null;
+  const season = sourceSeason&&clubContext?{...sourceSeason,teamDetails:sourceSeason.teamDetails?.map(team=>({...team,logo:leagueClubVisual(clubContext.clubAliases?.[team.key]||team.key,clubContext.season).logo||team.logo}))}:sourceSeason;
   const cards = season?.teamDetails?.map(team => `<a class="league-team-card" href="${escapeHtml(team.url)}" target="_blank" rel="noopener noreferrer"><img src="${escapeHtml(team.logo)}" alt="${escapeHtml(team.name)} crest" loading="lazy"><div><span>${escapeHtml(team.abbreviation)}</span><h2>${escapeHtml(team.name)}</h2><p>${team.stats.wins ?? 0}W · ${team.stats.draws ?? 0}D · ${team.stats.losses ?? 0}L${team.rosterSize!==null?` · ${team.rosterSize} players`:''}</p></div><b>View team ↗</b></a>`).join('');
   const sourceGroup = selectedSeason.id === '1' ? (division === '6v6' ? virtualArena['6v6Season1'] : null) : virtualArena[division];
   const source = sourceGroup?.teams;
@@ -1166,6 +1168,7 @@ function render() {
   bindLeagueExplorer();
   if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();
   if(typeof hydratePlayerPhotos==='function')hydratePlayerPhotos();
+  if(typeof hydrateTeamMedia==='function')hydrateTeamMedia();
   hydrateAccount();
   hydratePublishedEvents();
   hydrateByotPage();

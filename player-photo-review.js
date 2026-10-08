@@ -14,7 +14,11 @@ async function hydratePlayerPhotos(){
   if(!location.pathname.startsWith('/players/'))return;
   const art=main?.querySelector('[data-player-photo-id]');if(!art)return;
   const playerId=art.dataset.playerPhotoId;
-  const auth=await getAuthState();if(!art.isConnected||!['owner','admin'].includes(auth.user?.role))return;
+  const auth=await getAuthState();if(!art.isConnected||!auth.user)return;
+  let access;
+  try{const response=await fetch(`/api/admin/player-photos?playerId=${encodeURIComponent(playerId)}`,{credentials:'same-origin',cache:'no-store'});if(!response.ok)return;access=await response.json();}catch{return;}
+  if(!art.isConnected)return;
+  if(!access.canReview){managerPlayerPhotoForm(main,playerId,access);return;}
   const root=document.createElement('section');root.className='player-photo-review card';
   root.innerHTML=`<span class="section-kicker">Admin / owner only</span><h2>Player photo review</h2><p>Upload an original privately, then crop and approve a 512 × 640 PNG. The existing public portrait stays unchanged until approval. This formats a photo; it does not generate an illustrated character or remove its background.</p><form class="photo-upload-form"><label>Original photo <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required></label><button class="button button-primary">Upload for review</button><small>JPEG, PNG or WebP · up to 5 MB</small></form><p class="photo-status" role="status" aria-live="polite"></p><div class="photo-pending-list"></div><div class="photo-editor" hidden><h3>Format portrait</h3><p>Drag freely to move. Use scale to zoom. Guides are not included in the final image.</p><div class="photo-editor-layout"><div class="photo-canvas-wrap"><canvas width="512" height="640" aria-label="Portrait cropping preview"></canvas><div class="photo-guides" aria-hidden="true"><span>+</span></div></div><div class="photo-controls"><label>Scale <input type="range" min="0.05" max="5" step="0.01" value="1" data-photo-scale></label><label>Horizontal <input type="number" step="1" data-photo-x></label><label>Vertical <input type="number" step="1" data-photo-y></label><label>Background <input type="color" value="#091a2e" data-photo-bg></label><button type="button" class="button button-secondary" data-photo-reset>Reset framing</button><button type="button" class="button button-primary" data-photo-approve>Approve & publish portrait</button><button type="button" class="button button-secondary" data-photo-reject>Reject pending photo</button><button type="button" class="button button-secondary" data-photo-close>Close editor</button></div></div></div>`;
   main.querySelector('.league-explorer')?.append(root);
@@ -67,4 +71,46 @@ async function hydratePlayerPhotos(){
     if(!selected||busy)return;lock(true);try{const form=new FormData();form.set('action','reject');await request(`/api/admin/player-photos/${selected.id}`,{method:'POST',body:form});await load();editor.hidden=true;message('Marked rejected. Existing public portrait is unchanged.');}catch(error){message(error.message,true);}finally{lock(false);}
   });
   try{await load();}catch(error){message(error.message,true);}
+}
+
+function managerPlayerPhotoForm(main,playerId,access){
+ const root=document.createElement('section');root.className='player-photo-review card';
+ root.innerHTML='<span class="section-kicker">Team manager</span><h2>Submit player photo</h2><p>Photos remain private until an owner or administrator formats and approves them. The current public portrait stays unchanged.</p><form class="photo-upload-form"><label>Player photo<input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required></label><button class="button button-primary">Submit for approval</button><small>JPEG, PNG or WebP · up to 5 MB</small></form><p class="photo-status" role="status" aria-live="polite"></p>';
+ main.querySelector('.league-explorer')?.append(root);
+ const status=root.querySelector('.photo-status');
+ status.textContent=`${access.photos.filter(photo=>photo.status==='pending').length} photos awaiting staff review.`;
+ root.querySelector('form').addEventListener('submit',async event=>{
+  event.preventDefault();const button=root.querySelector('button'),form=new FormData(event.currentTarget);form.set('playerId',playerId);button.disabled=true;
+  try{const response=await fetch('/api/admin/player-photos',{method:'POST',credentials:'same-origin',body:form});const data=await response.json();if(!response.ok)throw new Error(data.error||'Upload failed.');status.textContent='Submitted privately. An owner or administrator must approve it before publication.';event.target.reset();}catch(error){status.textContent=error.message;}finally{button.disabled=false;}
+ });
+}
+
+const leagueTeamMediaState={teams:{},loadedAt:0};
+async function hydrateTeamMedia(){
+ const main=document.querySelector('main');
+ if(Date.now()-leagueTeamMediaState.loadedAt>15000){
+  leagueTeamMediaState.loadedAt=Date.now();
+  try{const response=await fetch('/api/team-media',{cache:'no-store'});if(response.ok){const data=await response.json();if(JSON.stringify(data.teams)!==JSON.stringify(leagueTeamMediaState.teams)){leagueTeamMediaState.teams=data.teams||{};if(main===document.querySelector('main'))render();return;}}}catch{/* Preserve current artwork when storage is unavailable. */}
+ }
+ if(!location.pathname.startsWith('/clubs/'))return;
+ const params=new URLSearchParams(location.search),context=leagueViewContext(params);if(context.selected.id!=='2')return;
+ const requested=decodeURIComponent(location.pathname.slice('/clubs/'.length)),team=context.clubAliases?.[requested]||requested,division=context.division;
+ const host=main?.querySelector('.league-explorer');if(!host||host.querySelector('[data-team-media-panel]'))return;
+ const auth=await getAuthState();if(!auth.user||!host.isConnected)return;
+ const endpoint=`/api/team-media/manage?division=${encodeURIComponent(division)}&team=${encodeURIComponent(team)}`;
+ let access;try{const response=await fetch(endpoint,{credentials:'same-origin',cache:'no-store'});if(!response.ok)return;access=await response.json();}catch{return;}
+ if(!host.isConnected||host.querySelector('[data-team-media-panel]'))return;
+ const root=document.createElement('section');root.className='player-photo-review card';root.dataset.teamMediaPanel='';
+ root.innerHTML='<span class="section-kicker">Team image management</span><h2>Logo & stadium</h2><p>Logos and stadium photos publish immediately as uploaded. Player photos require owner/admin approval on the player’s page.</p><form class="photo-upload-form" data-team-upload><label>Image type<select name="kind"><option value="logo">Club logo</option><option value="stadium">Stadium photo</option></select></label><label>Choose image<input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required></label><button class="button button-primary">Upload & publish</button><small>JPEG, PNG or WebP · up to 5 MB</small></form><p class="photo-status" role="status" aria-live="polite"></p><div data-team-managers></div>';
+ host.append(root);const status=root.querySelector('.photo-status'),managerRoot=root.querySelector('[data-team-managers]');
+ const request=async form=>{form.set('division',division);form.set('team',team);const response=await fetch('/api/team-media/manage',{method:'POST',credentials:'same-origin',body:form});const data=await response.json();if(!response.ok)throw new Error(data.error||'Unable to update team images.');return data;};
+ root.querySelector('[data-team-upload]').addEventListener('submit',async event=>{event.preventDefault();const button=event.target.querySelector('button');button.disabled=true;const form=new FormData(event.target);form.set('action','upload');try{await request(form);leagueTeamMediaState.loadedAt=0;await hydrateTeamMedia();}catch(error){status.textContent=error.message;}finally{button.disabled=false;}});
+ function managers(){
+  if(!access.canManageManagers)return;
+  managerRoot.innerHTML=`<h3>Team manager image access</h3><p>Grant access to an existing signed-in member for this team and division only. This allows logo/stadium changes and player photo submissions, not player approval or administrator powers.</p><form class="photo-upload-form" data-grant-manager><label>Member<select name="discordId" required><option value="">Choose member…</option>${access.users.map(user=>`<option value="${escapeHtml(user.discord_id)}">${escapeHtml(user.display_name)} · ${escapeHtml(user.username)}</option>`).join('')}</select></label><button class="button button-secondary">Grant team access</button></form>${access.managers.map(manager=>`<p>${escapeHtml(manager.display_name)} <button type="button" class="tab" data-revoke-manager="${escapeHtml(manager.discord_id)}">Remove image access</button></p>`).join('')}`;
+ }
+ async function updateManagers(form){try{await request(form);const response=await fetch(endpoint,{credentials:'same-origin',cache:'no-store'});if(!response.ok)throw new Error('Reload to see manager access.');access=await response.json();managers();status.textContent='Team image access updated.';}catch(error){status.textContent=error.message;}}
+ managerRoot.addEventListener('submit',async event=>{event.preventDefault();const form=new FormData(event.target);form.set('action','grant');await updateManagers(form);});
+ managerRoot.addEventListener('click',async event=>{const button=event.target.closest('[data-revoke-manager]');if(!button)return;button.disabled=true;const form=new FormData();form.set('action','revoke');form.set('discordId',button.dataset.revokeManager);await updateManagers(form);button.disabled=false;});
+ managers();
 }

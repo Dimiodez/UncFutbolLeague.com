@@ -1,16 +1,21 @@
 import {json} from '../../_lib/auth.js';
 import {staffGuard,resolvePhotoPlayer,photoForm,validatePhoto} from '../../_lib/player-photos.js';
+import {canSubmitPlayer,mediaStaff} from '../../_lib/team-media.js';
 export async function onRequestGet({request,env}){
-  const guard=await staffGuard(request,env);if(guard.response)return guard.response;
+  const guard=await staffGuard(request,env,false,true);if(guard.response)return guard.response;
   const player=await resolvePhotoPlayer(env,new URL(request.url).searchParams.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
+  if(!await canSubmitPlayer(env,guard.actor,player.identity))return json({error:'Team manager access required for this player.'},403);
   const rows=await env.DB.prepare('SELECT id,player_id,status,created_at,reviewed_at,original_deleted_at FROM player_photo_submissions WHERE identity_id=? ORDER BY created_at DESC,id DESC LIMIT 50').bind(player.identity).all();
-  return json({photos:rows.results.map(row=>({...row,originalUrl:row.original_deleted_at?null:`/api/admin/player-photos/${row.id}/image`}))});
+  const canReview=mediaStaff(guard.actor);
+  return json({canReview,photos:rows.results.map(row=>({...row,originalUrl:!canReview||row.original_deleted_at?null:`/api/admin/player-photos/${row.id}/image`}))});
 }
 export async function onRequestPost({request,env}){
-  const guard=await staffGuard(request,env,true);if(guard.response)return guard.response;
+  const guard=await staffGuard(request,env,true,true);if(guard.response)return guard.response;
   let form,photo;try{form=await photoForm(request);}catch(error){return json({error:error.message},400);}
   const player=await resolvePhotoPlayer(env,form.get('playerId'));if(!player)return json({error:'Unknown directory player.'},404);
+  if(!await canSubmitPlayer(env,guard.actor,player.identity))return json({error:'Team manager access required for this player.'},403);
   if(form.get('action')==='cleanup'){
+    if(!mediaStaff(guard.actor))return json({error:'Only owners and administrators can remove reviewed photos.'},403);
     // Only reviewed originals for this exact player identity are eligible. Pending uploads stay private.
     const originals=await env.DB.prepare("SELECT id,original_key FROM player_photo_submissions WHERE identity_id=? AND status IN ('approved','rejected') AND original_deleted_at IS NULL").bind(player.identity).all();
     const retired=await env.DB.prepare('SELECT object_key FROM player_photo_retired_assets WHERE identity_id=? AND object_key NOT IN (SELECT portrait_key FROM player_photo_publications)').bind(player.identity).all();

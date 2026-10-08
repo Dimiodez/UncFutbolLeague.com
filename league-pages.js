@@ -77,9 +77,10 @@ function leagueClubVisual(key, season) {
   if(!key)return {name:'Free agent',logo:'/assets/ufl-mark.webp',image:'/assets/ufl-banner.jpg',location:'Player pool',copy:'Available for team assignment.'};
   const [name,logo]=leagueTeam(key,season);
   const current=season?.provisionalClubs?.find(c=>c.key===key);
+  const media=season?.uflSeason===2&&typeof leagueTeamMediaState!=='undefined'?leagueTeamMediaState.teams?.[`${season.division}:${key}`]||{}:{};
   const registered=season?.uflSeason===2?season?.teamDetails?.find(c=>c.key===key&&c.registered!==false):null;
-  if(registered) return {name,logo:logo||current?.logo||'/assets/ufl-mark.webp',image:current?.image||registered.cover||'/assets/ufl-banner.jpg',location:'Season 2 · VA registered',copy:'Registered for this division on Virtual Arena. Website player assignments remain staff-managed while official rosters are verified.',officialUrl:registered.url};
-  if(current) return {name,logo:current.logo,image:current.image,location:'Season 2 · Provisional club',copy:'Meet the current squad. Club and player listings are from our collaborator’s roster; official VA registration will be linked as clubs register.'};
+  if(registered) return {name,logo:logo||current?.logo||'/assets/ufl-mark.webp',image:current?.image||registered.cover||'/assets/ufl-banner.jpg',location:'Season 2 · VA registered',copy:'Registered for this division on Virtual Arena. Website player assignments remain staff-managed while official rosters are verified.',officialUrl:registered.url,...media};
+  if(current) return {name,logo:current.logo,image:current.image,location:'Season 2 · Provisional club',copy:'Meet the current squad. Club and player listings are from our collaborator’s roster; official VA registration will be linked as clubs register.',...media};
   const artwork=leagueArtwork.find(row=>row[0]===key&&name===leagueTeam(key,leagueSeasons['s1-6v6'])[0]);
   return {name,logo:artwork?`/assets/league/${artwork[1]}-crest.png`:logo,image:artwork?`/assets/league/${artwork[1]}.jpg`:'/assets/ufl-banner.jpg',location:artwork?.[2]||'UFL clubhouse',copy:artwork?.[3]||'Meet the squad. Club artwork and roster details will be added as the season takes shape.'};
 }

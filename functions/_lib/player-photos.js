@@ -10,9 +10,9 @@ export async function resolvePhotoPlayer(env,id){
  const player=await env.DB.prepare('SELECT p.id,p.discord_name,a.canonical_id FROM league_players p LEFT JOIN league_player_aliases a ON a.alias_id=p.id WHERE p.id=?').bind(id).first();
  return player?{id:player.id,name:player.discord_name,identity:player.canonical_id||player.id}:null;
 }
-export async function staffGuard(request,env,write=false){
+export async function staffGuard(request,env,write=false,allowManagerSubmission=false){
   const actor=await getSession(request,env);
-  if(!actor||!['owner','admin'].includes(actor.role))return {response:json({error:'Administrator access required.'},403)};
+  if(!actor||(!allowManagerSubmission&&!['owner','admin'].includes(actor.role)))return {response:json({error:'Administrator access required.'},403)};
   if(write&&!sameOrigin(request))return {response:json({error:'Invalid request origin.'},403)};
   if(!env.PLAYER_PHOTOS)return {response:json({error:'Private photo storage is not enabled yet.'},503)};
   if(write){const limit=await consumeRateLimit(env,{scope:'player-photo-write',subject:actor.discord_id,limit:20,windowSeconds:3600});if(!limit.success)return {response:json({error:'Photo review limit reached. Try again later.'},429,{'retry-after':String(limit.retryAfter)})};}
