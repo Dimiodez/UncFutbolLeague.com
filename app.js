@@ -835,6 +835,20 @@ function arcadeSubmissionPage() {
         <p>Send @dimio11 a GitHub repository link or a source-code ZIP. Include the project files, not the hidden .git folder. If the repository is private, arrange reviewer access first.</p>
       </article>
     </div>
+    <article class="card arcade-submission-checklist"><span class="section-kicker">New to making games?</span><h3>Getting started with Codex and GitHub</h3>
+      <ol class="arcade-start-steps">
+        <li><strong>Start small.</strong> Pick one simple game idea, its controls, and how a run ends. Decide what players will try to beat: a score, a time, or a survival record.</li>
+        <li><strong>Create a GitHub repository.</strong> Use a separate repository for your game so its source code, assets, and change history stay together. A private repository is fine; arrange access with @dimio11 when you submit. Never put secrets in it, even if it is private.</li>
+        <li><strong>Open a local copy in Codex.</strong> Clone or download your repository to your computer, then open that project folder in Codex. GitHub Desktop is an optional way to clone, commit, and push without using terminal commands.</li>
+        <li><strong>Build a playable first version.</strong> Describe your idea to Codex and ask it to work in that repository. Start with movement, scoring, restart, and clear instructions. Ask for a README explaining how to run and build the game. Add artwork and polish after the basic game works.</li>
+        <li><strong>Playtest and improve.</strong> Follow the README to run it locally. Check keyboard or mouse controls, touch controls on a phone, scoring, game over, and restarting. Ask Codex to help fix problems one at a time.</li>
+        <li><strong>Save your progress to GitHub.</strong> Review your changes, commit them with a short description, and push them to your repository after each useful milestone. Saving files on your computer does not automatically back them up to GitHub. Keep source files and required assets; leave out secrets, dependency folders such as node_modules, and temporary files.</li>
+        <li><strong>Send it for review.</strong> Message @dimio11 with your repository link, a preview if you have one, and the checklist below. If the repository is private, give the reviewer access. A source-code ZIP is an alternative, but GitHub is preferred for keeping updates organized.</li>
+      </ol>
+      <p><strong>A starter prompt you can give Codex:</strong></p>
+      <blockquote class="arcade-starter-prompt">Help me build a small browser game in this repository using HTML, CSS, and JavaScript. My idea is [describe your game]. Include desktop and touch controls, a score or timer, game-over and restart screens, and a README with local run instructions. Keep it self-contained without accounts, payments, tracking, or secrets. Start with a playable prototype and explain how I can test it and commit and push my changes to GitHub.</blockquote>
+      <p>You do not have to use Codex, and no experience is required to send a game idea. Other development tools are welcome too.</p>
+    </article>
     <aside class="arcade-leaderboard-note"><span class="section-kicker">A little friendly competition</span><h3>Give players a reason to come back</h3>
       <p>Most arcade games should have a leaderboard: it keeps them fun, engaging, and just a little competitive. Think about a clear personal best—highest score, fastest time, or longest survival—and explain how it is earned.</p>
       <p>You do not need to build a separate account system. We can review how an approved game could connect to UFL's existing login and leaderboards. Scores will need validation before they count on an official board.</p>

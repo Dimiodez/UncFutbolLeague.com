@@ -17,5 +17,6 @@ test('all four arcade cards credit their creator directly below the title',()=>{
  const submission=vm.runInContext('arcadeSubmissionPage()',context);
  for(const required of ['@dimio11','Pitch an idea','Build your own','Codex','GitHub','source-code ZIP','leaderboard','Review first. Publish after approval.','API keys','creator credit'])assert.ok(submission.includes(required),required);
  assert.ok(!submission.includes('<form'),'Submission is reviewed through Discord, not an unrequested upload form');
+ for(const step of ['Create a GitHub repository','Open a local copy in Codex','GitHub Desktop','commit and push','does not automatically back them up to GitHub','starter prompt'])assert.ok(submission.includes(step),step);
  assert.ok(source.includes("else if (path === '/arcade/submit') main.innerHTML = arcadeSubmissionPage();"));
 });
