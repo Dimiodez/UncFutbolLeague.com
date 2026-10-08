@@ -52,10 +52,10 @@ const leagueProvisionalSeasons = {
         "image": "/assets/league/club-1790814116306.jpg"
       },
       {
-        "id": "club-1790181832909",
-        "name": "UFL Palermo",
+        "id": "ITA",
+        "name": "UFL Italia",
         "art": true,
-        "key": "club-1790181832909",
+        "key": "ITA",
         "logo": "/assets/league/club-1790181832909-crest.png",
         "image": "/assets/league/club-1790181832909.jpg"
       },
@@ -104,7 +104,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790190796702",
         "name": "afoe000",
-        "club": "club-1790181832909",
+        "club": "ITA",
         "number": "",
         "portrait": false
       },
@@ -199,7 +199,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790190806748",
         "name": "DTXtre-",
-        "club": "club-1790181832909",
+        "club": "ITA",
         "number": "",
         "portrait": false
       },
@@ -234,7 +234,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790190778704-703",
         "name": "Goose",
-        "club": "club-1790181832909",
+        "club": "ITA",
         "number": "",
         "portrait": true
       },
@@ -283,7 +283,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790190802026",
         "name": "KovacsKitchen",
-        "club": "club-1790181832909",
+        "club": "ITA",
         "number": "",
         "portrait": true
       },
@@ -332,7 +332,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790190810867",
         "name": "MiaSanMJ",
-        "club": "club-1790181832909",
+        "club": "ITA",
         "number": "",
         "portrait": false
       },

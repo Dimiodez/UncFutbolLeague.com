@@ -10,7 +10,7 @@ vm.runInContext(read('pickems-app/season-data.js'),context);
 vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
 
-test('all 16 VA registrations resolve to club pages while every provisional team stays',()=>{
+test('all 16 VA registrations resolve to club pages while every current provisional team stays',()=>{
   for(const [division,count] of [['6v6',9],['10v10',7]]){
     const query=`season=2&division=${division}`;
     const view=render(`leagueViewContext(new URLSearchParams('${query}'))`);
@@ -25,6 +25,22 @@ test('all 16 VA registrations resolve to club pages while every provisional team
   }
   assert.equal(render("leagueViewContext(new URLSearchParams('season=2&division=6v6')).players.length"),51);
   assert.equal(render("leagueViewContext(new URLSearchParams('season=2&division=10v10')).players.length"),65);
+});
+
+test('owner-confirmed Palermo rebrand keeps five players and stadium under Italia only',()=>{
+  const view=render("leagueViewContext(new URLSearchParams('season=2&division=6v6'))");
+  assert.equal(view.season.teams['club-1790181832909'],undefined);
+  assert.equal(view.season.teams.ITA[0],'UFL Italia');
+  assert.equal(view.players.filter(p=>p.club==='ITA').length,5);
+  assert.equal(view.players.filter(p=>p.club==='club-1790181832909').length,0);
+  const html=render("leagueClubProfile('club-1790181832909',new URLSearchParams('season=2&division=6v6'))");
+  assert.match(html,/UFL Italia/);
+  assert.match(html,/\/assets\/league\/club-1790181832909.jpg/);
+  for(const name of ['afoe000','DTXtre-','Goose','KovacsKitchen','MiaSanMJ']) assert.ok(html.includes(name),name);
+  assert.doesNotMatch(html,/UFL Palermo/);
+  const allowlist=read('functions/_lib/roster-clubs.js');
+  assert.doesNotMatch(allowlist,/club-1790181832909/);
+  assert.match(allowlist,/"ITA"/);
 });
 
 test('linked dual-division players show both team logos without changing their rosters',()=>{

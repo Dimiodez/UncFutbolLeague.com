@@ -54,6 +54,8 @@ function leagueViewContext(params) {
     return [key,reviewed?.key||exact?.key||(matches.length===1?matches[0].key:key)];
   }));
   const mappedKey=key=>aliases[key]||key;
+  // Owner-confirmed rebrand. Keep old bookmarks working without a second team.
+  if(provisional&&division==='6v6') aliases['club-1790181832909']='ITA';
   const season=provisional?{...official,
     teams:{...Object.fromEntries(provisional.clubs.map(c=>[c.key,[c.name,c.logo]])),...Object.fromEntries(Object.entries(official?.teams||{}).map(([key,team])=>[mappedKey(key),[team[0],team[1]||provisional.clubs.find(c=>c.key===mappedKey(key))?.logo||'/assets/ufl-mark.webp']]))},
     teamDetails:official?.teamDetails?.map(t=>({...t,key:mappedKey(t.key)})),
