@@ -47,6 +47,16 @@ Next: durable season/league/member model with one active team per player per lea
 
 ## VA replacement acceptance checklist
 
+### League page screens — 8 October 2026
+
+Creating a league now opens its full tabbed page with zero teams: Overview, Rules, Videos, Teams, Players, Matches, Finals, Stats, Standings and Team of the Week. Existing leagues have an “Open league tabs” button. The page’s explicit local-preview publication state is independent of team count, registration and fixture generation. Publishing/unpublishing and section edits save the version-3 draft on this device; all-league export/import preserves them. This is NOT shared/public publishing, not a public invitation URL and not authenticated owner/admin enforcement. Those remain pre-launch prerequisites.
+
+Overview retains playing rules/calendar editing; Matches includes dated windows, breaks and generated fixtures/EA candidate review; Teams retains registration and adds draft name/EA-ID editing with duplicate checks. Team editing is blocked after fixture generation until registration is reopened, avoiding stale fixture identities. Rules, introductions, video links, player eligibility notes, finals notes, statistics policy, standings points policy and award criteria can be edited in their own tabs. Video links require HTTPS; imported content is validated before rendering. Stats/standings/players/finals/awards explicitly identify unfinished pipelines and do not invent results, player counts, rankings or awards. Points policy is saved only and not applied to results yet. Badges and portraits are unchanged.
+
+The EA matching contract remains exact scheduled opponents plus kickoff window and unique EA match ID, with ambiguous candidates held for review. A ten-team league must not ingest all club games or count unrelated opponents/friendlies. Automatic result acceptance, idempotent scheduled ingestion, corrections and accepted-results-only aggregates still require implementation and end-to-end tests. Club linking alone does not activate that pipeline.
+
+Verification: all four Node test suites passed (league engine, playing rules, preview connections and league page model). Isolated deployed-browser QA created/published a zero-team league, saved rules, registered and renamed a team afterward, changed points policy and verified reload persistence. Added two further teams, closed registration and generated fixtures; all ten tabs rendered. The user's existing stable-preview tab and its drafts were not reloaded or changed.
+
 ### Draft league administration calendar
 
 The workshop now groups all locally drafted seasons, leagues and competition calendar entries in one overview. Seasons may be created before leagues or teams. Existing league cards expose editable start date, weekday, kickoff, timezone, 1–4-week recurrence and game spacing. Inclusive date-range breaks skip matching recurring nights and push the preserved round-robin matchups into subsequent slots. Adding a cup/playoff calendar draft can reserve its dates across one league or every current league in that season; it does not create brackets or results. Future leagues must have those breaks configured separately. Removing a calendar break explicitly reopens that slot; cup dates remain visible as metadata.
