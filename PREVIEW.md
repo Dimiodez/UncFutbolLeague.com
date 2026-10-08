@@ -157,6 +157,13 @@ Do not treat the workshop as migration-ready until the complete operational flow
 
 Implementation priority updated by the user on 8 October 2026: finish formats, league creation and team-management screens first. Keep their data model compatible with later shared records, but defer bot–website registration integration until the final pre-launch phase. The full acceptance checklist still applies before replacing VA or publishing live; finishing screens alone does not make the system launch-ready.
 
+### Final pre-launch: player stream identity and status
+
+- Pending implementation: attach each Twitch channel to the canonical player identity once, not a typed streamer name or a single league/team entry. Show the correct stream link on the player stats/profile page and derive team stream directories from current league memberships.
+- Show a non-interactive status indicator in a top corner of the player portrait: green LIVE when broadcasting, red OFFLINE when confirmed not broadcasting. The status badge is not a separate link; clicking the portrait continues to open the player's stats/profile page, where the stream link is available.
+- Configure Twitch API credentials server-side and verify automatic status refresh (target 1–2 minutes), including live → offline transitions. If the API fails or status is unknown, show Status unavailable or omit the indicator, never a fabricated OFFLINE status.
+- Before publishing live, test the same player across 6v6, 10v10, team transfers and future seasons; verify profile links, portrait navigation and badges on desktop/mobile without overwriting portraits. This is a final acceptance item, not functionality already connected by the preview's Stream Links editor.
+
 ### Final pre-launch: bot–website registration connection
 
 - Connect bot `/register` and `/linkclub` to the same canonical league/team records used by the website, with verified numeric EA club ID plus platform/game context.
