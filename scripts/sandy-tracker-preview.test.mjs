@@ -43,6 +43,24 @@ test('partnerships are calculated from shared detailed match appearances',()=>{
   for(const title of ['Sandcastle Architects','Lock the Cabin','Two Uncs, One Mission','Always on the Teamsheet'])assert.match(source,new RegExp(title));
 });
 
+test('attacking partnerships count team goals only in shared matches for both house clubs',()=>{
+  const context={};runInNewContext(`${source}\nthis.pairs=sbPairData;this.renderPairs=sbPartnerships;this.setClub=slug=>sandyTrackerState.club=houseTrackerClubs[slug];`,context);
+  for(const [slug,clubId] of [['fc-sandy-bums','43521'],['fc-mountains','96510']]){
+    context.setClub(slug);
+    const player=id=>({id,name:id,human:true,stats:['FWD',8,99,0,99]});
+    const match=(id,gf,ga,ids)=>({match_id:id,goals_for:gf,goals_against:ga,details:{clubs:[{id:clubId,players:ids.map(player)}]}});
+    const matches=[match('1',2,0,['a','b']),match('2',3,1,['a','b']),match('3',0,1,['a','b']),match('4',4,0,['a','b']),match('5',1,2,['a','b']),match('not-shared',100,0,['a'])];
+    const pair=context.pairs(matches).attack;
+    assert.equal(pair.teamGoals,10);assert.equal(pair.matches,5);assert.equal(pair.wins,3);
+    const rendered=context.renderPairs({matches});
+    assert.ok(rendered.includes('10 team goals'));
+    assert.ok(rendered.includes('whole team in matches both players appeared in'));
+    assert.ok(!rendered.includes(' G + A'));
+    const higherTeamScore=[...matches,match('6',6,0,['c','d']),match('7',6,0,['c','d'])];
+    assert.equal(context.pairs(higherTeamScore).attack.teamGoals,12,'Ranking follows team goals, not individual contributions or appearance count');
+  }
+});
+
 test('club honors include month filtering and the Sandiest Bum headline award',()=>{
   assert.match(source,/function sbHonorData\(players,totalMatches\)/);
   assert.match(source,/id="house-honors-month"/);

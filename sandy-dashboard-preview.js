@@ -50,9 +50,9 @@ function sbPairData(matches){
     const players=(club.players||[]).filter(player=>player.human!==false&&sbPlayerId(player));
     for(let i=0;i<players.length;i++)for(let j=i+1;j<players.length;j++){
       const ordered=[players[i],players[j]].sort((a,b)=>sbPlayerId(a).localeCompare(sbPlayerId(b))),key=ordered.map(sbPlayerId).join('|');
-      const row=pairs.get(key)||{players:ordered.map(player=>({id:sbPlayerId(player),name:player.name||sbPlayerId(player)})),matches:0,wins:0,contributions:0,defensiveMatches:0,cleanSheets:0};
+      const row=pairs.get(key)||{players:ordered.map(player=>({id:sbPlayerId(player),name:player.name||sbPlayerId(player)})),matches:0,wins:0,teamGoals:0,defensiveMatches:0,cleanSheets:0};
       row.players=ordered.map(player=>({id:sbPlayerId(player),name:player.name||sbPlayerId(player)}));row.matches++;if(sbResult(match)==='W')row.wins++;
-      row.contributions+=ordered.reduce((sum,player)=>sum+sbNum(player.stats?.[2])+sbNum(player.stats?.[4]),0);
+      row.teamGoals+=sbNum(match.goals_for);
       if(ordered.every(player=>['DEF','GK'].includes(sbPlayerPosition(player)))){row.defensiveMatches++;if(sbNum(match.goals_against)===0)row.cleanSheets++;}
       pairs.set(key,row);
     }
@@ -60,7 +60,7 @@ function sbPairData(matches){
   const rows=[...pairs.values()].map(row=>({...row,winRate:Math.round(row.wins/Math.max(row.matches,1)*100),cleanSheetRate:Math.round(row.cleanSheets/Math.max(row.defensiveMatches,1)*100)}));
   const best=(eligible,sort)=>[...rows].filter(eligible).sort(sort)[0]||null;
   return {
-    attack:best(row=>row.matches>=2,(a,b)=>b.contributions-a.contributions||b.matches-a.matches),
+    attack:best(row=>row.matches>=2,(a,b)=>b.teamGoals-a.teamGoals||b.matches-a.matches),
     defense:best(row=>row.defensiveMatches>=2,(a,b)=>b.cleanSheetRate-a.cleanSheetRate||b.defensiveMatches-a.defensiveMatches),
     winners:best(row=>row.matches>=3,(a,b)=>b.winRate-a.winRate||b.wins-a.wins||b.matches-a.matches),
     together:best(row=>row.matches>=1,(a,b)=>b.matches-a.matches||b.wins-a.wins)
@@ -165,10 +165,10 @@ function sbPairCard(kicker,title,pair,value,detail){
 function sbPartnerships(data){
   const pairs=sbPairData(data.matches);
   return `<div class="club-panel-heading"><div><span class="section-kicker">Better together</span><h2>UFL Partnerships</h2><p>These honors use matches where both players appeared for ${sandyTrackerState.club.name}.</p></div><span class="season-chip season-chip-live">${data.matches.length} matches</span></div><div class="house-pair-grid">
-    ${sbPairCard('Attacking partnership','Sandcastle Architects',pairs.attack,pair=>`${pair.contributions} G + A`,pair=>`${pair.matches} matches together · ${pair.wins} wins`)}
+    ${sbPairCard('Attacking partnership','Sandcastle Architects',pairs.attack,pair=>`${pair.teamGoals} team goals`,pair=>`${pair.matches} matches together · ${pair.wins} wins. Goals scored by the whole team in matches both players appeared in—not their individual goals + assists.`)}
     ${sbPairCard('Defensive partnership','Lock the Cabin',pairs.defense,pair=>`${pair.cleanSheetRate}% clean sheets`,pair=>`${pair.cleanSheets} clean sheets in ${pair.defensiveMatches} defensive appearances together`)}
     ${sbPairCard('Winning partnership','Two Uncs, One Mission',pairs.winners,pair=>`${pair.winRate}% win rate`,pair=>`${pair.wins} wins in ${pair.matches} matches together`)}
-    ${sbPairCard('Most experienced','Always on the Teamsheet',pairs.together,pair=>`${pair.matches} matches together`,pair=>`${pair.wins} shared wins · ${pair.contributions} combined goal contributions`)}
+    ${sbPairCard('Most experienced','Always on the Teamsheet',pairs.together,pair=>`${pair.matches} matches together`,pair=>`${pair.wins} shared wins · ${pair.teamGoals} team goals in those matches`)}
   </div><p class="house-feature-note">Partnerships require shared appearances. Defensive honors require both players to be recorded at DEF or GK.</p>`;
 }
 
