@@ -1215,7 +1215,7 @@ window.UFL_SEASONS = {
       ],
       "TK": [
         "UFL Ta6ascoKids",
-        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png"
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
       ],
       "PHN": [
         "UFL Rippettes",
@@ -1280,7 +1280,7 @@ window.UFL_SEASONS = {
         "key": "TK",
         "name": "UFL Ta6ascoKids",
         "abbreviation": "TK",
-        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791149240.png",
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
         "rosterSize": 1,
         "stats": []
@@ -1829,7 +1829,7 @@ window.UFL_SEASONS = {
         "abbreviation": "MAY",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
-        "rosterSize": 0,
+        "rosterSize": 9,
         "stats": []
       },
       {
@@ -1838,7 +1838,7 @@ window.UFL_SEASONS = {
         "abbreviation": "RM",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
         "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
-        "rosterSize": 1,
+        "rosterSize": 5,
         "stats": []
       },
       {
@@ -1856,7 +1856,7 @@ window.UFL_SEASONS = {
         "abbreviation": "T K",
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
         "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
-        "rosterSize": 6,
+        "rosterSize": 7,
         "stats": []
       },
       {

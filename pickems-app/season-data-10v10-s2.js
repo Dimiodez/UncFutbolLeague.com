@@ -51,7 +51,7 @@ window.UFL_SEASON_10V10_S2 = {
       "abbreviation": "MAY",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
-      "rosterSize": 0,
+      "rosterSize": 9,
       "stats": []
     },
     {
@@ -60,7 +60,7 @@ window.UFL_SEASON_10V10_S2 = {
       "abbreviation": "RM",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
       "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
-      "rosterSize": 1,
+      "rosterSize": 5,
       "stats": []
     },
     {
@@ -78,7 +78,7 @@ window.UFL_SEASON_10V10_S2 = {
       "abbreviation": "T K",
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
       "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
-      "rosterSize": 6,
+      "rosterSize": 7,
       "stats": []
     },
     {
