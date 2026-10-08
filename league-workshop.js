@@ -6,7 +6,9 @@ import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-mo
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
 import {registrationRequest} from './league-registration-invites.js';
+import {installWorkshopBrand} from './league-workshop-brand.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css';document.head.append(uxStyle);
+installWorkshopBrand();
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];

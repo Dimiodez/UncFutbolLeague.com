@@ -157,6 +157,10 @@ Do not treat the workshop as migration-ready until the complete operational flow
 
 Implementation priority updated by the user on 8 October 2026: finish formats, league creation and team-management screens first. Keep their data model compatible with later shared records, but defer bot–website registration integration until the final pre-launch phase. The full acceptance checklist still applies before replacing VA or publishing live; finishing screens alone does not make the system launch-ready.
 
+### UNC workspace presentation — 8 October 2026
+
+The league workshop now uses the site's crest, navy/red palette, Barlow Condensed headings, Inter forms, theme selector and responsive navigation. Guided creation, league panels and editors retain their existing behavior. Styles are scoped to this workshop; production pages, player images and the bot are unchanged. The Admin navigation is preview presentation, not a completed production admin integration. Publishing still requires the shared-storage and authorization work described above.
+
 ### Final pre-launch: player stream identity and status
 
 - Pending implementation: attach each Twitch channel to the canonical player identity once, not a typed streamer name or a single league/team entry. Show the correct stream link on the player stats/profile page and derive team stream directories from current league memberships.

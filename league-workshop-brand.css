@@ -1,0 +1,58 @@
+/* UNC admin presentation only. Keep selectors scoped away from the main site. */
+.unc-admin-preview{--admin-surface:color-mix(in srgb,var(--paper) 92%,var(--blue) 8%);--admin-raised:color-mix(in srgb,var(--paper) 85%,var(--blue) 15%);font-size:15px;line-height:1.55}
+.site-header.workshop-site-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;height:82px;gap:28px;max-width:100%}
+.workshop-site-header .brand{min-width:0}
+.workshop-site-links{display:flex;gap:24px;align-items:center;font:800 18px 'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.workshop-site-links a{color:#fff;text-decoration:none;padding:25px 0;border-bottom:3px solid transparent}
+.workshop-site-links a[aria-current]{border-color:var(--red)}.workshop-site-links a:hover{color:var(--sky)}
+.workshop-theme-label{display:flex;align-items:center;gap:8px;color:#c7d4e2;font-size:12px}
+.workshop-theme-label select{background:#10243d;color:white;border:1px solid #39516e;border-radius:5px;padding:6px 8px;font:inherit}
+.unc-workspace.workshop{max-width:1360px;padding:24px 32px;margin:0 auto 48px}
+.unc-workspace.workshop>header{margin:0 -32px 24px;padding:30px 32px 26px;border-bottom:1px solid var(--line);background:linear-gradient(100deg,var(--paper) 25%,color-mix(in srgb,var(--paper) 80%,transparent)),url('/assets/ufl-banner.jpg') center/cover}
+.unc-workspace>header>a{color:var(--muted);font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.14em;text-decoration:none}
+.unc-workspace.workshop>header h1{font:900 clamp(34px,4vw,52px)/1 'Barlow Condensed',sans-serif;letter-spacing:.01em;text-transform:uppercase;margin:6px 0}
+.unc-workspace.workshop>header h1::before{content:'';display:inline-block;width:5px;height:.78em;background:var(--red);margin-right:14px}
+.unc-workspace h2,.unc-workspace h3,.unc-workspace h4{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.025em}
+.unc-workspace h2{font-weight:800}.unc-workspace p,.unc-workspace small{line-height:1.6}
+.unc-workspace .section-kicker{color:var(--red);font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.14em}
+.unc-workspace.workshop .workshop-nav{margin:0 0 20px;gap:28px;border-bottom:1px solid var(--line);font:700 16px 'Barlow Condensed',sans-serif;letter-spacing:.04em;text-transform:uppercase}
+.unc-workspace .workshop-nav a{color:var(--muted);text-decoration:none}.unc-workspace .workshop-nav a[aria-current]{color:var(--ink);border-color:var(--red)}
+.unc-workspace .workshop-boundary,.unc-workspace.workshop>.workshop-boundary{background:var(--admin-surface);color:var(--muted);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:5px}
+.unc-workspace .workshop-boundary strong{color:var(--ink)}
+.unc-workspace .league-library-heading{margin:28px 0 18px}.unc-workspace .league-library-heading h2{font-size:32px}
+.unc-workspace #league-drafts>.league-library-card{background:var(--admin-surface);border:1px solid var(--line);border-top:3px solid var(--red);border-radius:9px;padding:24px;box-shadow:none}
+.unc-workspace #league-drafts>.league-library-card>h2{font-size:30px}
+.unc-workspace .card,.unc-workspace .rule-card,.unc-workspace .collection-edit-row,.unc-workspace .league-page-panel{background:var(--admin-surface);border-color:var(--line);color:var(--ink);box-shadow:none}
+.unc-workspace .league-card-status,.unc-workspace .league-library-heading p,.unc-workspace .league-library-filters p,.unc-workspace.workshop>header p,.unc-workspace .next-action-heading p,.unc-workspace .league-action-grid small,.unc-workspace .creation-chrome>[data-step-description],.unc-workspace .setup-note,.unc-workspace .creation-review dt,.unc-workspace .section-action-bar p,.unc-workspace .editor-group p,.unc-workspace .setting-toggle small,.unc-workspace .team-manager-list small{color:var(--muted)}
+.unc-workspace .league-card-status strong{color:var(--blue)}html[data-theme=dark] .unc-workspace .league-card-status strong{color:var(--sky)}
+.unc-workspace .season-event-tools>summary,.unc-workspace .season-event-tools>.workshop-pair,.unc-workspace .creation-card,.unc-workspace .review-heading,.unc-workspace .config-chip,.unc-workspace .tiebreak-editor li{background:var(--admin-surface)!important;border-color:var(--line);color:var(--ink);border-radius:7px}
+.unc-workspace .season-event-tools>summary span{color:var(--muted)}
+.unc-workspace.workshop input,.unc-workspace.workshop select,.unc-workspace.workshop textarea{background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px;font:400 15px/1.5 Inter,system-ui,sans-serif;padding:11px 12px;min-height:44px}
+.unc-workspace input::placeholder,.unc-workspace textarea::placeholder{color:var(--muted);opacity:.85}.unc-workspace label{color:var(--ink)}
+.unc-workspace.workshop input[type=checkbox]{width:20px;height:20px;min-height:20px;padding:0;accent-color:var(--red)}
+.unc-workspace .season-calendar,.unc-workspace .cup-planner,.unc-workspace .awards-filters,.unc-workspace .award-eligibility,.unc-workspace .award-candidates,.unc-workspace .eligibility-options label{background:var(--admin-surface);color:var(--ink);border-color:var(--line)}
+.unc-workspace .award-eligibility p,.unc-workspace .award-candidates p,.unc-workspace .awards-filters small,.unc-workspace .awards-pitch-panel>p,.unc-workspace .award-candidate small,.unc-workspace .award-candidate span{color:var(--muted)}
+.unc-workspace.workshop input:focus-visible,.unc-workspace.workshop select:focus-visible,.unc-workspace.workshop textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.unc-workspace.workshop button:where(:not(.award-slot button)),.unc-workspace .draft-file-tools>label{font:700 15px 'Barlow Condensed',sans-serif;letter-spacing:.045em;border:1px solid var(--line);border-radius:5px;padding:10px 15px;min-height:40px;background:var(--admin-raised);color:var(--ink);cursor:pointer}
+.unc-workspace.workshop button:disabled{opacity:.4;cursor:not-allowed}
+.unc-workspace.workshop button.button-primary,.unc-workspace .creation-navigation>[data-next],.unc-workspace.workshop .schedule-view-switch button[aria-pressed=true]{background:var(--red);color:#fff;border-color:var(--red)}
+.unc-workspace.workshop button:focus-visible,.unc-workspace summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.unc-workspace .creation-card{border-top:3px solid var(--red)!important;max-width:900px;width:100%;padding:28px!important}
+.unc-workspace.workshop .creation-steps button{background:transparent;border:0;border-bottom:3px solid var(--line);border-radius:0;color:var(--muted);font:600 14px Inter,sans-serif;letter-spacing:0;padding:12px 4px}
+.unc-workspace.workshop .creation-steps button[aria-current]{border-bottom-color:var(--red);color:var(--ink)}
+.unc-workspace .creation-steps button span{border-color:var(--line)}.unc-workspace .creation-steps button[aria-current] span{color:#fff}
+.unc-workspace .creation-review dl>div,.unc-workspace .creation-navigation,.unc-workspace .draft-file-tools,.unc-workspace .league-lifecycle,.unc-workspace .section-action-bar,.unc-workspace .team-manager-list article,.unc-workspace .workshop-fixture{border-color:var(--line)}
+.unc-workspace .league-page-hero,.unc-workspace.is-managing-league .league-dashboard .league-page-hero{background:var(--admin-surface);border:1px solid var(--line);border-top:3px solid var(--red);border-radius:8px;padding:22px 26px}
+.unc-workspace .league-dashboard .league-page-hero h1{font:900 40px/1.05 'Barlow Condensed',sans-serif;text-transform:uppercase;margin:8px 0}
+.unc-workspace .league-dashboard .league-page-hero>p{color:var(--muted)}
+.unc-workspace .league-dashboard>.league-page-tabs{padding:12px;background:var(--admin-surface);border:1px solid var(--line);border-radius:8px}
+.unc-workspace.workshop .league-dashboard>.league-page-tabs button{border:0;border-left:3px solid transparent;background:transparent;font-size:17px;color:var(--muted);text-transform:uppercase;padding:11px 12px}
+.unc-workspace.workshop .league-dashboard>.league-page-tabs button[aria-selected=true]{border-left-color:var(--red);background:var(--admin-raised);color:var(--ink)}
+.unc-workspace .league-lifecycle span{color:var(--muted)}.unc-workspace .league-lifecycle b{border-color:var(--line)}.unc-workspace .league-lifecycle .is-complete{color:var(--ink)}.unc-workspace .league-lifecycle .is-complete b{color:var(--good)}
+.unc-workspace.workshop .league-action-grid button{background:var(--paper);border:1px solid var(--line);border-radius:7px;padding:20px;letter-spacing:0}.unc-workspace .league-action-grid button>span{color:var(--red)}.unc-workspace .league-action-grid button>strong{font:800 23px 'Barlow Condensed',sans-serif;text-transform:uppercase}.unc-workspace .league-action-grid small{font:400 13px Inter,sans-serif}
+.unc-workspace .league-editor-dialog{background:var(--paper);border-color:var(--line);color:var(--ink)}.unc-workspace .league-editor-form header p{color:var(--muted)}.unc-workspace .editor-group,.unc-workspace .workshop-settings,.unc-workspace .league-page-panel details{border-color:var(--line)}
+.unc-workspace .league-page-panel th{font:800 16px 'Barlow Condensed',sans-serif;text-transform:uppercase;background:var(--paper)}.unc-workspace .league-page-panel th,.unc-workspace .league-page-panel td{border-color:var(--line);padding:14px;font-size:14px;vertical-align:top}.unc-workspace .workshop-fixture time{color:var(--muted)}
+.unc-workspace .workshop-warning{color:var(--champion-gold)}.unc-workspace .league-page-panel summary{font:700 20px 'Barlow Condensed',sans-serif}
+.unc-admin-preview .preview-notice{background:var(--navy);border-top:2px solid var(--red);color:#d5e0ee;box-shadow:none;font-size:12px;padding:8px 16px}
+@media(max-width:800px){.site-header.workshop-site-header{height:auto;min-height:76px;grid-template-columns:minmax(0,1fr) auto;padding:12px 18px;gap:10px 16px}.workshop-site-header .brand{font-size:17px}.workshop-site-header .brand img{width:38px;height:44px}.workshop-site-links{grid-row:2;grid-column:1/-1;gap:24px}.workshop-site-links a{padding:6px 0}.workshop-theme-label{font-size:11px;grid-column:2;grid-row:1}.unc-workspace.workshop{padding:20px 18px}.unc-workspace.workshop>header{margin:-20px -18px 20px;padding:24px 18px}.unc-workspace .league-dashboard>.league-page-tabs{padding:7px}.unc-workspace .league-dashboard .league-page-hero h1{font-size:32px}}
+@media(max-width:500px){.workshop-theme-label{font-size:0}.workshop-theme-label select{font-size:12px}.unc-workspace .creation-card{padding:18px!important}.unc-workspace.workshop .creation-steps button{font-size:11px}.unc-workspace .workshop-nav{gap:16px!important}.unc-workspace .league-dashboard .league-page-hero h1{font-size:30px}}
