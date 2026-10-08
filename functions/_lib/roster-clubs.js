@@ -30,10 +30,6 @@ export const ROSTER_CLUBS = {
       "name": "UFL Druzhba"
     },
     {
-      "key": "club-1790814116306",
-      "name": "UFL Inter Miami"
-    },
-    {
       "key": "club-1790182560035",
       "name": "UFL Pumas UNAM"
     },

@@ -43,6 +43,21 @@ test('owner-confirmed Palermo rebrand keeps five players and stadium under Itali
   assert.match(allowlist,/"ITA"/);
 });
 
+test('owner-confirmed Inter Miami rebrand keeps two players and stadium under LA FC only',()=>{
+  const view=render("leagueViewContext(new URLSearchParams('season=2&division=6v6'))");
+  assert.equal(view.season.teams['club-1790814116306'],undefined);
+  assert.equal(view.season.teams.LA[0],'UFL LA FC');
+  assert.equal(view.players.filter(p=>p.club==='LA').length,2);
+  assert.equal(view.players.filter(p=>p.club==='club-1790814116306').length,0);
+  const html=render("leagueClubProfile('club-1790814116306',new URLSearchParams('season=2&division=6v6'))");
+  assert.match(html,/UFL LA FC/);
+  assert.match(html,/\/assets\/league\/club-1790814116306.jpg/);
+  for(const name of ['Rich-1 (Gir)','tink7020']) assert.ok(html.includes(name),name);
+  assert.doesNotMatch(html,/UFL Inter Miami/);
+  assert.doesNotMatch(read('functions/_lib/roster-clubs.js'),/club-1790814116306/);
+  assert.equal(Object.keys(view.season.teams).length,9);
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");

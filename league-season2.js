@@ -44,10 +44,10 @@ const leagueProvisionalSeasons = {
         "image": "/assets/league/club-1790181684396-429.jpg"
       },
       {
-        "id": "club-1790814116306",
-        "name": "UFL Inter Miami",
+        "id": "LA",
+        "name": "UFL LA FC",
         "art": true,
-        "key": "club-1790814116306",
+        "key": "LA",
         "logo": "/assets/league/club-1790814116306-crest.png",
         "image": "/assets/league/club-1790814116306.jpg"
       },
@@ -367,7 +367,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790814959657",
         "name": "Rich-1 (Gir)",
-        "club": "club-1790814116306",
+        "club": "LA",
         "number": "",
         "portrait": false
       },
@@ -423,7 +423,7 @@ const leagueProvisionalSeasons = {
       {
         "id": "1790814944202",
         "name": "tink7020",
-        "club": "club-1790814116306",
+        "club": "LA",
         "number": "",
         "portrait": false
       },
