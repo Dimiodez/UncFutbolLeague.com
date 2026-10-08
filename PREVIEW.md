@@ -67,7 +67,15 @@ Do not treat the workshop as migration-ready until the complete operational flow
 - Season cups with knockout/random draws; later top/bottom finals and division-combination rules. Calendar/attendance integration remains optional until specified.
 - Import/reconciliation dry run against VA: identities, rosters, fixtures, results, standings and stat totals agree; permissions, rollback, backups and image preservation verified before switching the official site.
 
-Implementation order: persistent league/registration and permissions first; scheduling and accepted-result pipeline second; public views and awards third; migration rehearsal last. The initial local builder covers only draft league registration, schedules and EA candidate review.
+Implementation priority updated by the user on 8 October 2026: finish formats, league creation and team-management screens first. Keep their data model compatible with later shared records, but defer bot–website registration integration until the final pre-launch phase. The full acceptance checklist still applies before replacing VA or publishing live; finishing screens alone does not make the system launch-ready.
+
+### Final pre-launch: bot–website registration connection
+
+- Connect bot `/register` and `/linkclub` to the same canonical league/team records used by the website, with verified numeric EA club ID plus platform/game context.
+- Preserve Discord-server isolation and stable season/league/team identities; test manager permissions and duplicate prevention across both entry points.
+- Enable real shareable, revocable registration invites only after authenticated shared storage is ready, enforcing registration windows and roster limits server-side.
+- Verify that website and bot reflect each other's approved registrations and links, without overwriting live team edits, portraits or approved Maykop features.
+- Complete this connection and its end-to-end tests before publishing live. Do not prioritize implementing it ahead of the requested format/creation/team screens unless the user changes that order.
 
 ## Saved handoff — 4 October 2026
 
