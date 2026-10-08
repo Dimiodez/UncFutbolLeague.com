@@ -7,15 +7,17 @@ import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
+import {watchUnsaved} from './league-workspace-status.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css';document.head.append(uxStyle);
 installWorkshopBrand();
+const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
 let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
 document.querySelector('.workshop-layout').before(message,pageHost);
-function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));}
+function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));markLocalSaved('Saved on this device');}
 function pageReport(text){message.textContent=text;const status=pageHost.querySelector('[data-page-status]');if(status)status.textContent=text;}
 let pendingCalendarChange=null;
 function approveCalendarChange(signature,index){
@@ -168,7 +170,7 @@ function restoreDrafts(data){
  }
  seasons=savedSeasons;competitions=savedCups;return loaded;
 }
-save.addEventListener('click',()=>{try{localStorage.setItem(KEY,JSON.stringify(draftFile()));message.textContent='Saved on this device only. Download the draft file to share or move to another PC.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
+save.addEventListener('click',()=>{try{persistDrafts();message.textContent='Saved on this device only. Download the draft file to share or move to another PC.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
 download.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(draftFile(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ufl-league-drafts.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 document.querySelector('#import-drafts').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>1000000)throw Error('Choose a draft file smaller than 1 MB.');const data=JSON.parse(await file.text());const loaded=restoreDrafts(data);drafts=loaded;renderDrafts();message.textContent='Draft file opened. Nothing was registered or published.';}catch(error){message.textContent=error.message;}finally{event.target.value='';}});
 try{

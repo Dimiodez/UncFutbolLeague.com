@@ -6,6 +6,7 @@ import {acceptedAppearances,leagueStandings} from './league-results.js';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
+import {renderSeasonRollover} from './league-season-rollover.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
 const LEAGUE_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
@@ -49,6 +50,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   body.append(card.querySelector('.workshop-registration'));
   renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
   renderRegistrationInvites({host:admin,draft,onSettings,onImport:onImportTeam,onReport});
+  renderSeasonRollover(admin,draft);
  }
  if(tab==='players'){body.replaceChildren();renderSharedRoster(body,draft);}
  if(tab==='matches'){

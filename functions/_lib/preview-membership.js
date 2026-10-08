@@ -1,5 +1,7 @@
 // Preview-only durable identities, league manager grants and approved rosters.
 export const membershipSchema = [
+ `CREATE TABLE IF NOT EXISTS preview_rollover_batches(target_board TEXT PRIMARY KEY,source_board TEXT NOT NULL,actor TEXT NOT NULL,guard_count INTEGER NOT NULL CHECK(guard_count=0),created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
+ `CREATE TABLE IF NOT EXISTS preview_team_rollovers(new_team_id TEXT PRIMARY KEY,old_team_id TEXT NOT NULL,from_board TEXT NOT NULL,to_board TEXT NOT NULL,roster_count INTEGER NOT NULL,roster_limit INTEGER NOT NULL,CHECK(roster_count<=roster_limit))`,
  `CREATE TABLE IF NOT EXISTS preview_gaming_profiles(user_id TEXT PRIMARY KEY, platform TEXT NOT NULL CHECK(platform IN ('psn','ea','xbox')), account_name TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
  `CREATE TABLE IF NOT EXISTS preview_league_managers(board_id TEXT NOT NULL,user_id TEXT NOT NULL,active INTEGER NOT NULL DEFAULT 1,assigned_by TEXT NOT NULL,PRIMARY KEY(board_id,user_id))`,
  `CREATE TABLE IF NOT EXISTS preview_team_details(team_id TEXT PRIMARY KEY,in_game_name TEXT NOT NULL)`,

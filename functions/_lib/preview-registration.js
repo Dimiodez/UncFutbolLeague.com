@@ -1,6 +1,7 @@
 import {getSession,json,sameOrigin,randomToken,sha256} from './auth.js';
 import {validateScheduleSettings,registrationAllowed,leagueWindowState} from '../../league-engine.js';
 import {membershipSchema,gamingProfile,saveProfile,canManage} from './preview-membership.js';
+import {dashboardAction} from './preview-dashboard.js';
 const staff=user=>['owner','admin'].includes(user?.role);
 const clean=(value,max,label)=>{if(typeof value!=='string'||!value.trim()||value.length>max)throw Error(`Enter ${label} (up to ${max} characters).`);return value.trim();};
 async function schema(db){await db.batch([
@@ -19,6 +20,7 @@ export async function previewRegistrationApi(request,env){
   let input={};if(request.method==='POST'){if(!user)return json({error:'Sign in with Discord first.'},401);const raw=await request.text();if(raw.length>32000)return json({error:'Request too large.'},413);try{input=JSON.parse(raw);}catch{return json({error:'Invalid request.'},400);}}
   await schema(env.DB);
   const action=input.action;
+  const dashboard=await dashboardAction(request,env,user,input,url);if(dashboard)return dashboard;
   if(action==='manager'){
    if(!staff(user))return json({error:'Only a website owner/admin can assign league managers.'},403);
    if(typeof input.active!=='boolean')throw Error('Choose whether manager access is enabled.');
@@ -84,7 +86,7 @@ export async function previewRegistrationApi(request,env){
   if(request.method==='GET'){
    const roster=team&&(ownTeam||staff(user))?(await env.DB.prepare('SELECT r.user_id,u.display_name,g.platform,g.account_name FROM preview_roster_members r JOIN users u ON u.discord_id=r.user_id LEFT JOIN preview_gaming_profiles g ON g.user_id=r.user_id WHERE r.board_id=? AND r.team_id=? ORDER BY u.display_name').bind(board.id,team.id).all()).results:[];
    const playerRequest=playerInvite&&user?await env.DB.prepare('SELECT status FROM preview_player_requests WHERE board_id=? AND user_id=?').bind(board.id,user.discord_id).first():null;
-   return json({settings,open,managerAccess,profile,roster,playerRequest,kind:playerInvite?'player':'manager',user:user?{id:user.discord_id,name:user.display_name||user.username}:null,team:team?{id:team.id,name:team.name,inGameName:details?.in_game_name||'',eaClubId:team.ea_id,status:team.status,isManager:ownTeam}:null});
+   return json({settings,open,registrationOpen:!!board.is_open,managerAccess,profile,roster,playerRequest,kind:playerInvite?'player':'manager',user:user?{id:user.discord_id,name:user.display_name||user.username}:null,team:team?{id:team.id,name:team.name,inGameName:details?.in_game_name||'',eaClubId:team.ea_id,status:team.status,isManager:ownTeam}:null});
   }
   if(action==='updateTeam'){
    if(!team||!ownTeam&&!staff(user))return json({error:'Only this team’s authorized manager or website staff may edit it.'},403);
@@ -110,5 +112,5 @@ export async function previewRegistrationApi(request,env){
    const added=await env.DB.batch([env.DB.prepare('INSERT INTO preview_player_requests(team_id,board_id,user_id,display_name,ea_name) SELECT ?,?,?,?,? WHERE (SELECT COUNT(*) FROM preview_player_requests WHERE team_id=?)<?').bind(team.id,board.id,user.discord_id,user.display_name||user.username,eaName,team.id,settings.maxTeamSize),saveProfile(env.DB,user.discord_id,profile)]);if(!added[0].meta.changes)throw Error('This team has reached its roster limit.');return json({submitted:true});
   }
   return json({error:'Unknown registration action.'},400);
- }catch(error){if(/UNIQUE constraint/.test(String(error)))return json({error:'This team or player was already submitted. Refresh before trying again.'},409);if(/D1_|SQLITE|no such table|syntax error|network|fetch failed/i.test(String(error))){console.error('Preview registration storage failed',String(error));return json({error:'Registration storage is unavailable. Try again later.'},503);}return json({error:error.message||'Registration is unavailable.'},400);}
+ }catch(error){if(/UNIQUE constraint/.test(String(error)))return json({error:'This team, player or rollover already exists. Refresh before trying again.'},409);if(/CHECK constraint/.test(String(error)))return json({error:/roster_count/.test(String(error))?'A selected roster exceeds the destination limit. Choose teams/managers only or increase the new limit. No teams were copied.':'Rollover needs an empty destination league. No teams were copied.'},409);if(/D1_|SQLITE|no such table|syntax error|network|fetch failed/i.test(String(error))){console.error('Preview registration storage failed',String(error));return json({error:'Registration storage is unavailable. Try again later.'},503);}return json({error:error.message||'Registration is unavailable.'},400);}
 }

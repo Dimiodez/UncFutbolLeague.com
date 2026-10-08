@@ -1,4 +1,13 @@
 /* UNC admin presentation only. Keep selectors scoped away from the main site. */
+.unc-workspace .save-state{font-size:14px;color:var(--muted);border-left:3px solid var(--blue);padding:4px 10px;margin:10px 0}
+.unc-workspace .registration-status{display:inline-block;font:700 14px Inter,sans-serif;padding:6px 10px;margin:0 8px 8px 0;border:1px solid var(--line);border-radius:5px;background:var(--admin-raised)}
+.unc-workspace .registration-status.is-approved{border-color:var(--good)}
+.unc-workspace .registration-status.is-pending{border-color:var(--sky)}
+.unc-workspace .league-timing{display:grid;grid-template-columns:1fr 1fr;gap:16px;border-top:1px solid var(--line);margin-top:12px}
+.unc-workspace .league-important{border-left:3px solid var(--red);padding-left:12px;font-weight:600}
+.unc-workspace .invitation-card{padding:16px;background:var(--admin-raised);border:1px solid var(--line);border-radius:7px;margin:12px 0}
+.unc-workspace dialog.league-editor-dialog{max-width:min(560px,90vw);padding:24px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px}
+@media(max-width:700px){.unc-workspace .league-timing{grid-template-columns:1fr;gap:0}}
 .unc-admin-preview{--admin-surface:color-mix(in srgb,var(--paper) 92%,var(--blue) 8%);--admin-raised:color-mix(in srgb,var(--paper) 85%,var(--blue) 15%);font-size:15px;line-height:1.55}
 .site-header.workshop-site-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;height:82px;gap:28px;max-width:100%}
 .workshop-site-header .brand{min-width:0}

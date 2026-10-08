@@ -9,5 +9,6 @@ export function installWorkshopBrand(){
  const setTheme=value=>{document.documentElement.dataset.theme=value;select.value=value;};setTheme(theme);select.onchange=()=>{setTheme(select.value);try{localStorage.setItem('ufl-theme',select.value);}catch{}};
  const intro=document.querySelector('.workshop>header');intro.querySelector('a').textContent='ADMIN / LEAGUE MANAGEMENT';intro.querySelector('a').href='/league-workshop';
  const chip=intro.querySelector('.season-chip');if(chip)chip.textContent='Development preview';
+ const nav=document.querySelector('.workshop-nav');if(nav&&!nav.querySelector('[href="/league-dashboard"]')){const link=document.createElement('a');link.href='/league-dashboard';link.textContent='My dashboard';nav.append(link);}
  const notice=document.querySelector('.preview-notice');if(notice)notice.innerHTML='Development preview · Local league drafts · No changes to the live website or bot';
 }

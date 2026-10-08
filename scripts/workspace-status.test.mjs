@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {registrationSummary,nextFixture} from '../league-workspace-status.js';
+const settings={timeZone:'America/Chicago',windows:[{type:'registration',from:'2026-10-01',to:'2026-10-10'}]};
+assert.match(registrationSummary(settings,true,Date.parse('2026-10-10T23:00:00Z')),/closes in 6 hours/);
+assert.match(registrationSummary(settings,true,Date.parse('2026-09-30T12:00:00Z')),/opens 2026-10-01/);
+assert.equal(registrationSummary(settings,false),'Registration closed');
+assert.equal(registrationSummary(settings,true,Date.parse('2026-10-11T05:00:00Z')),'Registration window closed');
+assert.match(registrationSummary({...settings,windows:[]},true),/no closing date/);
+const draft={fixtures:[{id:'a',startsAt:100,home:{id:'1'},away:{id:'2'}},{id:'b',startsAt:200,home:{id:'3'},away:{id:'4'}}],acceptedResults:[{fixtureId:'a'}]};
+assert.equal(nextFixture(draft,null,0).id,'b');assert.equal(nextFixture(draft,['1'],0),null);assert.equal(nextFixture(draft,['3'],0).id,'b');assert.equal(nextFixture(draft,null,300),null);
+console.log('PASS: timezone-aware registration deadlines, absent deadlines, accepted-result exclusion and team-scoped next fixtures.');
