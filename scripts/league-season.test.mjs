@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import {buildLeagueSchedule,fixtureCandidates} from '../league-engine.js';
+import {acceptFixtureResult,restoreAcceptedResults,leagueStandings,acceptedAppearances} from '../league-results.js';
+import {createCupSchedule,splitDivisionPools,validateCupPlans} from '../league-cups.js';
+const settings={season:'S2',league:'6v6',format:'6v6',size:6,startDate:'2026-10-15',weekday:4,time:'20:00',timeZone:'America/Chicago',spacingMinutes:30,teams:Array.from({length:6},(_,i)=>({id:`team-${i}`,name:`Team ${i}`,eaClubId:String(i+100)}))};
+let draft=buildLeagueSchedule(settings);const f=draft.fixtures[0],game={matchId:'test-1',timestamp:f.startsAt/1000,clubs:{[f.home.eaClubId]:{goals:'2'},[f.away.eaClubId]:{goals:'1'}},players:{[f.home.eaClubId]:{'player-1':{playername:'Test player',position:'ST',rating:'3.0',goals:'1',assists:'0'}}}};
+assert.equal(acceptedAppearances(draft).length,0);assert.equal(leagueStandings(draft).reduce((s,r)=>s+r.points,0),0);
+assert.throws(()=>acceptFixtureResult(draft,f.id,{...game,timestamp:game.timestamp+86400},'regular'));
+assert.throws(()=>acceptFixtureResult(draft,'cup-r1',game,'regular'));
+assert.throws(()=>acceptFixtureResult(draft,f.id,game,''));
+draft=acceptFixtureResult(draft,f.id,game,'extraTime');assert.equal(leagueStandings(draft).find(t=>t.id===f.home.id).points,2);assert.equal(leagueStandings(draft).find(t=>t.id===f.away.id).points,1);
+assert.equal(acceptedAppearances(draft)[0].goals,1);assert.equal(acceptedAppearances(draft)[0].rating,3);
+assert.throws(()=>acceptFixtureResult(draft,f.id,game,'regular'));
+assert.deepEqual(restoreAcceptedResults(buildLeagueSchedule(settings),JSON.parse(JSON.stringify(draft.acceptedResults))).acceptedResults,draft.acceptedResults);
+assert.throws(()=>restoreAcceptedResults(buildLeagueSchedule(settings),[...draft.acceptedResults,...draft.acceptedResults]));
+const regular=acceptFixtureResult(buildLeagueSchedule(settings),f.id,game,'regular');assert.equal(leagueStandings(regular).find(t=>t.id===f.home.id).points,3);assert.equal(leagueStandings(regular).find(t=>t.id===f.away.id).points,0);
+const pools=splitDivisionPools([{key:'div1',rows:settings.teams.slice(0,5)},{key:'div2',rows:settings.teams.slice(0,4)}]);assert.equal(pools.ucl.length,5);assert.equal(pools.uel.length,4);assert.equal(new Set([...pools.ucl,...pools.uel].map(t=>t.id)).size,9);
+for(const n of [2,3,5,8,9,16]){const teams=Array.from({length:n},(_,i)=>({id:`t${i}`,name:`Team ${i}`,eaClubId:String(i)})),cup=createCupSchedule({id:'cup-test',name:'Test cup',teams,format:'knockout',legs:1,startDate:'2026-10-16',weekday:5,time:'20:00',timeZone:'America/Chicago'},()=>.5);assert.equal(cup.fixtures.filter(f=>f.status!=='bye').length,n-1);assert.equal(cup.fixtures.filter(f=>f.round===1).flatMap(f=>[f.home,f.away]).filter(t=>t&&!t.pending).length,n);validateCupPlans([cup]);}
+const rr=createCupSchedule({id:'cup-rr',name:'Mini league',teams:settings.teams,format:'roundRobin',legs:2,startDate:'2026-10-16',weekday:5,time:'20:00',timeZone:'America/Chicago'},()=>.5);assert.equal(rr.fixtures.length,30);assert.ok(rr.fixtures.every(f=>f.competitionId==='cup-rr'));assert.equal(leagueStandings(draft).reduce((sum,r)=>sum+r.played,0),2);
+const late={...f,date:'2026-10-15',startsAt:Date.parse('2026-10-16T04:45:00Z')},afterMidnight={...game,timestamp:Date.parse('2026-10-16T05:15:00Z')/1000};assert.equal(fixtureCandidates(late,[afterMidnight],{timeZone:settings.timeZone}).candidates.length,0);
+console.log('PASS: scheduled-only acceptance, wrong-day/cup/duplicate rejection, no-draw finish review, 3/0 and 2/1 points, retained disconnect stats, restore, UCL/UEL pools, knockout byes and cup round robin.');

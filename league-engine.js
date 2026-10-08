@@ -90,7 +90,7 @@ export function buildLeagueSchedule(settings){
  }
  const allRounds=[...rounds,...rounds.map(fixtures=>fixtures.map(game=>({home:game.away,away:game.home})))];
  const fixtures=[],nights=[],skippedDates=[];
- const scheduledDates=[],cursor=new Date(startDate),calendarBreaks=[...settings.breaks,...settings.windows.filter(window=>['bye','holiday','cup','break'].includes(window.type)).map(window=>({from:window.from,to:window.to,reason:window.name}))];
+ const scheduledDates=[],cursor=new Date(startDate),calendarBreaks=[...settings.breaks,...settings.windows.filter(window=>['bye','holiday','cup','break'].includes(window.type)).map(window=>({from:window.from,to:window.to,reason:window.name})),...(settings.pageContent?.finals?.cupPlans||[]).flatMap(cup=>cup.fixtures.map(f=>({from:f.date,to:f.date,reason:cup.name})))];
  for(let attempt=0;scheduledDates.length<Math.ceil(allRounds.length/2);attempt++){
   if(attempt>1000)throw Error('Too many skipped dates. Shorten the breaks.');
   const date=cursor.toISOString().slice(0,10),pauses=calendarBreaks.filter(pause=>date>=pause.from&&date<=pause.to);
@@ -105,7 +105,7 @@ export function buildLeagueSchedule(settings){
  }
  return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,skippedDates,warnings:teams.length%2?['An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
 }
-export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[]}={}){
+export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[],timeZone}={}){
  const home=String(fixture.home.eaClubId||''),away=String(fixture.away.eaClubId||'');
  if(!home||!away||home===away)return {status:'unlinked',candidates:[]};
  const unique=new Map(),used=new Set(acceptedMatchIds.map(String));
@@ -114,6 +114,7 @@ export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=9
   const playedAt=game.playedAt??Number(game.timestamp)*1000;
   if(id==='undefined'||used.has(id)||clubs.length!==2||!clubs.includes(home)||!clubs.includes(away)||!Number.isFinite(playedAt))continue;
   if(playedAt<fixture.startsAt-beforeMinutes*60000||playedAt>fixture.startsAt+afterMinutes*60000)continue;
+  if(timeZone&&new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(playedAt)!==fixture.date)continue;
   unique.set(id,game);
  }
  const candidates=[...unique.values()];

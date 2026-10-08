@@ -1,4 +1,5 @@
 import {validateAwardBoard,awardBoardKey} from './league-awards-model.js';
+import {validateCupPlans} from './league-cups.js';
 export const LEAGUE_TABS=[['overview','Overview'],['rules','Rules'],['videos','Videos'],['teams','Teams'],['players','Players'],['matches','Matches'],['finals','Finals'],['stats','Stats'],['standings','Standings'],['awards','TOTW / TOTS']];
 export const STAT_METRICS=[['goals','Goals'],['assists','Assists'],['rating','Average rating'],['shots','Shots'],['passes','Passing success'],['tackles','Successful tackles'],['interceptions','Interceptions'],['saves','Saves']];
 export const TIEBREAKERS=[['goalDifference','Goal difference'],['goalsFor','Goals scored'],['wins','Wins'],['headToHead','Head-to-head']];
@@ -23,6 +24,7 @@ export function updatePageSettings(settings,section,values){
  if(section==='standings'){for(const key of ['win','draw','loss']){
   content[key]=integer(values[key],0,20,'Points');
  }
+  content.extraTimeWin=integer(values.extraTimeWin??2,0,20,'Extra-time win points');content.extraTimeLoss=integer(values.extraTimeLoss??1,0,20,'Extra-time loss points');content.noDraws=true;
   const order=values.tiebreakers??TIEBREAKERS.map(([key])=>key);
   if(!Array.isArray(order)||order.length!==TIEBREAKERS.length||new Set(order).size!==order.length||order.some(key=>!TIEBREAKERS.some(([allowed])=>allowed===key)))throw Error('Use each tiebreaker once.');content.tiebreakers=[...order];
  }
@@ -38,6 +40,7 @@ export function updatePageSettings(settings,section,values){
   content.format=choice(values.format,['none','knockout','topBottom'],'finals format');content.qualifiers=integer(values.qualifiers,2,32,'Qualifying teams');content.legs=integer(values.legs,1,2,'Legs per tie');content.thirdPlace=boolean(values.thirdPlace,'third-place match');
   if(content.format!=='none'&&(content.qualifiers&(content.qualifiers-1)))throw Error('Knockout brackets need 2, 4, 8, 16 or 32 qualifying teams.');
  }
+ if(section==='finals'&&(values.cupPlans||settings.pageContent?.finals?.cupPlans))content.cupPlans=validateCupPlans(values.cupPlans??settings.pageContent.finals.cupPlans);
  if(section==='stats'&&values.metrics!==undefined){
   if(!Array.isArray(values.metrics)||!values.metrics.length||new Set(values.metrics).size!==values.metrics.length||values.metrics.some(key=>!STAT_METRICS.some(([allowed])=>allowed===key)))throw Error('Choose at least one supported statistic.');
   content.metrics=[...values.metrics];content.minAppearances=integer(values.minAppearances,1,100,'Minimum appearances');content.excludeDisconnectRatings=boolean(values.excludeDisconnectRatings,'excluding 3.0 ratings');

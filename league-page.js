@@ -2,10 +2,13 @@ import {LEAGUE_TABS,setPagePublished} from './league-page-model.js';
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
 import {renderAwardsWorkbench} from './league-awards.js';
 import {registrationAllowed} from './league-engine.js';
+import {acceptedAppearances,leagueStandings} from './league-results.js';
+import {renderSeasonCalendar} from './league-season-tools.js';
+import {renderCupPlanner} from './league-cup-planner.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
-export function renderLeaguePage({host,card,draft,index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onReport}){
+export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onReport}){
  const settings=draft.settings,content=settings.pageContent?.[tab]||{};
  let awardController=null;
  const guard=action=>{
@@ -26,14 +29,14 @@ export function renderLeaguePage({host,card,draft,index,tab,onTab,onClose,onSett
  const body=host.querySelector('[data-page-body]'),admin=host.querySelector('[data-page-admin]');
  const note=text=>{const p=document.createElement('p');p.className='league-page-text';p.textContent=text;body.append(p);};
  if(tab==='awards'){
-  awardController=renderAwardsWorkbench({host:body,draft,onSettings});
+  awardController=renderAwardsWorkbench({host:body,draft,onSettings,records:acceptedAppearances(draft)});
   return;
  }
  if(content.text)note(content.text);
  else if(tab==='rules'&&content.items?.length||tab==='videos'&&(content.videos?.length||content.links?.length)){} // Collection cards below replace the empty state.
  else if(tab==='finals'&&content.format)note(content.format==='none'?'Finals are disabled for this league.':'Finals settings saved. Bracket generation and automatic qualification are not connected yet.');
  else if(tab==='awards'&&content.formation)note('Formation and eligibility settings saved. No lineup selected yet; candidate selection and award publishing are not connected.');
- else if(empty[tab])note(empty[tab]);
+ else if(empty[tab]&&!(['stats','standings'].includes(tab)&&draft.acceptedResults?.length))note(empty[tab]);
  if(tab==='overview'){
   if(!content.text)note('Your league page is ready before any teams register. Set the rules and calendar now; add teams later.');
   note(`First eligible matchnight: ${settings.startDate} · ${settings.time} (${settings.timeZone}) · every ${settings.repeatWeeks||1} week(s).`);
@@ -44,16 +47,22 @@ export function renderLeaguePage({host,card,draft,index,tab,onTab,onClose,onSett
   renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
  }
  if(tab==='matches'){
+  renderSeasonCalendar({host:body,draft});
   if(!draft.scheduleGenerated)note('No fixtures yet. Add teams in Teams, close registration, then generate the schedule. The league page does not require fixtures to be published.');
   const windows=card.querySelector('.workshop-windows');if(windows)admin.append(windows);
   card.querySelectorAll(':scope > details:not(.workshop-settings)').forEach(night=>body.append(night));
   const calendar=card.querySelector('.workshop-settings');if(calendar)admin.append(calendar);
-  if(draft.scheduleGenerated)note('EA candidate checks find scheduled opponents in the kickoff window. Candidates are not official results until an acceptance workflow is connected.');
+  if(draft.scheduleGenerated)note('Only explicitly accepted scheduled fixtures count in this local preview. EA candidates remain uncounted until reviewed. Exact positions missing from EA cannot qualify for TOTW automatically.');
  }
+ if(tab==='finals')renderCupPlanner({host:body,draft,allDrafts,onSettings});
  if(tab==='videos')for(const video of (content.videos||(content.links||[]).map((url,index)=>({title:`Video ${index+1}`,url})))){const p=document.createElement('p'),a=document.createElement('a');p.className='video-card';a.href=video.url;a.textContent=video.title;a.target='_blank';a.rel='noopener noreferrer';p.append(a);body.append(p);}
  if(tab==='standings'){
-  note(`Points policy: win ${content.win??3} · draw ${content.draw??1} · loss ${content.loss??0}. Policy only — not calculating results yet.`);
-  if(settings.teams.length){const table=document.createElement('table');table.innerHTML=`<caption>Registered teams — unranked, no results counted</caption><thead><tr><th>Team</th><th>Played</th><th>Points</th></tr></thead><tbody>${settings.teams.map(team=>`<tr><td>${escape(team.name)}</td><td>—</td><td>—</td></tr>`).join('')}</tbody>`;body.append(table);}
+  note(`Regular-time win/loss: ${content.win??3}/${content.loss??0} points · Extra-time win/loss: ${content.extraTimeWin??2}/${content.extraTimeLoss??1} · No draws. Accepted local test fixtures only.`);
+  const table=document.createElement('table');table.innerHTML=`<caption>Local preview standings · ${(draft.acceptedResults||[]).length} accepted fixtures</caption><thead><tr><th>Team</th><th>P</th><th>W</th><th>ET W</th><th>ET L</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead><tbody>${leagueStandings(draft).map(t=>`<tr><td>${escape(t.name)}</td><td>${t.played}</td><td>${t.regularWins}</td><td>${t.extraWins}</td><td>${t.extraLosses}</td><td>${t.regularLosses}</td><td>${t.goalsFor}</td><td>${t.goalsAgainst}</td><td>${t.points}</td></tr>`).join('')}</tbody>`;body.append(table);
+ }
+ if(tab==='stats'){
+  const rows=new Map();for(const p of acceptedAppearances(draft)){const key=JSON.stringify([p.teamId,p.playerId]);if(!rows.has(key))rows.set(key,{...p,apps:0,goals:0,assists:0,goalsKnown:true,assistsKnown:true,ratingSum:0,ratingCount:0});const r=rows.get(key);r.apps++;if(p.goals===null)r.goalsKnown=false;else r.goals+=p.goals;if(p.assists===null)r.assistsKnown=false;else r.assists+=p.assists;if(p.rating>0&&p.rating<=10&&!(p.rating===3&&(content.excludeDisconnectRatings??true))){r.ratingSum+=p.rating;r.ratingCount++;}}
+  const table=document.createElement('table');table.innerHTML=`<caption>Accepted local fixture appearances only</caption><thead><tr><th>Player</th><th>Team</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Rating</th></tr></thead><tbody>${[...rows.values()].map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${p.apps}</td><td>${p.goalsKnown?p.goals:'Unavailable'}</td><td>${p.assistsKnown?p.assists:'Unavailable'}</td><td>${p.ratingCount?(p.ratingSum/p.ratingCount).toFixed(2):'Unavailable'}</td></tr>`).join('')}</tbody>`;body.append(table);
  }
  renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
 }
