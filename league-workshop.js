@@ -2,7 +2,7 @@ import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidat
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {renderAdministration} from './league-administration.js';
 import {renderLeaguePage} from './league-page.js';
-import {editDraftTeam,updatePageSettings} from './league-page-model.js';
+import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
@@ -68,7 +68,8 @@ function renderDrafts(){
    onTab:tab=>{activeTab=tab;renderDrafts();},onClose:()=>{activeLeague=null;renderDrafts();},
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Download draft file in All leagues & seasons to move them to another PC.');},
-   onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},onReport:pageReport});
+   onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
+   onTeamRemove:id=>{drafts[index]=removeDraftTeam(drafts[index],id);renderDrafts();persistDrafts();pageReport('Team removed from this draft league only. No live data was changed. Restore an exported draft backup to recover it.');},onReport:pageReport});
  }
 }
 function updateLeague(index,values){

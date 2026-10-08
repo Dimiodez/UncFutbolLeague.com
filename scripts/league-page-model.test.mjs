@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {LEAGUE_TABS,updatePageSettings,setPagePublished,editDraftTeam} from '../league-page-model.js';
+import {LEAGUE_TABS,updatePageSettings,setPagePublished,editDraftTeam,removeDraftTeam} from '../league-page-model.js';
 const settings={league:'Empty league',teams:[]};
 assert.equal(LEAGUE_TABS.length,10);
 assert.equal(setPagePublished(settings,true).pagePublished,true);
@@ -22,3 +22,30 @@ assert.throws(()=>editDraftTeam(draft,'team-1',{name:'bayern'}));assert.throws((
 assert.throws(()=>editDraftTeam({...draft,scheduleGenerated:true},'team-1',{name:'Roma'}));
 assert.throws(()=>editDraftTeam(draft,'missing',{name:'Roma'}));
 console.log('League page tests passed: empty publication, tab settings, link validation and safe team editing.');
+const rules=updatePageSettings(settings,'rules',{items:[{title:'Respect opponents',category:'Conduct',body:'No harassment.'}],ampsAllowed:false,boostsAllowed:false,anyAllowed:true});
+assert.equal(rules.pageContent.rules.items[0].category,'Conduct');assert.equal(rules.pageContent.rules.ampsAllowed,false);
+assert.throws(()=>updatePageSettings(settings,'rules',{items:[{title:'Missing body',category:'Conduct'}]}));
+assert.throws(()=>updatePageSettings(settings,'rules',{ampsAllowed:'yes'}));
+assert.throws(()=>updatePageSettings(settings,'standings',{win:'',draw:1,loss:0}));
+assert.throws(()=>updatePageSettings(settings,'standings',{win:3,draw:1,loss:0,tiebreakers:['wins','wins','wins','wins']}));
+assert.deepEqual(updatePageSettings(settings,'standings',{win:3,draw:1,loss:0,tiebreakers:['wins','goalsFor','goalDifference','headToHead']}).pageContent.standings.tiebreakers,['wins','goalsFor','goalDifference','headToHead']);
+const video=updatePageSettings(settings,'videos',{videos:[{title:'Match highlights',url:'https://example.com/highlights'}]}).pageContent.videos;
+assert.equal(video.videos[0].title,'Match highlights');assert.deepEqual(video.links,['https://example.com/highlights']);
+assert.throws(()=>updatePageSettings(settings,'videos',{videos:[{title:'Unsafe',url:'javascript:alert(1)'}]}));
+const stats=updatePageSettings(settings,'stats',{metrics:['rating','goals'],minAppearances:2,excludeDisconnectRatings:true}).pageContent.stats;
+assert.equal(stats.excludeDisconnectRatings,true);assert.equal(stats.minAppearances,2);
+assert.throws(()=>updatePageSettings(settings,'stats',{metrics:[],minAppearances:1,excludeDisconnectRatings:false}));
+assert.throws(()=>updatePageSettings(settings,'stats',{metrics:['amps'],minAppearances:1,excludeDisconnectRatings:false}));
+assert.equal(updatePageSettings(settings,'finals',{format:'knockout',qualifiers:8,legs:2,thirdPlace:true}).pageContent.finals.qualifiers,8);
+assert.throws(()=>updatePageSettings(settings,'finals',{format:'knockout',qualifiers:7,legs:1,thirdPlace:false}));
+assert.equal(updatePageSettings(settings,'players',{requireEaIdentity:true,transferWindowOnly:false}).pageContent.players.oneTeamPerLeague,true);
+assert.equal(updatePageSettings(settings,'awards',{formation:'2-2-1',minAppearances:2,ranking:'rating'}).pageContent.awards.ranking,'rating');
+assert.throws(()=>updatePageSettings(settings,'awards',{formation:'bad',minAppearances:2,ranking:'rating'}));
+assert.equal(removeDraftTeam(draft,'team-1').settings.teams.length,1);assert.equal(draft.settings.teams.length,2);
+assert.throws(()=>removeDraftTeam({...draft,scheduleGenerated:true},'team-1'));
+assert.throws(()=>removeDraftTeam(draft,'missing'));
+// Import revalidates the full section shape; values survive JSON round-trip.
+for(const [section,content] of Object.entries(JSON.parse(JSON.stringify(rules.pageContent))))assert.deepEqual(updatePageSettings(settings,section,content).pageContent[section],content);
+const legacy=updatePageSettings({pageContent:{stats:{text:'Existing saved notes'}}},'stats',{metrics:['rating'],minAppearances:1,excludeDisconnectRatings:false});
+assert.equal(legacy.pageContent.stats.text,'Existing saved notes');
+console.log('Structured editor tests passed: rules, video entries, eligibility, brackets, statistics, points, tiebreakers, award settings and removal guards.');
