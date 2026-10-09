@@ -23,7 +23,8 @@ function installWizard(form){
  form.addEventListener('submit',event=>{if(step!==3){event.preventDefault();event.stopImmediatePropagation();if(validThrough(step))show(step+1);}else if(!validThrough(2)){event.preventDefault();event.stopImmediatePropagation();}},true);
  show(0);return {card,reset:()=>{delete form.dataset.unsaved;show(0);}};
 }
-export function enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost}){
+export function enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost,sectionOnly=false}){
+ if(sectionOnly){enhanceLeaguePage({draft:drafts[activeLeague],activeTab,pageHost});return;}
  const form=document.querySelector('#league-builder');
  if(!wizard){
   wizard=installWizard(form);document.querySelector('.workshop-layout').classList.add('league-library-layout');
@@ -56,6 +57,6 @@ function enhanceLeaguePage({draft,activeTab,pageHost}){
   if(admin.children.length){const settings=document.createElement('details');settings.className='schedule-configuration';settings.innerHTML='<summary>Schedule settings, registration windows & breaks</summary>';while(admin.firstChild)settings.append(admin.firstChild);admin.append(settings);}
  }
  if(activeTab==='teams'){
-  const registration=body.querySelector('.workshop-registration'),form=registration?.querySelector('form');if(form){const add=document.createElement('details');add.className='team-add-panel';add.innerHTML='<summary>+ Register a team</summary>';form.before(add);add.append(form);}
+  const registration=body.querySelector('.workshop-registration'),form=registration?.querySelector('form');if(form&&!registration.querySelector('.team-add-panel')){const add=document.createElement('details');add.className='team-add-panel';add.innerHTML='<summary>+ Register a team</summary>';form.before(add);add.append(form);}
  }
 }

@@ -10,9 +10,14 @@ import {renderSeasonRollover} from './league-season-rollover.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
 const LEAGUE_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
+const sectionMoves=new WeakMap();
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
 export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onReport}){
+ // Return borrowed library controls before replacing the previous section.
+ for(const [node,parent] of sectionMoves.get(host)||[])parent.append(node);
+ const moved=[];sectionMoves.set(host,moved);
+ const move=(node,target)=>{if(!node)return;moved.push([node,node.parentElement]);target.append(node);};
  const settings=draft.settings,content=settings.pageContent?.[tab]||{};
  let awardController=null;
  const guard=action=>{
@@ -30,6 +35,15 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   button.onclick=()=>guard(()=>onTab(button.dataset.tab));
   button.onkeydown=event=>{const keys=['ArrowLeft','ArrowRight','Home','End'];if(!keys.includes(event.key))return;event.preventDefault();const current=LEAGUE_TABS.findIndex(([key])=>key===tab),next=event.key==='Home'?0:event.key==='End'?LEAGUE_TABS.length-1:(current+(event.key==='ArrowRight'?1:-1)+LEAGUE_TABS.length)%LEAGUE_TABS.length;guard(()=>{onTab(LEAGUE_TABS[next][0]);host.querySelector(`[data-tab="${LEAGUE_TABS[next][0]}"]`).focus();});};
  });
+ // Every section, including the early-return awards workbench, has the same way out.
+ const position=LEAGUE_TABS.findIndex(([key])=>key===tab);
+ const sectionLabel=key=>({videos:'Stream links',matches:'Schedule & results',finals:'Cups & finals',awards:'TOTW / TOTS'}[key]||LEAGUE_TABS.find(([id])=>id===key)?.[1]);
+ const navigation=document.createElement('nav');navigation.className='league-section-navigation';navigation.setAttribute('aria-label','Section navigation');
+ const navButton=(text,action)=>{const button=document.createElement('button');button.type='button';button.textContent=text;button.onclick=()=>guard(action);navigation.append(button);};
+ navButton(position?`Back · ${sectionLabel(LEAGUE_TABS[position-1][0])}`:'Back to leagues & seasons',()=>position?onTab(LEAGUE_TABS[position-1][0]):onClose());
+ if(position)navButton('League overview',()=>onTab('overview'));
+ if(position<LEAGUE_TABS.length-1)navButton(`Next · ${sectionLabel(LEAGUE_TABS[position+1][0])}`,()=>onTab(LEAGUE_TABS[position+1][0]));
+ host.querySelector('[role="tabpanel"]').append(navigation);
  const body=host.querySelector('[data-page-body]'),admin=host.querySelector('[data-page-admin]');
  const note=text=>{const p=document.createElement('p');p.className='league-page-text';p.textContent=text;body.append(p);};
  if(tab==='awards'){
@@ -44,10 +58,10 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  if(tab==='overview'){
   if(!content.text)note('Your league page is ready before any teams register. Set the rules and calendar now; add teams later.');
   note(`First eligible matchnight: ${settings.startDate} · ${settings.time} (${settings.timeZone}) · every ${settings.repeatWeeks||1} week(s).`);
-  const controls=card.querySelector('.workshop-settings');if(controls){controls.open=false;admin.append(controls);}
+  const controls=card.querySelector('.workshop-settings');if(controls){controls.open=false;move(controls,admin);}
  }
  if(tab==='teams'){
-  body.append(card.querySelector('.workshop-registration'));
+  move(card.querySelector('.workshop-registration'),body);
   renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
   renderRegistrationInvites({host:admin,draft,onSettings,onImport:onImportTeam,onReport});
   renderSeasonRollover(admin,draft);
@@ -56,9 +70,9 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  if(tab==='matches'){
   renderSeasonCalendar({host:body,draft});
   if(!draft.scheduleGenerated)note('No fixtures yet. Add teams in Teams, close registration, then generate the schedule. The league page does not require fixtures to be published.');
-  const windows=card.querySelector('.workshop-windows');if(windows)admin.append(windows);
-  card.querySelectorAll(':scope > details:not(.workshop-settings)').forEach(night=>body.append(night));
-  const calendar=card.querySelector('.workshop-settings');if(calendar)admin.append(calendar);
+  const windows=card.querySelector('.workshop-windows');move(windows,admin);
+  card.querySelectorAll(':scope > details:not(.workshop-settings)').forEach(night=>move(night,body));
+  const calendar=card.querySelector('.workshop-settings');move(calendar,admin);
   if(draft.scheduleGenerated)note('Only explicitly accepted scheduled fixtures count in this local preview. EA candidates remain uncounted until reviewed. Exact positions missing from EA cannot qualify for TOTW automatically.');
  }
  if(tab==='finals')renderCupPlanner({host:body,draft,allDrafts,onSettings});

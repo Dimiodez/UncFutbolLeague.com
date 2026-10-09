@@ -49,8 +49,9 @@ function settingsFrom(values){
  }
  return validateScheduleSettings({...values,byePolicyRevision:2});
 }
-function renderDrafts(){
+function renderDrafts({sectionOnly=false}={}){
  pendingCalendarChange=null;
+ if(!sectionOnly){
  root.after(review);
  save.disabled=download.disabled=!(drafts.length||seasons.length||competitions.length);
  root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">No built-in leagues. Create your first draft to see fixtures here.</p>';
@@ -75,6 +76,7 @@ function renderDrafts(){
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
   const button=document.createElement('button');button.type='button';button.textContent='Open league tabs';button.onclick=()=>{try{persistDrafts();activeLeague=index;activeTab='overview';renderDrafts();pageHost.scrollIntoView({block:'start'});}catch(error){message.textContent=`Could not save this draft: ${error.message}`;}};card.querySelector('h2').after(button);
  });
+ }
  if(activeLeague!==null&&!drafts[activeLeague])activeLeague=null;
  document.querySelector('.workshop-layout').hidden=activeLeague!==null;
  document.querySelector('#league-overview').hidden=activeLeague!==null;
@@ -82,7 +84,7 @@ function renderDrafts(){
  if(activeLeague!==null){
   const index=activeLeague;
   renderLeaguePage({host:pageHost,card:root.querySelector(`#league-${index}`),draft:drafts[index],allDrafts:drafts,index,tab:activeTab,
-   onTab:tab=>{activeTab=tab;renderDrafts();},onClose:()=>{activeLeague=null;renderDrafts();},
+   onTab:tab=>{if(tab===activeTab)return;activeTab=tab;renderDrafts({sectionOnly:true});const panel=pageHost.querySelector('[role="tabpanel"]');panel.scrollIntoView({block:'start'});const selected=pageHost.querySelector(`[data-tab="${tab}"]`);selected.scrollIntoView({block:'nearest',inline:'nearest'});selected.focus({preventScroll:true});},onClose:()=>{activeLeague=null;renderDrafts();document.querySelector('.league-library-heading').scrollIntoView({block:'start'});document.querySelector('[data-new-league]').focus({preventScroll:true});},
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Download draft file in All leagues & seasons to move them to another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
@@ -95,7 +97,7 @@ function renderDrafts(){
    },
    onTeamRemove:id=>{drafts[index]=removeDraftTeam(drafts[index],id);renderDrafts();persistDrafts();pageReport('Team removed from this draft league only. No live data was changed. Restore an exported draft backup to recover it.');},onReport:pageReport});
  }
- enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost});
+ enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost,sectionOnly});
 }
 function updateLeague(index,values){
  const settings=settingsFrom(values),draft=drafts[index];

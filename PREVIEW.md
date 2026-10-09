@@ -1,5 +1,9 @@
 # UFL major-update preview
 
+## Workshop navigation — 9 October 2026
+
+League section changes render only the active league view, not the league library and season tools. Borrowed registration/calendar/fixture controls are returned before switching sections so repeat visits preserve their controls. Every section, including TOTW/TOTS, has Back/Next navigation and an overview return where applicable. Desktop sidebar and mobile scrolling tab strip remain available while reading long sections; mobile spacing accounts for the site header. Selected tabs receive keyboard focus without a page reload. Existing award-unsaved-change protection is retained. Browser QA covered every section, footer return controls, repeated Teams visits and 390px mobile layout. Live website and bot remain untouched.
+
 ## Dashboards, registration UX and selective season rollover — 8 October 2026
 
 Current priority: manager/player dashboards, deadline/status/invitation/save-state UX, and selective admin rollover. Shared public publishing, match administration/corrections, transfers/releases, broader audit/recovery tooling and other expansion suggestions are **tabled**, not authorized by this slice. EA verification remains deferred. Existing bot-link/Twitch final launch checks stay pending.
