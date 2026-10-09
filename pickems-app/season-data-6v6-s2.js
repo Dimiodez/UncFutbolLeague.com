@@ -3,7 +3,7 @@ window.UFL_SEASON_6V6_S2 = {
   "division": "6v6",
   "uflSeason": 2,
   "game": "FC27",
-  "status": "registration",
+  "status": "active",
   "competitionId": 1,
   "seasonId": 2,
   "seriesSource": "https://ufl.virtualarena.app/competition-series/1/seasons/2",
@@ -300,7 +300,764 @@ window.UFL_SEASON_6V6_S2 = {
       0
     ]
   ],
-  "weeks": [],
+  "weeks": [
+    {
+      "week": 1,
+      "date": "Thu 15 Oct, 6:00 PM EDT",
+      "scheduledAt": 1792101600,
+      "matches": [
+        [
+          102,
+          "ITA",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          103,
+          "FCB",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          104,
+          "ARS",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          105,
+          "TK",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          106,
+          "LA",
+          "ROM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 2,
+      "date": "Thu 15 Oct, 6:30 PM EDT",
+      "scheduledAt": 1792103400,
+      "matches": [
+        [
+          107,
+          "TLC",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          108,
+          "ITA",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          109,
+          "PHN",
+          "TK",
+          null,
+          null
+        ],
+        [
+          110,
+          "DRU",
+          "LA",
+          null,
+          null
+        ],
+        [
+          111,
+          "PUM",
+          "ROM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 3,
+      "date": "Thu 22 Oct, 6:00 PM EDT",
+      "scheduledAt": 1792706400,
+      "matches": [
+        [
+          112,
+          "ARS",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          113,
+          "TK",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          114,
+          "LA",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          115,
+          "ROM",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          116,
+          "PUM",
+          "DRU",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 4,
+      "date": "Thu 22 Oct, 6:30 PM EDT",
+      "scheduledAt": 1792708200,
+      "matches": [
+        [
+          117,
+          "TLC",
+          "TK",
+          null,
+          null
+        ],
+        [
+          118,
+          "ARS",
+          "LA",
+          null,
+          null
+        ],
+        [
+          119,
+          "FCB",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          120,
+          "ITA",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          121,
+          "PHN",
+          "DRU",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 5,
+      "date": "Thu 29 Oct, 6:00 PM EDT",
+      "scheduledAt": 1793311200,
+      "matches": [
+        [
+          122,
+          "LA",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          123,
+          "ROM",
+          "TK",
+          null,
+          null
+        ],
+        [
+          124,
+          "PUM",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          125,
+          "DRU",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          126,
+          "PHN",
+          "ITA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 6,
+      "date": "Thu 29 Oct, 6:30 PM EDT",
+      "scheduledAt": 1793313000,
+      "matches": [
+        [
+          127,
+          "TLC",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          128,
+          "LA",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          129,
+          "TK",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          130,
+          "ARS",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          131,
+          "FCB",
+          "ITA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 7,
+      "date": "Thu 05 Nov, 5:00 PM EST",
+      "scheduledAt": 1793916000,
+      "matches": [
+        [
+          132,
+          "PUM",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          133,
+          "DRU",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          134,
+          "PHN",
+          "LA",
+          null,
+          null
+        ],
+        [
+          135,
+          "ITA",
+          "TK",
+          null,
+          null
+        ],
+        [
+          136,
+          "FCB",
+          "ARS",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 8,
+      "date": "Thu 05 Nov, 5:30 PM EST",
+      "scheduledAt": 1793917800,
+      "matches": [
+        [
+          137,
+          "TLC",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          138,
+          "PUM",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          139,
+          "ROM",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          140,
+          "LA",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          141,
+          "TK",
+          "ARS",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 9,
+      "date": "Thu 12 Nov, 5:00 PM EST",
+      "scheduledAt": 1794520800,
+      "matches": [
+        [
+          142,
+          "PHN",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          143,
+          "ITA",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          144,
+          "FCB",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          145,
+          "ARS",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          146,
+          "TK",
+          "LA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 10,
+      "date": "Thu 12 Nov, 5:30 PM EST",
+      "scheduledAt": 1794522600,
+      "matches": [
+        [
+          147,
+          "TLC",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          148,
+          "PHN",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          149,
+          "DRU",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          150,
+          "PUM",
+          "TK",
+          null,
+          null
+        ],
+        [
+          151,
+          "ROM",
+          "LA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 11,
+      "date": "Thu 19 Nov, 5:00 PM EST",
+      "scheduledAt": 1795125600,
+      "matches": [
+        [
+          152,
+          "FCB",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          153,
+          "ARS",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          154,
+          "TK",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          155,
+          "LA",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          156,
+          "ROM",
+          "PUM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 12,
+      "date": "Thu 19 Nov, 5:30 PM EST",
+      "scheduledAt": 1795127400,
+      "matches": [
+        [
+          157,
+          "TLC",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          158,
+          "FCB",
+          "TK",
+          null,
+          null
+        ],
+        [
+          159,
+          "ITA",
+          "LA",
+          null,
+          null
+        ],
+        [
+          160,
+          "PHN",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          161,
+          "DRU",
+          "PUM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 13,
+      "date": "Thu 26 Nov, 5:00 PM EST",
+      "scheduledAt": 1795730400,
+      "matches": [
+        [
+          162,
+          "TK",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          163,
+          "LA",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          164,
+          "ROM",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          165,
+          "PUM",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          166,
+          "DRU",
+          "PHN",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 14,
+      "date": "Thu 26 Nov, 5:30 PM EST",
+      "scheduledAt": 1795732200,
+      "matches": [
+        [
+          167,
+          "TLC",
+          "LA",
+          null,
+          null
+        ],
+        [
+          168,
+          "TK",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          169,
+          "ARS",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          170,
+          "FCB",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          171,
+          "ITA",
+          "PHN",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 15,
+      "date": "Thu 03 Dec, 5:00 PM EST",
+      "scheduledAt": 1796335200,
+      "matches": [
+        [
+          172,
+          "ROM",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          173,
+          "PUM",
+          "LA",
+          null,
+          null
+        ],
+        [
+          174,
+          "DRU",
+          "TK",
+          null,
+          null
+        ],
+        [
+          175,
+          "PHN",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          176,
+          "ITA",
+          "FCB",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 16,
+      "date": "Thu 03 Dec, 5:30 PM EST",
+      "scheduledAt": 1796337000,
+      "matches": [
+        [
+          177,
+          "TLC",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          178,
+          "ROM",
+          "DRU",
+          null,
+          null
+        ],
+        [
+          179,
+          "LA",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          180,
+          "TK",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          181,
+          "ARS",
+          "FCB",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 17,
+      "date": "Thu 10 Dec, 5:00 PM EST",
+      "scheduledAt": 1796940000,
+      "matches": [
+        [
+          182,
+          "DRU",
+          "TLC",
+          null,
+          null
+        ],
+        [
+          183,
+          "PHN",
+          "PUM",
+          null,
+          null
+        ],
+        [
+          184,
+          "ITA",
+          "ROM",
+          null,
+          null
+        ],
+        [
+          185,
+          "FCB",
+          "LA",
+          null,
+          null
+        ],
+        [
+          186,
+          "ARS",
+          "TK",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 18,
+      "date": "Thu 10 Dec, 5:30 PM EST",
+      "scheduledAt": 1796941800,
+      "matches": [
+        [
+          187,
+          "TLC",
+          "PHN",
+          null,
+          null
+        ],
+        [
+          188,
+          "DRU",
+          "ITA",
+          null,
+          null
+        ],
+        [
+          189,
+          "PUM",
+          "FCB",
+          null,
+          null
+        ],
+        [
+          190,
+          "ROM",
+          "ARS",
+          null,
+          null
+        ],
+        [
+          191,
+          "LA",
+          "TK",
+          null,
+          null
+        ]
+      ]
+    }
+  ],
   "leaderboards": {
     "players": {
       "goals": {
