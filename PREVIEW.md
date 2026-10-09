@@ -1,5 +1,9 @@
 # UFL major-update preview
 
+## Workspace-level navigation — 9 October 2026
+
+The top workspace destinations (League Administration, EA Club Lookup, Player Directory, My Dashboard) now share one navigation definition and an explicit Back to League Workspace link outside administration. EA lookup uses the branded workshop shell without changing its search/auth behavior. The existing player directory retains its router and portraits; a `workspace=1` entry parameter adds the shared navigation/return bar only in workspace context. This corrects the earlier misunderstanding that the requested navigation only concerned tabs inside an individual league. Verified the four destinations and return links in browser. Preview only.
+
 ## Workshop navigation — 9 October 2026
 
 League section changes render only the active league view, not the league library and season tools. Borrowed registration/calendar/fixture controls are returned before switching sections so repeat visits preserve their controls. Every section, including TOTW/TOTS, has Back/Next navigation and an overview return where applicable. Desktop sidebar and mobile scrolling tab strip remain available while reading long sections; mobile spacing accounts for the site header. Selected tabs receive keyboard focus without a page reload. Existing award-unsaved-change protection is retained. Browser QA covered every section, footer return controls, repeated Teams visits and 390px mobile layout. Live website and bot remain untouched.
