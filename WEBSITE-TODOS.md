@@ -1,5 +1,16 @@
 # Next website session
 
+## Saved handoff — October 8, 2026
+
+- Latest verified live feature release: `04dcb7fde0c187823b2cfce8834da8ee094a757a`. Both house teams now use shared-match team goals for attacking partnerships, require five qualifying matches for defensive/winning rates, disclose incomplete player-detail coverage, retain loaded details for retry, and pace requests with a rate-limit cooldown. Eighteen targeted checks passed. No new partnership awards were added.
+- Arcade creator credits are live on all four cards. The bottom invitation opens `/arcade/submit`, with Discord contact `@dimio11`, idea pitches, source submission/review requirements, leaderboard guidance, and beginner Codex/GitHub instructions including commits and pushes. There is no new upload endpoint or automatic publishing workflow.
+- Season 2 roster first pass updated 79 memberships using 48 existing identities and six initially new identities; 12 outdated memberships were released to the pool, not deleted. Stable VA user links were saved in production; migration `0019_va_player_links.sql` records the schema. Do not replay the one-time import against an already updated database.
+- Owner subsequently confirmed Matt is xdestroy-lonely. The two records were soft-merged into Matt's existing identity `1790190642688`, with display name `xdestroy-lonely` and both existing profile URLs preserved. VA user 70 now links to that identity. The mistaken goalkeeper designation was removed; VA position remains MID for Roma 6v6 and unspecified for Timbers 10v10. Do not create Matt/xdestroy again.
+- Seventeen uncertain VA names still need owner confirmation before import/merge: rfpqgold, BravoAnte, zo54, liz4, nb70, Rippy Nolan, Bradical, 77 Days Til Hockey Season, K0zmic kay, H00bear, Hartman, Espahr, mystahdeek, bn95, SamLoscarinho, Cookie Monster, Chip. Do not infer verified Discord identities from VA usernames or gaming handles.
+- Private pre-change roster snapshots, reviewed import plans, verification reports and Matt merge backup are saved under `C:/Users/twizz/Documents/New project/` with `UFL-VA-ROSTER-*` and `UFL-MATT-XDESTROY-*` names. Preserve these recovery artifacts; do not publish them. Some reports precede the Matt merge and are historical, not authoritative current state.
+- Keep the scoped image permissions already deployed: explicit team managers can submit player photos for staff approval; owners/admins approve player portraits; team logos/stadium images publish directly for authorized managers/staff. No team deletion or further unconfirmed player merges are authorized by this handoff.
+- Google dangerous-site/OAuth reputation concerns remain a separate unresolved item. Do not treat successful roster or arcade deployments as confirmation that browser security warnings are resolved.
+
 ## Preserve production data on every layout release
 
 - Keep `.github/workflows/sync-virtual-arena.yml` and `scripts/sync-virtual-arena.mjs` active. Scheduled sync runs four times daily; these are published snapshots, not an in-match live feed.
