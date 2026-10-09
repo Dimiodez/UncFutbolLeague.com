@@ -1189,8 +1189,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-08T20:37:24.000Z",
-    "statsFetchedAt": "2026-10-08T20:37:24.000Z",
+    "syncedAt": "2026-10-09T07:00:02.000Z",
+    "statsFetchedAt": "2026-10-09T07:00:02.000Z",
     "statsStatus": "available",
     "teams": {
       "ARS": [
