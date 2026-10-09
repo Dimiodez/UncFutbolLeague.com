@@ -145,7 +145,7 @@ window.UFL_SEASON_6V6_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
-      "rosterSize": 1,
+      "rosterSize": 3,
       "stats": []
     },
     {

@@ -1323,7 +1323,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
-        "rosterSize": 1,
+        "rosterSize": 3,
         "stats": []
       },
       {
@@ -2732,7 +2732,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-        "rosterSize": 7,
+        "rosterSize": 8,
         "stats": []
       }
     ],

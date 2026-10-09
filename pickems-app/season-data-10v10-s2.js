@@ -133,7 +133,7 @@ window.UFL_SEASON_10V10_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-      "rosterSize": 7,
+      "rosterSize": 8,
       "stats": []
     }
   ],
