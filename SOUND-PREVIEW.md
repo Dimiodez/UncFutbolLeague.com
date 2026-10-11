@@ -1,5 +1,9 @@
 # Sound preview — October 11, 2026
 
+## Current decision: YouTube only
+
+Spotify support and its test selection have been retired at the user's request. Sound accepts up to five YouTube playlists or albums total, including YouTube Music album Share links represented as `/playlist?list=OLAK…`. Only owner/admin can manage selections. `20261011_sound_youtube_only.sql` removes Spotify entries without deleting/reordering remaining YouTube selections, and is safe to rerun. Public UI, iframe code and CSP no longer include Spotify. Earlier sections below record historical development, not current provider support.
+
 ## YouTube test update
 
 - Accepts HTTPS Spotify, YouTube and YouTube Music playlist links, canonicalized server-side; five playlists total across both providers. Provider and playlist ID are derived from the validated URL, not trusted from client input.

@@ -6,15 +6,12 @@ export function normalizePlaylists(value) {
   return value.map(item => {
     if (!item || typeof item !== 'object') throw new Error('Invalid playlist.');
     let url;
-    try { url = new URL(item.url); } catch { throw new Error('Use a Spotify or YouTube playlist link.'); }
-    if (url.protocol !== 'https:' || url.username || url.password || url.port) throw new Error('Use a Spotify or YouTube playlist link.');
+    try { url = new URL(item.url); } catch { throw new Error('Use the Share link for a YouTube playlist or album.'); }
+    if (url.protocol !== 'https:' || url.username || url.password || url.port) throw new Error('Use the Share link for a YouTube playlist or album.');
     let provider, id, canonical;
-    const match = url.pathname.match(/^\/playlist\/([A-Za-z0-9]{22})\/?$/);
-    if (url.origin === 'https://open.spotify.com' && match) {
-      provider = 'spotify'; id = match[1]; canonical = `https://open.spotify.com/playlist/${id}`;
-    } else if (['youtube.com','www.youtube.com','music.youtube.com'].includes(url.hostname) && /^\/playlist\/?$/.test(url.pathname) && url.searchParams.getAll('list').length === 1 && /^[A-Za-z0-9_-]{10,100}$/.test(url.searchParams.get('list') || '')) {
+    if (['youtube.com','www.youtube.com','music.youtube.com'].includes(url.hostname) && /^\/playlist\/?$/.test(url.pathname) && url.searchParams.getAll('list').length === 1 && /^[A-Za-z0-9_-]{10,100}$/.test(url.searchParams.get('list') || '')) {
       provider = 'youtube'; id = url.searchParams.get('list'); canonical = `https://www.youtube.com/playlist?list=${id}`;
-    } else { throw new Error('Use a Spotify or YouTube playlist link.'); }
+    } else { throw new Error('Use the Share link for a YouTube playlist or album.'); }
     if (seen.has(`${provider}:${id}`)) throw new Error('That playlist is already on the list.');
     seen.add(`${provider}:${id}`);
     const title = typeof item.title === 'string' ? item.title.trim() : '';
