@@ -1817,8 +1817,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 9,
-        "date": "Thu 12 Nov, 10:00 PM EST",
-        "scheduledAt": 1794538800,
+        "date": "Thu 19 Nov, 9:00 PM EST",
+        "scheduledAt": 1795140000,
         "matches": [
           [
             142,
@@ -1859,8 +1859,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 10,
-        "date": "Thu 12 Nov, 10:30 PM EST",
-        "scheduledAt": 1794540600,
+        "date": "Thu 19 Nov, 9:30 PM EST",
+        "scheduledAt": 1795141800,
         "matches": [
           [
             147,
@@ -1901,8 +1901,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 11,
-        "date": "Thu 19 Nov, 10:00 PM EST",
-        "scheduledAt": 1795143600,
+        "date": "Thu 26 Nov, 9:00 PM EST",
+        "scheduledAt": 1795744800,
         "matches": [
           [
             152,
@@ -1943,8 +1943,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 12,
-        "date": "Thu 19 Nov, 10:30 PM EST",
-        "scheduledAt": 1795145400,
+        "date": "Thu 26 Nov, 9:30 PM EST",
+        "scheduledAt": 1795746600,
         "matches": [
           [
             157,
@@ -1985,8 +1985,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 13,
-        "date": "Thu 26 Nov, 10:00 PM EST",
-        "scheduledAt": 1795748400,
+        "date": "Thu 03 Dec, 9:00 PM EST",
+        "scheduledAt": 1796349600,
         "matches": [
           [
             162,
@@ -2027,8 +2027,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 14,
-        "date": "Thu 26 Nov, 10:30 PM EST",
-        "scheduledAt": 1795750200,
+        "date": "Thu 03 Dec, 9:30 PM EST",
+        "scheduledAt": 1796351400,
         "matches": [
           [
             167,
@@ -2069,8 +2069,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 15,
-        "date": "Thu 03 Dec, 10:00 PM EST",
-        "scheduledAt": 1796353200,
+        "date": "Thu 10 Dec, 9:00 PM EST",
+        "scheduledAt": 1796954400,
         "matches": [
           [
             172,
@@ -2111,8 +2111,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 16,
-        "date": "Thu 03 Dec, 10:30 PM EST",
-        "scheduledAt": 1796355000,
+        "date": "Thu 10 Dec, 9:30 PM EST",
+        "scheduledAt": 1796956200,
         "matches": [
           [
             177,
@@ -2153,8 +2153,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 17,
-        "date": "Thu 10 Dec, 10:00 PM EST",
-        "scheduledAt": 1796958000,
+        "date": "Thu 17 Dec, 9:00 PM EST",
+        "scheduledAt": 1797559200,
         "matches": [
           [
             182,
@@ -2195,8 +2195,8 @@ window.UFL_SEASONS = {
       },
       {
         "week": 18,
-        "date": "Thu 10 Dec, 10:30 PM EST",
-        "scheduledAt": 1796959800,
+        "date": "Thu 17 Dec, 9:30 PM EST",
+        "scheduledAt": 1797561000,
         "matches": [
           [
             187,
