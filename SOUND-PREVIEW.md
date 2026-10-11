@@ -1,5 +1,13 @@
 # Sound preview — October 11, 2026
 
+## YouTube test update
+
+- Accepts HTTPS Spotify, YouTube and YouTube Music playlist links, canonicalized server-side; five playlists total across both providers. Provider and playlist ID are derived from the validated URL, not trusted from client input.
+- Requested YouTube playlist `OLAK5uy_mi3B8_JLj-ehEm2O6l6qKQWUoHqzPClBk` appears first; the prior Spotify selection remains available separately. Seed migration preserves other selections and avoids duplicates.
+- YouTube uses the visible, click-to-load privacy-enhanced player at `www.youtube-nocookie.com`, with an explicit strict-origin-when-cross-origin Referer policy. No autoplay, hidden audio-only player, account collection or ad blocking.
+- Embedding/region/age restrictions and ads are controlled by YouTube; verify this specific playlist before promising full playback. Owner/admin and CSRF checks unchanged.
+- Browser verification: requested playlist resolved to “No Big Deal” by Dimio; player exposed a 189.661-second duration and progressing playback with no media error. This verifies the tested track/session, not every track, region or account.
+
 Preview only: `/sound`, linked from Fun. Production website and bot are unchanged.
 
 - Temporary playlist: `6iqa4OoxhBFrEBXAxul9cG`; not the upcoming FCFA playlist.
