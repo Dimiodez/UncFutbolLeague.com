@@ -6,6 +6,7 @@ import {sameOrigin} from './functions/_lib/auth.js';
 import {previewEaApi} from './functions/_lib/preview-ea.js';
 import {previewAwardsApi} from './functions/_lib/preview-awards.js';
 import {previewRegistrationApi} from './functions/_lib/preview-registration.js';
+import {previewSoundApi} from './functions/_lib/preview-sound.js';
 // Preview boundary: no production DB, storage, OAuth sessions, or bot bindings.
 // Photos remain owned by production; this narrowly scoped GET proxy only displays them.
 const LIVE_ORIGIN = 'https://www.uncfutbolleague.com';
@@ -13,6 +14,9 @@ const json = (value, status = 200) => Response.json(value, {status, headers:{'ca
 export default {
  async fetch(request, env) {
   const url = new URL(request.url), path = url.pathname;
+  if (path.split('/').some(part => part.startsWith('.') || ['functions','scripts','migrations','bot-match-bridge'].includes(part)) || /\.(?:md|toml|ps1|sql)$/i.test(path) || path === '/dev-server.mjs') {
+   return new Response('Not found',{status:404,headers:{'cache-control':'no-store','x-robots-tag':'noindex, nofollow'}});
+  }
   if (path === '/api/auth/discord' && request.method === 'GET') return discordLogin({request,env});
   if (path === '/api/auth/callback' && request.method === 'GET') return discordCallback({request,env});
   if (path === '/api/auth/session' && request.method === 'GET') return authSession({request,env});
@@ -23,6 +27,7 @@ export default {
   if (path.startsWith('/api/ea/')) return previewEaApi(request,env);
   if (path === '/api/awards') return previewAwardsApi(request,env);
   if (path === '/api/registration') return previewRegistrationApi(request,env);
+  if (path === '/api/sound') return previewSoundApi(request,env);
   if (!['GET','HEAD'].includes(request.method)) return json({error:'Changes are disabled in this read-only development preview. Live data has not been changed.'},403);
   const portrait = /^\/assets\/league\/player-[a-zA-Z0-9._-]+$/.test(path) || path === '/api/player-portraits' || /^\/api\/player-portraits\/[a-zA-Z0-9_-]+$/.test(path);
   if (portrait) {

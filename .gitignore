@@ -1,6 +1,7 @@
 .edge-qa*/
 .edge-*-qa/
 preview-*.png
+preview-*.jpg
 .dev.vars
 .dev.vars.*
 .wrangler/
