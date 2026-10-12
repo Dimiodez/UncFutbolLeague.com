@@ -3,7 +3,7 @@ window.UFL_SEASON_10V10_S2 = {
   "division": "10v10",
   "uflSeason": 2,
   "game": "FC27",
-  "status": "registration",
+  "status": "active",
   "competitionId": 3,
   "seasonId": 5,
   "seriesSource": "https://ufl.virtualarena.app/competitions/3/seasons/5",
@@ -68,7 +68,7 @@ window.UFL_SEASON_10V10_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
-      "rosterSize": 5,
+      "rosterSize": 6,
       "stats": []
     },
     {
@@ -94,7 +94,7 @@ window.UFL_SEASON_10V10_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
-      "rosterSize": 7,
+      "rosterSize": 8,
       "stats": []
     },
     {
@@ -107,7 +107,7 @@ window.UFL_SEASON_10V10_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
       "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-timbers-1790644273.jpg",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
-      "rosterSize": 11,
+      "rosterSize": 12,
       "stats": []
     },
     {
@@ -216,7 +216,400 @@ window.UFL_SEASON_10V10_S2 = {
       0
     ]
   ],
-  "weeks": [],
+  "weeks": [
+    {
+      "week": 1,
+      "date": "Tue 13 Oct, 10:00 PM EDT",
+      "scheduledAt": 1791943200,
+      "matches": [
+        [
+          234,
+          "PALA",
+          "RM",
+          null,
+          null
+        ],
+        [
+          235,
+          "TK",
+          "ACM",
+          null,
+          null
+        ],
+        [
+          236,
+          "TFC",
+          "NOB",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 2,
+      "date": "Tue 13 Oct, 10:30 PM EDT",
+      "scheduledAt": 1791945000,
+      "matches": [
+        [
+          237,
+          "RM",
+          "TK",
+          null,
+          null
+        ],
+        [
+          238,
+          "PALA",
+          "TFC",
+          null,
+          null
+        ],
+        [
+          239,
+          "NOB",
+          "MAY",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 3,
+      "date": "Tue 20 Oct, 10:00 PM EDT",
+      "scheduledAt": 1792548000,
+      "matches": [
+        [
+          240,
+          "TFC",
+          "RM",
+          null,
+          null
+        ],
+        [
+          241,
+          "MAY",
+          "PALA",
+          null,
+          null
+        ],
+        [
+          242,
+          "NOB",
+          "ACM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 4,
+      "date": "Tue 20 Oct, 10:30 PM EDT",
+      "scheduledAt": 1792549800,
+      "matches": [
+        [
+          243,
+          "TFC",
+          "MAY",
+          null,
+          null
+        ],
+        [
+          244,
+          "TK",
+          "NOB",
+          null,
+          null
+        ],
+        [
+          245,
+          "PALA",
+          "ACM",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 5,
+      "date": "Tue 27 Oct, 10:00 PM EDT",
+      "scheduledAt": 1793152800,
+      "matches": [
+        [
+          246,
+          "MAY",
+          "RM",
+          null,
+          null
+        ],
+        [
+          247,
+          "ACM",
+          "TFC",
+          null,
+          null
+        ],
+        [
+          248,
+          "PALA",
+          "TK",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 6,
+      "date": "Tue 27 Oct, 10:30 PM EDT",
+      "scheduledAt": 1793154600,
+      "matches": [
+        [
+          249,
+          "RM",
+          "NOB",
+          null,
+          null
+        ],
+        [
+          250,
+          "MAY",
+          "ACM",
+          null,
+          null
+        ],
+        [
+          251,
+          "TFC",
+          "TK",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 7,
+      "date": "Tue 03 Nov, 10:00 PM EST",
+      "scheduledAt": 1793761200,
+      "matches": [
+        [
+          252,
+          "ACM",
+          "RM",
+          null,
+          null
+        ],
+        [
+          253,
+          "PALA",
+          "NOB",
+          null,
+          null
+        ],
+        [
+          254,
+          "TK",
+          "MAY",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 8,
+      "date": "Tue 03 Nov, 10:30 PM EST",
+      "scheduledAt": 1793763000,
+      "matches": [
+        [
+          255,
+          "RM",
+          "PALA",
+          null,
+          null
+        ],
+        [
+          256,
+          "ACM",
+          "TK",
+          null,
+          null
+        ],
+        [
+          257,
+          "NOB",
+          "TFC",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 9,
+      "date": "Tue 17 Nov, 10:00 PM EST",
+      "scheduledAt": 1794970800,
+      "matches": [
+        [
+          258,
+          "TK",
+          "RM",
+          null,
+          null
+        ],
+        [
+          259,
+          "TFC",
+          "PALA",
+          null,
+          null
+        ],
+        [
+          260,
+          "MAY",
+          "NOB",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 10,
+      "date": "Tue 17 Nov, 10:30 PM EST",
+      "scheduledAt": 1794972600,
+      "matches": [
+        [
+          261,
+          "RM",
+          "TFC",
+          null,
+          null
+        ],
+        [
+          262,
+          "PALA",
+          "MAY",
+          null,
+          null
+        ],
+        [
+          263,
+          "ACM",
+          "NOB",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 11,
+      "date": "Tue 24 Nov, 10:00 PM EST",
+      "scheduledAt": 1795575600,
+      "matches": [
+        [
+          264,
+          "MAY",
+          "TFC",
+          null,
+          null
+        ],
+        [
+          265,
+          "NOB",
+          "TK",
+          null,
+          null
+        ],
+        [
+          266,
+          "ACM",
+          "PALA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 12,
+      "date": "Tue 24 Nov, 10:30 PM EST",
+      "scheduledAt": 1795577400,
+      "matches": [
+        [
+          267,
+          "RM",
+          "MAY",
+          null,
+          null
+        ],
+        [
+          268,
+          "TFC",
+          "ACM",
+          null,
+          null
+        ],
+        [
+          269,
+          "TK",
+          "PALA",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 13,
+      "date": "Tue 01 Dec, 10:00 PM EST",
+      "scheduledAt": 1796180400,
+      "matches": [
+        [
+          270,
+          "NOB",
+          "RM",
+          null,
+          null
+        ],
+        [
+          271,
+          "ACM",
+          "MAY",
+          null,
+          null
+        ],
+        [
+          272,
+          "TK",
+          "TFC",
+          null,
+          null
+        ]
+      ]
+    },
+    {
+      "week": 14,
+      "date": "Tue 01 Dec, 10:30 PM EST",
+      "scheduledAt": 1796182200,
+      "matches": [
+        [
+          273,
+          "RM",
+          "ACM",
+          null,
+          null
+        ],
+        [
+          274,
+          "NOB",
+          "PALA",
+          null,
+          null
+        ],
+        [
+          275,
+          "MAY",
+          "TK",
+          null,
+          null
+        ]
+      ]
+    }
+  ],
   "leaderboards": {
     "players": {
       "goals": {
