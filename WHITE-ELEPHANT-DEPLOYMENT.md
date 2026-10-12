@@ -1,5 +1,7 @@
 # White Elephant captain draft
 
+Captain steal allowance: separate 1/2 dropdown (default 1), saved with the draft and locked after starting. Each successful steal counts toward that captain's total, including replacement turns; failed moves and pool picks do not. Per-team counters display usage, steal buttons disable at the limit, and the shared move engine rejects drag steals too. Reset clears totals. Legacy saved drafts without counters start at zero. 39 source tests and TypeScript passed.
+
 Replacement-turn correction (source 2f709fa): a stolen player's captain gets an immediate replacement pick. Replacement steals pass the pick to the newly displaced team. The normal turn index remains held until the replacement chain finishes, preserving regular turns and snake endpoints. Pending replacement turns persist across reload and clear on reset. All 36 source tests and TypeScript passed.
 
 12 October 2026: UNC Wheel Captain Draft now has an optional White Elephant rule set with a selectable 1/2 steal limit. Drafting from the pool or stealing advances the selected draft order; full teams are skipped. Captains are protected and players lock after the selected steal limit. Turn and steal counts persist with the existing Session saves and event snapshots. Optional holiday accents include Christmas/Hanukkah-inspired navy/red, blue, silver, gold and snowflakes. This is not a league-workshop change.
