@@ -1,5 +1,7 @@
 # Team hub suite · workshop only
 
+Side-by-side mode compares any two saved boards, defaulting to attack and defence. Each panel keeps its board selection when switching the active editor; the red outline identifies the editable panel. Both are views of the same playbook records, so assignments, drawings and instructions remain independent and save together. Small screens scroll horizontally to preserve the side-by-side view; single-board mode remains available. The Roma demo snapshot now matches the eight-player public roster checked October 12, including H00bear and ROSA, with current names and canonical IDs.
+
 Team hubs use the shared 44-formation catalogue. Managers create up to 30 named attacking, defending, transition or set-piece boards with a full XI, current registered squad assignments, adjustable marker positions, position instructions, coaching notes, movement arrows, ball and opponent markers. Formation changes retain assignments; occupied-position assignment swaps players. Touch selection complements pointer dragging. Duplicate, undo, shape reset and clear tools support reuse.
 
 `/team-hub?team=<preview registration team ID>` is private. Active team managers and website owner/admin can edit; approved roster members can read. Other users and pending requests are rejected on the server. Each team's shared playbook lives in isolated preview D1, with account checks, same-origin writes, roster/geometry validation and atomic revision checks preventing stale overwrites. No production data or permissions are changed.

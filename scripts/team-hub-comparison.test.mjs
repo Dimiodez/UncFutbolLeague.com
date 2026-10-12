@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {comparisonPair} from '../team-hub-comparison.js';
+import {ROMA_ROSTER} from '../team-hub-roma.js';
+const boards=[{id:'a',phase:'attack'},{id:'d',phase:'defence'},{id:'s',phase:'setpiece'}];
+assert.deepEqual(comparisonPair(boards,'a',null,null),{left:'a',right:'d'});
+assert.deepEqual(comparisonPair(boards,'d','a','d'),{left:'a',right:'d'});
+assert.deepEqual(comparisonPair(boards,'s','a','d'),{left:'s',right:'d'});
+assert.deepEqual(comparisonPair(boards.slice(0,1),'a','a','d'),{left:'a',right:undefined});
+assert.equal(ROMA_ROSTER.length,8);
+assert.equal(new Set(ROMA_ROSTER.map(p=>p.id)).size,8);
+assert(ROMA_ROSTER.some(p=>p.name==='H00bear'));
+assert(ROMA_ROSTER.some(p=>p.name==='ROSA'));
+console.log('PASS: stable comparison pair, active-side switching, deleted boards and official eight-player Roma snapshot.');
