@@ -83,6 +83,10 @@ html[data-theme="dark"] .league-standings-table td:last-child { color:var(--sky)
 .league-stat-board h2 { margin:.5rem 0; font-size:1.8rem; }
 .league-stat-board header p,.league-stat-empty p { color:var(--muted); font-size:.85rem; line-height:1.65; }
 .league-stat-columns { display:flex; justify-content:space-between; gap:1rem; padding:1rem 1.5rem; border-block:1px solid var(--line); font-size:.75rem; color:var(--muted); background:var(--paper); }
+.league-stat-records { list-style:none; padding:0 1.5rem; margin:0; }
+.league-stat-records li { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding:1rem 0; border-bottom:1px solid var(--line); }
+.league-stat-records small { display:block; color:var(--muted); margin-top:.35rem; }
+.league-stat-records b { color:var(--red); font-size:1.25rem; }
 .league-stat-empty { padding:2rem; text-align:center; }
 .league-stat-empty>span { font-size:2rem; color:var(--muted); }
 .league-stat-empty h3 { font-size:1rem; }

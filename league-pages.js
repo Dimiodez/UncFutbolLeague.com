@@ -36,10 +36,26 @@ const leagueStatCategories = [
   ['clean-sheets','Shutout specialists','Defender clean sheets','Defense','Keeping the opposition off the scoreboard.'],
   ['rating','MVP race','Average match rating','MVP','Consistency across every match.']
 ];
+const leagueLiveFeeds = new Map();
+const leagueLivePending = new Set();
+function leagueOfficialSource(context,kind) {
+  const competition=context.division==='10v10'?3:1, season=context.selected.id==='1'?1:context.division==='10v10'?5:2;
+  return `https://ufl.virtualarena.app/competitions/${competition}/seasons/${season}/${kind}`;
+}
+function leagueFeedNote(context,kind) {
+  if(!context.selected.divisions[context.division])return '<p class="sync-note">This division was not contested in the selected season.</p>';
+  const live=context.selected.current?leagueLiveFeeds.get(`${context.division}:${kind}`):null, stamp=live?.syncedAt||context.season?.syncedAt;
+  return `<p class="sync-note">${context.archive?'Archived official results':live?'Official VA feed · refreshes every 5 minutes':'Official VA feed · showing the last saved update'}${stamp?` · ${escapeHtml(new Date(stamp).toLocaleString())}`:''}. Updates follow results recorded on Virtual Arena.</p><a class="button button-secondary" href="${leagueOfficialSource(context,kind)}" target="_blank" rel="noopener noreferrer">Open official ${kind} ↗</a>`;
+}
 function leagueViewContext(params) {
   const selected=selectedLeagueSeason(params);
   const division=params.get('division')==='10v10'?'10v10':'6v6';
-  const official=leagueSeasonFor(division,selected.id);
+  let official=leagueSeasonFor(division,selected.id);
+  if(selected.id==='2'&&official){
+    const live=leagueLiveFeeds.get(`${division}:standings`), stats=leagueLiveFeeds.get(`${division}:stats`);
+    const mapped=live?.standings.map(row=>{const team=official.teamDetails?.find(t=>t.teamId===row.teamId)||official.teamDetails?.find(t=>t.name===row.name);return team?[team.key,...row.stats]:null;});
+    official={...official,...(mapped?.length&&mapped.every(Boolean)?{standings:mapped}:{}),...(stats?{leaderboards:stats.leaderboards}:{})};
+  }
   const provisional=selected.id==='2'?leagueProvisionalSeasons[division]:null;
   const archive=selected.id==='1'&&division==='6v6';
   // Provider abbreviations can change. Preserve collaborator profile/roster keys
@@ -138,14 +154,46 @@ function leagueStandingsPage(params) {
   const context=leagueViewContext(params),rows=context.season?.standings||[];
   const champion=context.archive&&rows.length?leagueClubVisual(rows[0][0],context.season):null;
   const table=rows.length?`<div class="table-wrap league-standings-table"><table><caption>${context.selected.label} · ${context.division}${context.archive?' · Final table':''}</caption><thead><tr><th scope="col">#</th><th scope="col">Club</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GF</th><th scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>${rows.map(([key,p,w,d,l,gf,ga,gd,pts],index)=>{const club=leagueClubVisual(key,context.season);return `<tr ${context.archive&&index===0?'class="league-champion-row"':''}><td>${index+1}</td><th scope="row"><a class="table-team" href="${leagueViewLink(`/clubs/${key}`,context)}" data-link><img src="${escapeHtml(club.logo)}" alt="" loading="lazy"><strong>${escapeHtml(club.name)}</strong></a></th><td>${p}</td><td>${w}</td><td>${d}</td><td>${l}</td><td>${gf}</td><td>${ga}</td><td>${signed(gd)}</td><td><strong>${pts}</strong></td></tr>`;}).join('')}</tbody></table></div>`:emptyState('Standings to follow','The table will appear when clubs and results are available for this division.');
-  return pageHero('UFL · League','The standings','The title race, the chasing pack and every point in between.')+`<section class="section league-explorer">${leagueViewNavigation('/standings',context)}${champion?`<article class="league-champion-panel"><img src="${escapeHtml(champion.image)}" alt="" class="league-champion-backdrop"><div><span class="section-kicker">Season ${context.selected.id} champions</span><h2>${escapeHtml(champion.name)}</h2><p>${rows[0][8]} points · ${rows[0][2]} wins · ${rows[0][1]} matches</p><a href="${leagueViewLink(`/clubs/${rows[0][0]}`,context)}" data-link>Meet the champions →</a></div><img class="league-champion-crest" src="${escapeHtml(champion.logo)}" alt="${escapeHtml(champion.name)} crest"></article>`:`<div class="league-directory-head"><div><span class="section-kicker">League table</span><h2>A new title race.</h2></div><span>Season preparing</span></div>`}<p class="sync-note">Committed Virtual Arena snapshot${context.season?.syncedAt?` · ${new Date(context.season.syncedAt).toLocaleString()}`:''}. No live EA connection.</p>${table}<div class="league-directory-head"><div><span class="section-kicker">Season honours</span><h2>More than the table.</h2></div></div><div class="league-honours-grid">${[['League champions',champion?.name||'To be decided'],['Season MVP','Awaiting confirmed award'],['Golden Boot','Awaiting confirmed award']].map(([title,value])=>`<article class="card"><span class="section-kicker">${title}</span><h3>${escapeHtml(value)}</h3></article>`).join('')}</div></section>`;
+  return pageHero('UFL · League','The standings','The title race, the chasing pack and every point in between.')+`<section class="section league-explorer">${leagueViewNavigation('/standings',context)}${champion?`<article class="league-champion-panel"><img src="${escapeHtml(champion.image)}" alt="" class="league-champion-backdrop"><div><span class="section-kicker">Season ${context.selected.id} champions</span><h2>${escapeHtml(champion.name)}</h2><p>${rows[0][8]} points · ${rows[0][2]} wins · ${rows[0][1]} matches</p><a href="${leagueViewLink(`/clubs/${rows[0][0]}`,context)}" data-link>Meet the champions →</a></div><img class="league-champion-crest" src="${escapeHtml(champion.logo)}" alt="${escapeHtml(champion.name)} crest"></article>`:`<div class="league-directory-head"><div><span class="section-kicker">League table</span><h2>A new title race.</h2></div><span>Official table</span></div>`}${leagueFeedNote(context,'standings')}${table}<div class="league-directory-head"><div><span class="section-kicker">Season honours</span><h2>More than the table.</h2></div></div><div class="league-honours-grid">${[['League champions',champion?.name||'To be decided'],['Season MVP','Awaiting confirmed award'],['Golden Boot','Awaiting confirmed award']].map(([title,value])=>`<article class="card"><span class="section-kicker">${title}</span><h3>${escapeHtml(value)}</h3></article>`).join('')}</div></section>`;
 }
+const leagueStatFeedKeys = {goals:'goals',assists:'assists',contributions:'goals_and_assists',tackles:'tackles_per_game','clean-sheets':'defender_cleansheet',rating:'average_match_rating'};
 function leagueStatsPage(params) {
-  const context=leagueViewContext(params),group=params.get('category')||'All';
-  const categories=leagueStatCategories.filter(c=>group==='All'||c[3]===group);
-  return pageHero('UFL · League','The numbers game','Goals, creators, ball winners and the season’s standout performers.')+`<section class="section league-explorer">${leagueViewNavigation('/stats',context)}<div class="league-directory-head"><div><span class="section-kicker">Award watch</span><h2>Who sets the standard?</h2></div><span class="season-chip">Data connection pending</span></div><div class="league-award-watch">${leagueStatCategories.filter(c=>['goals','assists','contributions','rating'].includes(c[0])).map(c=>`<a href="#stats-${c[0]}" class="league-award-card"><span>${c[1]}</span><h3>${c[2]}</h3><strong>—</strong><small>Awaiting match statistics</small></a>`).join('')}</div><div class="league-directory-head"><div><span class="section-kicker">Leaderboards</span><h2>Every kind of impact.</h2></div></div><nav class="league-club-filters" aria-label="Statistics category">${[['All','All leaderboards'],['Attack','Attack'],['Playmaking','Playmaking & G+A'],['Defense','Defense & shutouts'],['MVP','MVP']].map(([value,label])=>`<a class="${group===value?'active':''}" href="${leagueViewLink('/stats',context,`&category=${value}`)}" data-link>${label}</a>`).join('')}</nav><p class="sync-note">Individual match statistics are coming soon. No sample scores are presented as real results.</p><div class="league-stats-grid">${categories.map(([id,title,metric,,copy])=>`<article class="league-stat-board" id="stats-${id}"><header><span class="section-kicker">${title}</span><h2>${metric}</h2><p>${copy}</p></header><div class="league-stat-columns"><span>Player / club</span><span>${metric}</span></div><div class="league-stat-empty"><span aria-hidden="true">—</span><h3>Waiting for the first numbers.</h3><p>Rankings will appear once verified match statistics are connected for ${context.selected.label} ${context.division}.</p></div></article>`).join('')}</div></section>`;
+  const context=leagueViewContext(params), group=params.get('category')||'All', boards=context.season?.leaderboards?.players||{};
+  const records=id=>boards[leagueStatFeedKeys[id]]?.records||[];
+  const player=row=>{
+    const matches=context.players.filter(p=>p.name.toLowerCase()===String(row.data?.name||'').toLowerCase());
+    return matches.length===1?`<a href="${leagueViewLink(`/players/${encodeURIComponent(matches[0].id)}`,context)}" data-link>${escapeHtml(row.data?.name)}</a>`:escapeHtml(row.data?.name||'Player');
+  };
+  const club=row=>{
+    if(!row.team?.name)return '';
+    const team=context.season?.teamDetails?.find(t=>t.name===row.team.name);
+    return team?`<a href="${leagueViewLink(`/clubs/${encodeURIComponent(team.key)}`,context)}" data-link>${escapeHtml(row.team.name)}</a>`:escapeHtml(row.team.name);
+  };
+  return pageHero('UFL · League','The numbers game','Goals, creators, ball winners and the season’s standout performers.')+`<section class="section league-explorer">${leagueViewNavigation('/stats',context)}${leagueFeedNote(context,'stats')}<div class="league-directory-head"><div><span class="section-kicker">Award watch</span><h2>Who sets the standard?</h2></div><span class="season-chip">Official match statistics</span></div><div class="league-award-watch">${leagueStatCategories.filter(c=>['goals','assists','contributions','rating'].includes(c[0])).map(([id,title,metric])=>{const first=records(id)[0];return `<a href="#stats-${id}" class="league-award-card"><span>${title}</span><h3>${metric}</h3><strong>${escapeHtml(first?.stat??'—')}</strong><small>${escapeHtml(first?.data?.name||'Awaiting recorded results')}</small></a>`;}).join('')}</div><div class="league-directory-head"><div><span class="section-kicker">Leaderboards</span><h2>Every kind of impact.</h2></div></div><nav class="league-club-filters" aria-label="Statistics category">${[['All','All leaderboards'],['Attack','Attack'],['Playmaking','Playmaking & G+A'],['Defense','Defense & shutouts'],['MVP','MVP']].map(([value,label])=>`<a class="${group===value?'active':''}" href="${leagueViewLink('/stats',context,`&category=${value}`)}" data-link>${label}</a>`).join('')}</nav><div class="league-stats-grid">${leagueStatCategories.filter(c=>group==='All'||c[3]===group).map(([id,title,metric,,copy])=>`<article class="league-stat-board" id="stats-${id}"><header><span class="section-kicker">${title}</span><h2>${metric}</h2><p>${copy}</p><a href="${leagueOfficialSource(context,'stats')}/players/${leagueStatFeedKeys[id]}" target="_blank" rel="noopener noreferrer">Full official leaderboard ↗</a></header><div class="league-stat-columns"><span>Player / club</span><span>${metric}</span></div>${records(id).length?`<ol class="league-stat-records">${records(id).map(row=>`<li><div><strong>${player(row)}</strong><small>${club(row)}${row.played!=null?` · ${escapeHtml(row.played)} appearances`:''}</small></div><b>${escapeHtml(row.stat??'—')}</b></li>`).join('')}</ol>`:`<div class="league-stat-empty"><span aria-hidden="true">—</span><h3>Waiting for the first numbers.</h3><p>No recorded ${metric.toLowerCase()} yet for ${context.selected.label} ${context.division}. Results will appear here as Virtual Arena publishes them.</p></div>`}</article>`).join('')}</div></section>`;
+}
+let leagueLiveRefreshTimer;
+async function refreshLeagueFeed() {
+  clearTimeout(leagueLiveRefreshTimer);
+  const path=window.location.pathname;
+  if(!['/standings','/stats'].includes(path))return;
+  const search=window.location.search, params=new URLSearchParams(search), context=leagueViewContext(params);
+  if(context.selected.id!=='2')return;
+  const kind=path.slice(1), key=`${context.division}:${kind}`, previous=leagueLiveFeeds.get(key);
+  if(leagueLivePending.has(key))return;
+  if(previous&&Date.now()-previous.loadedAt<300000){leagueLiveRefreshTimer=setTimeout(refreshLeagueFeed,300000-(Date.now()-previous.loadedAt));return;}
+  leagueLivePending.add(key);
+  try {
+    const response=await fetch(`/api/league/live?division=${context.division}&kind=${kind}`);
+    if(!response.ok)throw Error('Feed unavailable');
+    const data=await response.json();
+    if(data.division!==context.division||data.kind!==kind||data.season!=='2')throw Error('Wrong feed');
+    leagueLiveFeeds.set(key,{...data,loadedAt:Date.now()});
+    if(window.location.pathname===path&&window.location.search===search)render();
+  } catch { /* Preserve the saved table/statistics during provider outages. */ }
+  finally {leagueLivePending.delete(key);leagueLiveRefreshTimer=setTimeout(refreshLeagueFeed,300000);}
 }
 function bindLeagueExplorer() {
+  refreshLeagueFeed();
   document.querySelectorAll('.league-award-card').forEach(link=>{
     const target=link.getAttribute('href');
     const params=new URLSearchParams(window.location.search);

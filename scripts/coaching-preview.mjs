@@ -8,6 +8,7 @@ import {coachingApi} from '../functions/_lib/coaching.js';
 import {sha256} from '../functions/_lib/auth.js';
 import {isPublicFile} from './publication.mjs';
 import {formationGuides} from './coaching-formations.mjs';
+import {onRequestGet as liveLeagueFeed} from '../functions/api/league/live.js';
 
 const root=fileURLToPath(new URL('../',import.meta.url)),db=new DatabaseSync(':memory:');
 db.exec(fs.readFileSync(path.join(root,'migrations/0001_auth.sql'),'utf8'));
@@ -36,7 +37,9 @@ createServer(async(req,res)=>{
       const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>10*1024*1024+131072){res.writeHead(413);res.end();return;}chunks.push(chunk);}
       const request=new Request(url,{method:req.method,headers,...(!['GET','HEAD'].includes(req.method)?{body:Buffer.concat(chunks)}:{})});
       const parts=url.pathname.split('/').filter(Boolean);response=await coachingApi(request,env,parts[2]||null,parts[3]==='images'?`image:${parts[4]}`:parts[3]||null);
-    }else if(url.pathname.startsWith('/api/'))response=Response.json({});
+    }else if(url.pathname==='/api/league/live')response=await liveLeagueFeed({request:new Request(url),waitUntil(){}});
+    else if(url.pathname==='/api/pickems/leaderboard')response=Response.json({entries:[]});
+    else if(url.pathname.startsWith('/api/'))response=Response.json({});
     else{
       const file=url.pathname==='/'||!path.extname(url.pathname)?'index.html':decodeURIComponent(url.pathname.slice(1));
       if(!isPublicFile(file)||file.includes('..')||file.includes('\\')||!fs.existsSync(path.join(root,file)))response=new Response('Not found',{status:404});

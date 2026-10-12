@@ -242,7 +242,7 @@ function leaguePage() {
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
       {mark:'C',title:'Coaching',copy:'Read community guides, share your know-how and leave a heart for a helpful playbook.',href:'/coaching',label:'Enter the coaching room'},
-      {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Match data will be connected later.',href:'/stats',label:'Explore the numbers'},
+      {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Updated from official Virtual Arena results.',href:'/stats',label:'Explore the numbers'},
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
     ].map(hubCard).join('')}</div></section>`;
