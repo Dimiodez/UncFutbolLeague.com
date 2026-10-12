@@ -1,5 +1,7 @@
 # Private team hubs · focused live release
 
+The refined UX adds searchable squad/current-board placement filters, Squad/Position sidebar views, nearby assignment/instruction editing and quick removal. Board details, destructive/reset actions and team notes are collapsible; formation/phase remain visible. Save state/actions stay visible when scrolling. All these changes preserve explicit saves and the existing server access checks. Browser QA covers search, select/place and position removal without losing instructions.
+
 The registered squad is a sticky right-side sidebar with its own scroll area, beside the formations. Coaching instructions are below the boards. Pointer-driven roster dragging supports either comparison panel; dropping on the other board activates that board and assigns the player without duplicating the playbook. Small screens use a sticky horizontal player selector, with tap-to-place retained.
 
 Each current Season 2 club in each division has a hub automatically, keyed by season/division/team. No preview league registration database, workshop drafts, or public Roma demo is included. Roster players are read from the existing live roster on every request, including later registrations. Saved playbooks are shared online with revision conflict checks.
