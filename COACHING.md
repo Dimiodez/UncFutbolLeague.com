@@ -1,5 +1,13 @@
 # Coaching
 
+## Formation guides and article images — 12 October 2026
+
+Apply `20261012_coaching_images.sql` once before deploying this version. It adds a per-post byline and a validated image list (five images maximum). Author ownership remains the original Discord account; changing a byline does not change ownership. The three requested original guides are in `scripts/coaching-formations.mjs`. They are published under the existing verified owner account (`dimio11`) with byline `Dimiodez`. `publish-coaching-formations.mjs --apply` uploads the original cover files and inserts the three fixed IDs only if absent. It never overwrites later author edits. Source references are linked inside the articles; source counts/labels differ by game mode, so the articles avoid unverified meta rankings and numbered-variant assumptions.
+
+Authors can add up to five JPEG/PNG/WebP article images (5 MB each, all new images including cover total 10 MB per save), caption them, insert them into the body or leave them appended, and remove them. Retained image IDs are resolved only against the current guide. Failed/stale saves clean up their new uploads; successfully removed images are cleaned up only after committing the edit. Hidden/deleted image visibility follows the guide. Body rendering supports only escaped text, headings, lists, HTTPS links and server-owned image markers, never arbitrary HTML or third-party image URLs.
+
+Original cover source is deterministic vector drawing, rendered to PNG by `scripts/build-coaching-covers.mjs` using Sharp. No source website screenshots or diagrams were reused. `--formations` on the local QA server loads the actual drafts into memory for visual checks without touching production.
+
 Public routes: `/coaching`, `/coaching/new`, `/coaching/:id`, `/coaching/:id/edit`.
 The initial launch contains **no guides or sample posts**. Any active signed-in Discord member can publish a guide with a title, hook, cover and plain-text body. Only its author can edit the text/image. Hearts are one per member per guide, set idempotently; editing retains hearts. Public cards are three across on desktop, two on tablet, one on mobile.
 

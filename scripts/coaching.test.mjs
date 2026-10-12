@@ -2,15 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DatabaseSync} from 'node:sqlite';
 import fs from 'node:fs';
+import vm from 'node:vm';
 import {File} from 'node:buffer';
 import {coachingApi,validateGuide} from '../functions/_lib/coaching.js';
 import {onRequestGet as shell} from '../functions/coaching.js';
 import {onRequest as middleware} from '../functions/api/_middleware.js';
+import {formationGuides} from './coaching-formations.mjs';
 
 function setup(){
   const db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');
   db.exec(fs.readFileSync(new URL('../migrations/0001_auth.sql',import.meta.url),'utf8'));
   const migration=fs.readFileSync(new URL('../migrations/20261011_coaching.sql',import.meta.url),'utf8');db.exec(migration);
+  db.exec(fs.readFileSync(new URL('../migrations/20261012_coaching_images.sql',import.meta.url),'utf8'));
   for(const id of ['alice','bob','staff'])db.prepare('INSERT INTO users(discord_id,username,display_name) VALUES(?,?,?)').run(id,id,id);
   let actor=null;const objects=new Map(),deleted=[];
   const env={DB:{prepare(sql){const stmt={sql,params:[],bind(...args){this.params=args;return this;},async first(){return sql.includes('FROM sessions')?actor:db.prepare(sql).get(...this.params);},async all(){return{results:db.prepare(sql).all(...this.params)};},async run(){return{meta:{changes:Number(db.prepare(sql).run(...this.params).changes)}};}};return stmt;},async batch(statements){db.exec('BEGIN');try{const results=[];for(const statement of statements)results.push(await statement.run());db.exec('COMMIT');return results;}catch(error){db.exec('ROLLBACK');throw error;}}},PLAYER_PHOTOS:{async put(key,bytes){objects.set(key,bytes);},async get(key){return objects.has(key)?{body:objects.get(key)}:null;},async delete(key){deleted.push(key);objects.delete(key);}}};
@@ -72,7 +75,7 @@ test('Validation, image type and streaming limits prevent unsafe or oversized up
   const {call,act,guide,objects,env,db}=setup();act('alice');
   assert.equal((await call('POST',guide({},false))).status,400);
   const spoof=guide();spoof.set('cover',new File(['<svg onload="alert(1)"/>'],'cover.png',{type:'image/png'}));assert.equal((await call('POST',spoof)).status,400);assert.equal(objects.size,0);
-  const huge=new Request('https://site.test/api/coaching',{method:'POST',headers:{origin:'https://site.test',cookie:'__Host-ufl_session=qa','content-type':'multipart/form-data; boundary=x'},body:'x'.repeat(5*1024*1024+131073)});assert.equal((await coachingApi(huge,env)).status,413);assert.equal(objects.size,0);
+  const huge=new Request('https://site.test/api/coaching',{method:'POST',headers:{origin:'https://site.test',cookie:'__Host-ufl_session=qa','content-type':'multipart/form-data; boundary=x'},body:'x'.repeat(10*1024*1024+131073)});assert.equal((await coachingApi(huge,env)).status,413);assert.equal(objects.size,0);
   for(let i=0;i<8;i++)await call('POST',guide({},false));assert.equal((await call('POST',guide())).status,429);db.close();
 });
 
@@ -90,7 +93,27 @@ test('Shell deep links preserve coaching routing and API middleware permits boun
   const response=await shell({request:new Request('https://site.test/coaching/new'),env});assert.equal(await response.text(),'shell');assert.equal(fetched,'https://site.test/');
   const trailing=await shell({request:new Request('https://site.test/coaching/new/'),env});assert.equal(trailing.headers.get('location'),'https://site.test/coaching/new');
   const check=length=>middleware({request:new Request('https://site.test/api/coaching',{method:'POST',headers:{'content-length':String(length)}}),next:async()=>new Response('ok')});
-  assert.equal((await check(5*1024*1024)).status,200);assert.equal((await check(5*1024*1024+131073)).status,413);
+  assert.equal((await check(10*1024*1024)).status,200);assert.equal((await check(10*1024*1024+131073)).status,413);
+});
+
+test('Guide images belong to their post, survive edits, stay hidden with it and cannot be stolen',async()=>{
+  const {call,act,guide,objects,db}=setup();act('alice');
+  const create=guide({byline:'Dimiodez',body:'## Read this\n\n[[upload:1]]'});create.append('images',create.get('cover'));create.append('imageCaptions','Original diagram');
+  let response=await call('POST',create);assert.equal(response.status,201);let post=(await response.json()).post;
+  assert.equal(post.author,'Dimiodez');assert.equal(post.images.length,1);assert.match(post.body,new RegExp(post.images[0].id));assert.equal(objects.size,2);
+  assert.equal((await call('GET',undefined,post.id,'image:'+post.images[0].id)).status,200);
+  const other=(await(await call('POST',guide())).json()).post;
+  assert.equal((await call('POST',guide({revision:0,keepImages:JSON.stringify([{id:post.images[0].id,caption:'stolen'}])},false),other.id)).status,400);
+  assert.equal((await call('GET',undefined,other.id,'image:'+post.images[0].id)).status,404);
+  assert.equal((await call('POST',guide({revision:0,keepImages:'[]'},false),post.id)).status,200);assert.equal(objects.size,2);
+  assert.equal((await call('GET',undefined,post.id,'image:'+post.images[0].id)).status,404);db.close();
+});
+
+test('Guide renderer supports original headings, sources and image placement without executable HTML',()=>{
+  const context={window:{},URL};vm.runInNewContext(fs.readFileSync(new URL('../coaching-format.js',import.meta.url),'utf8'),context);
+  const render=context.window.coachingRenderBody,id=crypto.randomUUID();
+  const html=render(`## Heading\n\n<script>alert(1)</script>\n\n- First\n- Second\n\n[EA](https://www.ea.com/)\n\n[bad](javascript:alert(1))\n\n[[image:${id}]]`,[{id,url:'/api/coaching/test/images/test',caption:'<script>caption</script>'}]);
+  assert.match(html,/<h3>Heading<\/h3>/);assert.match(html,/<ul><li>First<\/li><li>Second/);assert.match(html,/rel="noopener noreferrer"/);assert.doesNotMatch(html,/<script>|href="javascript:/);assert.equal((html.match(/<figure/g)||[]).length,1);
 });
 
 test('Coaching UI escapes user content, uses three rounded cards, and production seeds no guides',()=>{
@@ -98,4 +121,14 @@ test('Coaching UI escapes user content, uses three rounded cards, and production
   const js=read('coaching-page.js');assert.match(js,/esc\(post.body\)/);assert.match(js,/esc\(post.title\)/);assert.match(js,/No guides have been posted yet/);assert.doesNotMatch(js,/\.innerHTML\s*=\s*post\./);
   assert.match(read('coaching-page.css'),/repeat\(3,minmax\(0,1fr\)\)/);assert.match(read('coaching-page.css'),/border-radius:22px/);
   assert.doesNotMatch(read('migrations/20261011_coaching.sql'),/INSERT INTO/i);assert.match(read('index.html'),/href="\/coaching"/);assert.match(read('app.js'),/window.hydrateCoaching/);
+});
+
+test('The three requested original formation articles include references and editable publication guards',()=>{
+  assert.deepEqual(formationGuides.map(guide=>guide.family),[3,4,5]);
+  for(const guide of formationGuides){
+    validateGuide({...guide,byline:'Dimiodez'});assert.match(guide.body,/fifplay\.com/);assert.match(guide.body,/fut\.gg/);assert.match(guide.body,/futbin\.com/);assert.match(guide.body,/forums\.ea\.com/);
+    assert.match(guide.body,/Clubs/);assert.match(guide.body,/suggestions/);
+    const image=fs.readFileSync(new URL(`../assets/coaching/formations-${guide.family}.png`,import.meta.url));assert.equal(image.readUInt32BE(16),1600);assert.equal(image.readUInt32BE(20),900);
+  }
+  const publisher=fs.readFileSync(new URL('./publish-coaching-formations.mjs',import.meta.url),'utf8');assert.match(publisher,/INSERT OR IGNORE/);assert.doesNotMatch(publisher,/UPDATE coaching_posts/);assert.match(publisher,/username='dimio11'/);
 });

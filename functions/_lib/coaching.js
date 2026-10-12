@@ -3,10 +3,10 @@ import {consumeRateLimit} from './rate-limit.js';
 import {boundedBytes, validatePhoto, imageResponse} from './player-photos.js';
 
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
-const MAX_BODY=5*1024*1024+131072;
+const MAX_BODY=10*1024*1024+131072;
 const staff=user=>['owner','admin'].includes(user?.role);
 const visible=(post,user)=>post && post.status!=='deleted' && (post.status==='published'||post.author_id===user?.discord_id||staff(user));
-const baseSelect=`SELECT p.*, u.display_name AS author_name,
+const baseSelect=`SELECT p.*, COALESCE(NULLIF(p.byline,''),u.display_name) AS author_name,
  (SELECT COUNT(*) FROM coaching_hearts h WHERE h.post_id=p.id) AS hearts,
  EXISTS(SELECT 1 FROM coaching_hearts h WHERE h.post_id=p.id AND h.user_id=?) AS hearted
  FROM coaching_posts p JOIN users u ON u.discord_id=p.author_id`;
@@ -15,7 +15,7 @@ function serialize(post,user,full=false){
     coverUrl:`/api/coaching/${post.id}/cover?v=${post.revision}`,status:post.status,
     revision:post.revision,createdAt:post.created_at,updatedAt:post.updated_at,
     hearts:Number(post.hearts),hearted:Boolean(post.hearted),canEdit:post.author_id===user?.discord_id,canModerate:staff(user)};
-  if(full)result.body=post.body;
+  if(full){result.body=post.body;result.byline=post.byline||'';result.images=JSON.parse(post.images||'[]').map(image=>({id:image.id,caption:image.caption,url:`/api/coaching/${post.id}/images/${image.id}?v=${post.revision}`}));}
   return result;
 }
 export function validateGuide(data){
@@ -25,6 +25,8 @@ export function validateGuide(data){
     if(!value||value.length>max)throw new Error(`${field==='body'?'Guide':field[0].toUpperCase()+field.slice(1)} needs 1–${max.toLocaleString('en-US')} characters.`);
     result[field]=value;
   }
+  result.byline=typeof data.byline==='string'?data.byline.trim():'';
+  if(result.byline.length>80)throw new Error('Byline allows up to 80 characters.');
   return result;
 }
 async function rateGuard(env,user,scope,limit,windowSeconds){
@@ -45,9 +47,11 @@ export async function coachingApi(request,env,id=null,operation=null){
       if(id){
         const post=await env.DB.prepare(`${baseSelect} WHERE p.id=?`).bind(user?.discord_id||'',id).first();
         if(!visible(post,user))return json({error:'Guide not found.'},404);
-        if(operation==='cover'){
-          const object=await env.PLAYER_PHOTOS?.get(post.cover_key);
-          return object?imageResponse(object,post.cover_type):json({error:'Image not found.'},404);
+        if(operation==='cover'||operation?.startsWith('image:')){
+          const image=operation==='cover'?{key:post.cover_key,type:post.cover_type}:JSON.parse(post.images||'[]').find(image=>image.id===operation.slice(6));
+          if(!image)return json({error:'Image not found.'},404);
+          const object=await env.PLAYER_PHOTOS?.get(image.key);
+          return object?imageResponse(object,image.type):json({error:'Image not found.'},404);
         }
         if(operation)return json({error:'Not found.'},404);
         return json({post:serialize(post,user,true)});
@@ -103,24 +107,43 @@ export async function coachingApi(request,env,id=null,operation=null){
     }
     if(action!=='save')return json({error:'Unknown action.'},400);
     if(current&&current.author_id!==user.discord_id)return json({error:'Only the author can edit this guide. Use moderation to hide it.'},403);
-    let guide,cover;
+    let guide,cover,images,uploads=[];
     try{
       guide=validateGuide(Object.fromEntries(data));
       const file=data.get('cover');
       if(file&&typeof file!=='string'&&file.size)cover=await validatePhoto(file);
       if(!current&&!cover)throw new Error('Add a cover image before publishing.');
+      const existing=JSON.parse(current?.images||'[]');
+      const retained=data.has('keepImages')?JSON.parse(data.get('keepImages')):existing.map(image=>({id:image.id,caption:image.caption}));
+      if(!Array.isArray(retained)||retained.length>5||new Set(retained.map(image=>image.id)).size!==retained.length)throw new Error('Choose up to five guide images.');
+      images=retained.map(item=>{const image=existing.find(image=>image.id===item.id);if(!image)throw new Error('Unknown guide image.');if(typeof item.caption!=='string'||item.caption.length>200)throw new Error('Image captions allow up to 200 characters.');return{...image,caption:item.caption.trim()};});
+      const additions=data.getAll('images').filter(file=>typeof file!=='string'&&file.size);
+      if(images.length+additions.length>5)throw new Error('Choose up to five guide images.');
+      let size=cover?.bytes.length||0;
+      const captions=data.getAll('imageCaptions');
+      for(const [index,file] of additions.entries()){
+        const image=await validatePhoto(file);size+=image.bytes.length;
+        if(size>10*1024*1024)throw new Error('Images must total 10 MB or less per save.');
+        const caption=captions[index]||'';if(typeof caption!=='string'||caption.length>200)throw new Error('Image captions allow up to 200 characters.');
+        uploads.push({...image,id:crypto.randomUUID(),caption:caption.trim()});
+      }
+      guide.body=guide.body.replace(/\[\[upload:(\d+)\]\]/g,(marker,index)=>uploads[Number(index)-1]?`[[image:${uploads[Number(index)-1].id}]]`:marker);
+      if(guide.body.length>30000)throw new Error('Guide needs 1–30,000 characters including image markers.');
     }catch(error){return json({error:error.message},400);}
-    if(cover&&!env.PLAYER_PHOTOS)return json({error:'Image storage is temporarily unavailable.'},503);
+    if((cover||uploads.length)&&!env.PLAYER_PHOTOS)return json({error:'Image storage is temporarily unavailable.'},503);
     const postId=id||crypto.randomUUID(),key=cover?`coaching/${postId}/${crypto.randomUUID()}`:current.cover_key;
-    if(cover)await env.PLAYER_PHOTOS.put(key,cover.bytes,{httpMetadata:{contentType:cover.type}});
+    const uploadedKeys=[];
     let result;
     try{
-      result=current?await env.DB.prepare("UPDATE coaching_posts SET title=?,hook=?,body=?,cover_key=?,cover_type=?,revision=revision+1,updated_at=datetime('now') WHERE id=? AND revision=? AND status!='deleted'").bind(guide.title,guide.hook,guide.body,key,cover?.type||current.cover_type,id,revision).run():
-        await env.DB.prepare("INSERT INTO coaching_posts(id,author_id,title,hook,body,cover_key,cover_type) SELECT ?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM coaching_posts WHERE author_id=? AND status!='deleted')<100").bind(postId,user.discord_id,guide.title,guide.hook,guide.body,key,cover.type,user.discord_id).run();
-    }catch(error){if(cover)await env.PLAYER_PHOTOS.delete(key);throw error;}
-    if(result.meta.changes!==1){if(cover)await env.PLAYER_PHOTOS.delete(key);return json({error:current?'This guide changed. Reload before saving.':'You have reached the 100-guide limit.'},409);}
+      if(cover){uploadedKeys.push(key);await env.PLAYER_PHOTOS.put(key,cover.bytes,{httpMetadata:{contentType:cover.type}});}
+      for(const upload of uploads){const imageKey=`coaching/${postId}/${upload.id}`;uploadedKeys.push(imageKey);await env.PLAYER_PHOTOS.put(imageKey,upload.bytes,{httpMetadata:{contentType:upload.type}});images.push({id:upload.id,key:imageKey,type:upload.type,caption:upload.caption});}
+      result=current?await env.DB.prepare("UPDATE coaching_posts SET title=?,hook=?,body=?,byline=?,images=?,cover_key=?,cover_type=?,revision=revision+1,updated_at=datetime('now') WHERE id=? AND revision=? AND status!='deleted'").bind(guide.title,guide.hook,guide.body,guide.byline,JSON.stringify(images),key,cover?.type||current.cover_type,id,revision).run():
+        await env.DB.prepare("INSERT INTO coaching_posts(id,author_id,title,hook,body,byline,images,cover_key,cover_type) SELECT ?,?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM coaching_posts WHERE author_id=? AND status!='deleted')<100").bind(postId,user.discord_id,guide.title,guide.hook,guide.body,guide.byline,JSON.stringify(images),key,cover.type,user.discord_id).run();
+    }catch(error){for(const uploaded of uploadedKeys)await env.PLAYER_PHOTOS.delete(uploaded);throw error;}
+    if(result.meta.changes!==1){for(const uploaded of uploadedKeys)await env.PLAYER_PHOTOS.delete(uploaded);return json({error:current?'This guide changed. Reload before saving.':'You have reached the 100-guide limit.'},409);}
     // Successful replacements no longer reference the old immutable upload key.
     if(cover&&current&&current.cover_key!==key){try{await env.PLAYER_PHOTOS.delete(current.cover_key);}catch{console.error('Coaching old cover cleanup deferred');}}
+    for(const retired of JSON.parse(current?.images||'[]').filter(old=>!images.some(image=>image.id===old.id))){try{await env.PLAYER_PHOTOS.delete(retired.key);}catch{console.error('Coaching old image cleanup deferred');}}
     const post=await env.DB.prepare(`${baseSelect} WHERE p.id=?`).bind(user.discord_id,postId).first();
     return json({post:serialize(post,user,true)},current?200:201);
   }catch(error){console.error('Coaching unavailable',error.name);return json({error:'Coaching is temporarily unavailable. Please try again.'},503);}
