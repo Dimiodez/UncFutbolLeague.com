@@ -1,5 +1,6 @@
+import {expandFormationGuide} from './coaching-tactical-details.mjs';
 // Original editorial content. Published records belong to the verified owner account.
-export const formationGuides=[
+export const baselineFormationGuides=[
   {
     id:'8177fa01-9f5d-4ada-8df7-3fb22b8d0301',family:3,shape:'3-5-2',
     title:'Three at the back: width comes with a job',
@@ -274,3 +275,4 @@ For comparison, use [FUT.GG's formation reference](https://www.fut.gg/tactics/) 
 UNC takeaway: a back five needs an exit plan. Otherwise you have just invited the next attack.`
   }
 ];
+export const formationGuides=baselineFormationGuides.map(expandFormationGuide);

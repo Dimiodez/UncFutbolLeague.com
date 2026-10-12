@@ -132,3 +132,17 @@ test('The three requested original formation articles include references and edi
   }
   const publisher=fs.readFileSync(new URL('./publish-coaching-formations.mjs',import.meta.url),'utf8');assert.match(publisher,/INSERT OR IGNORE/);assert.doesNotMatch(publisher,/UPDATE coaching_posts/);assert.match(publisher,/username='dimio11'/);
 });
+
+test('Every formation section has a complete original tactical profile within the editable body limit',()=>{
+  for(const guide of formationGuides){
+    const sections=guide.body.split(/^### /m).slice(1);
+    assert.ok(sections.length>=5);
+    for(const section of sections){
+      for(const label of ['Style:', 'Build-up and chance creation:', 'Key player jobs:', 'Main strength:', 'Main risk:', 'Tactical adjustments:', 'Facing this shape:'])assert.ok(section.includes(label),`${guide.family}: ${section.slice(0,60)} missing ${label}`);
+    }
+    assert.ok(guide.body.length<=30000);assert.match(guide.body,/not official EA ratings/);
+  }
+  const updater=fs.readFileSync(new URL('./update-coaching-tactics.mjs',import.meta.url),'utf8');
+  assert.match(updater,/baselineFormationGuides\[index\]\.body/);assert.match(updater,/AND revision=/);
+  assert.doesNotMatch(updater,/SET (?:author_id|images|cover_key|created_at|byline)=/);
+});
