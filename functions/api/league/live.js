@@ -7,7 +7,7 @@ export async function loadLeagueData(division, kind, fetcher = fetch) {
   const [competition, season] = competitions[division];
   const source = `https://ufl.virtualarena.app/competitions/${competition}/seasons/${season}/${kind}`;
   const response = await fetcher(source, {redirect:'error', signal:AbortSignal.timeout(10000), headers:{'user-agent':'UncFutbolLeague.com public league sync'}});
-  if (!response.ok) throw Error('VA unavailable');
+  if (!response.ok) throw Object.assign(Error('VA unavailable'),{upstreamStatus:response.status});
   const html = await response.text();
   if (html.length > 3000000) throw Error('VA response too large');
   const match = html.match(/data-page="([^"]+)"/);
@@ -38,7 +38,9 @@ export async function onRequestGet(context) {
     const response = Response.json(await loadLeagueData(division,kind), {headers:{'Cache-Control':'public, max-age=60, s-maxage=300'}});
     if (cache) context.waitUntil(cache.put(key,response.clone()));
     return response;
-  } catch {
-    return Response.json({error:'Official data is temporarily unavailable. Showing the last saved update.'},{status:502,headers:{'Cache-Control':'no-store'}});
+  } catch(error) {
+    const reason=['VA unavailable','VA response too large','VA data missing','VA season mismatch','VA table missing','VA stats missing','Incomplete VA standings'].includes(error.message)?error.message:'request_failed';
+    console.warn('Public league feed unavailable', {upstreamStatus:error.upstreamStatus||null,reason});
+    return Response.json({error:'Official data is temporarily unavailable. Showing the last saved update.',upstreamStatus:error.upstreamStatus||null,reason},{status:502,headers:{'Cache-Control':'no-store'}});
   }
 }
