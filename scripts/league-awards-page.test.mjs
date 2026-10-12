@@ -30,3 +30,11 @@ test('Coaching moved to Utility and awards replace its League menu position',()=
  const league=html.split('data-nav-hub="league"')[1].split('nav-actions')[0];
  assert.match(utility,/href="\/coaching"/);assert.doesNotMatch(league,/href="\/coaching"/);assert.match(league,/href="\/totw"/);
 });
+test('VA source links are exact division and UFL season mappings, not fabricated per-week or TOTS URLs',()=>{
+ const html=page(new URLSearchParams('season=2&week=2'));
+ assert.match(html,/https:\/\/ufl.virtualarena.app\/competitions\/1\/seasons\/2\/squads/);
+ assert.match(html,/https:\/\/ufl.virtualarena.app\/competitions\/3\/seasons\/5\/squads/);
+ assert.equal((html.match(/Open VA TOTW archive/g)||[]).length,2);
+ assert.doesNotMatch(page(new URLSearchParams('season=1')),/Open VA TOTW archive/);
+ assert.doesNotMatch(page(new URLSearchParams('season=2&award=tots')),/Open VA TOTW archive/);
+});
