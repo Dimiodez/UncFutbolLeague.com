@@ -17,9 +17,10 @@ const jsonError = (message, status) => new Response(JSON.stringify({ error: mess
 export async function onRequest(context) {
   const length = Number(context.request.headers.get('content-length') || 0);
   const photoUpload=context.request.method==='POST'&&/^\/api\/admin\/player-photos(?:\/[a-zA-Z0-9-]+)?$/.test(new URL(context.request.url).pathname);
+  const coachingUpload=context.request.method==='POST'&&/^\/api\/coaching(?:\/[a-f0-9-]{36})?$/.test(new URL(context.request.url).pathname);
   let response;
   try {
-    response = length > (photoUpload?5*1024*1024+16384:65536)
+    response = length > (coachingUpload?5*1024*1024+131072:photoUpload?5*1024*1024+16384:65536)
       ? jsonError('Request body is too large.', 413)
       : await context.next();
   } catch (error) {

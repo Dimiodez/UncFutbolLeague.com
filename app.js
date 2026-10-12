@@ -1,7 +1,7 @@
 const routes = {
   home: '/', rules: '/rules', teams: '/teams', schedules: '/schedules',
   standings: '/standings', users: '/users', pickems: '/pickems', func: '/func', arcade: '/arcade', wheel: '/wheel', contact: '/contact', privacy: '/privacy', account: '/account', admin: '/admin', ufb: '/ufb',
-  utility: '/utility', fun: '/fun', league: '/league', sound: '/sound'
+  utility: '/utility', fun: '/fun', league: '/league', sound: '/sound', coaching: '/coaching'
 };
 
 const escapeHtml = value => String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
@@ -241,6 +241,7 @@ function leaguePage() {
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
+      {mark:'C',title:'Coaching',copy:'Read community guides, share your know-how and leave a heart for a helpful playbook.',href:'/coaching',label:'Enter the coaching room'},
       {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Match data will be connected later.',href:'/stats',label:'Explore the numbers'},
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
@@ -887,6 +888,7 @@ function contactPage() {
 
 function privacyPage() {
   return pageHero('Member data', 'Privacy & account information', 'A plain-language summary of what UFL stores, why it is needed, and how to request removal.') +
+    `<section class="section"><article class="card"><span class="section-kicker">Community coaching</span><h2>Your guides & hearts</h2><p>Coaching guides, hooks and cover images are public when you publish them, with your Discord display name credited as the author. UFL stores your submissions and member-linked hearts to support editing and prevent duplicate reactions; only the total number of hearts is shown publicly. You can edit or remove your own guides. Owners and admins can hide inappropriate posts. Removed content and moderation records may be retained for recovery, safety or integrity; contact the league for a permanent removal request.</p></article></section>` +
     `<section class="section"><article class="card"><span class="section-kicker">Login protection</span><h2>Human verification</h2><p>Before Discord sign-in, UFL uses Cloudflare Turnstile to help prevent automated abuse. Cloudflare processes browser and connection signals to perform this check. UFL validates the resulting short-lived token on the server; it is not your Discord password. See <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">Cloudflare’s privacy policy</a>.</p></article></section>` +
     `<section class="section privacy-grid"><article class="card"><span class="section-kicker">Discord sign-in</span><h2>What we store</h2><p>When you sign in, UFL stores your Discord user ID, username, display name, avatar URL, account role, and login timestamps. We do not request your email, Discord messages, server list, password, or Discord access token.</p></article><article class="card"><span class="section-kicker">Pick’ems</span><h2>Competition data</h2><p>Your submitted picks, tiebreakers, scores, and leaderboard placement are stored so the competition works across devices. Your display name and avatar may appear publicly in the member directory or leaderboard.</p></article><article class="card"><span class="section-kicker">Local tools</span><h2>On your device</h2><p>Wheel settings and saved FUNC creations may use your browser’s local storage or IndexedDB. Uploaded FUNC portraits remain on your device unless you download the finished card; UFL does not upload those portraits to its server.</p></article><article class="card"><span class="section-kicker">Your choice</span><h2>Removal requests</h2><p>To request account removal or correction, message <strong>Dimio11</strong> on the UFL Discord. UFL will delete or anonymize your member information where reasonably possible while retaining limited integrity or security records when necessary.</p><a href="/contact" data-link>Contact the league →</a></article></section>`;
 }
@@ -1183,6 +1185,7 @@ function render() {
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = mountainArcadePage();
   else if (path === routes.sound) main.innerHTML = window.soundPage();
+  else if (path === routes.coaching || path.startsWith('/coaching/')) main.innerHTML = window.coachingPage();
   else if (path === '/arcade/submit') main.innerHTML = arcadeSubmissionPage();
   else if (path === '/arcade/mountain-mayhem') main.innerHTML = '<nav class="arcade-return" aria-label="Game navigation"><a class="button button-primary" href="/arcade" data-link>← Back to Arcade</a></nav><section class="integrated-app arcade-host" aria-label="Mountain Mayhem"><iframe class="integrated-app-frame" src="/mountain-app/" title="Mountain Mayhem mountain chase game" scrolling="no"></iframe></section>';
   else if (path === routes.utility) main.innerHTML = utilityHubPage();
@@ -1216,11 +1219,13 @@ function render() {
   else main.innerHTML = homePage();
   document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
-  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') ? 'league' : '';
+  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/coaching' || path.startsWith('/coaching/') ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   if(path === routes.sound)window.hydrateSound();
+  if(path === routes.coaching || path.startsWith('/coaching/'))window.hydrateCoaching();
+  else window.disposeCoaching?.();
   if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
   bindLeagueExplorer();
   if(typeof hydrateLeagueRosters==='function')hydrateLeagueRosters();
