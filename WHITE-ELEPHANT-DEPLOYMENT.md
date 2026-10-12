@@ -1,0 +1,5 @@
+# White Elephant captain draft
+
+12 October 2026: UNC Wheel Captain Draft now has an optional White Elephant rule set with a selectable 1/2 steal limit. Drafting from the pool or stealing advances the selected draft order; full teams are skipped. Captains are protected and players lock after the selected steal limit. Turn and steal counts persist with the existing Session saves and event snapshots. Optional holiday accents include Christmas/Hanukkah-inspired navy/red, blue, silver, gold and snowflakes. This is not a league-workshop change.
+
+Editable source and regression tests are backed up in UncWheelUnited, branch codex/white-elephant-draft. Source checkout: C:/Users/twizz/Documents/New project/ufl-white-elephant-20261012. Build: existing Vite toolchain, then copy generated main JS/CSS into wheel-app/wheel.js and wheel-app/wheel.css. Preserve wheel-app/theme-bridge.css and the other production assets. No bot/backend/permission changes. 33 source tests and TypeScript build passed; preview verified draft, steal, lock and reload persistence through the actual controls.
