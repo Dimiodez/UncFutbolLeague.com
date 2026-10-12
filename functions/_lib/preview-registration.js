@@ -35,7 +35,7 @@ export async function previewRegistrationApi(request,env){
    const s=validateScheduleSettings(input.settings);clean(s.league,80,'a league name');clean(s.season,80,'a season name');
    if(typeof input.open!=='boolean')throw Error('Choose registration open or closed.');
    // Only public registration metadata is stored, never the local result/award snapshot.
-   const settings=JSON.stringify({league:s.league,season:s.season,format:s.format,size:s.size,maxTeamSize:s.maxTeamSize,keepersEnabled:s.keepersEnabled,startDate:s.startDate,time:s.time,timeZone:s.timeZone,weekday:s.weekday,spacingMinutes:s.spacingMinutes,windows:s.windows});
+   const settings=JSON.stringify({league:s.league,season:s.season,format:s.format,size:s.size,maxTeamSize:s.maxTeamSize,keepersEnabled:s.keepersEnabled,startDate:s.startDate,time:s.time,timeZone:s.timeZone,weekday:s.weekday,matchnightCount:s.matchnightCount,secondWeekday:s.secondWeekday,repeatWeeks:s.repeatWeeks,spacingMinutes:s.spacingMinutes,windows:s.windows});
    if(action==='update'){
     const existing=await env.DB.prepare('SELECT id FROM preview_registration_boards WHERE id=?').bind(input.boardId).first();if(!existing)return json({error:'Registration board not found.'},404);
     await env.DB.prepare('UPDATE preview_registration_boards SET settings=?,is_open=? WHERE id=?').bind(settings,input.open?1:0,input.boardId).run();return json({updated:true});

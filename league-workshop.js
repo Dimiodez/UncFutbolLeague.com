@@ -1,5 +1,6 @@
 import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
+import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
 import {renderLeaguePage} from './league-page.js';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
@@ -32,7 +33,8 @@ function approveCalendarChange(signature,index){
 }
 form.elements.startDate.value=new Date().toLocaleDateString('en-CA',{timeZone:'America/Chicago'});
 bindTeamRuleControls(form);
-form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom')form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';});
+bindMatchnightControls(form);
+form.elements.format.addEventListener('change',()=>{if(form.elements.format.value!=='Custom'){form.elements.weekday.value=form.elements.format.value==='10v10'?'2':'4';form.elements.weekday.dispatchEvent(new Event('change'));}});
 function settingsFrom(values){
  if(values?.inviteBoardId!==undefined&&(typeof values.inviteBoardId!=='string'||!/^[A-Za-z0-9_-]{24}$/.test(values.inviteBoardId)))throw Error('Invalid shared registration board.');
  if(values?.managerInviteUrl!==undefined&&(typeof values.managerInviteUrl!=='string'||!/^https:\/\/(?:[a-zA-Z0-9-]+\.)?ufl-major-update-preview\.pages\.dev\/league-join\.html#[A-Za-z0-9_-]{43}$/.test(values.managerInviteUrl)))throw Error('Invalid preview registration invitation URL.');
@@ -104,7 +106,7 @@ function renderDrafts({sectionOnly=false}={}){
 function updateLeague(index,values){
  const settings=settingsFrom(values),draft=drafts[index];
  if(drafts.some((other,otherIndex)=>otherIndex!==index&&other.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&other.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season.');
- const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.byePolicy??'split',value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
+ const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,Number(value.matchnightCount??1),Number(value.matchnightCount??1)===2?Number(value.secondWeekday):null,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.byePolicy??'split',value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
  const calendarChanged=calendarKey(settings)!==calendarKey(draft.settings);
  if(calendarChanged&&draft.acceptedResults?.length)throw Error('Accepted test results exist. Export a backup and create a new league draft instead of rebuilding its fixtures.');
  const updated=draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};

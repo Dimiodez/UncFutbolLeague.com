@@ -1,4 +1,5 @@
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
+import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderLeagueWindows} from './league-window-controls.js';
 import {registrationAllowed} from './league-engine.js';
 import {cleanWizardClone} from './league-workshop-ux.js';
@@ -26,6 +27,9 @@ export function renderAdministration({drafts,seasons,competitions,updateLeague,a
   if(settings.byePolicy==='split'&&draft.acceptedResults?.length&&settingsForm.elements.byePolicy){const legacy=document.createElement('option');legacy.value='split';legacy.textContent='Historical split byes — locked because results exist';settingsForm.elements.byePolicy.append(legacy);settingsForm.elements.byePolicy.disabled=true;}
   for(const [key,value] of Object.entries(settings))if(settingsForm.elements.namedItem(key))settingsForm.elements.namedItem(key).value=value;
   settingsForm.elements.repeatWeeks.value=settings.repeatWeeks??1;
+  settingsForm.elements.matchnightCount.value=settings.matchnightCount??1;
+  settingsForm.elements.secondWeekday.value=settings.secondWeekday??(Number(settings.weekday)===2?4:2);
+  bindMatchnightControls(settingsForm);
   settingsForm.elements.keepersEnabled.checked=settings.keepersEnabled===true;
   settingsForm.elements.maxTeamSize.value=settings.maxTeamSize??settings.size;
   bindTeamRuleControls(settingsForm);

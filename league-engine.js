@@ -13,6 +13,9 @@ export function validateScheduleSettings(settings){
  const byePolicy=settings.byePolicy??'split';
  if(!['split','fullNight'].includes(byePolicy))throw Error('Choose split byes or a full-night double bye.');
  const interval=Number(settings.repeatWeeks??1),weekday=Number(settings.weekday),spacing=Number(settings.spacingMinutes);
+ const matchnightCount=Number(settings.matchnightCount??1),secondWeekday=Number(settings.secondWeekday);
+ if(![1,2].includes(matchnightCount))throw Error('Choose one or two matchnights per week.');
+ if(matchnightCount===2&&(settings.secondWeekday==null||settings.secondWeekday===''||!Number.isInteger(secondWeekday)||secondWeekday<0||secondWeekday>6||secondWeekday===weekday))throw Error('Choose two different matchnights.');
  if(!Number.isInteger(interval)||interval<1||interval>4)throw Error('Repeat games every 1–4 weeks.');
  if(!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(spacing)||spacing<15||spacing>180)throw Error('Choose a valid matchnight and 15–180 minutes between games.');
  zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
@@ -33,7 +36,7 @@ export function validateScheduleSettings(settings){
   if(window.type==='registration'&&window.to>=settings.startDate)throw Error('Registration must end before the league start date.');
   if(window.type==='transfer'&&window.from<settings.startDate)throw Error('Midseason transfers must start on or after the league start date.');
  }
- return {...settings,byePolicy,repeatWeeks:interval,breaks,windows};
+ return {...settings,matchnightCount,secondWeekday:matchnightCount===2?secondWeekday:null,byePolicy,repeatWeeks:interval,breaks,windows};
 }
 export function leagueWindowState(window,timeZone,now=Date.now()){
  const end=new Date(window.to+'T12:00:00Z');end.setUTCDate(end.getUTCDate()+1);
@@ -87,7 +90,11 @@ export function buildLeagueSchedule(settings){
  if(!Number.isInteger(weekday)||weekday<0||weekday>6||!Number.isInteger(spacing)||spacing<15||spacing>180)throw Error('Choose a valid matchnight and 15–180 minutes between games.');
  zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
  const startDate=new Date(settings.startDate+'T12:00:00Z');
- startDate.setUTCDate(startDate.getUTCDate()+(weekday-startDate.getUTCDay()+7)%7);
+ const days=settings.matchnightCount===2?[weekday,settings.secondWeekday]:[weekday];
+ // Keep legacy single-day recurrence anchored to its first eligible night.
+ // With two days, active weeks start on Monday; neither day precedes startDate.
+ const weekAnchor=new Date(startDate);weekAnchor.setUTCDate(weekAnchor.getUTCDate()-(weekAnchor.getUTCDay()+6)%7);
+ if(settings.matchnightCount===1)startDate.setUTCDate(startDate.getUTCDate()+(weekday-startDate.getUTCDay()+7)%7);
  const rotation=[...teams];if(rotation.length%2)rotation.push(null);
  const rounds=[];
  for(let round=0;round<rotation.length-1;round++){
@@ -116,10 +123,14 @@ export function buildLeagueSchedule(settings){
  const fixtures=[],nights=[],skippedDates=[];
  const scheduledDates=[],cursor=new Date(startDate),calendarBreaks=[...settings.breaks,...settings.windows.filter(window=>['bye','holiday','cup','break'].includes(window.type)).map(window=>({from:window.from,to:window.to,reason:window.name})),...(settings.pageContent?.finals?.cupPlans||[]).flatMap(cup=>cup.fixtures.map(f=>({from:f.date,to:f.date,reason:cup.name})))];
  for(let attempt=0;scheduledDates.length<Math.ceil(allRounds.length/2);attempt++){
-  if(attempt>1000)throw Error('Too many skipped dates. Shorten the breaks.');
+  if(attempt>28000)throw Error('Too many skipped dates. Shorten the breaks.');
+  if(settings.matchnightCount===2){
+   const weekOffset=Math.floor((cursor-weekAnchor)/(7*86400000));
+   if(!days.includes(cursor.getUTCDay())||weekOffset%settings.repeatWeeks!==0){cursor.setUTCDate(cursor.getUTCDate()+1);continue;}
+  }
   const date=cursor.toISOString().slice(0,10),pauses=calendarBreaks.filter(pause=>date>=pause.from&&date<=pause.to);
   if(pauses.length)skippedDates.push({date,reasons:pauses.map(pause=>pause.reason)});else scheduledDates.push(date);
-  cursor.setUTCDate(cursor.getUTCDate()+settings.repeatWeeks*7);
+  cursor.setUTCDate(cursor.getUTCDate()+(settings.matchnightCount===2?1:settings.repeatWeeks*7));
  }
  for(let round=0;round<allRounds.length;round++){
   const night=Math.floor(round/2),localDate=scheduledDates[night];

@@ -57,7 +57,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  else if(empty[tab]&&!(['stats','standings'].includes(tab)&&draft.acceptedResults?.length))note(empty[tab]);
  if(tab==='overview'){
   if(!content.text)note('Your league page is ready before any teams register. Set the rules and calendar now; add teams later.');
-  note(`First eligible matchnight: ${settings.startDate} · ${settings.time} (${settings.timeZone}) · every ${settings.repeatWeeks||1} week(s).`);
+  note(`First eligible matchnight: ${settings.startDate} · ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.weekday)]}${Number(settings.matchnightCount)===2?' & '+['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.secondWeekday)]:''} · ${settings.time} (${settings.timeZone}) · ${settings.matchnightCount||1} night(s) every ${settings.repeatWeeks||1} week(s).`);
   const controls=card.querySelector('.workshop-settings');if(controls){controls.open=false;move(controls,admin);}
  }
  if(tab==='teams'){

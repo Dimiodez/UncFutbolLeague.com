@@ -2,7 +2,7 @@ import {invitationCard,watchUnsaved,statusBadge} from './league-workspace-status
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const boardQueues=new Map();
 export function registrationRequest(body){
- if(body.settings){const s=body.settings;body={...body,settings:Object.fromEntries(['league','season','format','size','maxTeamSize','keepersEnabled','startDate','time','timeZone','weekday','spacingMinutes','windows'].map(key=>[key,s[key]]))};}
+ if(body.settings){const s=body.settings;body={...body,settings:Object.fromEntries(['league','season','format','size','maxTeamSize','keepersEnabled','startDate','time','timeZone','weekday','matchnightCount','secondWeekday','repeatWeeks','spacingMinutes','windows'].map(key=>[key,s[key]]))};}
  const send=async()=>{const response=await fetch('/api/registration',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),data=await response.json();if(!response.ok)throw Error(data.error);return data;};
  // Preserve this tab's edit/close ordering so a slow settings save cannot reopen an invite.
  if(!body.boardId)return send();const previous=boardQueues.get(body.boardId)||Promise.resolve(),next=previous.catch(()=>{}).then(send);boardQueues.set(body.boardId,next);const cleanup=()=>{if(boardQueues.get(body.boardId)===next)boardQueues.delete(body.boardId);};next.then(cleanup,cleanup);return next;

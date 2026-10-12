@@ -1,5 +1,9 @@
 # UFL major-update preview
 
+## Two matchnights per week — 12 October 2026
+
+Creation and calendar editing now share a one/two-matchnight selector with two distinct weekdays. Both days use the existing kickoff/timezone/spacing rules: two games per playing night. The scheduler visits selected dates chronologically on or after the first eligible date, skipping breaks and reserved cups. With two days and an alternate-week recurrence, active weeks are Monday–Sunday anchored to the start date's week. Legacy single-day schedules retain their original first-night recurrence anchor. Fixture pairing, full-night byes, home/away balance and accepted-result rebuild protections are unchanged. Calendar summaries use “Night” rather than treating every night as a separate week. Draft archives and shared invitation settings retain the new fields. Browser QA verified duplicate-day validation, review, creation and edit restoration; automated tests cover recurrence, breaks, DST and bye invariants. Preview only; live site/bot untouched.
+
 ## Discord-account draft archives — 12 October 2026
 
 `/api/drafts` stores one private v4 workspace archive (all leagues/seasons/cups) per active Discord account in preview D1. GET and POST derive ownership from the existing session; even site owners cannot request another user's archive. POST requires same origin, the currently displayed account ID, a bounded 900 KB archive and an expected revision. Atomic insert/update compare-and-swap rejects stale simultaneous saves with 409 instead of silently overwriting. No public league/registration/award permissions change. Browser storage and optional JSON backups remain supported.
