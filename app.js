@@ -874,7 +874,7 @@ function arcadeSubmissionPage() {
 
 function arcadeGamePage(){return '<section class="integrated-app arcade-host" aria-label="Cleat Arcade"><iframe class="integrated-app-frame" src="/arcade-app/" title="Cleat Arcade soccer game" scrolling="no"></iframe></section>';}
 function wheelPage() {
-  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20261012-white-elephant" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app" aria-label="Unc Wheel United"><iframe class="integrated-app-frame" src="/wheel-app/?v=20261012-holiday-teams" title="Unc Wheel United application" scrolling="no"></iframe></section>`;
 }
 
 function funcPage() {
