@@ -8,6 +8,7 @@ import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
 import {watchUnsaved} from './league-workspace-status.js';
+import {installAccountDrafts} from './league-account-drafts.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css';document.head.append(uxStyle);
 installWorkshopBrand();
 const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
@@ -17,7 +18,8 @@ const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
 let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
 document.querySelector('.workshop-layout').before(message,pageHost);
-function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));markLocalSaved('Saved on this device');}
+let accountDrafts;
+function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));markLocalSaved('Saved on this device');accountDrafts?.changed();}
 function pageReport(text){message.textContent=text;const status=pageHost.querySelector('[data-page-status]');if(status)status.textContent=text;}
 let pendingCalendarChange=null;
 function approveCalendarChange(signature,index){
@@ -86,7 +88,7 @@ function renderDrafts({sectionOnly=false}={}){
   renderLeaguePage({host:pageHost,card:root.querySelector(`#league-${index}`),draft:drafts[index],allDrafts:drafts,index,tab:activeTab,
    onTab:tab=>{if(tab===activeTab)return;activeTab=tab;renderDrafts({sectionOnly:true});const panel=pageHost.querySelector('[role="tabpanel"]');panel.scrollIntoView({block:'start'});const selected=pageHost.querySelector(`[data-tab="${tab}"]`);selected.scrollIntoView({block:'nearest',inline:'nearest'});selected.focus({preventScroll:true});},onClose:()=>{activeLeague=null;renderDrafts();document.querySelector('.league-library-heading').scrollIntoView({block:'start'});document.querySelector('[data-new-league]').focus({preventScroll:true});},
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
-   onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Download draft file in All leagues & seasons to move them to another PC.');},
+   onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Save drafts online above to continue on mobile or another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
    onImportTeam:(team,{checkOnly=false}={})=>{
     const existing=drafts[index].settings.teams.find(t=>t.remoteTeamId===team.id);
@@ -172,13 +174,29 @@ function restoreDrafts(data){
  }
  seasons=savedSeasons;competitions=savedCups;return loaded;
 }
-save.addEventListener('click',()=>{try{persistDrafts();message.textContent='Saved on this device only. Download the draft file to share or move to another PC.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
+save.addEventListener('click',()=>{try{persistDrafts();message.textContent='Saved on this device. Use Save drafts online to keep a copy in your Discord account.';}catch{message.textContent='This browser could not save the draft. Download the file instead.';}});
 download.addEventListener('click',()=>{const blob=new Blob([JSON.stringify(draftFile(),null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ufl-league-drafts.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
 document.querySelector('#import-drafts').addEventListener('change',async event=>{try{const file=event.target.files[0];if(!file)return;if(file.size>1000000)throw Error('Choose a draft file smaller than 1 MB.');const data=JSON.parse(await file.text());const loaded=restoreDrafts(data);drafts=loaded;renderDrafts();message.textContent='Draft file opened. Nothing was registered or published.';}catch(error){message.textContent=error.message;}finally{event.target.value='';}});
 try{
  const previous=localStorage.getItem(KEY)||'[]';drafts=restoreDrafts(JSON.parse(previous));
  if(migratedByeCount){localStorage.setItem(KEY+'-before-full-night-byes',previous);persistDrafts();message.textContent=`Corrected ${migratedByeCount} odd-team draft(s) to full-night byes. Existing results were not changed. A pre-update backup is saved on this device.`;}
 }catch{/* Leave invalid or older drafts untouched in storage. */}renderDrafts();
+accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
+ hasUnappliedChanges:()=>!!document.querySelector('form[data-unsaved="true"]'),
+ onSaved:()=>markLocalSaved('Saved online · Discord account'),
+ loadData:data=>{
+  const before=draftFile(),oldSeasons=seasons,oldCompetitions=competitions;
+  let loaded;try{loaded=restoreDrafts(data);}catch(error){seasons=oldSeasons;competitions=oldCompetitions;throw error;}
+  const nextSeasons=seasons,nextCompetitions=competitions;seasons=oldSeasons;competitions=oldCompetitions;
+  localStorage.setItem(KEY+'-before-account-open',JSON.stringify(before));
+  localStorage.setItem(KEY,JSON.stringify(data));
+  seasons=nextSeasons;competitions=nextCompetitions;
+  document.querySelector('[data-close-create]')?.click();form.reset();delete form.dataset.unsaved;
+  drafts=loaded;activeLeague=null;review.hidden=true;renderDrafts();pageHost.replaceChildren();
+ },recoverLocal:()=>{
+  const backup=localStorage.getItem(KEY+'-before-account-open');if(!backup)throw Error('No browser backup from an account opening is available on this device yet.');
+  const loaded=restoreDrafts(JSON.parse(backup));drafts=loaded;activeLeague=null;review.hidden=true;persistDrafts();renderDrafts();
+ }});
 async function checkFixture(index,id,button){
  const draft=drafts[index],fixture=draft.fixtures.find(game=>game.id===id);button.disabled=true;review.hidden=false;review.innerHTML='<h2>Checking scheduled matchup…</h2>';
  if(activeLeague!==null)pageHost.querySelector('[data-page-body]').append(review);

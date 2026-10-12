@@ -1,4 +1,7 @@
 /* UNC admin presentation only. Keep selectors scoped away from the main site. */
+.unc-workspace .account-drafts{margin:18px 0;border-top:3px solid var(--blue)}
+.unc-workspace .account-drafts h2{font-size:24px;margin:0 0 8px}
+.unc-workspace .account-drafts p{font-size:14px;color:var(--muted)}
 .unc-workspace .save-state{font-size:14px;color:var(--muted);border-left:3px solid var(--blue);padding:4px 10px;margin:10px 0}
 .unc-workspace .registration-status{display:inline-block;font:700 14px Inter,sans-serif;padding:6px 10px;margin:0 8px 8px 0;border:1px solid var(--line);border-radius:5px;background:var(--admin-raised)}
 .unc-workspace .registration-status.is-approved{border-color:var(--good)}
