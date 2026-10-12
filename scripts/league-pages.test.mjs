@@ -10,8 +10,8 @@ vm.runInContext(read('pickems-app/season-data.js'),context);
 vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
 
-test('all 16 VA registrations resolve to club pages while every current provisional team stays',()=>{
-  for(const [division,count] of [['6v6',9],['10v10',7]]){
+test('all current VA registrations resolve to club pages while every provisional team stays',()=>{
+  for(const [division,count] of [['6v6',10],['10v10',7]]){
     const query=`season=2&division=${division}`;
     const view=render(`leagueViewContext(new URLSearchParams('${query}'))`);
     assert.equal(view.season.teamDetails.filter(team=>team.registered!==false).length,count);
@@ -55,7 +55,7 @@ test('owner-confirmed Inter Miami rebrand keeps two players and stadium under LA
   for(const name of ['Rich-1 (Gir)','tink7020']) assert.ok(html.includes(name),name);
   assert.doesNotMatch(html,/UFL Inter Miami/);
   assert.doesNotMatch(read('functions/_lib/roster-clubs.js'),/club-1790814116306/);
-  assert.equal(Object.keys(view.season.teams).length,9);
+  assert.equal(Object.keys(view.season.teams).length,10);
 });
 
 test('uploaded team images flow through club pages, directories and team cards without changing archives',()=>{

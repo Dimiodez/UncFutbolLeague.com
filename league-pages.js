@@ -61,7 +61,7 @@ function leagueViewContext(params) {
     teams:{...Object.fromEntries(provisional.clubs.map(c=>[c.key,[c.name,c.logo]])),...Object.fromEntries(Object.entries(official?.teams||{}).map(([key,team])=>[mappedKey(key),[team[0],team[1]||provisional.clubs.find(c=>c.key===mappedKey(key))?.logo||'/assets/ufl-mark.webp']]))},
     teamDetails:official?.teamDetails?.map(t=>({...t,key:mappedKey(t.key)})),
     standings:official?.standings?.map(([key,...stats])=>[mappedKey(key),...stats]),
-    weeks:official?.weeks?.map(week=>({...week,matches:week.matches.map(([id,home,away,...scores])=>[id,mappedKey(home),mappedKey(away),...scores])})),
+    weeks:official?.weeks?.map(week=>({...week,matches:week.matches.map(([id,home,away,...scores])=>[id,mappedKey(home),mappedKey(away),...scores]),byes:week.byes?.map(bye=>({...bye,team:mappedKey(bye.team)}))})),
     provisionalClubs:provisional.clubs}:official;
   const managed=selected.id==='2'&&typeof leagueManagedRosterState!=='undefined'?leagueManagedRosterState.players?.[division]:null;
   const players=(archive?leaguePlayerReference:managed||provisional?.players||[]).map(player=>({...player,portrait:playerPortraitSource(player)}));

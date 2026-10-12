@@ -45,37 +45,41 @@ const badge = team => `<img class="team-badge team-logo" src="${team.logo}" alt=
 
 function weekData(week) { return season.weeks?.find(item => item.week === week) || season.weeks?.[0] || null; }
 function fixturesForWeek(week) {
-  return (weekData(week)?.matches || []).map(([id,home,away,hs,as]) => ({
-    id: String(id), home: teamByKey[home], away: teamByKey[away], hs, as,
+  return (weekData(week)?.matches || []).map(([id,home,away,hs,as,kickoff,round]) => ({
+    id: String(id), home: teamByKey[home], away: teamByKey[away], hs, as, kickoff, round,
     url: `https://ufl.virtualarena.app/matches/${id}`
   }));
 }
 function weekTabs(target, selected, type) {
   $(target).innerHTML = season.weeks.map(week => {
     const complete = week.matches.every(match => match[3] !== null && match[4] !== null);
-    return `<button class="${week.week===selected?'active ':''}${complete?'complete':''}" data-${type}-week="${week.week}"><span>${complete?'✓':'OPEN'}</span>Week ${week.week}</button>`;
+    return `<button class="${week.week===selected?'active ':''}${complete?'complete':''}" data-${type}-week="${week.week}"><span>${complete?'✓':'OPEN'}</span>${week.rounds?'Matchday':'Week'} ${week.week}</button>`;
   }).join('');
 }
 function formatKickoff(week) { return weekData(week)?.date || 'Date to be announced'; }
+function fixtureKickoff(week,fixture){return weekData(week)?.rounds?.find(round=>round.scheduledAt===fixture.kickoff)?.date||formatKickoff(week);}
+function byesForWeek(week){return (weekData(week)?.byes||[]).map(bye=>`${teamByKey[bye.team]?.name||bye.team} — BYE in round ${bye.round}`).join(' · ');}
+function clubUrl(team){return `/clubs/${encodeURIComponent(team.key)}?season=${state.selectedSeason}&division=${state.selectedDivision}`;}
 const ballotKey = (competition, week) => `${competition}:${Number(week)}`;
 function getBallot(week) { return serverBallots.get(ballotKey(state.competition, week)) || {}; }
 function showToast(message) { const toast=$('#toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>toast.classList.remove('show'),2400); }
 
 function renderSimple() {
   const week=state.simpleWeek, data=weekData(week), fixtures=fixturesForWeek(week), complete=fixtures.every(f=>f.hs!==null&&f.as!==null), open=!complete&&Date.now()<data.scheduledAt*1000, saved=getBallot(week);
-  weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`Gameweek ${week} · ${fixtures.length} match${fixtures.length===1?'':'es'}`;
+  weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`${data.rounds?'Matchday':'Gameweek'} ${week} · ${fixtures.length} match${fixtures.length===1?'':'es'}`;
   $('#simple-status').textContent=open?'Voting open':complete?'Final · voting closed':'Voting closed'; $('#simple-status').className=`status ${open?'open':'closed'}`;
-  $('#live-badge').innerHTML=`<i></i> WEEK ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
+  $('#live-badge').innerHTML=`<i></i> ${data.rounds?'MATCHDAY':'WEEK'} ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
   $('#simple-fixtures').innerHTML=fixtures.map((f,i)=>{
     const result=complete?(f.hs>f.as?'home':f.hs<f.as?'away':'draw'):null, chosen=saved.picks?.[f.id];
     const cls=choice=>`${choice===chosen?' selected':''}${complete&&choice===chosen?(choice===result?' correct':' incorrect'):''}`;
-    return `<article class="simple-match"><header><span>Match ${i+1} · ${formatKickoff(week)}</span><a href="${f.url}" target="_blank" rel="noopener noreferrer">${complete?`Final ${f.hs}–${f.as}`:open?'Pick one':'Awaiting result'} ↗</a></header><div>
+    return `<article class="simple-match"><header><span>${f.round?`Round ${f.round}`:`Match ${i+1}`} · ${fixtureKickoff(week,f)}</span><a href="${f.url}" target="_blank" rel="noopener noreferrer">${complete?`Final ${f.hs}–${f.as}`:open?'Pick one':'Awaiting result'} ↗</a></header><div>
       <button data-choice="home" data-match="${f.id}" class="${cls('home')}" ${open?'':'disabled'}>${badge(f.home)}<span><strong>${f.home.name}</strong><small>Home win</small></span></button>
       <button data-choice="draw" data-match="${f.id}" class="draw${cls('draw')}" ${open?'':'disabled'}><b>×</b><span><strong>Draw</strong><small>Level</small></span></button>
       <button data-choice="away" data-match="${f.id}" class="${cls('away')}" ${open?'':'disabled'}>${badge(f.away)}<span><strong>${f.away.name}</strong><small>Away win</small></span></button>
-    </div></article>`;
+    </div><footer class="fixture-club-links"><a href="${clubUrl(f.home)}" target="_top">${escapeHtml(f.home.name)} squad →</a><a href="${clubUrl(f.away)}" target="_top">${escapeHtml(f.away.name)} squad →</a></footer></article>`;
   }).join('');
-  const featured=fixtures.at(-1), finalTotal=complete?featured.hs+featured.as:null; $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=complete?`Final total: ${finalTotal} · Your pick: ${saved.tiebreaker??'—'}`:`Locks ${formatKickoff(week)}`;
+  const byeNote=byesForWeek(week);if(byeNote)$('#simple-fixtures').insertAdjacentHTML('beforeend',`<p class="pickem-byes">${escapeHtml(byeNote)}. No prediction needed.</p>`);
+  const featured=fixtures.at(-1), finalTotal=complete?featured.hs+featured.as:null; $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=complete?`Final total: ${finalTotal} · Your pick: ${saved.tiebreaker??'—'}`:`Entire matchday locks ${formatKickoff(week)}`;
   $('#tiebreaker').value=saved.tiebreaker??(complete?finalTotal:''); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?(authState.authenticated?'Save shared ballot':'Sign in to submit'):complete?`Week ${week} final`:`Week ${week} locked`;
   $('#account-state').innerHTML=authState.authenticated?`Signed in as <strong>${escapeHtml(authState.user.displayName)}</strong> · picks are saved to your UFL account.`:`<a href="/account" target="_top">Sign in with Discord</a> to save picks across devices and appear on the shared leaderboard.`;
   updateProgress(); renderSimpleLeaders(); renderActivity(open);
@@ -124,7 +128,7 @@ function renderDetailLeaders(){ const season=state.detailPeriod==='season'; $('#
 document.addEventListener('click',async event=>{
   const seasonButton=event.target.closest('[data-pickem-season]');if(seasonButton){selectCompetition(Number(seasonButton.dataset.pickemSeason),state.selectedDivision);await renderCompetition();return;}
   const divisionButton=event.target.closest('[data-pickem-division]');if(divisionButton){selectCompetition(state.selectedSeason,divisionButton.dataset.pickemDivision);await renderCompetition();return;}
-  const mode=event.target.closest('[data-mode]'); if(mode){state.mode=mode.dataset.mode; $$('[data-mode]').forEach(b=>b.classList.toggle('active',b===mode)); $$('[data-pane]').forEach(p=>p.classList.toggle('active',p.dataset.pane===state.mode)); $('#subtitle').textContent=state.mode==='simple'?'Pick the winner or a draw across all five scheduled matches.':'Call scores, scorers, assists, and your Double Down.'; window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);}
+  const mode=event.target.closest('[data-mode]'); if(mode){state.mode=mode.dataset.mode; $$('[data-mode]').forEach(b=>b.classList.toggle('active',b===mode)); $$('[data-pane]').forEach(p=>p.classList.toggle('active',p.dataset.pane===state.mode)); $('#subtitle').textContent=state.mode==='simple'?'Pick the winner or a draw across the scheduled matches.':'Call scores, scorers, assists, and your Double Down.'; window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);}
   const sw=event.target.closest('[data-simple-week]'); if(sw){state.simpleWeek=Number(sw.dataset.simpleWeek);await loadBallot(state.simpleWeek);await loadLeaderboard();renderSimple();}
   const dw=event.target.closest('[data-detail-week]'); if(dw){state.detailWeek=Number(dw.dataset.detailWeek);renderDetail();}
   const choice=event.target.closest('[data-choice]'); if(choice&&!choice.disabled){$$(`[data-match="${choice.dataset.match}"]`).forEach(b=>b.classList.remove('selected'));choice.classList.add('selected');updateProgress();}
@@ -149,7 +153,7 @@ async function renderCompetition(){
   const syncedLabel=$('#data-source');if(syncedLabel)syncedLabel.textContent=season.syncedAt?`Virtual Arena · synced ${new Date(season.syncedAt).toLocaleString()}`:'Virtual Arena · awaiting first sync';
   $('[data-competition-pane="pickems"]').hidden=!ready;$('#future-competition').hidden=ready;
   if(ready){
-    $('#subtitle').textContent=config.archived?'Season 1 is closed and preserved here with its final results and leaderboard.':`Pick the winner or a draw in every ${config.division} fixture.`;
+    $('#subtitle').textContent=config.archived?'Season 1 is closed and preserved here with its final results and leaderboard.':`Pick every ${config.division} match across both rounds. The full matchday ballot locks at the first kickoff; BYEs need no pick. Times are Eastern.`;
     $('#live-badge').innerHTML=`<i></i> ${config.archived?'ARCHIVED':`${config.division} · SEASON 2`}`;
     $('#season-heading').textContent=`${config.game} · UFL Season ${config.season}${config.archived?' · Archive':''}`;
     await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);renderSimple();

@@ -311,82 +311,110 @@
           "ITA",
           "TLC",
           null,
-          null
+          null,
+          1792116000,
+          1
         ],
         [
           103,
           "FCB",
           "PHN",
           null,
-          null
+          null,
+          1792116000,
+          1
         ],
         [
           104,
           "ARS",
           "DRU",
           null,
-          null
+          null,
+          1792116000,
+          1
         ],
         [
           105,
           "TK",
           "PUM",
           null,
-          null
+          null,
+          1792116000,
+          1
         ],
         [
           106,
           "LA",
           "ROM",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 2,
-      "date": "Thu 15 Oct, 10:30 PM EDT",
-      "scheduledAt": 1792117800,
-      "matches": [
+          null,
+          1792116000,
+          1
+        ],
         [
           107,
           "TLC",
           "FCB",
           null,
-          null
+          null,
+          1792117800,
+          2
         ],
         [
           108,
           "ITA",
           "ARS",
           null,
-          null
+          null,
+          1792117800,
+          2
         ],
         [
           109,
           "PHN",
           "TK",
           null,
-          null
+          null,
+          1792117800,
+          2
         ],
         [
           110,
           "DRU",
           "LA",
           null,
-          null
+          null,
+          1792117800,
+          2
         ],
         [
           111,
           "PUM",
           "ROM",
           null,
-          null
+          null,
+          1792117800,
+          2
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 1,
+          "roundId": 25,
+          "date": "Thu 15 Oct, 10:00 PM EDT",
+          "scheduledAt": 1792116000
+        },
+        {
+          "round": 2,
+          "roundId": 26,
+          "date": "Thu 15 Oct, 10:30 PM EDT",
+          "scheduledAt": 1792117800
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 3,
+      "week": 2,
       "date": "Thu 22 Oct, 10:00 PM EDT",
       "scheduledAt": 1792720800,
       "matches": [
@@ -395,82 +423,110 @@
           "ARS",
           "TLC",
           null,
-          null
+          null,
+          1792720800,
+          3
         ],
         [
           113,
           "TK",
           "FCB",
           null,
-          null
+          null,
+          1792720800,
+          3
         ],
         [
           114,
           "LA",
           "ITA",
           null,
-          null
+          null,
+          1792720800,
+          3
         ],
         [
           115,
           "ROM",
           "PHN",
           null,
-          null
+          null,
+          1792720800,
+          3
         ],
         [
           116,
           "PUM",
           "DRU",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 4,
-      "date": "Thu 22 Oct, 10:30 PM EDT",
-      "scheduledAt": 1792722600,
-      "matches": [
+          null,
+          1792720800,
+          3
+        ],
         [
           117,
           "TLC",
           "TK",
           null,
-          null
+          null,
+          1792722600,
+          4
         ],
         [
           118,
           "ARS",
           "LA",
           null,
-          null
+          null,
+          1792722600,
+          4
         ],
         [
           119,
           "FCB",
           "ROM",
           null,
-          null
+          null,
+          1792722600,
+          4
         ],
         [
           120,
           "ITA",
           "PUM",
           null,
-          null
+          null,
+          1792722600,
+          4
         ],
         [
           121,
           "PHN",
           "DRU",
           null,
-          null
+          null,
+          1792722600,
+          4
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 3,
+          "roundId": 27,
+          "date": "Thu 22 Oct, 10:00 PM EDT",
+          "scheduledAt": 1792720800
+        },
+        {
+          "round": 4,
+          "roundId": 28,
+          "date": "Thu 22 Oct, 10:30 PM EDT",
+          "scheduledAt": 1792722600
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 5,
+      "week": 3,
       "date": "Thu 29 Oct, 10:00 PM EDT",
       "scheduledAt": 1793325600,
       "matches": [
@@ -479,82 +535,110 @@
           "LA",
           "TLC",
           null,
-          null
+          null,
+          1793325600,
+          5
         ],
         [
           123,
           "ROM",
           "TK",
           null,
-          null
+          null,
+          1793325600,
+          5
         ],
         [
           124,
           "PUM",
           "ARS",
           null,
-          null
+          null,
+          1793325600,
+          5
         ],
         [
           125,
           "DRU",
           "FCB",
           null,
-          null
+          null,
+          1793325600,
+          5
         ],
         [
           126,
           "PHN",
           "ITA",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 6,
-      "date": "Thu 29 Oct, 10:30 PM EDT",
-      "scheduledAt": 1793327400,
-      "matches": [
+          null,
+          1793325600,
+          5
+        ],
         [
           127,
           "TLC",
           "ROM",
           null,
-          null
+          null,
+          1793327400,
+          6
         ],
         [
           128,
           "LA",
           "PUM",
           null,
-          null
+          null,
+          1793327400,
+          6
         ],
         [
           129,
           "TK",
           "DRU",
           null,
-          null
+          null,
+          1793327400,
+          6
         ],
         [
           130,
           "ARS",
           "PHN",
           null,
-          null
+          null,
+          1793327400,
+          6
         ],
         [
           131,
           "FCB",
           "ITA",
           null,
-          null
+          null,
+          1793327400,
+          6
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 5,
+          "roundId": 29,
+          "date": "Thu 29 Oct, 10:00 PM EDT",
+          "scheduledAt": 1793325600
+        },
+        {
+          "round": 6,
+          "roundId": 30,
+          "date": "Thu 29 Oct, 10:30 PM EDT",
+          "scheduledAt": 1793327400
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 7,
+      "week": 4,
       "date": "Thu 05 Nov, 10:00 PM EST",
       "scheduledAt": 1793934000,
       "matches": [
@@ -563,82 +647,110 @@
           "PUM",
           "TLC",
           null,
-          null
+          null,
+          1793934000,
+          7
         ],
         [
           133,
           "DRU",
           "ROM",
           null,
-          null
+          null,
+          1793934000,
+          7
         ],
         [
           134,
           "PHN",
           "LA",
           null,
-          null
+          null,
+          1793934000,
+          7
         ],
         [
           135,
           "ITA",
           "TK",
           null,
-          null
+          null,
+          1793934000,
+          7
         ],
         [
           136,
           "FCB",
           "ARS",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 8,
-      "date": "Thu 05 Nov, 10:30 PM EST",
-      "scheduledAt": 1793935800,
-      "matches": [
+          null,
+          1793934000,
+          7
+        ],
         [
           137,
           "TLC",
           "DRU",
           null,
-          null
+          null,
+          1793935800,
+          8
         ],
         [
           138,
           "PUM",
           "PHN",
           null,
-          null
+          null,
+          1793935800,
+          8
         ],
         [
           139,
           "ROM",
           "ITA",
           null,
-          null
+          null,
+          1793935800,
+          8
         ],
         [
           140,
           "LA",
           "FCB",
           null,
-          null
+          null,
+          1793935800,
+          8
         ],
         [
           141,
           "TK",
           "ARS",
           null,
-          null
+          null,
+          1793935800,
+          8
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 7,
+          "roundId": 31,
+          "date": "Thu 05 Nov, 10:00 PM EST",
+          "scheduledAt": 1793934000
+        },
+        {
+          "round": 8,
+          "roundId": 32,
+          "date": "Thu 05 Nov, 10:30 PM EST",
+          "scheduledAt": 1793935800
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 9,
+      "week": 5,
       "date": "Thu 19 Nov, 9:00 PM EST",
       "scheduledAt": 1795140000,
       "matches": [
@@ -647,82 +759,110 @@
           "PHN",
           "TLC",
           null,
-          null
+          null,
+          1795140000,
+          9
         ],
         [
           143,
           "ITA",
           "DRU",
           null,
-          null
+          null,
+          1795140000,
+          9
         ],
         [
           144,
           "FCB",
           "PUM",
           null,
-          null
+          null,
+          1795140000,
+          9
         ],
         [
           145,
           "ARS",
           "ROM",
           null,
-          null
+          null,
+          1795140000,
+          9
         ],
         [
           146,
           "TK",
           "LA",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 10,
-      "date": "Thu 19 Nov, 9:30 PM EST",
-      "scheduledAt": 1795141800,
-      "matches": [
+          null,
+          1795140000,
+          9
+        ],
         [
           147,
           "TLC",
           "ITA",
           null,
-          null
+          null,
+          1795141800,
+          10
         ],
         [
           148,
           "PHN",
           "FCB",
           null,
-          null
+          null,
+          1795141800,
+          10
         ],
         [
           149,
           "DRU",
           "ARS",
           null,
-          null
+          null,
+          1795141800,
+          10
         ],
         [
           150,
           "PUM",
           "TK",
           null,
-          null
+          null,
+          1795141800,
+          10
         ],
         [
           151,
           "ROM",
           "LA",
           null,
-          null
+          null,
+          1795141800,
+          10
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 9,
+          "roundId": 33,
+          "date": "Thu 19 Nov, 9:00 PM EST",
+          "scheduledAt": 1795140000
+        },
+        {
+          "round": 10,
+          "roundId": 34,
+          "date": "Thu 19 Nov, 9:30 PM EST",
+          "scheduledAt": 1795141800
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 11,
+      "week": 6,
       "date": "Thu 26 Nov, 9:00 PM EST",
       "scheduledAt": 1795744800,
       "matches": [
@@ -731,82 +871,110 @@
           "FCB",
           "TLC",
           null,
-          null
+          null,
+          1795744800,
+          11
         ],
         [
           153,
           "ARS",
           "ITA",
           null,
-          null
+          null,
+          1795744800,
+          11
         ],
         [
           154,
           "TK",
           "PHN",
           null,
-          null
+          null,
+          1795744800,
+          11
         ],
         [
           155,
           "LA",
           "DRU",
           null,
-          null
+          null,
+          1795744800,
+          11
         ],
         [
           156,
           "ROM",
           "PUM",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 12,
-      "date": "Thu 26 Nov, 9:30 PM EST",
-      "scheduledAt": 1795746600,
-      "matches": [
+          null,
+          1795744800,
+          11
+        ],
         [
           157,
           "TLC",
           "ARS",
           null,
-          null
+          null,
+          1795746600,
+          12
         ],
         [
           158,
           "FCB",
           "TK",
           null,
-          null
+          null,
+          1795746600,
+          12
         ],
         [
           159,
           "ITA",
           "LA",
           null,
-          null
+          null,
+          1795746600,
+          12
         ],
         [
           160,
           "PHN",
           "ROM",
           null,
-          null
+          null,
+          1795746600,
+          12
         ],
         [
           161,
           "DRU",
           "PUM",
           null,
-          null
+          null,
+          1795746600,
+          12
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 11,
+          "roundId": 35,
+          "date": "Thu 26 Nov, 9:00 PM EST",
+          "scheduledAt": 1795744800
+        },
+        {
+          "round": 12,
+          "roundId": 36,
+          "date": "Thu 26 Nov, 9:30 PM EST",
+          "scheduledAt": 1795746600
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 13,
+      "week": 7,
       "date": "Thu 03 Dec, 9:00 PM EST",
       "scheduledAt": 1796349600,
       "matches": [
@@ -815,82 +983,110 @@
           "TK",
           "TLC",
           null,
-          null
+          null,
+          1796349600,
+          13
         ],
         [
           163,
           "LA",
           "ARS",
           null,
-          null
+          null,
+          1796349600,
+          13
         ],
         [
           164,
           "ROM",
           "FCB",
           null,
-          null
+          null,
+          1796349600,
+          13
         ],
         [
           165,
           "PUM",
           "ITA",
           null,
-          null
+          null,
+          1796349600,
+          13
         ],
         [
           166,
           "DRU",
           "PHN",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 14,
-      "date": "Thu 03 Dec, 9:30 PM EST",
-      "scheduledAt": 1796351400,
-      "matches": [
+          null,
+          1796349600,
+          13
+        ],
         [
           167,
           "TLC",
           "LA",
           null,
-          null
+          null,
+          1796351400,
+          14
         ],
         [
           168,
           "TK",
           "ROM",
           null,
-          null
+          null,
+          1796351400,
+          14
         ],
         [
           169,
           "ARS",
           "PUM",
           null,
-          null
+          null,
+          1796351400,
+          14
         ],
         [
           170,
           "FCB",
           "DRU",
           null,
-          null
+          null,
+          1796351400,
+          14
         ],
         [
           171,
           "ITA",
           "PHN",
           null,
-          null
+          null,
+          1796351400,
+          14
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 13,
+          "roundId": 37,
+          "date": "Thu 03 Dec, 9:00 PM EST",
+          "scheduledAt": 1796349600
+        },
+        {
+          "round": 14,
+          "roundId": 38,
+          "date": "Thu 03 Dec, 9:30 PM EST",
+          "scheduledAt": 1796351400
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 15,
+      "week": 8,
       "date": "Thu 10 Dec, 9:00 PM EST",
       "scheduledAt": 1796954400,
       "matches": [
@@ -899,82 +1095,110 @@
           "ROM",
           "TLC",
           null,
-          null
+          null,
+          1796954400,
+          15
         ],
         [
           173,
           "PUM",
           "LA",
           null,
-          null
+          null,
+          1796954400,
+          15
         ],
         [
           174,
           "DRU",
           "TK",
           null,
-          null
+          null,
+          1796954400,
+          15
         ],
         [
           175,
           "PHN",
           "ARS",
           null,
-          null
+          null,
+          1796954400,
+          15
         ],
         [
           176,
           "ITA",
           "FCB",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 16,
-      "date": "Thu 10 Dec, 9:30 PM EST",
-      "scheduledAt": 1796956200,
-      "matches": [
+          null,
+          1796954400,
+          15
+        ],
         [
           177,
           "TLC",
           "PUM",
           null,
-          null
+          null,
+          1796956200,
+          16
         ],
         [
           178,
           "ROM",
           "DRU",
           null,
-          null
+          null,
+          1796956200,
+          16
         ],
         [
           179,
           "LA",
           "PHN",
           null,
-          null
+          null,
+          1796956200,
+          16
         ],
         [
           180,
           "TK",
           "ITA",
           null,
-          null
+          null,
+          1796956200,
+          16
         ],
         [
           181,
           "ARS",
           "FCB",
           null,
-          null
+          null,
+          1796956200,
+          16
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 15,
+          "roundId": 39,
+          "date": "Thu 10 Dec, 9:00 PM EST",
+          "scheduledAt": 1796954400
+        },
+        {
+          "round": 16,
+          "roundId": 40,
+          "date": "Thu 10 Dec, 9:30 PM EST",
+          "scheduledAt": 1796956200
+        }
+      ],
+      "byes": []
     },
     {
-      "week": 17,
+      "week": 9,
       "date": "Thu 17 Dec, 9:00 PM EST",
       "scheduledAt": 1797559200,
       "matches": [
@@ -983,81 +1207,110 @@
           "DRU",
           "TLC",
           null,
-          null
+          null,
+          1797559200,
+          17
         ],
         [
           183,
           "PHN",
           "PUM",
           null,
-          null
+          null,
+          1797559200,
+          17
         ],
         [
           184,
           "ITA",
           "ROM",
           null,
-          null
+          null,
+          1797559200,
+          17
         ],
         [
           185,
           "FCB",
           "LA",
           null,
-          null
+          null,
+          1797559200,
+          17
         ],
         [
           186,
           "ARS",
           "TK",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 18,
-      "date": "Thu 17 Dec, 9:30 PM EST",
-      "scheduledAt": 1797561000,
-      "matches": [
+          null,
+          1797559200,
+          17
+        ],
         [
           187,
           "TLC",
           "PHN",
           null,
-          null
+          null,
+          1797561000,
+          18
         ],
         [
           188,
           "DRU",
           "ITA",
           null,
-          null
+          null,
+          1797561000,
+          18
         ],
         [
           189,
           "PUM",
           "FCB",
           null,
-          null
+          null,
+          1797561000,
+          18
         ],
         [
           190,
           "ROM",
           "ARS",
           null,
-          null
+          null,
+          1797561000,
+          18
         ],
         [
           191,
           "LA",
           "TK",
           null,
-          null
+          null,
+          1797561000,
+          18
         ]
-      ]
+      ],
+      "rounds": [
+        {
+          "round": 17,
+          "roundId": 41,
+          "date": "Thu 17 Dec, 9:00 PM EST",
+          "scheduledAt": 1797559200
+        },
+        {
+          "round": 18,
+          "roundId": 42,
+          "date": "Thu 17 Dec, 9:30 PM EST",
+          "scheduledAt": 1797561000
+        }
+      ],
+      "byes": []
     }
   ],
+  "scheduleFormat": "matchdays-v1",
   "leaderboards": {
     "players": {
       "goals": {

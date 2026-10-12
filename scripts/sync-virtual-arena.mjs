@@ -58,6 +58,27 @@ function normalizeLeaderboards(leaderboards = {}) {
   ]));
 }
 
+// A UFL matchday contains both official rounds, not two different "weeks".
+// Fixture IDs remain VA IDs; BYEs have no match ID and can never become picks.
+function matchdaysFromRounds(rounds, registeredKeys) {
+  const days = new Map();
+  for (const round of rounds) {
+    if (!Number.isFinite(round.scheduledAt) || round.scheduledAt <= 0) throw new Error('Official round is missing a kickoff time');
+    const dayKey = new Intl.DateTimeFormat('en-CA', {timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(round.scheduledAt*1000));
+    if (!days.has(dayKey)) days.set(dayKey, {week:days.size+1,date:round.date,scheduledAt:round.scheduledAt,matches:[],rounds:[],byes:[]});
+    const day=days.get(dayKey), playing=new Set();
+    day.scheduledAt=Math.min(day.scheduledAt,round.scheduledAt);
+    day.rounds.push({round:round.round,roundId:round.roundId,date:round.date,scheduledAt:round.scheduledAt});
+    for(const match of round.matches){
+      if(playing.has(match[1])||playing.has(match[2])||match[1]===match[2])throw new Error('A team appears twice in the same round');
+      playing.add(match[1]);playing.add(match[2]);
+      day.matches.push([...match,round.scheduledAt,round.round]);
+    }
+    for(const team of registeredKeys)if(!playing.has(team))day.byes.push({team,round:round.round,scheduledAt:round.scheduledAt,date:round.date});
+  }
+  return [...days.values()];
+}
+
 async function buildSeason(config) {
   const [matchProps, standingProps, teamProps, statsProps] = await Promise.all([
     pageProps(config, 'matches'), pageProps(config, 'standings'), pageProps(config, 'teams'), pageProps(config, 'stats', { allowMissing: true })
@@ -107,11 +128,12 @@ async function buildSeason(config) {
   const scheduleGroups = matchProps.schedule?.matches || [];
   const dateByRound = new Map(scheduleDates.map(date => [date.round_id, date]));
   const groupedMatches = scheduleGroups.map(group => Object.values(group)[0]).filter(Array.isArray);
-  const weeks = groupedMatches.map((matches, index) => {
+  const rounds = groupedMatches.map((matches, index) => {
     const date = dateByRound.get(matches[0]?.competition_season_round_id) || scheduleDates[index] || {};
     const scheduledAt = Number(date.scheduled_at) || Math.floor(Date.parse(date.date || 0) / 1000) || 0;
     return {
-      week: index + 1,
+      round: Number(String(date.round_name||'').match(/\d+/)?.[0]) || index + 1,
+      roundId: date.round_id,
       date: String(date.date || 'Date to be announced').replace(/(\d{1,2}:\d{2})(AM|PM)/, '$1 $2'),
       scheduledAt,
       matches: matches.map(match => {
@@ -126,6 +148,9 @@ async function buildSeason(config) {
       })
     };
   });
+  const ids=rounds.flatMap(round=>round.matches.map(match=>match[0]));
+  if(new Set(ids).size!==ids.length)throw new Error('Duplicate official fixture IDs');
+  const weeks=matchdaysFromRounds(rounds,teamDetails.filter(team=>team.registered).map(team=>team.key));
 
   const timestamps = [
     teamProps.season?.updated_at,
@@ -154,6 +179,7 @@ async function buildSeason(config) {
     teamDetails,
     standings,
     weeks,
+    scheduleFormat: 'matchdays-v1',
     leaderboards: normalizeLeaderboards(statsProps.leaderboards)
   };
 }

@@ -13,6 +13,7 @@ export async function syncPickemMatchesFromAsset(request, env, competition) {
   const matches = (season.weeks || []).flatMap(week => (week.matches || []).map(([id, home, away, homeScore, awayScore]) => ({
     id: Number(id),
     week: Number(week.week),
+    // One complete matchday ballot locks at the first round, including round two.
     scheduledAt: Number(week.scheduledAt),
     home,
     away,

@@ -45,3 +45,41 @@ test('a removed VA entry remains available without being marked currently regist
   assert.equal(result.teamDetails.find(team=>team.key==='LEGACY').registered,false);
   assert.equal(result.teams.OLD,undefined,'a renamed entry is not duplicated');
 });
+
+test('two rounds on one date form one matchday with distinct byes and stable fixture IDs',()=>{
+ const run=setup(200,{});
+ const days=run(`matchdaysFromRounds([
+ {round:1,roundId:57,date:'Tue 13 Oct, 10:00 PM EDT',scheduledAt:1791943200,matches:[[234,'A','B',null,null]]},
+ {round:2,roundId:58,date:'Tue 13 Oct, 10:30 PM EDT',scheduledAt:1791945000,matches:[[237,'B','C',null,null]]}
+ ],['A','B','C'])`);
+ assert.equal(days.length,1);assert.equal(days[0].matches.length,2);
+ assert.equal(days[0].matches[0][0],234);assert.equal(days[0].matches[1][5],1791945000);
+ assert.equal(days[0].byes[0].team,'C');assert.equal(days[0].byes[1].team,'A');
+ assert.equal(days[0].scheduledAt,1791943200);
+ assert.equal(days[0].byes[0].id,undefined);
+});
+
+test('invalid kickoff and duplicate team appearances stop a schedule refresh',()=>{
+ const run=setup(200,{});
+ assert.throws(()=>run(`matchdaysFromRounds([{scheduledAt:0,matches:[]}],[])`),/missing a kickoff/);
+ assert.throws(()=>run(`matchdaysFromRounds([{scheduledAt:1791943200,matches:[[1,'A','B'],[2,'A','C']]}],[])`),/twice/);
+});
+
+test('published schedules preserve every official match and expose only actual games for pickems',()=>{
+ for(const [division,count,days] of [['6v6',90,9],['10v10',42,7]]){
+  const season=JSON.parse(fs.readFileSync(new URL(`../pickems-app/seasons/s2-${division}.json`,import.meta.url)));
+  assert.equal(season.weeks.length,days);
+  const matches=season.weeks.flatMap(w=>w.matches);
+  assert.equal(matches.length,count);assert.equal(new Set(matches.map(m=>m[0])).size,count);
+  for(const day of season.weeks){
+   assert.equal(day.rounds.length,2);
+   assert.equal(day.byes.length,division==='10v10'?2:0);
+   for(const detail of season.teamDetails.filter(t=>t.registered!==false)){
+    const games=day.matches.filter(m=>m[1]===detail.key||m[2]===detail.key);
+    const byes=day.byes.filter(b=>b.team===detail.key);
+    assert.equal(games.length+byes.length,2);
+    if(games.length===2)assert.notEqual(games[0][1]===detail.key?games[0][2]:games[0][1],games[1][1]===detail.key?games[1][2]:games[1][1]);
+   }
+  }
+ }
+});

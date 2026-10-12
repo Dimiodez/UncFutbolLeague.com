@@ -1,6 +1,7 @@
 // Generated roster assignment allowlist; rebuild when clubs change.
 export const ROSTER_CLUBS = {
   "6v6": [
+    {"key":"ARS","name":"UFL Arsenal"},
     {
       "key": "ITA",
       "name": "UFL Italia"

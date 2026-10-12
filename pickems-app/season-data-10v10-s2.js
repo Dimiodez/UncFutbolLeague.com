@@ -11,8 +11,8 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-  "syncedAt": "2026-10-08T20:34:03.000Z",
-  "statsFetchedAt": "2026-10-08T20:34:03.000Z",
+  "syncedAt": "2026-10-12T07:00:01.000Z",
+  "statsFetchedAt": "2026-10-12T07:00:01.000Z",
   "statsStatus": "available",
   "teams": {
     "MAY": [
@@ -227,54 +227,87 @@ window.UFL_SEASON_10V10_S2 = {
           "PALA",
           "RM",
           null,
-          null
+          null,
+          1791943200,
+          1
         ],
         [
           235,
           "TK",
           "ACM",
           null,
-          null
+          null,
+          1791943200,
+          1
         ],
         [
           236,
           "TFC",
           "NOB",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 2,
-      "date": "Tue 13 Oct, 10:30 PM EDT",
-      "scheduledAt": 1791945000,
-      "matches": [
+          null,
+          1791943200,
+          1
+        ],
         [
           237,
           "RM",
           "TK",
           null,
-          null
+          null,
+          1791945000,
+          2
         ],
         [
           238,
           "PALA",
           "TFC",
           null,
-          null
+          null,
+          1791945000,
+          2
         ],
         [
           239,
           "NOB",
           "MAY",
           null,
-          null
+          null,
+          1791945000,
+          2
         ]
+      ],
+      "rounds": [
+        {
+          "round": 1,
+          "roundId": 57,
+          "date": "Tue 13 Oct, 10:00 PM EDT",
+          "scheduledAt": 1791943200
+        },
+        {
+          "round": 2,
+          "roundId": 58,
+          "date": "Tue 13 Oct, 10:30 PM EDT",
+          "scheduledAt": 1791945000
+        }
+      ],
+      "byes": [
+        {
+          "team": "MAY",
+          "round": 1,
+          "scheduledAt": 1791943200,
+          "date": "Tue 13 Oct, 10:00 PM EDT"
+        },
+        {
+          "team": "ACM",
+          "round": 2,
+          "scheduledAt": 1791945000,
+          "date": "Tue 13 Oct, 10:30 PM EDT"
+        }
       ]
     },
     {
-      "week": 3,
+      "week": 2,
       "date": "Tue 20 Oct, 10:00 PM EDT",
       "scheduledAt": 1792548000,
       "matches": [
@@ -283,54 +316,87 @@ window.UFL_SEASON_10V10_S2 = {
           "TFC",
           "RM",
           null,
-          null
+          null,
+          1792548000,
+          3
         ],
         [
           241,
           "MAY",
           "PALA",
           null,
-          null
+          null,
+          1792548000,
+          3
         ],
         [
           242,
           "NOB",
           "ACM",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 4,
-      "date": "Tue 20 Oct, 10:30 PM EDT",
-      "scheduledAt": 1792549800,
-      "matches": [
+          null,
+          1792548000,
+          3
+        ],
         [
           243,
           "TFC",
           "MAY",
           null,
-          null
+          null,
+          1792549800,
+          4
         ],
         [
           244,
           "TK",
           "NOB",
           null,
-          null
+          null,
+          1792549800,
+          4
         ],
         [
           245,
           "PALA",
           "ACM",
           null,
-          null
+          null,
+          1792549800,
+          4
         ]
+      ],
+      "rounds": [
+        {
+          "round": 3,
+          "roundId": 59,
+          "date": "Tue 20 Oct, 10:00 PM EDT",
+          "scheduledAt": 1792548000
+        },
+        {
+          "round": 4,
+          "roundId": 60,
+          "date": "Tue 20 Oct, 10:30 PM EDT",
+          "scheduledAt": 1792549800
+        }
+      ],
+      "byes": [
+        {
+          "team": "TK",
+          "round": 3,
+          "scheduledAt": 1792548000,
+          "date": "Tue 20 Oct, 10:00 PM EDT"
+        },
+        {
+          "team": "RM",
+          "round": 4,
+          "scheduledAt": 1792549800,
+          "date": "Tue 20 Oct, 10:30 PM EDT"
+        }
       ]
     },
     {
-      "week": 5,
+      "week": 3,
       "date": "Tue 27 Oct, 10:00 PM EDT",
       "scheduledAt": 1793152800,
       "matches": [
@@ -339,54 +405,87 @@ window.UFL_SEASON_10V10_S2 = {
           "MAY",
           "RM",
           null,
-          null
+          null,
+          1793152800,
+          5
         ],
         [
           247,
           "ACM",
           "TFC",
           null,
-          null
+          null,
+          1793152800,
+          5
         ],
         [
           248,
           "PALA",
           "TK",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 6,
-      "date": "Tue 27 Oct, 10:30 PM EDT",
-      "scheduledAt": 1793154600,
-      "matches": [
+          null,
+          1793152800,
+          5
+        ],
         [
           249,
           "RM",
           "NOB",
           null,
-          null
+          null,
+          1793154600,
+          6
         ],
         [
           250,
           "MAY",
           "ACM",
           null,
-          null
+          null,
+          1793154600,
+          6
         ],
         [
           251,
           "TFC",
           "TK",
           null,
-          null
+          null,
+          1793154600,
+          6
         ]
+      ],
+      "rounds": [
+        {
+          "round": 5,
+          "roundId": 61,
+          "date": "Tue 27 Oct, 10:00 PM EDT",
+          "scheduledAt": 1793152800
+        },
+        {
+          "round": 6,
+          "roundId": 62,
+          "date": "Tue 27 Oct, 10:30 PM EDT",
+          "scheduledAt": 1793154600
+        }
+      ],
+      "byes": [
+        {
+          "team": "NOB",
+          "round": 5,
+          "scheduledAt": 1793152800,
+          "date": "Tue 27 Oct, 10:00 PM EDT"
+        },
+        {
+          "team": "PALA",
+          "round": 6,
+          "scheduledAt": 1793154600,
+          "date": "Tue 27 Oct, 10:30 PM EDT"
+        }
       ]
     },
     {
-      "week": 7,
+      "week": 4,
       "date": "Tue 03 Nov, 10:00 PM EST",
       "scheduledAt": 1793761200,
       "matches": [
@@ -395,54 +494,87 @@ window.UFL_SEASON_10V10_S2 = {
           "ACM",
           "RM",
           null,
-          null
+          null,
+          1793761200,
+          7
         ],
         [
           253,
           "PALA",
           "NOB",
           null,
-          null
+          null,
+          1793761200,
+          7
         ],
         [
           254,
           "TK",
           "MAY",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 8,
-      "date": "Tue 03 Nov, 10:30 PM EST",
-      "scheduledAt": 1793763000,
-      "matches": [
+          null,
+          1793761200,
+          7
+        ],
         [
           255,
           "RM",
           "PALA",
           null,
-          null
+          null,
+          1793763000,
+          8
         ],
         [
           256,
           "ACM",
           "TK",
           null,
-          null
+          null,
+          1793763000,
+          8
         ],
         [
           257,
           "NOB",
           "TFC",
           null,
-          null
+          null,
+          1793763000,
+          8
         ]
+      ],
+      "rounds": [
+        {
+          "round": 7,
+          "roundId": 63,
+          "date": "Tue 03 Nov, 10:00 PM EST",
+          "scheduledAt": 1793761200
+        },
+        {
+          "round": 8,
+          "roundId": 64,
+          "date": "Tue 03 Nov, 10:30 PM EST",
+          "scheduledAt": 1793763000
+        }
+      ],
+      "byes": [
+        {
+          "team": "TFC",
+          "round": 7,
+          "scheduledAt": 1793761200,
+          "date": "Tue 03 Nov, 10:00 PM EST"
+        },
+        {
+          "team": "MAY",
+          "round": 8,
+          "scheduledAt": 1793763000,
+          "date": "Tue 03 Nov, 10:30 PM EST"
+        }
       ]
     },
     {
-      "week": 9,
+      "week": 5,
       "date": "Tue 17 Nov, 10:00 PM EST",
       "scheduledAt": 1794970800,
       "matches": [
@@ -451,54 +583,87 @@ window.UFL_SEASON_10V10_S2 = {
           "TK",
           "RM",
           null,
-          null
+          null,
+          1794970800,
+          9
         ],
         [
           259,
           "TFC",
           "PALA",
           null,
-          null
+          null,
+          1794970800,
+          9
         ],
         [
           260,
           "MAY",
           "NOB",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 10,
-      "date": "Tue 17 Nov, 10:30 PM EST",
-      "scheduledAt": 1794972600,
-      "matches": [
+          null,
+          1794970800,
+          9
+        ],
         [
           261,
           "RM",
           "TFC",
           null,
-          null
+          null,
+          1794972600,
+          10
         ],
         [
           262,
           "PALA",
           "MAY",
           null,
-          null
+          null,
+          1794972600,
+          10
         ],
         [
           263,
           "ACM",
           "NOB",
           null,
-          null
+          null,
+          1794972600,
+          10
         ]
+      ],
+      "rounds": [
+        {
+          "round": 9,
+          "roundId": 65,
+          "date": "Tue 17 Nov, 10:00 PM EST",
+          "scheduledAt": 1794970800
+        },
+        {
+          "round": 10,
+          "roundId": 66,
+          "date": "Tue 17 Nov, 10:30 PM EST",
+          "scheduledAt": 1794972600
+        }
+      ],
+      "byes": [
+        {
+          "team": "ACM",
+          "round": 9,
+          "scheduledAt": 1794970800,
+          "date": "Tue 17 Nov, 10:00 PM EST"
+        },
+        {
+          "team": "TK",
+          "round": 10,
+          "scheduledAt": 1794972600,
+          "date": "Tue 17 Nov, 10:30 PM EST"
+        }
       ]
     },
     {
-      "week": 11,
+      "week": 6,
       "date": "Tue 24 Nov, 10:00 PM EST",
       "scheduledAt": 1795575600,
       "matches": [
@@ -507,54 +672,87 @@ window.UFL_SEASON_10V10_S2 = {
           "MAY",
           "TFC",
           null,
-          null
+          null,
+          1795575600,
+          11
         ],
         [
           265,
           "NOB",
           "TK",
           null,
-          null
+          null,
+          1795575600,
+          11
         ],
         [
           266,
           "ACM",
           "PALA",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 12,
-      "date": "Tue 24 Nov, 10:30 PM EST",
-      "scheduledAt": 1795577400,
-      "matches": [
+          null,
+          1795575600,
+          11
+        ],
         [
           267,
           "RM",
           "MAY",
           null,
-          null
+          null,
+          1795577400,
+          12
         ],
         [
           268,
           "TFC",
           "ACM",
           null,
-          null
+          null,
+          1795577400,
+          12
         ],
         [
           269,
           "TK",
           "PALA",
           null,
-          null
+          null,
+          1795577400,
+          12
         ]
+      ],
+      "rounds": [
+        {
+          "round": 11,
+          "roundId": 67,
+          "date": "Tue 24 Nov, 10:00 PM EST",
+          "scheduledAt": 1795575600
+        },
+        {
+          "round": 12,
+          "roundId": 68,
+          "date": "Tue 24 Nov, 10:30 PM EST",
+          "scheduledAt": 1795577400
+        }
+      ],
+      "byes": [
+        {
+          "team": "RM",
+          "round": 11,
+          "scheduledAt": 1795575600,
+          "date": "Tue 24 Nov, 10:00 PM EST"
+        },
+        {
+          "team": "NOB",
+          "round": 12,
+          "scheduledAt": 1795577400,
+          "date": "Tue 24 Nov, 10:30 PM EST"
+        }
       ]
     },
     {
-      "week": 13,
+      "week": 7,
       "date": "Tue 01 Dec, 10:00 PM EST",
       "scheduledAt": 1796180400,
       "matches": [
@@ -563,53 +761,87 @@ window.UFL_SEASON_10V10_S2 = {
           "NOB",
           "RM",
           null,
-          null
+          null,
+          1796180400,
+          13
         ],
         [
           271,
           "ACM",
           "MAY",
           null,
-          null
+          null,
+          1796180400,
+          13
         ],
         [
           272,
           "TK",
           "TFC",
           null,
-          null
-        ]
-      ]
-    },
-    {
-      "week": 14,
-      "date": "Tue 01 Dec, 10:30 PM EST",
-      "scheduledAt": 1796182200,
-      "matches": [
+          null,
+          1796180400,
+          13
+        ],
         [
           273,
           "RM",
           "ACM",
           null,
-          null
+          null,
+          1796182200,
+          14
         ],
         [
           274,
           "NOB",
           "PALA",
           null,
-          null
+          null,
+          1796182200,
+          14
         ],
         [
           275,
           "MAY",
           "TK",
           null,
-          null
+          null,
+          1796182200,
+          14
         ]
+      ],
+      "rounds": [
+        {
+          "round": 13,
+          "roundId": 69,
+          "date": "Tue 01 Dec, 10:00 PM EST",
+          "scheduledAt": 1796180400
+        },
+        {
+          "round": 14,
+          "roundId": 70,
+          "date": "Tue 01 Dec, 10:30 PM EST",
+          "scheduledAt": 1796182200
+        }
+      ],
+      "byes": [
+        {
+          "team": "PALA",
+          "round": 13,
+          "scheduledAt": 1796180400,
+          "date": "Tue 01 Dec, 10:00 PM EST"
+        },
+        {
+          "team": "TFC",
+          "round": 14,
+          "scheduledAt": 1796182200,
+          "date": "Tue 01 Dec, 10:30 PM EST"
+        }
       ]
     }
   ],
+  "scheduleFormat": "matchdays-v1",
   "leaderboards": {
     "players": {
       "goals": {

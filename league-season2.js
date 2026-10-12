@@ -6,7 +6,7 @@
 // from a renamed team. Old VA abbreviations continue to resolve through aliases.
 const leagueOfficialClubLinks = {
   '6v6': {
-    ITA:{teamId:25,key:'ITA'}, LA:{teamId:24,key:'LA'},
+    ARS:{teamId:26,key:'ARS'}, ITA:{teamId:25,key:'ITA'}, LA:{teamId:24,key:'LA'},
     FCB:{teamId:5,key:'club-1790623010463'},
     PUM:{teamId:7,key:'club-1790182560035'},
     DRU:{teamId:8,key:'club-1790181684396-429'},
