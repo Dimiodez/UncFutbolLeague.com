@@ -222,6 +222,7 @@ function utilityHubPage() {
   return pageHero('UFL · Utility', 'Make game night easy', 'Useful tools for sorting teams, settling debates and running custom competition formats.') +
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">U</span><div><span class="section-kicker">Utility</span><h2>Less setup.<br>More football.</h2><p class="section-intro">Open a tool and get the group moving. Everything here is designed to work quickly on desktop or mobile.</p></div></div><div class="hub-card-grid">${[
       {mark:'W',title:'Unc Wheel',copy:'Build player pools, randomize teams and let the wheel handle the decision nobody wants to make.',href:'/wheel',label:'Open the wheel'},
+      {mark:'C',title:'Coaching',copy:'Read community guides, share your know-how and leave a heart for a helpful playbook.',href:'/coaching',label:'Enter the coaching room'},
       {mark:'A',title:'Aggregate BYOT',copy:'Set four squads, manage ten-player rosters and track the complete multi-format aggregate bracket.',href:'/wheel/aggregate-byot',label:'Build a bracket'}
     ].map(hubCard).join('')}</div></section>`;
 }
@@ -241,7 +242,7 @@ function leaguePage() {
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
-      {mark:'C',title:'Coaching',copy:'Read community guides, share your know-how and leave a heart for a helpful playbook.',href:'/coaching',label:'Enter the coaching room'},
+      {mark:'XI',title:'TOTW / TOTS',copy:'Celebrate the official 6v6 and 10v10 selections, grouped by gameweek and season.',href:'/totw',label:'See the selections'},
       {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Updated from official Virtual Arena results.',href:'/stats',label:'Explore the numbers'},
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
@@ -1187,6 +1188,7 @@ function render() {
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = mountainArcadePage();
   else if (path === routes.sound) main.innerHTML = window.soundPage();
+  else if (path === '/totw' || path === '/tots') { if(path === '/tots')params.set('award','tots'); main.innerHTML = window.UFLAwards.page(params); }
   else if (path === routes.coaching || path.startsWith('/coaching/')) main.innerHTML = window.coachingPage();
   else if (path === '/arcade/submit') main.innerHTML = arcadeSubmissionPage();
   else if (path === '/arcade/mountain-mayhem') main.innerHTML = '<nav class="arcade-return" aria-label="Game navigation"><a class="button button-primary" href="/arcade" data-link>← Back to Arcade</a></nav><section class="integrated-app arcade-host" aria-label="Mountain Mayhem"><iframe class="integrated-app-frame" src="/mountain-app/" title="Mountain Mayhem mountain chase game" scrolling="no"></iframe></section>';
@@ -1221,11 +1223,12 @@ function render() {
   else main.innerHTML = homePage();
   document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
-  const activeHub = path === '/utility' || path.startsWith('/wheel') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/coaching' || path.startsWith('/coaching/') ? 'league' : '';
+  const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
   if(path === routes.sound)window.hydrateSound();
+  if(path === '/totw' || path === '/tots')window.hydrateLeagueAwards();
   if(path === routes.coaching || path.startsWith('/coaching/'))window.hydrateCoaching();
   else window.disposeCoaching?.();
   if(typeof bindSandyTrackerPreview==='function')bindSandyTrackerPreview();
