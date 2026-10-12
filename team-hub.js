@@ -4,8 +4,10 @@ import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js';
 import {PHASES,newTactic,assignPlayer,changeFormation,validatePlaybook} from './team-tactics-model.js';
 import {ROMA_ROSTER} from './team-hub-roma.js';
 import {installBoardComparison} from './team-hub-comparison.js?v=20261012-sidebar2';
+import {installTeamHubUX} from './team-hub-ux.js?v=20261012-ux1';
 installWorkshopBrand();
 const sidebarStyle=document.createElement('link');sidebarStyle.rel='stylesheet';sidebarStyle.href='/team-hub-sidebar.css?v=20261012-sidebar1';document.head.append(sidebarStyle);
+const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/team-hub-ux.css?v=20261012-ux1';document.head.append(uxStyle);
 const root=document.querySelector('#team-hub-root'),message=document.querySelector('#hub-message');
 let context,playbook,revision=0,activeId,selectedSlot=null,selectedPlayer=null,phaseFilter='all',tool='move',arrowStart=null,dirty=false,busy=false,undo=[];
 const demo=new URLSearchParams(location.search).get('demo')==='roma',demoKey='ufl-roma-tactics-demo-v1';
@@ -39,6 +41,7 @@ function render(){
  const inspector=root.querySelector('.hub-inspector'),squad=inspector?.children[1];
  if(squad){const sidebar=document.createElement('aside');sidebar.className='hub-squad-sidebar';sidebar.setAttribute('aria-label','Registered squad player selector');sidebar.append(squad);root.querySelector('.hub-columns').append(sidebar);}
  savedState();bind();
+ installTeamHubUX(root,{board:b,roster:context.roster,selectedSlot,selectedPlayer,editable,busy,clearPosition:()=>edit(()=>assignPlayer(board(),selectedSlot,null)),cancelSelection:()=>{selectedPlayer=null;selectedSlot=null;render();}});
 }
 function bind(){
  const on=(selector,event,fn)=>root.querySelectorAll(selector).forEach(el=>el.addEventListener(event,fn));
@@ -59,10 +62,10 @@ function bind(){
   e.preventDefault();const el=e.currentTarget,id=el.dataset.player,start={x:e.clientX,y:e.clientY};let ghost,moved=false;
   el.setPointerCapture(e.pointerId);
   const move=ev=>{if(!moved&&Math.hypot(ev.clientX-start.x,ev.clientY-start.y)<6)return;moved=true;
-   if(!ghost){ghost=document.createElement('div');ghost.className='hub-player-drag-preview';ghost.textContent=person(id)?.name||'Player';document.body.append(ghost);}
+   if(!ghost){ghost=document.createElement('div');ghost.className='hub-player-drag-preview';ghost.textContent=person(id)?.name||'Player';document.body.append(ghost);document.body.classList.add('hub-dragging');}
    ghost.style.left=(ev.clientX+12)+'px';ghost.style.top=(ev.clientY+12)+'px';
   };
-  const cleanup=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',end);el.removeEventListener('pointercancel',cancel);ghost?.remove();};
+  const cleanup=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',end);el.removeEventListener('pointercancel',cancel);ghost?.remove();document.body.classList.remove('hub-dragging');};
   const end=ev=>{const target=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('[data-slot],[data-comparison-slot]');cleanup();
    if(moved){ev.preventDefault();if(target){const targetBoard=target.dataset.comparisonBoard||activeId,targetSlot=target.dataset.comparisonSlot||target.dataset.slot;edit(()=>{activeId=targetBoard;selectedSlot=targetSlot;selectedPlayer=null;assignPlayer(board(),targetSlot,id);});}}
   };

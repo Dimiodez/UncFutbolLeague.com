@@ -1,0 +1,44 @@
+/* The pitch is the workspace; controls and coaching details support it. */
+.hub-sidebar-tabs{display:flex;gap:5px;margin-bottom:14px}.team-suite .hub-sidebar-tabs button{flex:1;font-size:11px!important;padding:8px 5px!important}.team-suite .hub-sidebar-tabs [aria-pressed=true]{background:#a91939;border-color:#ee0d3a;color:white}.team-suite .hub-squad-sidebar [hidden]{display:none!important}
+.team-suite .hub-refined .hub-library h3{font-size:22px;line-height:1.2}
+.team-suite .hub-refined .hub-topbar{position:sticky;top:0;z-index:12;background:#0b1d30eF;backdrop-filter:blur(12px);border-radius:14px 14px 0 0;padding:14px 20px}
+body.unc-admin-preview .hub-refined .hub-topbar{top:80px}
+.team-suite .hub-refined .hub-squad-sidebar{top:94px;padding-top:16px}
+body.unc-admin-preview .hub-refined .hub-squad-sidebar{top:174px}
+.hub-stage-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.hub-stage-heading h3{font-size:26px;margin:0!important;text-transform:none!important}
+.hub-editor-badge{padding:5px 9px;border-radius:20px;color:#ffb5c5;background:#4c1730;font-size:11px;white-space:nowrap}
+.team-suite .hub-refined .hub-compare-controls{margin-bottom:12px}
+.team-suite .hub-refined .hub-board-controls{margin-bottom:10px;gap:10px}
+.hub-details,.hub-more-actions,.hub-team-notes{border:1px solid #30465d;border-radius:7px;margin:10px 0;color:#bed1e3}
+.hub-details summary,.hub-more-actions summary,.hub-team-notes summary{padding:10px 12px;cursor:pointer;font:600 13px Inter,sans-serif}
+.hub-details>label,.hub-team-notes>label{margin:0!important;padding:0 12px 12px}
+.hub-more-actions>.hub-toolbar{padding:0 12px 12px;margin:0}
+.hub-context-help{padding:9px 12px;border-left:2px solid #ee0d3a;background:#10283b;border-radius:4px}
+.hub-squad-controls{display:grid;gap:8px;margin-bottom:10px}
+.team-suite .hub-squad-controls input,.team-suite .hub-squad-controls select{font:12px Inter,sans-serif!important;padding:9px!important;min-height:36px!important}
+.hub-squad-count{font-size:11px;color:#9fb6ce;margin:0}
+.team-suite .hub-refined .hub-roster{max-height:min(410px,max(120px,calc(100dvh - 440px)));margin-top:8px}
+.team-suite .hub-refined .hub-roster button{background:#102a40;border-color:#29485f;border-left:3px solid #42576c}
+.team-suite .hub-refined .hub-roster button.is-assigned{border-left-color:#54cbb0}
+.team-suite .hub-refined .hub-roster button[aria-pressed=true]{border-color:#ffd56b;background:#3b341b;box-shadow:0 0 0 1px #ffd56b}
+.hub-placement-hint{font-size:12px;line-height:1.55;color:#bed1e3;padding:10px 0}
+.hub-placement-hint button{display:block;margin-top:8px;font-size:11px!important}
+.hub-position-card{margin-bottom:16px;padding:12px;background:#112b42;border:1px solid #52687d;border-radius:8px;max-height:300px;overflow-y:auto}
+.team-suite .hub-position-card h3{font:700 17px 'Barlow Condensed',sans-serif;margin-bottom:12px}
+.hub-position-card label{display:grid;gap:6px;margin:10px 0!important;font-size:12px}
+.hub-position-card textarea{min-height:75px;resize:vertical}
+.hub-position-card button{font-size:11px!important;width:100%}
+.hub-dragging .hub-pitch{box-shadow:inset 0 0 0 2px #ffd56b88}
+.hub-dragging .tactic-token .token-shirt{outline:1px dashed #ffd56b;outline-offset:4px}
+.team-suite .hub-refined .token-name{font-size:11px;background:#061921ee}
+.team-suite .hub-refined .hub-inspector[hidden]{display:none!important}
+@media(max-width:720px){
+ .team-suite .hub-refined .hub-topbar{position:static}.team-suite .hub-refined .hub-squad-sidebar{top:0}
+ body.unc-admin-preview .hub-refined .hub-squad-sidebar{top:80px}
+ .hub-stage-heading{flex-wrap:wrap}.hub-stage-heading h3{font-size:22px}
+ .hub-squad-controls{grid-template-columns:1fr 1fr;gap:6px}.hub-squad-count{grid-column:1/-1}
+ .team-suite .hub-refined .hub-roster{max-height:none;margin:4px 0}
+ .hub-position-card{max-height:150px;margin-bottom:8px}
+ .hub-placement-hint{font-size:11px;padding:4px 0}
+}

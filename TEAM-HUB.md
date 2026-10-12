@@ -1,5 +1,7 @@
 # Team hub suite · workshop only
 
+Refined controls now include squad search/placement filters, Squad and Position sidebar views, nearby position instructions, compact expandable board details/actions/notes, and a sticky save bar. No authorization or persistence rules change.
+
 The squad selector stays beside the formations in a sticky right sidebar, with coaching notes below and independent roster scrolling. Pointer dragging can assign players to either comparison panel; mobile retains a sticky horizontal selector and tap placement.
 
 Side-by-side mode compares any two saved boards, defaulting to attack and defence. Each panel keeps its board selection when switching the active editor; the red outline identifies the editable panel. Both are views of the same playbook records, so assignments, drawings and instructions remain independent and save together. Small screens scroll horizontally to preserve the side-by-side view; single-board mode remains available. The Roma demo snapshot now matches the eight-player public roster checked October 12, including H00bear and ROSA, with current names and canonical IDs.
