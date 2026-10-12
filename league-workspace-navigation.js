@@ -1,5 +1,5 @@
 // One navigation set across the four workspace destinations; no production data changes.
-const destinations=[['/league-workshop','League administration'],['/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-dashboard','My dashboard']];
+const destinations=[['/league-workshop','League administration'],['/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-dashboard','My dashboard'],['/team-hub','Team hubs']];
 export function installWorkspaceNavigation(main=document.querySelector('main.workshop')){
  const path=location.pathname.replace(/\.html$/,'');
  let nav=main.querySelector('.workshop-nav');

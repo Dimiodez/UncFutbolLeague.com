@@ -1,0 +1,11 @@
+# Team hub suite · workshop only
+
+Team hubs use the shared 44-formation catalogue. Managers create up to 30 named attacking, defending, transition or set-piece boards with a full XI, current registered squad assignments, adjustable marker positions, position instructions, coaching notes, movement arrows, ball and opponent markers. Formation changes retain assignments; occupied-position assignment swaps players. Touch selection complements pointer dragging. Duplicate, undo, shape reset and clear tools support reuse.
+
+`/team-hub?team=<preview registration team ID>` is private. Active team managers and website owner/admin can edit; approved roster members can read. Other users and pending requests are rejected on the server. Each team's shared playbook lives in isolated preview D1, with account checks, same-origin writes, roster/geometry validation and atomic revision checks preventing stale overwrites. No production data or permissions are changed.
+
+`/team-hub?team=roma-workshop` is an owner/admin-only Roma sandbox. It reads the public current Season 2 Roma roster where available, falling back to the existing public snapshot. This does not assign managers or register a new league team.
+
+The preview Pages project currently has no Discord OAuth secret configuration, confirmed through its login endpoint and secret-name listing. It therefore cannot currently support an authenticated browser test or online saves. No credentials were copied from production. `/team-hub?team=roma-workshop&demo=roma` is a clearly labelled, unauthenticated editor demonstration using the already-public roster snapshot. Demo saves are browser-local under `ufl-roma-tactics-demo-v1`, never sent to private team storage. Shared private playbooks remain behind authentication. Restore preview OAuth separately before account/manager acceptance testing.
+
+Automated SQLite tests cover manager/member/outsider access, revoked manager grants, roster validation, CSRF, account switching, team separation, shared reload and concurrent save conflicts. Model tests cover formation changes, unique assignments, swaps and bounds. Browser QA uses the explicit public demo only; shared saves are verified through the authenticated API test fixture.

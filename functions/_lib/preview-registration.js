@@ -4,7 +4,7 @@ import {membershipSchema,gamingProfile,saveProfile,canManage} from './preview-me
 import {dashboardAction} from './preview-dashboard.js';
 const staff=user=>['owner','admin'].includes(user?.role);
 const clean=(value,max,label)=>{if(typeof value!=='string'||!value.trim()||value.length>max)throw Error(`Enter ${label} (up to ${max} characters).`);return value.trim();};
-async function schema(db){await db.batch([
+export async function ensureRegistrationSchema(db){await db.batch([
  db.prepare(`CREATE TABLE IF NOT EXISTS preview_registration_boards(id TEXT PRIMARY KEY, creator TEXT NOT NULL, settings TEXT NOT NULL, is_open INTEGER NOT NULL, expires INTEGER NOT NULL, token_hash TEXT NOT NULL UNIQUE)`),
  db.prepare(`CREATE TABLE IF NOT EXISTS preview_team_requests(id TEXT PRIMARY KEY, board_id TEXT NOT NULL, manager_id TEXT NOT NULL, manager_name TEXT NOT NULL, name TEXT NOT NULL, name_key TEXT NOT NULL, ea_id TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', player_hash TEXT NOT NULL UNIQUE, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE(board_id,name_key), UNIQUE(board_id,manager_id))`),
  db.prepare(`CREATE TABLE IF NOT EXISTS preview_player_requests(team_id TEXT NOT NULL, board_id TEXT NOT NULL, user_id TEXT NOT NULL, display_name TEXT NOT NULL, ea_name TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending', created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(team_id,user_id), UNIQUE(board_id,user_id))`),
@@ -18,7 +18,7 @@ export async function previewRegistrationApi(request,env){
  try{
   const user=await getSession(request,env),url=new URL(request.url);
   let input={};if(request.method==='POST'){if(!user)return json({error:'Sign in with Discord first.'},401);const raw=await request.text();if(raw.length>32000)return json({error:'Request too large.'},413);try{input=JSON.parse(raw);}catch{return json({error:'Invalid request.'},400);}}
-  await schema(env.DB);
+  await ensureRegistrationSchema(env.DB);
   const action=input.action;
   const dashboard=await dashboardAction(request,env,user,input,url);if(dashboard)return dashboard;
   if(action==='manager'){

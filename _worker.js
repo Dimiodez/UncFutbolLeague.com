@@ -8,6 +8,7 @@ import {previewAwardsApi} from './functions/_lib/preview-awards.js';
 import {previewRegistrationApi} from './functions/_lib/preview-registration.js';
 import {previewSoundApi} from './functions/_lib/preview-sound.js';
 import {previewDraftsApi} from './functions/_lib/preview-drafts.js';
+import {previewTeamHubApi} from './functions/_lib/preview-team-hub.js';
 // Preview boundary: no production DB, storage, OAuth sessions, or bot bindings.
 // Photos remain owned by production; this narrowly scoped GET proxy only displays them.
 const LIVE_ORIGIN = 'https://www.uncfutbolleague.com';
@@ -30,6 +31,7 @@ export default {
   if (path === '/api/registration') return previewRegistrationApi(request,env);
   if (path === '/api/sound') return previewSoundApi(request,env);
   if (path === '/api/drafts') return previewDraftsApi(request,env);
+  if (path === '/api/team-hub') return previewTeamHubApi(request,env);
   if (!['GET','HEAD'].includes(request.method)) return json({error:'Changes are disabled in this read-only development preview. Live data has not been changed.'},403);
   const portrait = /^\/assets\/league\/player-[a-zA-Z0-9._-]+$/.test(path) || path === '/api/player-portraits' || /^\/api\/player-portraits\/[a-zA-Z0-9_-]+$/.test(path);
   if (portrait) {
