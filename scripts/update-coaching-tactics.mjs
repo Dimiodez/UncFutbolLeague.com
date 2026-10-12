@@ -1,5 +1,6 @@
 import {execFileSync} from 'node:child_process';
 import {baselineFormationGuides,formationGuides} from './coaching-formations.mjs';
+import {expandFormationGuide} from './coaching-tactical-details.mjs';
 import {validateGuide} from '../functions/_lib/coaching.js';
 
 const db='2e4969ed-3a15-4e07-b0a2-516fb480b58f',owner='222875432763129856';
@@ -21,7 +22,8 @@ for(const [index,guide] of formationGuides.entries()){
   const current=sql(`SELECT * FROM coaching_posts WHERE id=${literal(guide.id)};`)[0].results[0];
   if(!current||current.author_id!==owner||current.status!=='published')throw new Error('Unexpected post ownership or publication state.');
   if(current.body===guide.body){console.log(`Already expanded: ${guide.title}`);continue;}
-  if(current.body!==baselineFormationGuides[index].body)throw new Error(`Guide was edited since initial publication; preserve it and merge manually: ${guide.title}`);
+  const baseline=baselineFormationGuides[index];
+  if(current.body!==baselineFormationGuides[index].body&&current.body!==expandFormationGuide(baseline,{includeModeTips:false}).body)throw new Error(`Guide was edited since initial publication; preserve it and merge manually: ${guide.title}`);
   planned.push({guide,revision:current.revision});
 }
 for(const {guide,revision} of planned){

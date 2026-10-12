@@ -138,9 +138,10 @@ test('Every formation section has a complete original tactical profile within th
     const sections=guide.body.split(/^### /m).slice(1);
     assert.ok(sections.length>=5);
     for(const section of sections){
-      for(const label of ['Style:', 'Build-up and chance creation:', 'Key player jobs:', 'Main strength:', 'Main risk:', 'Tactical adjustments:', 'Facing this shape:'])assert.ok(section.includes(label),`${guide.family}: ${section.slice(0,60)} missing ${label}`);
+      for(const label of ['Starting shape:', 'Style:', 'Build-up and chance creation:', 'Key player jobs:', 'Main strength:', 'Main risk:', 'Tactical adjustments:', 'Facing this shape:', 'UNC 6v6 tip:', 'UNC 10v10 tip:'])assert.ok(section.includes(label),`${guide.family}: ${section.slice(0,60)} missing ${label}`);
     }
     assert.ok(guide.body.length<=30000);assert.match(guide.body,/not official EA ratings/);
+    assert.match(guide.body,/four AI outfield players and an AI keeper/);assert.match(guide.body,/ten human outfield players and an AI keeper/);assert.match(guide.body,/reddit\.com\/r\/fifaclubs/);
   }
   const updater=fs.readFileSync(new URL('./update-coaching-tactics.mjs',import.meta.url),'utf8');
   assert.match(updater,/baselineFormationGuides\[index\]\.body/);assert.match(updater,/AND revision=/);

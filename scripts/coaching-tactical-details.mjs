@@ -1,3 +1,4 @@
+import {modeTips,modeIntroduction} from './coaching-mode-tips.mjs';
 // Original UNC session plans: qualitative recommendations, not EA ratings or copied presets.
 // Match named position layouts rather than assigning contradictory numbered aliases.
 export const tacticalDetails={
@@ -205,16 +206,30 @@ export const tacticalDetails={
   ]
 };
 
-export function expandFormationGuide(guide){
+export function expandFormationGuide(guide,{includeModeTips=true}={}){
   let body=guide.body;
+  if(includeModeTips&&guide.family===4){
+    // The common introduction and individual profiles now cover these repeated overview notes.
+    body=body.replace(/## A quick note on FC 27 names\n[\s\S]*?(?=## The 4-3-3 family)/,'');
+    body=body.replace(/## A useful first-session plan\n[\s\S]*?(?=## Sources and limits)/,'');
+  }
   for(const [prefix,style,build,jobs,strength,risk,adjust,opponent] of tacticalDetails[guide.family]){
     const heading=body.split('\n').find(line=>line.startsWith('### '+prefix));
     if(!heading)throw new Error(`Missing formation section: ${prefix}`);
     const detail=`${heading}\n\nStyle: ${style}.\n\n- Build-up and chance creation: ${build}\n- Key player jobs: ${jobs}\n- Main strength: ${strength}\n- Main risk: ${risk}\n- Tactical adjustments: ${adjust}\n- Facing this shape: ${opponent}`;
-    body=body.replace(heading,detail);
+    if(includeModeTips){
+      const [shape,six,ten]=modeTips[prefix]||[];
+      if(!shape||!six||!ten)throw new Error(`Missing mode advice: ${prefix}`);
+      // Replace repeated overview prose with an explicit layout and the new format-specific tips.
+      // Tactical strengths, risks, adjustments and counterplay remain intact.
+      const start=body.indexOf(heading),next=body.indexOf('\n##',start+heading.length);
+      const end=next<0?body.length:next;
+      body=body.slice(0,start)+detail.replace(heading,`${heading}\n\nStarting shape: ${shape}`)+`\n\n- UNC 6v6 tip: ${six}\n- UNC 10v10 tip: ${ten}\n`+body.slice(end);
+    }else body=body.replace(heading,detail);
   }
   const introduction='## How to use the tactical profiles\n\nAttacking means committing more support near goal; balanced means keeping options ahead of and behind the ball; defensive means prioritising protection and recovery. Counter-attacking means using space soon after a regain. Possession means keeping useful passing options and moving the opponent before forcing the final ball. None of these labels forces a particular tempo or defensive line.\n\nThe style labels and session plans below are original UNC coaching suggestions, not official EA ratings, fixed in-game instructions or guaranteed results. Use the same shape differently when your players or opponents change. Key player jobs describe responsibilities, not mandatory FC Role presets.\n\nRelated Flat, Wide, Narrow and numbered menu labels are grouped by the actual layout rather than treated as different systems just to fill a list. Check your position diagram: online catalogues disagree on some numbered 4-3-3 descriptions.\n\n';
   const firstSection=body.indexOf('## ');
-  body=body.slice(0,firstSection)+introduction+body.slice(firstSection);
+  const conciseIntroduction='## How to use the tactical profiles\n\nAttacking prioritises forward support; balanced keeps options on both sides of the ball; defensive prioritises protection and recovery. Counter-attacking uses space after a regain, while possession play uses passing options to move the opposition.\n\nThese are original UNC coaching suggestions, not official EA ratings, mandatory FC Role presets or guaranteed results. Related menu labels are grouped by layout. Check the position diagram rather than trusting a number in brackets.\n\n';
+  body=body.slice(0,firstSection)+(includeModeTips?conciseIntroduction+modeIntroduction+'Layout references: [FIFPlay’s formation catalogue](https://www.fifplay.com/fc-27/formations/) and [FUT.GG’s position maps](https://www.fut.gg/tactics/). Labels and availability can differ between modes.\n\n':introduction)+body.slice(firstSection);
   return {...guide,body};
 }
