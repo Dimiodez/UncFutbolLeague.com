@@ -3,7 +3,7 @@ const competitions = {'6v6': [1, 2], '10v10': [3, 5]};
 const decode = value => value.replaceAll('&quot;', '"').replaceAll('&#039;', "'").replaceAll('&apos;', "'").replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)));
 const text = value => String(value ?? '').slice(0, 200);
 const number = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
-export async function loadLeagueData(division, kind, fetcher = fetch) {
+export async function loadLeagueData(division, kind, fetcher = (...args) => globalThis.fetch(...args)) {
   const [competition, season] = competitions[division];
   const source = `https://ufl.virtualarena.app/competitions/${competition}/seasons/${season}/${kind}`;
   const response = await fetcher(source, {redirect:'error', signal:AbortSignal.timeout(10000), headers:{'user-agent':'UncFutbolLeague.com public league sync'}});

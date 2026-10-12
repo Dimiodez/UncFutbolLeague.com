@@ -6,6 +6,13 @@ import {loadLeagueData,onRequestGet} from '../functions/api/league/live.js';
 const root=new URL('../',import.meta.url), read=file=>fs.readFileSync(new URL(file,root),'utf8');
 const page=props=>new Response(`<main data-page="${JSON.stringify({props}).replaceAll('"','&quot;')}"></main>`);
 const base={competition:{id:1},season:{id:2}};
+test('default upstream fetch retains the Cloudflare global receiver',async()=>{
+  const original=globalThis.fetch;
+  try {
+    globalThis.fetch=async function(){assert.equal(this,globalThis);return page({...base,leaderboards:{players:{}}});};
+    assert.equal((await loadLeagueData('6v6','stats')).kind,'stats');
+  } finally {globalThis.fetch=original;}
+});
 test('public VA feed strips private props and validates season before exposing standings',async()=>{
   const data=await loadLeagueData('6v6','standings',async url=>{
     assert.equal(url,'https://ufl.virtualarena.app/competitions/1/seasons/2/standings');
