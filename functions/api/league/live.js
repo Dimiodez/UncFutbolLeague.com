@@ -6,7 +6,8 @@ const number = value => value !== null && value !== undefined && value !== '' &&
 export async function loadLeagueData(division, kind, fetcher = (...args) => globalThis.fetch(...args)) {
   const [competition, season] = competitions[division];
   const source = `https://ufl.virtualarena.app/competitions/${competition}/seasons/${season}/${kind}`;
-  const response = await fetcher(source, {redirect:'error', signal:AbortSignal.timeout(10000), headers:{'user-agent':'UncFutbolLeague.com public league sync'}});
+  // Workers supports manual redirect handling; never follow an upstream redirect.
+  const response = await fetcher(source, {redirect:'manual', signal:AbortSignal.timeout(10000), headers:{'user-agent':'UncFutbolLeague.com public league sync'}});
   if (!response.ok) throw Object.assign(Error('VA unavailable'),{upstreamStatus:response.status});
   const html = await response.text();
   if (html.length > 3000000) throw Error('VA response too large');
@@ -36,10 +37,13 @@ export async function onRequestGet(context) {
   if (cached) return cached;
   try {
     const response = Response.json(await loadLeagueData(division,kind), {headers:{'Cache-Control':'public, max-age=60, s-maxage=300'}});
-    if (cache) context.waitUntil(cache.put(key,response.clone()));
+    if (cache) {
+      try {context.waitUntil(cache.put(key,response.clone()).catch(()=>{}));} catch { /* Cache failure must not hide a valid official response. */ }
+    }
     return response;
   } catch(error) {
-    const reason=['VA unavailable','VA response too large','VA data missing','VA season mismatch','VA table missing','VA stats missing','Incomplete VA standings'].includes(error.message)?error.message:'request_failed';
+    const runtimeReason=/redirect/i.test(error.message)?'redirect_mode':/invocation|this reference/i.test(error.message)?'runtime_binding':/timeout|aborted/i.test(error.message)?'upstream_timeout':/JSON|Unexpected token/i.test(error.message)?'upstream_format':/fetch|network|DNS|TLS|SSL/i.test(error.message)?'upstream_network':'request_failed';
+    const reason=['VA unavailable','VA response too large','VA data missing','VA season mismatch','VA table missing','VA stats missing','Incomplete VA standings'].includes(error.message)?error.message:runtimeReason;
     console.warn('Public league feed unavailable', {upstreamStatus:error.upstreamStatus||null,reason});
     return Response.json({error:'Official data is temporarily unavailable. Showing the last saved update.',upstreamStatus:error.upstreamStatus||null,reason},{status:502,headers:{'Cache-Control':'no-store'}});
   }

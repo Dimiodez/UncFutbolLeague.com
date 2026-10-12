@@ -14,7 +14,8 @@ test('default upstream fetch retains the Cloudflare global receiver',async()=>{
   } finally {globalThis.fetch=original;}
 });
 test('public VA feed strips private props and validates season before exposing standings',async()=>{
-  const data=await loadLeagueData('6v6','standings',async url=>{
+  const data=await loadLeagueData('6v6','standings',async (url,options)=>{
+    assert.equal(options.redirect,'manual');
     assert.equal(url,'https://ufl.virtualarena.app/competitions/1/seasons/2/standings');
     return page({...base,auth:{secret:'private'},standings:[{name:'Club',team:{id:5},stats:{played:2,wins:2,draws:0,losses:0,goals_for:3,goals_against:0,goal_difference:3,points:6}}]});
   });
