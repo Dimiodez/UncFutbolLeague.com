@@ -1,4 +1,4 @@
-import {escape as esc} from './team-hub-shell.js';
+import {escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
 const root=document.querySelector('#hub-access-root'),message=document.querySelector('#hub-message');
 let data,busy=false,selectedTeam='6v6:ROM';
 async function api(body){const r=await fetch('/api/team-hub-access',{cache:'no-store',method:body?'POST':'GET',...(body?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to update team access.');return d;}

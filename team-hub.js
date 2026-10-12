@@ -1,7 +1,7 @@
-import {installWorkshopBrand,escape as esc} from './team-hub-shell.js';
-import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js';
-import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js';
-import {installBoardComparison} from './team-hub-comparison.js';
+import {installWorkshopBrand,escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
+import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js?v=20261012-hubs1';
+import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js?v=20261012-hubs1';
+import {installBoardComparison} from './team-hub-comparison.js?v=20261012-hubs1';
 installWorkshopBrand();
 const root=document.querySelector('#team-hub-root'),message=document.querySelector('#hub-message');
 let context,playbook,revision=0,activeId,selectedSlot=null,selectedPlayer=null,phaseFilter='all',tool='move',arrowStart=null,dirty=false,busy=false,undo=[];

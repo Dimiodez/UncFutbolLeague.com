@@ -1,6 +1,6 @@
-import {escape as esc} from './team-hub-shell.js';
-import {PHASES} from './team-tactics-model.js';
-import {formationSlots} from './fc27-formations.js';
+import {escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
+import {PHASES} from './team-tactics-model.js?v=20261012-hubs1';
+import {formationSlots} from './fc27-formations.js?v=20261012-hubs1';
 let enabled=true,leftId=null,rightId=null;
 
 // View state only: both panels reference existing boards, never duplicated tactics.
