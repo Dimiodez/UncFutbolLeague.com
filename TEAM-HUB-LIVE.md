@@ -1,5 +1,7 @@
 # Private team hubs · focused live release
 
+The registered squad is a sticky right-side sidebar with its own scroll area, beside the formations. Coaching instructions are below the boards. Pointer-driven roster dragging supports either comparison panel; dropping on the other board activates that board and assigns the player without duplicating the playbook. Small screens use a sticky horizontal player selector, with tap-to-place retained.
+
 Each current Season 2 club in each division has a hub automatically, keyed by season/division/team. No preview league registration database, workshop drafts, or public Roma demo is included. Roster players are read from the existing live roster on every request, including later registrations. Saved playbooks are shared online with revision conflict checks.
 
 Access rules: explicit team managers edit; signed-in accounts explicitly linked to a canonical roster identity view that identity's current teams; the site owner can inspect every team read-only unless also assigned manager. Admins can appoint/revoke managers and link accounts but have no global tactics-reading override. Existing role/title labels and team-media permissions do not grant tactical access. Revocation, transfers and suspension are checked every request. A merged-away player identity must be relinked to its canonical record; stale alias memberships grant no access.

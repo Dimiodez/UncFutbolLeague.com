@@ -62,4 +62,7 @@ assert.equal((await call('owner')).team.canEdit,true);
 const concurrent=await Promise.all([call('owner','6v6:ROM',{...input,accountId:'owner',revision:1}),call('owner','6v6:ROM',{...input,accountId:'owner',revision:1})]);
 assert.deepEqual(concurrent.map(r=>r.status).sort(),[200,409]);
 const editor=readFileSync(new URL('../team-hub.js',import.meta.url),'utf8');assert(!editor.includes('localStorage'));assert(!editor.includes('demo=roma'));assert(!editor.includes('preview-team'));
+assert(editor.includes("sidebar.setAttribute('aria-label','Registered squad player selector')"));
+assert(editor.includes("document.elementFromPoint(ev.clientX,ev.clientY)?.closest('[data-slot],[data-comparison-slot]')"));
+const sidebarCss=readFileSync(new URL('../team-hub-sidebar.css',import.meta.url),'utf8');assert(sidebarCss.includes('position:sticky'));assert(sidebarCss.includes('overflow-y:auto'));assert(sidebarCss.includes('grid-column:3;grid-row:1'));
 console.log('PASS: every team, exact manager edits, linked player views, owner-only cross-team inspection, admin non-bypass, CSRF, account switching, live roster additions/transfers, revocation, isolated shared saves and audit trail.');

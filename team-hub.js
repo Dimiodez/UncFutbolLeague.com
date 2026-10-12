@@ -1,8 +1,9 @@
 import {installWorkshopBrand,escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
 import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js?v=20261012-hubs1';
 import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js?v=20261012-hubs1';
-import {installBoardComparison} from './team-hub-comparison.js?v=20261012-hubs1';
+import {installBoardComparison} from './team-hub-comparison.js?v=20261012-sidebar2';
 installWorkshopBrand();
+const sidebarStyle=document.createElement('link');sidebarStyle.rel='stylesheet';sidebarStyle.href='/team-hub-sidebar.css?v=20261012-sidebar1';document.head.append(sidebarStyle);
 const root=document.querySelector('#team-hub-root'),message=document.querySelector('#hub-message');
 let context,playbook,revision=0,activeId,selectedSlot=null,selectedPlayer=null,phaseFilter='all',tool='move',arrowStart=null,dirty=false,busy=false,undo=[];
 // Live hubs never enable the workshop's public demo or local-save path.
@@ -32,6 +33,9 @@ function render(){
  if(!b&&!editable)root.querySelector('.hub-empty p').textContent='Your managers have not saved a game plan yet.';
  const refresh=document.createElement('button');refresh.textContent='Refresh registered squad';refresh.title='Reload current roster and saved tactics, including players registered later';refresh.onclick=load;root.querySelector('.hub-topbar .hub-actions').append(refresh);
  installBoardComparison(root,playbook,b,context.roster,switchBoard,render,editable);
+ // Move the existing squad nodes, retaining one roster and its normal bindings.
+ const inspector=root.querySelector('.hub-inspector'),squad=inspector?.children[1];
+ if(squad){const sidebar=document.createElement('aside');sidebar.className='hub-squad-sidebar';sidebar.setAttribute('aria-label','Registered squad player selector');sidebar.append(squad);root.querySelector('.hub-columns').append(sidebar);}
  savedState();bind();
 }
 function bind(){
@@ -47,6 +51,21 @@ function bind(){
  on('[data-assignment]','change',e=>edit(()=>assignPlayer(board(),selectedSlot,e.target.value||null)));
  on('[data-player]','click',e=>{selectedPlayer=e.currentTarget.dataset.player;if(selectedSlot)edit(()=>{assignPlayer(board(),selectedSlot,selectedPlayer);selectedPlayer=null;});else render();});
  on('[data-player]','dragstart',e=>{if(canEdit())e.dataTransfer.setData('text/ufl-player',e.currentTarget.dataset.player);});
+ // Pointer-driven squad dragging works with mouse, touch and a sticky sidebar.
+ on('[data-player]','pointerdown',e=>{
+  if(!canEdit()||busy||e.button!==0)return;
+  e.preventDefault();const el=e.currentTarget,id=el.dataset.player,start={x:e.clientX,y:e.clientY};let ghost,moved=false;
+  el.setPointerCapture(e.pointerId);
+  const move=ev=>{if(!moved&&Math.hypot(ev.clientX-start.x,ev.clientY-start.y)<6)return;moved=true;
+   if(!ghost){ghost=document.createElement('div');ghost.className='hub-player-drag-preview';ghost.textContent=person(id)?.name||'Player';document.body.append(ghost);}
+   ghost.style.left=(ev.clientX+12)+'px';ghost.style.top=(ev.clientY+12)+'px';
+  };
+  const cleanup=()=>{el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',end);el.removeEventListener('pointercancel',cancel);ghost?.remove();};
+  const end=ev=>{const target=document.elementFromPoint(ev.clientX,ev.clientY)?.closest('[data-slot],[data-comparison-slot]');cleanup();
+   if(moved){ev.preventDefault();if(target){const targetBoard=target.dataset.comparisonBoard||activeId,targetSlot=target.dataset.comparisonSlot||target.dataset.slot;edit(()=>{activeId=targetBoard;selectedSlot=targetSlot;selectedPlayer=null;assignPlayer(board(),targetSlot,id);});}}
+  };
+  const cancel=()=>cleanup();el.addEventListener('pointermove',move);el.addEventListener('pointerup',end);el.addEventListener('pointercancel',cancel);
+ });
  on('[data-slot]','dragover',e=>{if(canEdit())e.preventDefault();});
  on('[data-slot]','drop',e=>{e.preventDefault();const id=e.dataTransfer.getData('text/ufl-player');if(context.roster.some(p=>p.id===id))edit(()=>{selectedSlot=e.currentTarget.dataset.slot;assignPlayer(board(),selectedSlot,id);selectedPlayer=null;});});
  on('[data-tool]','click',e=>{tool=e.currentTarget.dataset.tool;arrowStart=null;selectedSlot=null;selectedPlayer=null;render();});
