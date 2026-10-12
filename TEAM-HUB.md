@@ -1,5 +1,7 @@
 # Team hub suite · workshop only
 
+The squad selector stays beside the formations in a sticky right sidebar, with coaching notes below and independent roster scrolling. Pointer dragging can assign players to either comparison panel; mobile retains a sticky horizontal selector and tap placement.
+
 Side-by-side mode compares any two saved boards, defaulting to attack and defence. Each panel keeps its board selection when switching the active editor; the red outline identifies the editable panel. Both are views of the same playbook records, so assignments, drawings and instructions remain independent and save together. Small screens scroll horizontally to preserve the side-by-side view; single-board mode remains available. The Roma demo snapshot now matches the eight-player public roster checked October 12, including H00bear and ROSA, with current names and canonical IDs.
 
 Team hubs use the shared 44-formation catalogue. Managers create up to 30 named attacking, defending, transition or set-piece boards with a full XI, current registered squad assignments, adjustable marker positions, position instructions, coaching notes, movement arrows, ball and opponent markers. Formation changes retain assignments; occupied-position assignment swaps players. Touch selection complements pointer dragging. Duplicate, undo, shape reset and clear tools support reuse.
