@@ -2863,10 +2863,14 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-10-12T07:00:01.000Z",
-    "statsFetchedAt": "2026-10-12T07:00:01.000Z",
+    "syncedAt": "2026-10-13T21:45:21.000Z",
+    "statsFetchedAt": "2026-10-13T21:45:21.000Z",
     "statsStatus": "available",
     "teams": {
+      "DMT": [
+        "Dummy Team 1",
+        null
+      ],
       "MAY": [
         "UFL Maykop",
         "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
@@ -2897,6 +2901,19 @@ window.UFL_SEASONS = {
       ]
     },
     "teamDetails": [
+      {
+        "key": "DMT",
+        "teamId": 27,
+        "participantId": 32,
+        "registered": true,
+        "name": "Dummy Team 1",
+        "abbreviation": "DMT",
+        "logo": null,
+        "cover": null,
+        "url": "https://ufl.virtualarena.app/teams/Dummy%20Team%201",
+        "rosterSize": 0,
+        "stats": []
+      },
       {
         "key": "MAY",
         "teamId": 19,
@@ -2972,7 +2989,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
         "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-milan-1790954043.jpg",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
-        "rosterSize": 11,
+        "rosterSize": 12,
         "stats": []
       },
       {
@@ -3066,6 +3083,17 @@ window.UFL_SEASONS = {
         0,
         0,
         0
+      ],
+      [
+        "DMT",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
       ]
     ],
     "weeks": [
@@ -3075,54 +3103,72 @@ window.UFL_SEASONS = {
         "scheduledAt": 1791943200,
         "matches": [
           [
-            234,
-            "PALA",
-            "RM",
+            276,
+            "DMT",
+            "MAY",
             null,
             null,
             1791943200,
             1
           ],
           [
-            235,
+            277,
+            "TFC",
+            "NOB",
+            null,
+            null,
+            1791943200,
+            1
+          ],
+          [
+            278,
+            "RM",
+            "PALA",
+            null,
+            null,
+            1791943200,
+            1
+          ],
+          [
+            279,
+            "ACM",
             "TK",
+            null,
+            null,
+            1791943200,
+            1
+          ],
+          [
+            280,
+            "MAY",
+            "TFC",
+            null,
+            null,
+            1791945000,
+            2
+          ],
+          [
+            281,
+            "DMT",
+            "RM",
+            null,
+            null,
+            1791945000,
+            2
+          ],
+          [
+            282,
+            "NOB",
             "ACM",
             null,
             null,
-            1791943200,
-            1
-          ],
-          [
-            236,
-            "TFC",
-            "NOB",
-            null,
-            null,
-            1791943200,
-            1
-          ],
-          [
-            237,
-            "RM",
-            "TK",
-            null,
-            null,
             1791945000,
             2
           ],
           [
-            238,
+            283,
             "PALA",
-            "TFC",
-            null,
-            null,
-            1791945000,
-            2
-          ],
-          [
-            239,
-            "NOB",
-            "MAY",
+            "TK",
             null,
             null,
             1791945000,
@@ -3132,31 +3178,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 1,
-            "roundId": 57,
+            "roundId": 71,
             "date": "Tue 13 Oct, 10:00 PM EDT",
             "scheduledAt": 1791943200
           },
           {
             "round": 2,
-            "roundId": 58,
+            "roundId": 72,
             "date": "Tue 13 Oct, 10:30 PM EDT",
             "scheduledAt": 1791945000
           }
         ],
-        "byes": [
-          {
-            "team": "MAY",
-            "round": 1,
-            "scheduledAt": 1791943200,
-            "date": "Tue 13 Oct, 10:00 PM EDT"
-          },
-          {
-            "team": "ACM",
-            "round": 2,
-            "scheduledAt": 1791945000,
-            "date": "Tue 13 Oct, 10:30 PM EDT"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 2,
@@ -3164,54 +3197,72 @@ window.UFL_SEASONS = {
         "scheduledAt": 1792548000,
         "matches": [
           [
-            240,
-            "TFC",
+            284,
             "RM",
-            null,
-            null,
-            1792548000,
-            3
-          ],
-          [
-            241,
             "MAY",
-            "PALA",
             null,
             null,
             1792548000,
             3
           ],
           [
-            242,
-            "NOB",
+            285,
             "ACM",
-            null,
-            null,
-            1792548000,
-            3
-          ],
-          [
-            243,
             "TFC",
-            "MAY",
             null,
             null,
-            1792549800,
-            4
+            1792548000,
+            3
           ],
           [
-            244,
+            286,
             "TK",
+            "DMT",
+            null,
+            null,
+            1792548000,
+            3
+          ],
+          [
+            287,
+            "PALA",
             "NOB",
             null,
             null,
+            1792548000,
+            3
+          ],
+          [
+            288,
+            "MAY",
+            "ACM",
+            null,
+            null,
             1792549800,
             4
           ],
           [
-            245,
+            289,
+            "RM",
+            "TK",
+            null,
+            null,
+            1792549800,
+            4
+          ],
+          [
+            290,
+            "TFC",
             "PALA",
-            "ACM",
+            null,
+            null,
+            1792549800,
+            4
+          ],
+          [
+            291,
+            "DMT",
+            "NOB",
             null,
             null,
             1792549800,
@@ -3221,31 +3272,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 3,
-            "roundId": 59,
+            "roundId": 73,
             "date": "Tue 20 Oct, 10:00 PM EDT",
             "scheduledAt": 1792548000
           },
           {
             "round": 4,
-            "roundId": 60,
+            "roundId": 74,
             "date": "Tue 20 Oct, 10:30 PM EDT",
             "scheduledAt": 1792549800
           }
         ],
-        "byes": [
-          {
-            "team": "TK",
-            "round": 3,
-            "scheduledAt": 1792548000,
-            "date": "Tue 20 Oct, 10:00 PM EDT"
-          },
-          {
-            "team": "RM",
-            "round": 4,
-            "scheduledAt": 1792549800,
-            "date": "Tue 20 Oct, 10:30 PM EDT"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 3,
@@ -3253,8 +3291,26 @@ window.UFL_SEASONS = {
         "scheduledAt": 1793152800,
         "matches": [
           [
-            246,
+            292,
+            "TK",
             "MAY",
+            null,
+            null,
+            1793152800,
+            5
+          ],
+          [
+            293,
+            "PALA",
+            "ACM",
+            null,
+            null,
+            1793152800,
+            5
+          ],
+          [
+            294,
+            "NOB",
             "RM",
             null,
             null,
@@ -3262,8 +3318,8 @@ window.UFL_SEASONS = {
             5
           ],
           [
-            247,
-            "ACM",
+            295,
+            "DMT",
             "TFC",
             null,
             null,
@@ -3271,17 +3327,17 @@ window.UFL_SEASONS = {
             5
           ],
           [
-            248,
+            296,
+            "MAY",
             "PALA",
-            "TK",
             null,
             null,
-            1793152800,
-            5
+            1793154600,
+            6
           ],
           [
-            249,
-            "RM",
+            297,
+            "TK",
             "NOB",
             null,
             null,
@@ -3289,18 +3345,18 @@ window.UFL_SEASONS = {
             6
           ],
           [
-            250,
-            "MAY",
+            298,
             "ACM",
+            "DMT",
             null,
             null,
             1793154600,
             6
           ],
           [
-            251,
+            299,
+            "RM",
             "TFC",
-            "TK",
             null,
             null,
             1793154600,
@@ -3310,31 +3366,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 5,
-            "roundId": 61,
+            "roundId": 75,
             "date": "Tue 27 Oct, 10:00 PM EDT",
             "scheduledAt": 1793152800
           },
           {
             "round": 6,
-            "roundId": 62,
+            "roundId": 76,
             "date": "Tue 27 Oct, 10:30 PM EDT",
             "scheduledAt": 1793154600
           }
         ],
-        "byes": [
-          {
-            "team": "NOB",
-            "round": 5,
-            "scheduledAt": 1793152800,
-            "date": "Tue 27 Oct, 10:00 PM EDT"
-          },
-          {
-            "team": "PALA",
-            "round": 6,
-            "scheduledAt": 1793154600,
-            "date": "Tue 27 Oct, 10:30 PM EDT"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 4,
@@ -3342,26 +3385,8 @@ window.UFL_SEASONS = {
         "scheduledAt": 1793761200,
         "matches": [
           [
-            252,
-            "ACM",
-            "RM",
-            null,
-            null,
-            1793761200,
-            7
-          ],
-          [
-            253,
-            "PALA",
+            300,
             "NOB",
-            null,
-            null,
-            1793761200,
-            7
-          ],
-          [
-            254,
-            "TK",
             "MAY",
             null,
             null,
@@ -3369,27 +3394,63 @@ window.UFL_SEASONS = {
             7
           ],
           [
-            255,
-            "RM",
+            301,
+            "DMT",
             "PALA",
             null,
             null,
-            1793763000,
-            8
+            1793761200,
+            7
           ],
           [
-            256,
-            "ACM",
+            302,
+            "TFC",
             "TK",
             null,
             null,
+            1793761200,
+            7
+          ],
+          [
+            303,
+            "RM",
+            "ACM",
+            null,
+            null,
+            1793761200,
+            7
+          ],
+          [
+            304,
+            "MAY",
+            "DMT",
+            null,
+            null,
             1793763000,
             8
           ],
           [
-            257,
+            305,
             "NOB",
             "TFC",
+            null,
+            null,
+            1793763000,
+            8
+          ],
+          [
+            306,
+            "PALA",
+            "RM",
+            null,
+            null,
+            1793763000,
+            8
+          ],
+          [
+            307,
+            "TK",
+            "ACM",
             null,
             null,
             1793763000,
@@ -3399,31 +3460,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 7,
-            "roundId": 63,
+            "roundId": 77,
             "date": "Tue 03 Nov, 10:00 PM EST",
             "scheduledAt": 1793761200
           },
           {
             "round": 8,
-            "roundId": 64,
+            "roundId": 78,
             "date": "Tue 03 Nov, 10:30 PM EST",
             "scheduledAt": 1793763000
           }
         ],
-        "byes": [
-          {
-            "team": "TFC",
-            "round": 7,
-            "scheduledAt": 1793761200,
-            "date": "Tue 03 Nov, 10:00 PM EST"
-          },
-          {
-            "team": "MAY",
-            "round": 8,
-            "scheduledAt": 1793763000,
-            "date": "Tue 03 Nov, 10:30 PM EST"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 5,
@@ -3431,54 +3479,72 @@ window.UFL_SEASONS = {
         "scheduledAt": 1794970800,
         "matches": [
           [
-            258,
-            "TK",
-            "RM",
-            null,
-            null,
-            1794970800,
-            9
-          ],
-          [
-            259,
+            308,
             "TFC",
-            "PALA",
-            null,
-            null,
-            1794970800,
-            9
-          ],
-          [
-            260,
-            "MAY",
-            "NOB",
-            null,
-            null,
-            1794970800,
-            9
-          ],
-          [
-            261,
-            "RM",
-            "TFC",
-            null,
-            null,
-            1794972600,
-            10
-          ],
-          [
-            262,
-            "PALA",
             "MAY",
             null,
             null,
-            1794972600,
-            10
+            1794970800,
+            9
           ],
           [
-            263,
+            309,
+            "RM",
+            "DMT",
+            null,
+            null,
+            1794970800,
+            9
+          ],
+          [
+            310,
             "ACM",
             "NOB",
+            null,
+            null,
+            1794970800,
+            9
+          ],
+          [
+            311,
+            "TK",
+            "PALA",
+            null,
+            null,
+            1794970800,
+            9
+          ],
+          [
+            312,
+            "MAY",
+            "RM",
+            null,
+            null,
+            1794972600,
+            10
+          ],
+          [
+            313,
+            "TFC",
+            "ACM",
+            null,
+            null,
+            1794972600,
+            10
+          ],
+          [
+            314,
+            "DMT",
+            "TK",
+            null,
+            null,
+            1794972600,
+            10
+          ],
+          [
+            315,
+            "NOB",
+            "PALA",
             null,
             null,
             1794972600,
@@ -3488,31 +3554,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 9,
-            "roundId": 65,
+            "roundId": 79,
             "date": "Tue 17 Nov, 10:00 PM EST",
             "scheduledAt": 1794970800
           },
           {
             "round": 10,
-            "roundId": 66,
+            "roundId": 80,
             "date": "Tue 17 Nov, 10:30 PM EST",
             "scheduledAt": 1794972600
           }
         ],
-        "byes": [
-          {
-            "team": "ACM",
-            "round": 9,
-            "scheduledAt": 1794970800,
-            "date": "Tue 17 Nov, 10:00 PM EST"
-          },
-          {
-            "team": "TK",
-            "round": 10,
-            "scheduledAt": 1794972600,
-            "date": "Tue 17 Nov, 10:30 PM EST"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 6,
@@ -3520,54 +3573,72 @@ window.UFL_SEASONS = {
         "scheduledAt": 1795575600,
         "matches": [
           [
-            264,
-            "MAY",
-            "TFC",
-            null,
-            null,
-            1795575600,
-            11
-          ],
-          [
-            265,
-            "NOB",
-            "TK",
-            null,
-            null,
-            1795575600,
-            11
-          ],
-          [
-            266,
+            316,
             "ACM",
-            "PALA",
+            "MAY",
             null,
             null,
             1795575600,
             11
           ],
           [
-            267,
+            317,
+            "TK",
             "RM",
-            "MAY",
             null,
             null,
-            1795577400,
-            12
+            1795575600,
+            11
           ],
           [
-            268,
-            "TFC",
-            "ACM",
-            null,
-            null,
-            1795577400,
-            12
-          ],
-          [
-            269,
-            "TK",
+            318,
             "PALA",
+            "TFC",
+            null,
+            null,
+            1795575600,
+            11
+          ],
+          [
+            319,
+            "NOB",
+            "DMT",
+            null,
+            null,
+            1795575600,
+            11
+          ],
+          [
+            320,
+            "MAY",
+            "TK",
+            null,
+            null,
+            1795577400,
+            12
+          ],
+          [
+            321,
+            "ACM",
+            "PALA",
+            null,
+            null,
+            1795577400,
+            12
+          ],
+          [
+            322,
+            "RM",
+            "NOB",
+            null,
+            null,
+            1795577400,
+            12
+          ],
+          [
+            323,
+            "TFC",
+            "DMT",
             null,
             null,
             1795577400,
@@ -3577,31 +3648,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 11,
-            "roundId": 67,
+            "roundId": 81,
             "date": "Tue 24 Nov, 10:00 PM EST",
             "scheduledAt": 1795575600
           },
           {
             "round": 12,
-            "roundId": 68,
+            "roundId": 82,
             "date": "Tue 24 Nov, 10:30 PM EST",
             "scheduledAt": 1795577400
           }
         ],
-        "byes": [
-          {
-            "team": "RM",
-            "round": 11,
-            "scheduledAt": 1795575600,
-            "date": "Tue 24 Nov, 10:00 PM EST"
-          },
-          {
-            "team": "NOB",
-            "round": 12,
-            "scheduledAt": 1795577400,
-            "date": "Tue 24 Nov, 10:30 PM EST"
-          }
-        ]
+        "byes": []
       },
       {
         "week": 7,
@@ -3609,17 +3667,8 @@ window.UFL_SEASONS = {
         "scheduledAt": 1796180400,
         "matches": [
           [
-            270,
-            "NOB",
-            "RM",
-            null,
-            null,
-            1796180400,
-            13
-          ],
-          [
-            271,
-            "ACM",
+            324,
+            "PALA",
             "MAY",
             null,
             null,
@@ -3627,36 +3676,63 @@ window.UFL_SEASONS = {
             13
           ],
           [
-            272,
+            325,
+            "NOB",
+            "TK",
+            null,
+            null,
+            1796180400,
+            13
+          ],
+          [
+            326,
+            "DMT",
+            "ACM",
+            null,
+            null,
+            1796180400,
+            13
+          ],
+          [
+            327,
+            "TFC",
+            "RM",
+            null,
+            null,
+            1796180400,
+            13
+          ],
+          [
+            328,
+            "MAY",
+            "NOB",
+            null,
+            null,
+            1796182200,
+            14
+          ],
+          [
+            329,
+            "PALA",
+            "DMT",
+            null,
+            null,
+            1796182200,
+            14
+          ],
+          [
+            330,
             "TK",
             "TFC",
             null,
             null,
-            1796180400,
-            13
+            1796182200,
+            14
           ],
           [
-            273,
-            "RM",
+            331,
             "ACM",
-            null,
-            null,
-            1796182200,
-            14
-          ],
-          [
-            274,
-            "NOB",
-            "PALA",
-            null,
-            null,
-            1796182200,
-            14
-          ],
-          [
-            275,
-            "MAY",
-            "TK",
+            "RM",
             null,
             null,
             1796182200,
@@ -3666,31 +3742,18 @@ window.UFL_SEASONS = {
         "rounds": [
           {
             "round": 13,
-            "roundId": 69,
+            "roundId": 83,
             "date": "Tue 01 Dec, 10:00 PM EST",
             "scheduledAt": 1796180400
           },
           {
             "round": 14,
-            "roundId": 70,
+            "roundId": 84,
             "date": "Tue 01 Dec, 10:30 PM EST",
             "scheduledAt": 1796182200
           }
         ],
-        "byes": [
-          {
-            "team": "PALA",
-            "round": 13,
-            "scheduledAt": 1796180400,
-            "date": "Tue 01 Dec, 10:00 PM EST"
-          },
-          {
-            "team": "TFC",
-            "round": 14,
-            "scheduledAt": 1796182200,
-            "date": "Tue 01 Dec, 10:30 PM EST"
-          }
-        ]
+        "byes": []
       }
     ],
     "scheduleFormat": "matchdays-v1",
