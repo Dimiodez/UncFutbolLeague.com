@@ -1223,7 +1223,7 @@ window.UFL_SEASONS = {
       ],
       "PHN": [
         "UFL Rippettes",
-        null
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-rippettes-1791852327.png"
       ],
       "ROM": [
         "UFL Roma",
@@ -1245,7 +1245,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal",
-        "rosterSize": 3,
+        "rosterSize": 6,
         "stats": []
       },
       {
@@ -1333,7 +1333,7 @@ window.UFL_SEASONS = {
         "registered": true,
         "name": "UFL Rippettes",
         "abbreviation": "PHN",
-        "logo": null,
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-rippettes-1791852327.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes",
         "rosterSize": 6,
@@ -2933,7 +2933,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/Palace",
-        "rosterSize": 8,
+        "rosterSize": 9,
         "stats": []
       },
       {
@@ -2985,7 +2985,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-        "rosterSize": 8,
+        "rosterSize": 9,
         "stats": []
       }
     ],
