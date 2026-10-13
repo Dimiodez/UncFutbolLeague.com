@@ -1,4 +1,4 @@
-import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js';
+import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js?v=20261013-recovery2';
 export const PHASES={attack:'Attacking',defence:'Defending',transition:'Transitions',setpiece:'Set pieces'};
 export function newTactic(name='New tactical board',phase='attack',formation='4-3-3'){
  return {id:crypto.randomUUID(),name,phase,formation,notes:'',slots:formationSlots(formation).map(s=>({id:s.id,x:s.x,y:s.y,playerId:null,instruction:''})),arrows:[],opponents:[],ball:{x:50,y:50}};

@@ -1,11 +1,10 @@
-import {installWorkshopBrand,escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
-import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js?v=20261012-hubs1';
-import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js?v=20261012-hubs1';
-import {installBoardComparison} from './team-hub-comparison.js?v=20261012-sidebar2';
-import {installTeamHubUX} from './team-hub-ux.js?v=20261012-ux1';
+import {installWorkshopBrand,escape as esc} from './team-hub-shell.js?v=20261013-recovery2';
+import {FC27_FORMATIONS,formationSlots} from './fc27-formations.js?v=20261013-recovery2';
+import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js?v=20261013-recovery2';
+import {installBoardComparison} from './team-hub-comparison.js?v=20261013-recovery2';
+import {installTeamHubUX} from './team-hub-ux.js?v=20261013-recovery2';
 installWorkshopBrand();
-const sidebarStyle=document.createElement('link');sidebarStyle.rel='stylesheet';sidebarStyle.href='/team-hub-sidebar.css?v=20261012-sidebar1';document.head.append(sidebarStyle);
-const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/team-hub-ux.css?v=20261012-ux1';document.head.append(uxStyle);
+// Styles are loaded by the HTML shell, even if a module cannot start.
 const root=document.querySelector('#team-hub-root'),message=document.querySelector('#hub-message');
 let context,playbook,revision=0,activeId,selectedSlot=null,selectedPlayer=null,phaseFilter='all',tool='move',arrowStart=null,dirty=false,busy=false,undo=[];
 // Live hubs never enable the workshop's public demo or local-save path.

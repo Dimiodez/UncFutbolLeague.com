@@ -11,6 +11,21 @@
 /auth-turnstile.js
   Cache-Control: no-store, max-age=0
 
+/team-hub
+  Cache-Control: no-store, max-age=0
+
+/team-hub-access
+  Cache-Control: no-store, max-age=0
+
+/team-hub*
+  Cache-Control: no-store, max-age=0
+
+/team-tactics-model.js
+  Cache-Control: no-store, max-age=0
+
+/fc27-formations.js
+  Cache-Control: no-store, max-age=0
+
 /theme-init.js
   Cache-Control: public, max-age=0, must-revalidate
 
