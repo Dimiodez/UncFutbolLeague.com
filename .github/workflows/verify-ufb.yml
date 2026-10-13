@@ -16,3 +16,5 @@ jobs:
           node-version: '22'
       - name: Keep the UFB documentation published
         run: node scripts/check-ufb.mjs
+      - name: Verify private team hubs and publication assets
+        run: node --test scripts/live-team-hub.test.mjs scripts/team-hub-ux.test.mjs scripts/publication.test.mjs scripts/auth-security.test.mjs scripts/league-rosters.test.mjs

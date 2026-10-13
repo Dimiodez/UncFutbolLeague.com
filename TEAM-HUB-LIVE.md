@@ -1,5 +1,7 @@
 # Private team hubs · focused live release
 
+October 13 recovery: the scheduled VA data sync deployed production from master, which had not received the October 12 hub feature branch. Merge the current production data into the hub release and fast-forward remote master to the combined release. A manual production deployment is not durable until its source is also on the production branch. The production verification workflow now checks team-hub authorization, UX filters and publication assets as well as existing auth and roster behavior. Do not roll back the fresh VA data or copy workshop drafts into production.
+
 The refined UX adds searchable squad/current-board placement filters, Squad/Position sidebar views, nearby assignment/instruction editing and quick removal. Board details, destructive/reset actions and team notes are collapsible; formation/phase remain visible. Save state/actions stay visible when scrolling. All these changes preserve explicit saves and the existing server access checks. Browser QA covers search, select/place and position removal without losing instructions.
 
 The registered squad is a sticky right-side sidebar with its own scroll area, beside the formations. Coaching instructions are below the boards. Pointer-driven roster dragging supports either comparison panel; dropping on the other board activates that board and assigns the player without duplicating the playbook. Small screens use a sticky horizontal player selector, with tap-to-place retained.
