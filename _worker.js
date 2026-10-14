@@ -45,6 +45,11 @@ export default {
   if (path.startsWith('/api/') || path.startsWith('/auth/')) return json({error:'This service is disabled in the development preview. Use the cloned pages and saved snapshots; live accounts and data are not connected.'},503);
   const response = await env.ASSETS.fetch(request);
   const headers = new Headers(response.headers); headers.set('x-robots-tag','noindex, nofollow');
+  if(['/league-workshop','/league-workshop.html'].includes(path)&&request.method==='GET'&&headers.get('content-type')?.includes('text/html')){
+   const html=(await response.text()).replace('src="/league-workshop.js"','src="/league-workshop.js?v=20261014-eatest1"');
+   headers.set('cache-control','no-store');headers.delete('content-length');headers.delete('etag');
+   return new Response(html,{status:response.status,headers});
+  }
   return new Response(response.body,{status:response.status,headers});
  }
 };
