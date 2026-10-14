@@ -1189,8 +1189,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-09T07:00:02.000Z",
-    "statsFetchedAt": "2026-10-09T07:00:02.000Z",
+    "syncedAt": "2026-10-13T22:37:26.000Z",
+    "statsFetchedAt": "2026-10-13T22:37:26.000Z",
     "statsStatus": "available",
     "teams": {
       "ARS": [
@@ -1297,7 +1297,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM",
-        "rosterSize": 6,
+        "rosterSize": 7,
         "stats": []
       },
       {
@@ -2863,8 +2863,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-10-13T21:45:21.000Z",
-    "statsFetchedAt": "2026-10-13T21:45:21.000Z",
+    "syncedAt": "2026-10-13T22:38:07.000Z",
+    "statsFetchedAt": "2026-10-13T22:38:07.000Z",
     "statsStatus": "available",
     "teams": {
       "DMT": [
@@ -2937,7 +2937,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
-        "rosterSize": 6,
+        "rosterSize": 9,
         "stats": []
       },
       {
@@ -2963,7 +2963,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
-        "rosterSize": 8,
+        "rosterSize": 10,
         "stats": []
       },
       {
@@ -3002,7 +3002,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-        "rosterSize": 9,
+        "rosterSize": 11,
         "stats": []
       }
     ],
