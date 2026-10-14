@@ -9,11 +9,12 @@ import {renderRegistrationInvites,renderSharedRoster} from './league-registratio
 import {renderSeasonRollover} from './league-season-rollover.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
-const LEAGUE_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
+const ADMIN_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
 const sectionMoves=new WeakMap();
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
 export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onReport}){
+ const LEAGUE_TABS=draft.settings.trialSchedule?SITE_LEAGUE_TABS:ADMIN_TABS;
  // Return borrowed library controls before replacing the previous section.
  for(const [node,parent] of sectionMoves.get(host)||[])parent.append(node);
  const moved=[];sectionMoves.set(host,moved);
@@ -65,6 +66,10 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
   renderRegistrationInvites({host:admin,draft,onSettings,onImport:onImportTeam,onReport});
   renderSeasonRollover(admin,draft);
+  if(settings.trialSchedule){
+   const links=document.createElement('section');links.className='card';links.innerHTML=`<h3>EA trial club links</h3><p>Add missing numeric EA IDs here without changing the supplied fixtures. IDs alone do not verify club ownership.</p>`;
+   for(const team of settings.teams){const form=document.createElement('form');form.className='workshop-toolbar';form.innerHTML=`<label>${escape(team.name)}<input name="eaId" inputmode="numeric" pattern="[0-9]{1,20}" value="${escape(team.eaClubId||'')}" required placeholder="Awaiting EA club ID"></label><button>Save club ID</button>`;form.onsubmit=e=>{e.preventDefault();try{const id=String(new FormData(form).get('eaId')).trim();if(!/^\d{1,20}$/.test(id))throw Error('Enter a numeric EA club ID.');if(settings.teams.some(t=>t.id!==team.id&&t.eaClubId===id))throw Error('That club ID is already linked to another team.');onSettings({...settings,teams:settings.teams.map(t=>t.id===team.id?{...t,eaClubId:id}:t)});}catch(error){onReport(error.message);}};links.append(form);}body.prepend(links);
+  }
  }
  if(tab==='players'){body.replaceChildren();renderSharedRoster(body,draft);}
  if(tab==='matches'){

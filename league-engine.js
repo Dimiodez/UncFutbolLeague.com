@@ -1,3 +1,4 @@
+import {EA_TRIAL_ID,buildEaTrial} from './league-ea-trial.js?v=20261014-trial1';
 // Shared schedule and candidate matching logic. Never treats raw EA games as league results.
 export function validateTeamRules(values){
  if(!['6v6','10v10','Custom'].includes(values.format))throw Error('Choose a valid format.');
@@ -82,6 +83,7 @@ export function registerLeagueTeam(draft,team,{now=Date.now(),restoring=false}={
 }
 export function buildLeagueSchedule(settings){
  settings=validateScheduleSettings(settings);
+ if(settings.trialSchedule===EA_TRIAL_ID)return buildEaTrial(settings,zonedTimestamp);
  const teams=settings.teams||[];
  if(teams.length<3||teams.length>40)throw Error('Choose 3–40 teams. Two different opponents per night need at least three teams.');
  if(new Set(teams.map(team=>team.id)).size!==teams.length)throw Error('A team can only be entered once.');

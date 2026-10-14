@@ -1,8 +1,9 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261014-trial1';
+import {EA_TRIAL_ID,eaTrialSettings} from './league-ea-trial.js?v=20261014-trial1';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js';
+import {renderLeaguePage} from './league-page.js?v=20261014-trial1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
@@ -18,6 +19,7 @@ const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
+let draftStorageReadable=true;
 let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
 document.querySelector('.workshop-layout').before(message,pageHost);
@@ -111,7 +113,8 @@ function updateLeague(index,values){
  const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,Number(value.matchnightCount??1),Number(value.matchnightCount??1)===2?Number(value.secondWeekday):null,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.byePolicy??'split',value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
  const calendarChanged=calendarKey(settings)!==calendarKey(draft.settings);
  if(calendarChanged&&draft.acceptedResults?.length)throw Error('Accepted test results exist. Export a backup and create a new league draft instead of rebuilding its fixtures.');
- const updated=draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
+ if(settings.trialSchedule===EA_TRIAL_ID){for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(x=>x.id===result.fixtureId);for(const t of [f.home,f.away])if(settings.teams.find(x=>x.id===t.id)?.eaClubId!==t.eaClubId)throw Error('Cannot change a club ID already used by an accepted result.');}}
+ const updated=settings.trialSchedule===EA_TRIAL_ID?{...buildLeagueSchedule(settings),acceptedResults:draft.acceptedResults||[]}:draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
  if(draft.scheduleGenerated&&calendarChanged&&!approveCalendarChange(`league-${index}:${JSON.stringify(settings)}`,index))return;
  // Keep competition references consistent when a draft league is renamed or moved.
  competitions=competitions.map(cup=>cup.season===draft.settings.season&&cup.league===draft.settings.league?{...cup,season:settings.season,league:settings.league}:cup);
@@ -184,7 +187,14 @@ document.querySelector('#import-drafts').addEventListener('change',async event=>
 try{
  const previous=localStorage.getItem(KEY)||'[]';drafts=restoreDrafts(JSON.parse(previous));
  if(migratedByeCount){localStorage.setItem(KEY+'-before-full-night-byes',previous);persistDrafts();message.textContent=`Corrected ${migratedByeCount} odd-team draft(s) to full-night byes. Existing results were not changed. A pre-update backup is saved on this device.`;}
-}catch{/* Leave invalid or older drafts untouched in storage. */}renderDrafts();
+}catch{draftStorageReadable=false;/* Leave invalid or older drafts untouched in storage. */}
+// Add the explicitly requested parallel trial without replacing existing drafts.
+if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TRIAL_ID)&&drafts.length<20){
+ drafts.push(buildLeagueSchedule(eaTrialSettings()));
+ // Do not overwrite an unreadable existing draft backup.
+ try{const previous=localStorage.getItem(KEY);if(previous)localStorage.setItem(KEY+'-before-ea-trial',previous);persistDrafts();}catch{message.textContent='EA trial loaded but could not be saved on this browser.';}
+}
+renderDrafts();
 accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
  hasUnappliedChanges:()=>!!document.querySelector('form[data-unsaved="true"]'),
  onSaved:()=>markLocalSaved('Saved online · Discord account'),
