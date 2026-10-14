@@ -3943,7 +3943,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "TheFlav",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1786811723.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1791980771.png",
                 "url": "https://ufl.virtualarena.app/users/TheFlav"
               },
               "team": {
@@ -4054,7 +4054,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "TheFlav",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1786811723.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1791980771.png",
                 "url": "https://ufl.virtualarena.app/users/TheFlav"
               },
               "team": {
@@ -4138,13 +4138,13 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Soups",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/soups-1786553365.png",
-                "url": "https://ufl.virtualarena.app/users/Soups"
+                "name": "Bradical",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bradical-1791992573.png",
+                "url": "https://ufl.virtualarena.app/users/Bradical"
               },
               "team": {
-                "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
               },
               "stat": "2",
               "played": 2
@@ -4211,7 +4211,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "TheFlav",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1786811723.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1791980771.png",
                 "url": "https://ufl.virtualarena.app/users/TheFlav"
               },
               "team": {
