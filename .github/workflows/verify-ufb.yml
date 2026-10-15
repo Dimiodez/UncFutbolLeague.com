@@ -2,7 +2,7 @@ name: Verify UFB website
 
 on:
   push:
-    branches: [master]
+    branches: [master, 'codex/ux-*']
   pull_request:
     branches: [master]
 
@@ -16,5 +16,14 @@ jobs:
           node-version: '22'
       - name: Keep the UFB documentation published
         run: node scripts/check-ufb.mjs
-      - name: Verify private team hubs and publication assets
-        run: node --test scripts/live-team-hub.test.mjs scripts/team-hub-ux.test.mjs scripts/team-hub-loading.test.mjs scripts/publication.test.mjs scripts/auth-security.test.mjs scripts/league-rosters.test.mjs
+      - name: Verify website behavior, access controls, and games
+        run: node --test scripts/*.test.mjs mountain-app/tests/*.test.mjs
+      - name: Build public-only website
+        run: node scripts/build-public.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ufl-site-${{ github.sha }}
+          path: |
+            dist/
+            functions/
+            wrangler.toml

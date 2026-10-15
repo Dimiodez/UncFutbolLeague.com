@@ -209,8 +209,8 @@ async function hydrateHouseClub(slug,month='all',fresh=false){
 
 function homePage() {
   return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Join the league →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
+  <section class="section home-calendar" id="home-calendar" aria-labelledby="home-calendar-title"><span class="section-kicker">Matchday essentials</span><h2 id="home-calendar-title">This week in UFL</h2><nav class="home-quick-links" aria-label="Matchday shortcuts"><a href="/schedules?season=2&type=6v6" data-link>6v6 fixtures</a><a href="/schedules?season=2&type=10v10" data-link>10v10 fixtures</a><a href="/pickems" data-link>Make your picks</a><a href="/clubs" data-link>Find your team</a><a href="/standings" data-link>Standings</a></nav><div class="home-calendar-grid"><p role="status">Checking the schedule…</p></div></section>
   ${featuredClubSection()}
-  <section class="section home-calendar" id="home-calendar"><span class="section-kicker">Coming up</span><h2>From the clubhouse calendar</h2><div class="home-calendar-grid"><p>Checking the schedule…</p></div></section>
   <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>6v6 League</h3><p>Registration is underway. Teams, standings, and fixtures update from Virtual Arena as they are published.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>10v10 League</h3><p>The full tactical experience is now part of UFL Season 2, with clubs and fixtures arriving soon.</p><a href="/teams?division=10v10" data-link>Open 10v10 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.webp" alt="Animated UNC Futbol League crest" decoding="async"></div></div></section>`;
@@ -316,28 +316,44 @@ function teamsPage(params) {
   return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,data.title,data.intro) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div><p class="sync-note">Synced from Virtual Arena${season?.syncedAt?` · ${new Date(season.syncedAt).toLocaleString()}`:''}</p>${cards?`<div class="league-team-grid">${cards}</div>`:empty}</section>`;
 }
 
+function defaultScheduleWeek(weeks,now=Date.now()){
+  if(!weeks?.length)return null;
+  return weeks.find(week=>{
+    const ends=Math.max(Number(week.scheduledAt)||0,...(week.rounds||[]).map(round=>Number(round.scheduledAt)||0));
+    return ends>0&&ends*1000+7200000>=now;
+  })||weeks.at(-1);
+}
 function schedulesPage(params) {
-  const requestedType = params.get('type');
-  if (!requestedType) {
-    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchweek.','/schedules?season=2&type=6v6'],['10v10','10v10 League','The upcoming full-squad schedule.','/schedules?season=2&type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
-    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+`<section class="section"><div class="schedule-hub">${destinations.map(([key,title,copy,href])=>`<a class="card schedule-hub-card" href="${href}" data-link><span class="num">${key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY'}</span><h2>${title}</h2><p>${copy}</p><strong>Open schedule →</strong></a>`).join('')}</div></section>`;
+  const requestedType=params.get('type');
+  if(!requestedType){
+    const destinations=[['6v6','6v6 League','Weekly fixtures and results, organized by matchday.','/schedules?season=2&type=6v6'],['10v10','10v10 League','Official full-squad fixtures and results.','/schedules?season=2&type=10v10'],['events','Community Events','Community nights and special formats.','/schedules/community-events'],['league-cup','League Cup','Official cup fixtures and knockout rounds.','/schedules/league-cup'],['byot','BYOT Tournaments','Recurring bring-your-own-team competitions.','/schedules/byot-tournaments']];
+    return pageHero('Match centre','Schedules','Every league, cup, community event, and BYOT tournament in one place.')+'<section class="section"><div class="schedule-hub">'+destinations.map(([key,title,copy,href])=>'<a class="card schedule-hub-card" href="'+href+'" data-link><span class="num">'+(key==='6v6'?'6V6':key==='10v10'?'10V10':key==='league-cup'?'LC':key==='events'?'CE':'BY')+'</span><h2>'+title+'</h2><p>'+copy+'</p><strong>Open schedule →</strong></a>').join('')+'</div></section>';
   }
-  const type = requestedType === '10v10' ? '10v10' : '6v6';
-  const data = scheduleTypes[type];
-  const selectedSeason = selectedLeagueSeason(params);
-  const context = leagueViewContext(new URLSearchParams({season:selectedSeason.id,division:type}));
-  const season = context.season;
-  const unavailable = selectedSeason.archived && !selectedSeason.divisions[type];
-  const clubLink=key=>`<a href="${leagueViewLink(`/clubs/${encodeURIComponent(key)}`,context)}" data-link>${escapeHtml(leagueTeam(key,season)[0])}</a>`;
-  const weeks = season?.weeks?.map(week => `<section class="schedule-week"><div class="schedule-week-head"><span class="section-kicker">${week.rounds?'Matchday':'Matchweek'}</span><h2>${week.rounds?'Matchday':'Week'} ${week.week}</h2><p>${escapeHtml(week.rounds?.map(round=>`Round ${round.round} · ${round.date}`).join(' / ')||week.date)}</p></div><div class="table-wrap"><table><thead><tr><th>Round / kickoff</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>${week.matches.map(([id,home,away,homeScore,awayScore,kickoff,round],matchIndex)=>{const played=homeScore!==null&&awayScore!==null;const date=week.rounds?.find(r=>r.scheduledAt===kickoff)?.date;return `<tr><td><strong>${round?`Round ${round}`:`Match ${matchIndex+1}`}</strong>${date?`<br><small>${escapeHtml(date)}</small>`:''}</td><td>${clubLink(home)}</td><td>${clubLink(away)}</td><td><a class="result-link ${played?'final':'upcoming'}" href="https://ufl.virtualarena.app/matches/${id}" target="_blank" rel="noopener noreferrer">${played?`${homeScore}–${awayScore} · Final`:'Upcoming'} ↗</a></td></tr>`;}).join('')}${(week.byes||[]).map(bye=>`<tr class="schedule-bye"><td><strong>Round ${bye.round}</strong><br><small>${escapeHtml(bye.date)}</small></td><td>${clubLink(bye.team)}</td><td>BYE</td><td>No match this round</td></tr>`).join('')}</tbody></table></div></section>`).join('');
-  const official = selectedSeason.id === '1' ? (type === '6v6' ? virtualArena['6v6Season1'] : null) : virtualArena[type];
-  const sourceUrl = official?.schedule || official?.series;
-  const action = sourceUrl ? `<a class="button button-secondary" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">Open official season ↗</a>` : '';
-  const empty = unavailable
-    ? emptyState(`${type} was not contested in ${selectedSeason.label}`, `There is no official ${type} schedule for ${selectedSeason.label}.`)
-    : emptyState(selectedSeason.archived ? `${selectedSeason.label} archive unavailable` : `${selectedSeason.label} schedule not published yet`, selectedSeason.archived ? 'The archived fixtures are temporarily unavailable.' : `The ${type} schedule is connected and will appear here automatically when Virtual Arena publishes its matchweeks.`, action);
-  const navigation = `<div class="league-tab-stack">${leagueSeasonTabs('/schedules',selectedSeason.id,'type',type)}${scheduleLandingTabs(type,selectedSeason.id)}</div>`;
-  return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,data[0],data[1]) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div><p class="sync-note">Official fixtures and results · synced from Virtual Arena${selectedSeason.current?' · Two rounds per matchday; a BYE means no game in that round. Times shown in Eastern Time.':''}</p><div class="schedule-weeks">${weeks || empty}</div></section>`;
+  const type=requestedType==='10v10'?'10v10':'6v6',data=scheduleTypes[type],selectedSeason=selectedLeagueSeason(params);
+  const context=leagueViewContext(new URLSearchParams({season:selectedSeason.id,division:type})),season=context.season;
+  const allWeeks=season?.weeks||[],requestedDay=params.get('matchday'),showAll=requestedDay==='all';
+  const current=allWeeks.find(week=>String(week.week)===requestedDay)||defaultScheduleWeek(allWeeks);
+  const team=Object.hasOwn(season?.teams||{},params.get('team'))?params.get('team'):'';
+  const clubLink=key=>'<a href="'+leagueViewLink('/clubs/'+encodeURIComponent(key),context)+'" data-link>'+escapeHtml(leagueTeam(key,season)[0])+'</a>';
+  const destination=day=>'/schedules?'+new URLSearchParams({season:selectedSeason.id,type,matchday:String(day),...(team?{team}:{})});
+  const currentIndex=allWeeks.indexOf(current);
+  const navigation='<div class="league-tab-stack">'+leagueSeasonTabs('/schedules',selectedSeason.id,'type',type)+scheduleLandingTabs(type,selectedSeason.id)+'</div>';
+  const controls=allWeeks.length?'<form class="matchday-controls" action="/schedules" method="get" aria-label="Find fixtures"><input type="hidden" name="season" value="'+selectedSeason.id+'"><input type="hidden" name="type" value="'+type+'"><label>Matchday<select name="matchday" id="schedule-matchday">'+allWeeks.map(week=>'<option value="'+week.week+'" '+(!showAll&&week===current?'selected':'')+'>Matchday '+week.week+' · '+escapeHtml(week.date||'Date pending')+'</option>').join('')+'<option value="all" '+(showAll?'selected':'')+'>Whole season</option></select></label><label>Team<select name="team" id="schedule-team"><option value="">All teams</option>'+Object.entries(season.teams).sort((a,b)=>a[1][0].localeCompare(b[1][0])).map(([key,value])=>'<option value="'+escapeHtml(key)+'" '+(team===key?'selected':'')+'>'+escapeHtml(value[0])+'</option>').join('')+'</select></label><button class="button button-primary" type="submit">View matches</button></form><nav class="matchday-paging" aria-label="Matchday navigation">'+(!showAll&&currentIndex>0?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex-1].week)+'" data-link>← Previous</a>':'<span></span>')+'<a href="/schedules?season='+selectedSeason.id+'&type='+type+'" data-link>Jump to today / next matchday</a>'+(!showAll&&currentIndex<allWeeks.length-1?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex+1].week)+'" data-link>Next →</a>':'<span></span>')+'</nav>':'';
+  const weeks=(showAll?allWeeks:current?[current]:[]).map(week=>{
+    const matches=week.matches.filter(([,home,away])=>!team||home===team||away===team),byes=(week.byes||[]).filter(bye=>!team||bye.team===team);
+    const rows=matches.map(([id,home,away,homeScore,awayScore,kickoff,round],index)=>{
+      const played=Number.isFinite(homeScore)&&Number.isFinite(awayScore),date=week.rounds?.find(r=>r.scheduledAt===kickoff)?.date||week.date;
+      const label=round?'Round '+round:'Match '+(index+1),result=played?homeScore+'–'+awayScore+' · Final':'Upcoming';
+      return {table:'<tr><td><strong>'+label+'</strong><br><small>'+escapeHtml(date)+'</small></td><td>'+clubLink(home)+'</td><td>'+clubLink(away)+'</td><td><a class="result-link '+(played?'final':'upcoming')+'" href="https://ufl.virtualarena.app/matches/'+id+'" target="_blank" rel="noopener noreferrer">'+result+' ↗</a></td></tr>',
+      card:'<article class="mobile-fixture"><header><strong>'+label+'</strong><span>'+escapeHtml(date)+'</span></header><div class="mobile-fixture-clubs"><div><small>Home</small>'+clubLink(home)+'</div><span aria-hidden="true">vs</span><div><small>Away</small>'+clubLink(away)+'</div></div><a class="result-link '+(played?'final':'upcoming')+'" href="https://ufl.virtualarena.app/matches/'+id+'" target="_blank" rel="noopener noreferrer">'+result+' · Match details ↗</a></article>'};
+    });
+    const byeTable=byes.map(bye=>'<tr class="schedule-bye"><td><strong>Round '+bye.round+'</strong><br><small>'+escapeHtml(bye.date)+'</small></td><td>'+clubLink(bye.team)+'</td><td>BYE</td><td>No match this round</td></tr>').join('');
+    const byeCards=byes.map(bye=>'<article class="mobile-fixture schedule-bye"><header><strong>Round '+bye.round+'</strong><span>'+escapeHtml(bye.date)+'</span></header><div>'+clubLink(bye.team)+'</div><p>BYE · No match this round</p></article>').join('');
+    return '<section class="schedule-week" aria-labelledby="matchday-'+week.week+'"><div class="schedule-week-head"><span class="section-kicker">Matchday</span><h2 id="matchday-'+week.week+'">Matchday '+week.week+'</h2><p>'+escapeHtml(week.rounds?.map(r=>'Round '+r.round+' · '+r.date).join(' / ')||week.date)+'</p></div>'+(rows.length||byes.length?'<div class="schedule-desktop-table table-wrap"><table><caption class="sr-only">Matchday '+week.week+' fixtures and results</caption><thead><tr><th>Round / kickoff</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>'+rows.map(r=>r.table).join('')+byeTable+'</tbody></table></div><div class="schedule-mobile-matches">'+rows.map(r=>r.card).join('')+byeCards+'</div>':'<p class="matchday-empty">No fixtures for this team on this matchday. Try another matchday or select All teams.</p>')+'</section>';
+  }).join('');
+  const unavailable=selectedSeason.archived&&!selectedSeason.divisions[type];
+  const empty=emptyState(unavailable?type+' was not contested in '+selectedSeason.label:'No published fixtures yet',unavailable?'There is no official schedule for this division and season.':'Fixtures will appear as Virtual Arena publishes them.');
+  return pageHero('UFL '+selectedSeason.label+(selectedSeason.archived?' archive':''),data[0],data[1])+'<section class="section matchday-page">'+navigation+'<p class="sync-note">Official fixtures and results · synced from Virtual Arena. Two rounds per matchday; a BYE means no game in that round. Times shown in Eastern Time.</p>'+controls+'<div class="schedule-weeks">'+(weeks||empty)+'</div></section>';
 }
 
 function scheduleLandingTabs(active, seasonId = '2') {
@@ -768,7 +784,8 @@ async function hydrateByotPage() {
 async function hydrateHomeCalendar() {
   const root=document.querySelector('#home-calendar .home-calendar-grid');
   if(!root) return;
-  const leagueCards=['6v6','10v10'].map(division=>{const season=leagueSeasonFor(division),week=season?.weeks?.find(item=>item.matches.some(([, , ,homeScore,awayScore])=>homeScore===null||awayScore===null));return week?`<a class="home-event-card home-matchweek-card" href="/schedules?type=${division}" data-link><span class="season-chip season-chip-live">${division} · Season 2</span><h3>Matchweek ${week.week}</h3><p>${escapeHtml(week.date)} · ${week.matches.length} fixtures</p><small>Open official schedule →</small></a>`:'';}).join('');
+  const leagueCards=['6v6','10v10'].map(division=>{const season=leagueSeasonFor(division),week=defaultScheduleWeek(season?.weeks);return week?'<article class="home-event-card home-matchweek-card"><span class="season-chip season-chip-live">'+division+' · Season 2</span><h3>Matchday '+week.week+'</h3><p>'+escapeHtml(week.date)+' · '+week.matches.length+' fixtures</p><a href="/schedules?season=2&type='+division+'&matchday='+week.week+'" data-link>View fixtures →</a><p class="home-pickem-deadline">Pick’ems '+(week.scheduledAt*1000>Date.now()?'lock '+escapeHtml(week.date):'closed for this matchday')+'</p><a href="/pickems?division='+division+'&matchday='+week.week+'" data-link>Open '+division+' Pick’ems →</a></article>':'';}).join('');
+  root.innerHTML=leagueCards||'<p>Checking community events…</p>';
   try {
     const response=await fetch('/api/events?calendar=1'),data=await response.json();
     if(!response.ok) throw new Error();
@@ -1032,6 +1049,7 @@ async function hydrateAccount() {
   adminNav?.classList.toggle('active', window.location.pathname === '/admin');
   const accountRoot = document.querySelector('#account-root');
   if (accountRoot) {
+    if(window.UFLUX?.completeLoginReturn(state))return;
     if (!state.configured) accountRoot.innerHTML = `<h2>Discord login setup</h2><p>The secure login code is ready. Connect the Cloudflare database and Discord application secrets to activate registration.</p>`;
     else if (!state.authenticated) accountRoot.innerHTML = `<h2>Join with Discord</h2><p>We request only your Discord ID, username, display name, and avatar. We do not request your email or messages. If you enter Pick’ems, your display name and avatar may appear on the public leaderboard.</p><p class="privacy-note">By continuing, you acknowledge the <a href="/privacy" data-link>UFL privacy notice</a>.</p><a class="button discord-button" href="/api/auth/discord">Continue with Discord →</a>`;
     else accountRoot.innerHTML = `${userCard(state.user)}<div class="button-row">${['owner','admin'].includes(state.user.role)?'<a class="button button-primary" href="/admin" data-link>Open admin clubhouse →</a>':''}<button class="button button-secondary" id="logout-button" type="button">Sign out</button></div>`;
@@ -1182,6 +1200,7 @@ function render() {
     path = '/wheel/aggregate-byot';
   }
   const params = new URLSearchParams(window.location.search);
+  document.body.classList.toggle('matchday-route',path==='/schedules'&&['6v6','10v10'].includes(params.get('type')));
   document.body.classList.toggle('aggregate-embed', path === '/wheel/aggregate-byot' && params.get('embed') === '1');
   const main = document.querySelector('main');
   const canonicalPath = path === '/' ? '/' : path;
@@ -1243,6 +1262,7 @@ function render() {
   hydrateUsersDirectory();
   hydrateHomeCalendar();
   window.scrollTo({ ...scrollPosition, behavior: 'instant' });
+  window.UFLUX?.afterRender(main);
 }
 
 function randomLocation() { return locations[Math.floor(Math.random() * locations.length)]; }

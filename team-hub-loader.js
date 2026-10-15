@@ -1,5 +1,5 @@
 // Keep module failures visible instead of leaving the dressing room loading forever.
-import('/team-hub.js?v=20261013-recovery2').catch(()=>{
+import('/team-hub.js?v=20261015-ux1').catch(()=>{
  const root=document.querySelector('#team-hub-root');
  const message=document.querySelector('#hub-message');
  if(message)message.textContent='The tactical editor could not load. Your saved playbook has not been changed.';

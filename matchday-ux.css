@@ -1,0 +1,57 @@
+/* Practical matchday UI; uses the existing UNC theme tokens. */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+main h1[tabindex="-1"]:focus{outline:none}
+.matchday-controls{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) auto;gap:16px;align-items:end;margin:24px 0 16px;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.matchday-controls label{display:grid;gap:8px;font-size:.9rem;font-weight:700}
+.matchday-controls select{width:100%;min-width:0;min-height:46px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);font:inherit}
+.matchday-controls .button{min-height:46px}
+.matchday-paging{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:0 0 24px}
+.matchday-paging>a{min-height:44px;display:inline-flex;align-items:center}
+.schedule-mobile-matches{display:none}
+.mobile-fixture{padding:16px;border-top:1px solid var(--line)}
+.mobile-fixture header{display:flex;justify-content:space-between;gap:12px;align-items:start;font-size:.8rem;color:var(--muted)}
+.mobile-fixture header span{max-width:70%;text-align:right}
+.mobile-fixture-clubs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;margin:18px 0}
+.mobile-fixture-clubs>div{display:grid;gap:6px;min-width:0}
+.mobile-fixture-clubs>div:last-child{text-align:right}
+.mobile-fixture-clubs small{text-transform:uppercase;color:var(--muted);font-size:.7rem}
+.mobile-fixture a{overflow-wrap:anywhere}
+.mobile-fixture-clubs a{font-weight:700;line-height:1.4}
+.mobile-fixture>.result-link{display:flex;align-items:center;min-height:44px;font-size:.85rem}
+.matchday-empty{padding:20px}
+.home-quick-links{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.home-quick-links a{display:inline-flex;align-items:center;min-height:44px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;text-decoration:none;font-weight:600}
+.home-quick-links a:hover,.home-quick-links a:focus-visible{border-color:var(--red)}
+.home-matchweek-card a{display:inline-flex;align-items:center;min-height:44px;font-weight:700}
+.home-pickem-deadline{font-size:.85rem!important;margin:12px 0 0!important}
+body[data-standalone-navigation] .team-suite{width:100%;padding-top:24px}
+body[data-standalone-navigation] .site-header a{color:inherit}
+body[data-standalone-navigation] .site-header .brand strong{color:var(--red)}
+body[data-standalone-navigation] .site-header .brand img{width:52px;height:58px}
+:where(.matchday-controls select,.matchday-controls button,.home-quick-links a):focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+@media(max-width:700px){
+ body.matchday-route .page-hero{min-height:0;padding:28px 16px}
+ body.matchday-route .page-hero h1{font-size:clamp(2rem,8vw,2.8rem);line-height:1.05}
+ body.matchday-route .page-hero p{font-size:.9rem}
+ .matchday-page.section{padding:20px 12px}
+ .matchday-page .league-tab-stack{gap:8px;margin-bottom:12px}
+ .matchday-page .league-season-tabs{display:flex;gap:8px}
+ .matchday-page .league-season-tab{flex:1;padding:10px;min-height:44px}
+ .matchday-page .schedule-tabs{display:flex;gap:6px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:8px}
+ .matchday-page .schedule-tabs .tab{flex:0 0 auto;min-width:70px;min-height:44px;padding:10px}
+ .matchday-page .sync-note{font-size:.8rem;line-height:1.5}
+ .matchday-controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;padding:12px;margin:16px 0}
+ .matchday-controls .button{grid-column:1/-1;justify-content:center}
+ .matchday-controls label{font-size:.8rem}
+ .matchday-controls select{font-size:.85rem}
+ .matchday-paging{gap:8px;font-size:.8rem}
+ .matchday-paging>a:not(.button){order:3;width:100%;justify-content:center}
+ .schedule-desktop-table{display:none}
+ .schedule-mobile-matches{display:block}
+ .schedule-week-head{padding:16px}
+ .schedule-week-head h2{font-size:1.8rem}
+ .schedule-week-head p{font-size:.8rem;line-height:1.5}
+ .home-calendar.section{padding-top:32px;padding-bottom:32px}
+ .home-quick-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .home-quick-links a{font-size:.85rem;justify-content:center;text-align:center}
+}
