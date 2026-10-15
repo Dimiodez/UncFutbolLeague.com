@@ -827,7 +827,7 @@ async function hydrateUsersDirectory() {
     const response=await fetch('/api/users'),data=await response.json();
     if(!response.ok) throw new Error();
     if(!data.users.length) return void(root.innerHTML=emptyState('The clubhouse is quiet','No users have signed up yet.'));
-    root.innerHTML=data.users.map(user=>{const avatar=user.avatarUrl?`<img src="${escapeHtml(user.avatarUrl)}" alt="" loading="lazy">`:'<span class="user-directory-avatar">UFL</span>';const team=user.teamTitle&&user.teamName?`<span class="member-title-badge">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>`:'';return `<article class="user-directory-card">${avatar}<div><small>League nickname</small><h3>${escapeHtml(user.displayName)}</h3><div class="profile-chips"><span class="season-chip ${user.role==='owner'||user.role==='admin'?'season-chip-live':'season-chip-upcoming'}">${escapeHtml(user.role)}</span>${team}</div></div></article>`;}).join('');
+    root.innerHTML=data.users.map(user=>{const avatar=user.avatarUrl?`<img src="${escapeHtml(user.avatarUrl)}" alt="" loading="lazy">`:'<span class="user-directory-avatar">UFL</span>';const team=memberTitleBadges(user);return `<article class="user-directory-card">${avatar}<div><small>League nickname</small><h3>${escapeHtml(user.displayName)}</h3><div class="profile-chips"><span class="season-chip ${user.role==='owner'||user.role==='admin'?'season-chip-live':'season-chip-upcoming'}">${escapeHtml(user.role)}</span>${team}</div></div></article>`;}).join('');
   } catch { root.innerHTML=emptyState('Directory temporarily unavailable','The clubhouse roster could not be loaded. Please try again shortly.'); }
 }
 
@@ -951,25 +951,31 @@ async function getAuthState() {
 
 function userCard(user) {
   const avatar = user.avatarUrl ? `<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : '<span class="discord-avatar avatar-fallback">UFL</span>';
-  const teamTitle = user.teamTitle && user.teamName ? `<span class="season-chip member-team-title">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>` : '';
+  const teamTitle = memberTitleBadges(user,'season-chip member-team-title');
   return `<div class="account-profile">${avatar}<div><div class="profile-chips"><span class="season-chip season-chip-live">${escapeHtml(user.role)}</span>${teamTitle}</div><h2>${escapeHtml(user.displayName)}</h2><p>@${escapeHtml(user.username)}</p></div></div>`;
 }
 
-const assignableTeams = [...new Set([
-  ...Object.values(leagueSeasons['s2-6v6']?.teams || {}).map(team => team[0]),
-  ...Object.values(leagueSeasons['s2-10v10']?.teams || {}).map(team => team[0]),
-  'FC Sandy Bums', 'FC Mountains'
-])].sort((a,b) => a.localeCompare(b));
-
+let adminTitleTeams=[];
+function memberTeamTitlesFor(user){
+ return Array.isArray(user.teamTitles)&&user.teamTitles.length?user.teamTitles:user.teamTitle&&user.teamName?[{title:user.teamTitle,teamName:user.teamName,teamId:'legacy:'+user.teamName,division:''}]:[];
+}
+function memberTitleBadges(user,classes='member-title-badge'){
+ return memberTeamTitlesFor(user).map(t=>'<span class="'+classes+'">'+escapeHtml(t.title)+' · '+escapeHtml(t.teamName)+(t.division?' · '+escapeHtml(t.division==='house'?'House':t.division):'')+'</span>').join('');
+}
+function teamTitleRow(user,assignment={},index=0){
+ const label='assignment '+(index+1)+' for '+user.displayName;
+ const options=adminTitleTeams.map(team=>'<option value="'+escapeHtml(team.id)+'" '+(assignment.teamId===team.id?'selected':'')+'>'+escapeHtml((team.division==='house'?'House':team.division)+' · '+team.name)+'</option>').join('');
+ const legacy=assignment.teamId&&!adminTitleTeams.some(t=>t.id===assignment.teamId)?'<option value="'+escapeHtml(assignment.teamId)+'" selected>'+escapeHtml(assignment.teamName)+' · Existing assignment</option>':'';
+ return '<div class="member-title-row" data-title-row><label>Role<select data-title-kind aria-label="Role, '+escapeHtml(label)+'"><option value="">Choose role…</option><option value="captain" '+(assignment.title==='captain'?'selected':'')+'>Captain</option><option value="manager" '+(assignment.title==='manager'?'selected':'')+'>Manager</option></select></label><label>Team<select data-title-team aria-label="Team, '+escapeHtml(label)+'"><option value="">Choose team…</option>'+options+legacy+'</select></label><button type="button" class="tab" data-title-remove aria-label="Remove '+escapeHtml(label)+'">Remove</button></div>';
+}
 function teamTitleControls(user) {
-  const title = user.teamTitle || '';
-  const teams = assignableTeams.map(team => `<option value="${escapeHtml(team)}" ${user.teamName===team?'selected':''}>${escapeHtml(team)}</option>`).join('');
-  return `<div class="member-title-controls"><select data-title-kind="${escapeHtml(user.id)}" aria-label="Title for ${escapeHtml(user.displayName)}"><option value="" ${!title?'selected':''}>No team title</option><option value="captain" ${title==='captain'?'selected':''}>Captain</option><option value="manager" ${title==='manager'?'selected':''}>Manager</option></select><select data-title-team="${escapeHtml(user.id)}" aria-label="Team for ${escapeHtml(user.displayName)}"><option value="">Choose team…</option>${teams}</select><button class="tab" data-title-save="${escapeHtml(user.id)}">Save title</button></div>`;
+ const assignments=memberTeamTitlesFor(user);
+ return '<div class="member-title-controls" data-title-controls="'+escapeHtml(user.id)+'"><div class="member-title-rows" data-title-rows>'+assignments.map((assignment,index)=>teamTitleRow(user,assignment,index)).join('')+'</div><div class="member-title-actions"><button type="button" class="tab" data-title-add>+ Add team</button><button type="button" class="tab" data-title-save="'+escapeHtml(user.id)+'">Save titles</button></div><p data-title-status role="status" aria-live="polite"></p></div>';
 }
 
 function adminMemberRow(user, canManageRoles) {
   const avatar = user.avatarUrl ? `<img class="discord-avatar" src="${escapeHtml(user.avatarUrl)}" alt="">` : '<span class="discord-avatar avatar-fallback">UFL</span>';
-  const titleBadge = user.teamTitle && user.teamName ? `<span class="member-title-badge">${escapeHtml(user.teamTitle)} · ${escapeHtml(user.teamName)}</span>` : '';
+  const titleBadge = memberTitleBadges(user);
   const roleControl = canManageRoles && user.role !== 'owner'
     ? `<button class="tab" data-role-user="${escapeHtml(user.id)}" data-next-role="${user.role==='admin'?'member':'admin'}">${user.role==='admin'?'Remove admin':'Make admin'}</button>`
     : `<span class="owner-only-note">${user.role==='owner'?'Configured owner':'Owner controls admin access'}</span>`;
@@ -1071,13 +1077,14 @@ async function hydrateAccount() {
   ]);
   if (!membersResponse.ok) return void (adminRoot.innerHTML = '<h2>Unable to load the admin panel</h2><p>Please sign in again or try later.</p>');
   const data = await membersResponse.json();
+  adminTitleTeams=Array.isArray(data.teamTitleTeams)?data.teamTitleTeams:[];
   const events = eventsResponse.ok ? (await eventsResponse.json()).events : [];
   const messages = chatResponse.ok ? (await chatResponse.json()).messages : [];
   const audit = auditResponse.ok ? (await auditResponse.json()).entries : [];
   const eaClubs = await eaClubsResponse.json().catch(()=>({connection:'unavailable',channelId:'1520080337806299181',clubs:[]}));
   const adminParams=new URLSearchParams(window.location.search),requestedAdminTab=adminParams.get('tab'),allowedAdminTabs=new Set(['competitions','control-room','ea-matches','members','chat','audit']),activeAdminTab=allowedAdminTabs.has(requestedAdminTab)?requestedAdminTab:'competitions',selectedControlEvent=adminParams.get('event');
   const active=tab=>activeAdminTab===tab?' active':'';
-  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>League operations</h2><p class="admin-note">Manage competitions and staff titles here. Captain and Manager remain display titles only; only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="admin-tabs" role="tablist"><button class="tab${active('competitions')}" data-admin-tab="competitions">Competitions</button><button class="tab${active('control-room')}" data-admin-tab="control-room">Night Control Room</button><button class="tab${active('ea-matches')}" data-admin-tab="ea-matches">EA Match Center</button><button class="tab${active('members')}" data-admin-tab="members">Members (${data.users.length})</button><button class="tab${active('chat')}" data-admin-tab="chat">Staff chat</button><button class="tab${active('audit')}" data-admin-tab="audit">Audit history</button></div><section class="admin-panel${active('competitions')}" data-admin-panel="competitions"><div class="admin-section-heading"><div><h2>Competition manager</h2><p>Draft, publish, update status, duplicate, archive, or remove events and cups.</p></div><a class="button button-primary" href="/wheel" data-link>Create in Unc Wheel →</a></div><div class="admin-event-list">${events.length?events.map(adminCompetitionCard).join(''):'<p class="admin-empty">No saved competitions yet.</p>'}</div></section><section class="admin-panel${active('control-room')}" data-admin-panel="control-room" id="control-room-panel">${adminControlRoom(events,selectedControlEvent)}</section><section class="admin-panel${active('ea-matches')}" data-admin-panel="ea-matches">${adminEaMatchCenter(eaClubs)}</section><section class="admin-panel${active('members')}" data-admin-panel="members"><div class="member-list">${data.users.map(user => adminMemberRow(user,data.canManageRoles)).join('')}</div></section><section class="admin-panel${active('chat')}" data-admin-panel="chat"><div class="admin-section-heading"><div><h2>Staff chat</h2><p>Private to owners and administrators.</p></div><button class="tab" id="refresh-admin-chat">Refresh</button></div>${adminChat(messages)}</section><section class="admin-panel${active('audit')}" data-admin-panel="audit"><div class="admin-section-heading"><div><h2>Audit history</h2><p>The latest protected administrative actions.</p></div></div>${adminAudit(audit)}</section>`;
+  adminRoot.innerHTML = `<div class="admin-heading"><div><p class="eyebrow">Admin control panel</p><h2>League operations</h2><p class="admin-note">Manage competitions and staff titles here. Members can hold Captain or Manager titles for multiple teams. Titles do not grant private Team Hub access; use Team hub access to assign those permissions. Only the Owner can appoint administrators.</p></div><span class="season-chip season-chip-live">${escapeHtml(state.user.role)}</span></div><div class="admin-tabs" role="tablist"><button class="tab${active('competitions')}" data-admin-tab="competitions">Competitions</button><button class="tab${active('control-room')}" data-admin-tab="control-room">Night Control Room</button><button class="tab${active('ea-matches')}" data-admin-tab="ea-matches">EA Match Center</button><button class="tab${active('members')}" data-admin-tab="members">Members (${data.users.length})</button><button class="tab${active('chat')}" data-admin-tab="chat">Staff chat</button><button class="tab${active('audit')}" data-admin-tab="audit">Audit history</button></div><section class="admin-panel${active('competitions')}" data-admin-panel="competitions"><div class="admin-section-heading"><div><h2>Competition manager</h2><p>Draft, publish, update status, duplicate, archive, or remove events and cups.</p></div><a class="button button-primary" href="/wheel" data-link>Create in Unc Wheel →</a></div><div class="admin-event-list">${events.length?events.map(adminCompetitionCard).join(''):'<p class="admin-empty">No saved competitions yet.</p>'}</div></section><section class="admin-panel${active('control-room')}" data-admin-panel="control-room" id="control-room-panel">${adminControlRoom(events,selectedControlEvent)}</section><section class="admin-panel${active('ea-matches')}" data-admin-panel="ea-matches">${adminEaMatchCenter(eaClubs)}</section><section class="admin-panel${active('members')}" data-admin-panel="members"><div class="member-list">${data.users.map(user => adminMemberRow(user,data.canManageRoles)).join('')}</div></section><section class="admin-panel${active('chat')}" data-admin-panel="chat"><div class="admin-section-heading"><div><h2>Staff chat</h2><p>Private to owners and administrators.</p></div><button class="tab" id="refresh-admin-chat">Refresh</button></div>${adminChat(messages)}</section><section class="admin-panel${active('audit')}" data-admin-panel="audit"><div class="admin-section-heading"><div><h2>Audit history</h2><p>The latest protected administrative actions.</p></div></div>${adminAudit(audit)}</section>`;
   allowedAdminTabs.add('players');
   adminRoot.querySelector('.admin-tabs').insertAdjacentHTML('beforeend',`<button class="tab${requestedAdminTab==='players'?' active':''}" data-admin-tab="players">Players & rosters</button>`);
   adminRoot.insertAdjacentHTML('beforeend',`<section class="admin-panel${requestedAdminTab==='players'?' active':''}" data-admin-panel="players" id="admin-players-root"></section>`);
@@ -1129,18 +1136,35 @@ async function hydrateAccount() {
     const update = await fetch('/api/admin/role', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId: button.dataset.roleUser, role: button.dataset.nextRole }) });
     if (update.ok) hydrateAccount(); else button.disabled = false;
   }));
-  document.querySelectorAll('[data-title-save]').forEach(button => button.addEventListener('click', async () => {
-    const discordId = button.dataset.titleSave;
-    const title = document.querySelector(`[data-title-kind="${discordId}"]`).value;
-    const teamName = document.querySelector(`[data-title-team="${discordId}"]`).value;
-    if (title && !teamName) return void window.alert('Choose a team before saving this title.');
-    button.disabled = true;
-    const update = await fetch('/api/admin/title', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ discordId, title, teamName }) });
-    if (update.ok) hydrateAccount(); else {
-      const result = await update.json().catch(() => ({}));
-      window.alert(result.error || 'Unable to update the team title.');
-      button.disabled = false;
+  document.querySelectorAll('[data-title-controls]').forEach(controls=>controls.addEventListener('click',event=>{
+    const remove=event.target.closest('[data-title-remove]');if(remove){remove.closest('[data-title-row]').remove();controls.querySelector('[data-title-status]').textContent='Unsaved changes. Save titles when ready.';return;}
+    if(!event.target.closest('[data-title-add]'))return;
+    const rows=controls.querySelector('[data-title-rows]'),count=rows.querySelectorAll('[data-title-row]').length;
+    if(count>=10){controls.querySelector('[data-title-status]').textContent='Up to 10 team assignments per member.';return;}
+    const user=data.users.find(u=>u.id===controls.dataset.titleControls);
+    rows.insertAdjacentHTML('beforeend',teamTitleRow(user,{},count));
+    rows.lastElementChild.querySelector('select').focus();
+    controls.querySelector('[data-title-status]').textContent='Choose a role and team, then save titles.';
+  }));
+  document.querySelectorAll('[data-title-save]').forEach(button=>button.addEventListener('click',async()=>{
+    const discordId=button.dataset.titleSave,controls=button.closest('[data-title-controls]'),status=controls.querySelector('[data-title-status]'),assignments=[];
+    for(const row of controls.querySelectorAll('[data-title-row]')){
+      const title=row.querySelector('[data-title-kind]').value,teamId=row.querySelector('[data-title-team]').value;
+      if(!title&&!teamId)continue;
+      if(!title||!teamId){status.textContent='Choose both a role and team for every row.';return;}
+      assignments.push({title,teamId});
     }
+    if(new Set(assignments.map(t=>t.teamId)).size!==assignments.length){status.textContent='Choose each team only once.';return;}
+    button.disabled=true;status.textContent='Saving team titles…';
+    try{
+      const response=await fetch('/api/admin/title',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({discordId,assignments})});
+      const result=await response.json().catch(()=>({}));
+      if(!response.ok||!result.ok){status.textContent=result.error||'Unable to save team titles. Please try again.';return;}
+      await hydrateAccount();
+      const saved=document.querySelector('[data-title-controls="'+discordId+'"] [data-title-status]');
+      if(saved)saved.textContent='Team titles saved.';
+    }catch{status.textContent='Unable to reach the server. Your changes have not been confirmed saved.';}
+    finally{button.disabled=false;}
   }));
   const eventPayload = (card,event,overrides={}) => ({
     id:event.id,title:card.querySelector('[data-event-title]').value.trim(),

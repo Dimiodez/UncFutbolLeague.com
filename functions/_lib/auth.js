@@ -66,6 +66,7 @@ export function publicUser(user) {
     role: user.role,
     teamTitle: user.teamTitle || null,
     teamName: user.teamName || null,
+    teamTitles: user.teamTitles || [],
     createdAt: user.created_at
   } : null;
 }

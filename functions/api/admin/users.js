@@ -1,5 +1,5 @@
 import { getSession, json } from '../../_lib/auth.js';
-import { ensureMemberTitles } from '../../_lib/member-titles.js';
+import { ensureMemberTitles,memberTeamTitles,memberTitleTeams } from '../../_lib/member-titles.js';
 
 export async function onRequestGet({ request, env }) {
   const actor = await getSession(request, env);
@@ -10,5 +10,7 @@ export async function onRequestGet({ request, env }) {
     mt.title AS teamTitle, mt.team_name AS teamName
     FROM users u LEFT JOIN member_titles mt ON mt.discord_id = u.discord_id
     ORDER BY u.created_at DESC`).all();
-  return json({ users: result.results, canManageRoles: actor.role === 'owner' });
+  const titles=await memberTeamTitles(env);
+  const users=result.results.map(user=>({...user,teamTitles:titles.filter(t=>t.userId===user.id).map(({userId,...t})=>t)}));
+  return json({ users, teamTitleTeams:memberTitleTeams(), canManageRoles: actor.role === 'owner' });
 }
