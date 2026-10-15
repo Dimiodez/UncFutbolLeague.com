@@ -13,7 +13,7 @@ async function setup(){
  db.prepare("INSERT INTO users(discord_id,username,display_name) VALUES('qa','qa','QA')").run();
  db.prepare("INSERT INTO sessions(id_hash,discord_id,expires_at) VALUES(?,'qa','2099-01-01')").run(await sha256('test-session'));
  const season=JSON.parse(read('pickems-app/seasons/s2-10v10.json'));
- for(const day of season.weeks)day.scheduledAt=Math.floor(Date.now()/1000)+3600*day.week;
+ for(const day of season.weeks){day.scheduledAt=Math.floor(Date.now()/1000)+3600*day.week;for(const match of day.matches){match[3]=null;match[4]=null;match[5]=day.scheduledAt;}}
  const env={DB:{prepare(sql){return{params:[],bind(...params){this.params=params;return this;},async run(){return{meta:db.prepare(sql).run(...this.params)};},async all(){return{results:db.prepare(sql).all(...this.params)};},async first(){return db.prepare(sql).get(...this.params);}};},async batch(statements){db.exec('BEGIN');try{const rows=[];for(const s of statements)rows.push(await s.run());db.exec('COMMIT');return rows;}catch(e){db.exec('ROLLBACK');throw e;}}},ASSETS:{async fetch(){return Response.json(season);}}};
  return{db,env,season};
 }

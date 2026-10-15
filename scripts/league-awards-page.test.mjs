@@ -26,11 +26,11 @@ test('season view, unavailable historical division and malformed query are safe'
  const season=page(new URLSearchParams('season=1&award=tots'));assert.match(season,/Not announced yet/);assert.doesNotMatch(season,/10v10 · Season 1|aria-label="Award gameweek"/);
  const bad=page(new URLSearchParams('week=-1&season=<script>&award=garbage'));assert.match(bad,/Gameweek 1/);assert.doesNotMatch(bad,/<script>/);
 });
-test('Coaching moved to Utility and awards replace its League menu position',()=>{
+test('Coaching remains in Utility and is cross-linked from League alongside awards',()=>{
  const html=fs.readFileSync(new URL('index.html',root),'utf8');
  const utility=html.split('data-nav-hub="utility"')[1].split('data-nav-hub="fun"')[0];
  const league=html.split('data-nav-hub="league"')[1].split('nav-actions')[0];
- assert.match(utility,/href="\/coaching"/);assert.doesNotMatch(league,/href="\/coaching"/);assert.match(league,/href="\/totw"/);
+ assert.match(utility,/href="\/coaching"/);assert.match(league,/href="\/coaching"/);assert.match(league,/href="\/totw"/);
 });
 test('VA source links are exact division and UFL season mappings, not fabricated per-week or TOTS URLs',()=>{
  const html=page(new URLSearchParams('season=2&week=2'));
