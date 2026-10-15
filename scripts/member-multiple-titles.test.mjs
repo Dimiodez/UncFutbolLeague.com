@@ -77,3 +77,12 @@ test('selector distinguishes divisions, supports repeatable rows and retains leg
  assert.equal((html.match(/data-title-remove/g)||[]).length,2);
  const badges=vm.runInContext('memberTitleBadges(user)',context);assert.match(badges,/6v6/);assert.match(badges,/10v10/);
 });
+
+test('title selector retains every currently published league team plus both house teams',()=>{
+ const options=memberTitleTeams();
+ for(const division of ['6v6','10v10']){
+  const season=JSON.parse(read('pickems-app/seasons/s2-'+division+'.json'));
+  for(const [name] of Object.values(season.teams))assert.ok(options.some(t=>t.division===division&&t.name===name),division+': '+name);
+ }
+ assert.equal(options.filter(t=>t.division==='house').length,2);
+});

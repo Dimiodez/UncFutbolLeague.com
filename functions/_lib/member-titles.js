@@ -1,6 +1,7 @@
 import { ROSTER_CLUBS } from './roster-clubs.js';
 export function memberTitleTeams(){
  return [...Object.entries(ROSTER_CLUBS).flatMap(([division,teams])=>teams.map(t=>({id:division+':'+t.key,name:t.name,division}))),
+ {id:'10v10:NSH',name:'UFL Night Shift',division:'10v10'},
  {id:'house:fc-sandy-bums',name:'FC Sandy Bums',division:'house'},{id:'house:fc-mountains',name:'FC Mountains',division:'house'}];
 }
 export async function ensureMemberTitles(env) {
