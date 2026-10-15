@@ -3,7 +3,7 @@ import {EA_TRIAL_ID,eaTrialSettings} from './league-ea-trial.js?v=20261014-trial
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261014-trial1';
+import {renderLeaguePage} from './league-page.js?v=20261014-trial2';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
