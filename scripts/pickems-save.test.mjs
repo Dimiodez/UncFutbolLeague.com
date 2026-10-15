@@ -28,7 +28,7 @@ test('network failure and invalid ballot show actionable feedback, retaining sel
  c.selected.pop();await c.save();assert.match(c.elements.get('#save-status').textContent,/all 2 matches/);
 });
 test('in-flight save cannot attach a ballot to another matchday',async()=>{
- let finish;const c=context(()=>new Promise(resolve=>finish=resolve));const saving=c.save();c.state.simpleWeek=2;finish(Response.json({ok:true}));await saving();
+ let finish;const c=context(()=>new Promise(resolve=>finish=resolve));const saving=c.save();c.state.simpleWeek=2;finish(Response.json({ok:true}));await saving;
  assert.equal(c.ballots.has('s2-6v6:1'),true);assert.equal(c.ballots.has('s2-6v6:2'),false);
 });
 test('login draft capture iterates over every selected button',()=>{
