@@ -71,7 +71,7 @@ function readDraft(week){
  return {picks,tiebreaker};}catch{return null;}
 }
 function rememberDraft(){
- const picks={};$$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ const picks={};$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
  try{sessionStorage.setItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek),JSON.stringify({picks,tiebreaker:$('#tiebreaker').value,at:Date.now()}));}catch{}
 }
 function loginDestination(){return '/account?returnTo='+encodeURIComponent('/pickems?'+new URLSearchParams({season:state.selectedSeason,division:state.selectedDivision,matchday:state.simpleWeek}));}
