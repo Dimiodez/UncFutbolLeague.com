@@ -49,13 +49,13 @@ function leagueDivisionTabs(path, selectedSeason, active, includeHouse = false) 
 }
 
 const divisions = {
-  '6v6': { title: '6v6 Teams', intro: 'Fast, technical, and just chaotic enough. Meet the squads competing in the six-a-side division.' },
+  '6v6': { title: '6v6 Teams', intro: 'Fast, technical, and just chaotic enough. Meet the squads playing standard Clubs with six human outfield players and AI filling the remaining positions.' },
   '10v10': { title: '10v10 Teams', intro: 'Full-pitch tactics, organized squads, and ninety virtual minutes to settle it.' },
   house: { title: 'House Teams', intro: 'The home of drop-ins, community nights, and players looking for their next squad.' }
 };
 
 const scheduleTypes = {
-  '6v6': ['6v6 League Schedule','Six-a-side fixtures and matchweek results.'],
+  '6v6': ['6v6 League Schedule','Standard Clubs with six human outfield players, AI teammates, and an AI goalkeeper.'],
   '10v10': ['10v10 League Schedule','Full-squad fixtures and matchweek results.'],
   events: ['Community Events Schedule','Community nights, special events, and one-off competitions.'],
   'league-cup': ['League Cup Schedule','The knockout road to silverware.'],
@@ -208,10 +208,10 @@ async function hydrateHouseClub(slug,month='all',fresh=false){
 }
 
 function homePage() {
-  return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Join the league →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
+  return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Request an invite →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
   <section class="section home-calendar" id="home-calendar" aria-labelledby="home-calendar-title"><span class="section-kicker">Matchday essentials</span><h2 id="home-calendar-title">This week in UFL</h2><nav class="home-quick-links" aria-label="Matchday shortcuts"><a href="/schedules?season=2&type=6v6" data-link>6v6 fixtures</a><a href="/schedules?season=2&type=10v10" data-link>10v10 fixtures</a><a href="/pickems" data-link>Make your picks</a><a href="/clubs" data-link>Find your team</a><a href="/standings" data-link>Standings</a></nav><div class="home-calendar-grid"><p role="status">Checking the schedule…</p></div></section>
   ${featuredClubSection()}
-  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>6v6 League</h3><p>Registration is underway. Teams, standings, and fixtures update from Virtual Arena as they are published.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>10v10 League</h3><p>The full tactical experience is now part of UFL Season 2, with clubs and fixtures arriving soon.</p><a href="/teams?division=10v10" data-link>Open 10v10 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
+  <section class="section"><span class="section-kicker">Choose your football</span><h2>One community.<br>Plenty of ways to play.</h2><p class="section-intro">Build a club, find a house team, chase the table, or show up for cup night. UFL makes organized EA FC competition feel like the best night in the group chat.</p><div class="cards"><article class="card"><span class="num">06</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>6v6 League</h3><p>Follow the registered clubs, official fixtures and results for UFL Season 2.</p><a href="/teams?division=6v6" data-link>Meet the teams →</a></article><article class="card"><span class="num">10</span><div class="status-row"><span class="season-chip season-chip-live">FC27 · UFL Season 2</span></div><h3>10v10 League</h3><p>UFL Season 2 is underway: explore the 10v10 clubs, official schedule and published results.</p><a href="/teams?division=10v10" data-link>Open 10v10 →</a></article><article class="card"><span class="num">HC</span><h3>House Teams</h3><p>From the beach to the mountains, find your house: FC Sandy Bums or FC Mountains.</p><a href="/teams?division=house" data-link>Find your house →</a></article></div></section>
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
   <section class="dark-section"><div class="section feature-grid"><div><span class="section-kicker">Built for the group chat</span><h2>Serious matches.<br>Unserious people.</h2><p class="section-intro">Fixtures, tables, rules, predictions, and the legendary Unc Wheel—all under one crest. Competitive enough to matter. Relaxed enough to come back next week.</p><div class="stat-row"><div class="stat"><strong>6v6</strong><span>Quick & technical</span></div><div class="stat"><strong>10v10</strong><span>Full-club football</span></div><div class="stat"><strong>∞</strong><span>Post-match excuses</span></div></div></div><div class="crest-stage"><img src="/assets/ufl-animated.webp" alt="Animated UNC Futbol League crest" decoding="async"></div></div></section>`;
 }
@@ -243,6 +243,7 @@ function leaguePage() {
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
       {mark:'XI',title:'TOTW / TOTS',copy:'Celebrate the official 6v6 and 10v10 selections, grouped by gameweek and season.',href:'/totw',label:'See the selections'},
+      {mark:'C',title:'Coaching',copy:'Formation guides and practical tips from the people you play with.',href:'/coaching',label:'Read the playbook'},
       {mark:'ST',title:'Stats',copy:'Goals, assists, G+A, tackles, shutouts and the MVP race. Updated from official Virtual Arena results.',href:'/stats',label:'Explore the numbers'},
       {mark:'S',title:'Schedules',copy:'Find league matchweeks, cups, BYOT tournaments, community events and published results.',href:'/schedules',label:'View fixtures'},
       {mark:'#',title:'Standings',copy:'Track the official 6v6 and 10v10 tables or revisit a completed season.',href:'/standings?season=2&division=6v6',label:'Open tables'}
@@ -899,11 +900,11 @@ function funcPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20260929-season-navigation1" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20261015-ux1&amp;division=${new URLSearchParams(location.search).get('division')==='10v10'?'10v10':'6v6'}&amp;season=${new URLSearchParams(location.search).get('season')==='1'?'1':'2'}&amp;matchday=${encodeURIComponent(new URLSearchParams(location.search).get('matchday')||'')}" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
 }
 
 function contactPage() {
-  return pageHero('Get in the game','Contact & Discord','UFL lives online. The Discord is our clubhouse, match lobby, transfer desk, and questionable pundit studio.') + `<section class="section contact-grid"><div class="contact-panel"><span class="section-kicker">The clubhouse</span><h2>JOIN THE DISCORD</h2><p>Find a team, register for competition, report results, and meet the Uncs.</p><div class="discord-invite-contact"><span>For a Discord invite, message</span><div><strong>Dimio11</strong><i>or</i><strong>luuuiiisss7</strong></div><small>Invites are subject to approval while the community grows.</small></div><span class="button button-primary" aria-disabled="true">Permanent invite link coming soon</span><div class="vibes-note"><span>Community standard</span><strong>Vibes come first.</strong><p>Competitive football is the point, but good people and a welcoming clubhouse are the priority as UFL grows.</p></div></div><div class="card"><span class="num">?</span><h3>Need league help?</h3><p>Message <strong>Dimio11</strong> or <strong>luuuiiisss7</strong> on Discord for invite approval, league questions, or support.</p><p><strong>League location:</strong><br><span id="contact-location">Wherever the Wi-Fi reaches.</span></p><button class="tab" id="contact-reroll">Relocate Unc</button></div></section>`;
+ return pageHero('Get in the game','Request a Discord invite','UFL lives online. Discord is our clubhouse, match lobby, transfer desk, and questionable pundit studio.')+'<section class="section contact-grid"><div class="contact-panel"><span class="section-kicker">The clubhouse</span><h2>Come meet the Uncs</h2><p>Want to play, bring a club, or try a house pickup? Request an invite from league staff. Invites are reviewed while the community grows.</p><ol class="invite-steps"><li>Open Discord. If you do not share a server with us, go to <strong>Friends → Add Friend</strong>.</li><li>Copy one of the usernames below and send a friend request.</li><li>Once you can message them, introduce yourself: your EA name, platform, preferred format (6v6, 10v10 or house pickup), and usual availability.</li></ol><div class="invite-contacts"><div><strong>@dimio11</strong><button type="button" class="button button-secondary" data-copy-discord="dimio11">Copy dimio11</button></div><div><strong>@luuuiiisss7</strong><button type="button" class="button button-secondary" data-copy-discord="luuuiiisss7">Copy luuuiiisss7</button></div></div><p id="invite-copy-status" role="status" aria-live="polite"></p><p class="sync-note">A request is not an automatic registration. Staff will help you with the next step.</p><div class="vibes-note"><span>Community standard</span><strong>Vibes come first.</strong><p>Competitive football is the point, but good people and a welcoming clubhouse are the priority as UFL grows.</p></div></div><div class="card"><span class="num">?</span><h3>Already a member?</h3><p>Use the same contacts for league help or to check a missing team-hub link.</p><a class="button button-secondary" href="/account" data-link>Open your account</a><p><strong>League location:</strong><br><span id="contact-location">Wherever the Wi-Fi reaches.</span></p><button class="tab" id="contact-reroll">Relocate Unc</button></div></section>';
 }
 
 function privacyPage() {
@@ -914,7 +915,7 @@ function privacyPage() {
 }
 
 function accountPage() {
-  return pageHero('Member access','Discord account','Sign in with Discord to create your UFL member profile and prepare for account-based Pick’ems.') +
+  return pageHero('Member access','Discord account','Sign in with Discord to save your Pick’ems, access your team hub, and share coaching guides.') +
     `<section class="section auth-section"><div class="auth-card" id="account-root"><p>Checking your UFL session…</p></div></section>`;
 }
 
@@ -1274,6 +1275,11 @@ function setLocation() {
   if (contact) contact.textContent = `Currently ${location}.`;
 }
 function bindDynamicActions() {
+  document.querySelectorAll('[data-copy-discord]').forEach(button=>button.addEventListener('click',async()=>{
+    const status=document.querySelector('#invite-copy-status'),name=button.dataset.copyDiscord;
+    try{await navigator.clipboard.writeText(name);status.textContent='Copied '+name+'. Paste it into Discord → Friends → Add Friend.';}
+    catch{status.textContent='Could not copy automatically. Select and copy this username: '+name;}
+  }));
   document.querySelector('#aggregate-reset')?.addEventListener('click',()=>{aggregateByotState=makeDefaultAggregateByotState();render();});
   document.querySelectorAll('[data-aggregate-team]').forEach(input=>input.addEventListener('input',()=>{renameAggregateTeam(Number(input.dataset.aggregateTeam),input.value);renderAggregateByotBoard();}));
   document.querySelectorAll('[data-aggregate-player]').forEach(input=>input.addEventListener('input',()=>{const [teamIndex,playerIndex]=input.dataset.aggregatePlayer.split(':').map(Number);aggregateByotState.rosters[teamIndex][playerIndex]=input.value;}));
@@ -1322,7 +1328,7 @@ document.querySelector('.menu-button').addEventListener('click', event => {
 document.querySelectorAll('.nav-group').forEach(group => {
   const button = group.querySelector(':scope > button');
   button.addEventListener('click', () => {
-    document.querySelectorAll('.nav-group.open').forEach(other => { if (other !== group) other.classList.remove('open'); });
+    document.querySelectorAll('.nav-group.open').forEach(other => { if (other !== group) {other.classList.remove('open');other.querySelector(':scope > button')?.setAttribute('aria-expanded','false');} });
     const open = group.classList.toggle('open');
     button.setAttribute('aria-expanded', open);
   });

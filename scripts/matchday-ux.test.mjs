@@ -47,3 +47,27 @@ test('priority UX resources are published and preserve security boundaries',()=>
  assert.match(read('functions/api/auth/discord.js'),/verifyTurnstile/);
  assert.match(read('functions/api/auth/callback.js'),/verifyLoginState/);
 });
+
+test('Pick’ems has a compact matchday selector and visible deadline and progress near the ballot',()=>{
+ const app=read('pickems-app/app.js'),html=read('pickems-app/index.html');
+ assert.match(app,/id="pickem-matchday"/);assert.match(app,/Date\.now\(\)>=week\.scheduledAt/);
+ assert.ok(html.indexOf('id="ballot-deadline"')<html.indexOf('id="simple-fixtures"'));
+ assert.ok(html.indexOf('id="progress-top"')<html.indexOf('id="simple-fixtures"'));
+ assert.match(app,/rememberDraft\(\);window\.top\.location\.assign\(loginDestination\(\)\)/);
+});
+test('only bounded, current match predictions survive the login handoff',()=>{
+ const source=read('pickems-app/app.js'),start=source.indexOf('function readDraft('),end=source.indexOf('function showToast(',start),values=new Map();
+ const context=vm.createContext({state:{competition:'s2-6v6'},Date,serverBallots:new Map(),fixturesForWeek:()=>[{id:'1'},{id:'2'}],sessionStorage:{getItem:k=>values.get(k)},URLSearchParams});
+ vm.runInContext("const ballotKey=(competition,week)=>competition+':'+week;\n"+source.slice(start,end),context);
+ values.set('ufl-pickem-draft:s2-6v6:1',JSON.stringify({at:Date.now(),picks:{1:'home',2:'bogus',99:'away'},tiebreaker:300}));
+ const draft=vm.runInContext('readDraft(1)',context);assert.equal(JSON.stringify(draft.picks),'{"1":"home"}');assert.equal(draft.tiebreaker,'');
+ values.set('ufl-pickem-draft:s2-6v6:1',JSON.stringify({at:Date.now()-86400001,picks:{1:'home'}}));
+ assert.equal(vm.runInContext('readDraft(1)',context),null);
+});
+test('invite approval and the UFL navigation identity are retained',()=>{
+ const app=read('app.js'),html=read('index.html');
+ assert.match(app,/Invites are reviewed/);assert.match(app,/data-copy-discord="dimio11"/);
+ assert.match(app,/six human outfield players/);assert.doesNotMatch(app,/fixtures arriving soon|prepare for account-based/);
+ for(const name of ['Utility','Fun','League'])assert.ok(html.includes('aria-label="'+name+'"'));
+ assert.equal((html.match(/href="\/coaching" data-link/g)||[]).length,2);
+});

@@ -57,3 +57,5 @@ body[data-standalone-navigation] .site-header .brand img{width:52px;height:58px}
 }
 
 @media(max-width:700px){body.matchday-route .page-hero>div{padding:0}.matchday-page .league-tab-stack{margin-top:0}.matchday-page .tabs{margin-top:0;margin-bottom:0}}
+
+.invite-steps{padding-left:24px;line-height:1.7}.invite-steps li{margin:12px 0}.invite-contacts{display:grid;gap:16px;margin:24px 0}.invite-contacts>div{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.invite-contacts button{min-height:44px}#invite-copy-status{min-height:1.5em}

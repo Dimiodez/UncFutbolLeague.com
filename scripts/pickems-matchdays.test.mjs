@@ -26,7 +26,7 @@ test('both rounds share a ballot and lock, while archived rows and picks remain 
  assert.equal(db.prepare("SELECT COUNT(*) n FROM pickem_matches WHERE competition_key='s2-10v10'").get().n,season.weeks.flatMap(w=>w.matches).length);
  assert.deepEqual(db.prepare("SELECT * FROM pickem_matches WHERE competition_key='s1-6v6'").all(),archive);
  const first=db.prepare("SELECT * FROM pickem_matches WHERE competition_key='s2-10v10' AND week=1").all();
- assert.equal(first.length,6);assert.equal(new Set(first.map(m=>m.scheduled_at)).size,1);
+ assert.equal(first.length,season.weeks[0].matches.length);assert.equal(new Set(first.map(m=>m.scheduled_at)).size,1);
  const ballot={competition:'s2-10v10',week:1,picks:Object.fromEntries(first.map(m=>[m.id,'home'])),tiebreaker:3};
  assert.equal((await onRequestPost({request:request(ballot),env})).status,200);
  assert.equal(db.prepare("SELECT COUNT(*) n FROM picks").get().n,first.length+1);

@@ -50,22 +50,37 @@ function fixturesForWeek(week) {
     url: `https://ufl.virtualarena.app/matches/${id}`
   }));
 }
-function weekTabs(target, selected, type) {
-  $(target).innerHTML = season.weeks.map(week => {
-    const complete = week.matches.every(match => match[3] !== null && match[4] !== null);
-    return `<button class="${week.week===selected?'active ':''}${complete?'complete':''}" data-${type}-week="${week.week}"><span>${complete?'✓':'OPEN'}</span>${week.rounds?'Matchday':'Week'} ${week.week}</button>`;
-  }).join('');
+function weekTabs(target,selected,type){
+ if(type==='simple'){
+  const index=season.weeks.findIndex(week=>week.week===selected);
+  const label=week=>{const complete=week.matches.every(m=>m[3]!==null&&m[4]!==null);return complete?'Final':Date.now()>=week.scheduledAt*1000?'Locked':'Open';};
+  $(target).innerHTML='<label class="matchday-picker">Choose matchday<select id="pickem-matchday">'+season.weeks.map(week=>'<option value="'+week.week+'" '+(week.week===selected?'selected':'')+'>'+(week.rounds?'Matchday':'Week')+' '+week.week+' · '+label(week)+' · '+escapeHtml(week.date)+'</option>').join('')+'</select></label><div class="pickem-week-actions"><button data-simple-week="'+(season.weeks[index-1]?.week||selected)+'" '+(index<=0?'disabled':'')+'>← Previous</button><button data-simple-week="'+(season.weeks[index+1]?.week||selected)+'" '+(index>=season.weeks.length-1?'disabled':'')+'>Next →</button></div>';
+  return;
+ }
+ $(target).innerHTML=season.weeks.map(week=>'<button data-'+type+'-week="'+week.week+'">'+week.week+'</button>').join('');
 }
 function formatKickoff(week) { return weekData(week)?.date || 'Date to be announced'; }
 function fixtureKickoff(week,fixture){return weekData(week)?.rounds?.find(round=>round.scheduledAt===fixture.kickoff)?.date||formatKickoff(week);}
 function byesForWeek(week){return (weekData(week)?.byes||[]).map(bye=>`${teamByKey[bye.team]?.name||bye.team} — BYE in round ${bye.round}`).join(' · ');}
 function clubUrl(team){return `/clubs/${encodeURIComponent(team.key)}?season=${state.selectedSeason}&division=${state.selectedDivision}`;}
 const ballotKey = (competition, week) => `${competition}:${Number(week)}`;
-function getBallot(week) { return serverBallots.get(ballotKey(state.competition, week)) || {}; }
+function readDraft(week){
+ try{const draft=JSON.parse(sessionStorage.getItem('ufl-pickem-draft:'+ballotKey(state.competition,week))||'null');if(!draft||Date.now()-draft.at<0||Date.now()-draft.at>86400000)return null;
+ const ids=new Set(fixturesForWeek(week).map(f=>f.id));const picks=Object.fromEntries(Object.entries(draft.picks||{}).filter(([id,choice])=>ids.has(id)&&['home','draw','away'].includes(choice)));
+ const tiebreaker=draft.tiebreaker!==''&&Number.isInteger(Number(draft.tiebreaker))&&Number(draft.tiebreaker)>=0&&Number(draft.tiebreaker)<=30?Number(draft.tiebreaker):'';
+ return {picks,tiebreaker};}catch{return null;}
+}
+function rememberDraft(){
+ const picks={};$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ try{sessionStorage.setItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek),JSON.stringify({picks,tiebreaker:$('#tiebreaker').value,at:Date.now()}));}catch{}
+}
+function loginDestination(){return '/account?returnTo='+encodeURIComponent('/pickems?'+new URLSearchParams({season:state.selectedSeason,division:state.selectedDivision,matchday:state.simpleWeek}));}
+function getBallot(week) { return readDraft(week)||serverBallots.get(ballotKey(state.competition, week))||{}; }
 function showToast(message) { const toast=$('#toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>toast.classList.remove('show'),2400); }
 
 function renderSimple() {
   const week=state.simpleWeek, data=weekData(week), fixtures=fixturesForWeek(week), complete=fixtures.every(f=>f.hs!==null&&f.as!==null), open=!complete&&Date.now()<data.scheduledAt*1000, saved=getBallot(week);
+  $('#ballot-deadline').textContent=complete?'Final results · voting is closed':open?'Your whole ballot locks '+formatKickoff(week):'Voting locked '+formatKickoff(week)+' · awaiting official results';
   weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`${data.rounds?'Matchday':'Gameweek'} ${week} · ${fixtures.length} match${fixtures.length===1?'':'es'}`;
   $('#simple-status').textContent=open?'Voting open':complete?'Final · voting closed':'Voting closed'; $('#simple-status').className=`status ${open?'open':'closed'}`;
   $('#live-badge').innerHTML=`<i></i> ${data.rounds?'MATCHDAY':'WEEK'} ${week} · ${open?'OPEN':complete?'FINAL':'LOCKED'}`;
@@ -81,10 +96,10 @@ function renderSimple() {
   const byeNote=byesForWeek(week);if(byeNote)$('#simple-fixtures').insertAdjacentHTML('beforeend',`<p class="pickem-byes">${escapeHtml(byeNote)}. No prediction needed.</p>`);
   const featured=fixtures.at(-1), finalTotal=complete?featured.hs+featured.as:null; $('#tb-question').textContent=`Total goals in ${featured.home.name} vs ${featured.away.name}?`; $('#tb-lock').textContent=complete?`Final total: ${finalTotal} · Your pick: ${saved.tiebreaker??'—'}`:`Entire matchday locks ${formatKickoff(week)}`;
   $('#tiebreaker').value=saved.tiebreaker??(complete?finalTotal:''); $('#tiebreaker').disabled=!open; $('#save-simple').disabled=!open; $('#save-simple').textContent=open?(authState.authenticated?'Save shared ballot':'Sign in to submit'):complete?`Week ${week} final`:`Week ${week} locked`;
-  $('#account-state').innerHTML=authState.authenticated?`Signed in as <strong>${escapeHtml(authState.user.displayName)}</strong> · picks are saved to your UFL account.`:`<a href="/account" target="_top">Sign in with Discord</a> to save picks across devices and appear on the shared leaderboard.`;
+  $('#account-state').innerHTML=authState.authenticated?`Signed in as <strong>${escapeHtml(authState.user.displayName)}</strong> · choose your picks, then save your ballot to sync them across devices.`:`<a href="${loginDestination()}" target="_top" data-pickem-signin>Sign in with Discord</a> to save picks across devices and appear on the shared leaderboard.`;
   updateProgress(); renderSimpleLeaders(); renderActivity(open);
 }
-function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
+function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-top').textContent=`${count}/${total} picks selected · save your ballot when ready`; $('[data-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.classList.contains('selected')))); $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
 function renderSimpleLeaders(){
   $('#simple-leader-title').textContent=`${competitions[state.competition].division} standings`;
   const source=$('#standings-source');if(source)source.href=season.standingsSource||season.seriesSource||'#';
@@ -126,6 +141,7 @@ function renderDetail(){
 function renderDetailLeaders(){ const season=state.detailPeriod==='season'; $('#detail-leader-title').textContent=season?'Season leaderboard':`Week ${state.detailWeek}`; $$('[data-detail-period]').forEach(b=>b.classList.toggle('active',b.dataset.detailPeriod===state.detailPeriod)); $('#detail-leaders').innerHTML=entries.slice(0,5).map((e,i)=>leaderRow(i,e[0],e[1],season?e[4]:Math.max(4,35-i*3),season?e[5]+7-i:e[5])).join(''); }
 
 document.addEventListener('click',async event=>{
+  if(event.target.closest('[data-pickem-signin]'))rememberDraft();
   const seasonButton=event.target.closest('[data-pickem-season]');if(seasonButton){selectCompetition(Number(seasonButton.dataset.pickemSeason),state.selectedDivision);await renderCompetition();return;}
   const divisionButton=event.target.closest('[data-pickem-division]');if(divisionButton){selectCompetition(state.selectedSeason,divisionButton.dataset.pickemDivision);await renderCompetition();return;}
   const mode=event.target.closest('[data-mode]'); if(mode){state.mode=mode.dataset.mode; $$('[data-mode]').forEach(b=>b.classList.toggle('active',b===mode)); $$('[data-pane]').forEach(p=>p.classList.toggle('active',p.dataset.pane===state.mode)); $('#subtitle').textContent=state.mode==='simple'?'Pick the winner or a draw across the scheduled matches.':'Call scores, scorers, assists, and your Double Down.'; window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);}
@@ -136,13 +152,14 @@ document.addEventListener('click',async event=>{
   const scope=event.target.closest('[data-leader-scope]');if(scope){state.simplePeriod=scope.dataset.leaderScope;await loadLeaderboard();}
   const dp=event.target.closest('[data-detail-period]'); if(dp){state.detailPeriod=dp.dataset.detailPeriod;renderDetailLeaders();}
   if(event.target.closest('#save-simple')){
-    if(!authState.authenticated){window.top.location.assign('/account');return;}
+    if(!authState.authenticated){rememberDraft();window.top.location.assign(loginDestination());return;}
     const picks={};$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
     if(Object.keys(picks).length<fixturesForWeek(state.simpleWeek).length)return showToast('Make every pick first.');
     if($('#tiebreaker').value==='')return showToast('Add your total-goals tiebreaker.');
     const response=await fetch('/api/pickems/ballot',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({competition:state.competition,week:state.simpleWeek,picks,tiebreaker:Number($('#tiebreaker').value)})});
     const result=await response.json().catch(()=>({error:'Unable to save ballot.'}));
     if(!response.ok)return showToast(result.error||'Unable to save ballot.');
+    try{sessionStorage.removeItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek));}catch{}
     serverBallots.set(ballotKey(state.competition,state.simpleWeek),{picks,tiebreaker:Number($('#tiebreaker').value)});showToast('Shared Pick’ems saved to your UFL account.');await loadLeaderboard();
   }
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
@@ -170,5 +187,14 @@ async function renderCompetition(){
   }
   window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
 }
-async function initialize(){await loadAuth();await renderCompetition();}
+document.addEventListener('change',async event=>{
+ if(event.target.id!=='pickem-matchday')return;
+ state.simpleWeek=Number(event.target.value);await loadBallot(state.simpleWeek);await loadLeaderboard();renderSimple();
+});
+async function initialize(){
+ const params=new URLSearchParams(location.search);
+ selectCompetition(params.get('season')==='1'?1:2,params.get('division')==='10v10'?'10v10':'6v6');
+ const week=Number(params.get('matchday'));if(season.weeks?.some(day=>day.week===week))state.simpleWeek=week;
+ await loadAuth();await renderCompetition();
+}
 initialize();
