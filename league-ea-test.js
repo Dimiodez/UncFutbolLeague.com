@@ -2,7 +2,7 @@ import {testClub,mergeTestMatches,testOpponents} from './league-ea-test-model.js
 const key='ufl-preview-ea-test-v1';
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 export function installEaTestLab(){
- const host=document.createElement('details');host.className='card ea-test-lab';host.open=true;
+ const host=document.createElement('details');host.className='card ea-test-lab';host.open=false;
  const style=document.createElement('link');style.rel='stylesheet';style.href='/league-ea-test.css?v=20261014-eatest1';document.head.append(style);
  const anchor=document.querySelector('#league-overview');anchor.before(host);
  let clubs=[],busy=false,timer,saveNote='Saved on this browser only';
@@ -11,6 +11,9 @@ export function installEaTestLab(){
  function render(){
   const open=host.open;
   host.innerHTML=`<summary>EA Clubs · independent match test</summary><p>Connect up to eight clubs for the upcoming test. This reads EA club games through the existing relay—not Virtual Arena. Nothing here changes official results.</p><form class="ea-test-add"><label>Test team name<input name="clubName" maxlength="80" required placeholder="Team name"></label><label>EA club ID<input name="clubId" inputmode="numeric" pattern="[0-9]{1,20}" required placeholder="Numeric club ID"></label><button ${busy?'disabled':''}>Add test team</button></form><div class="workshop-toolbar"><button type="button" data-check ${busy||!clubs.length?'disabled':''}>${busy?'Checking EA…':'Check all teams now'}</button><label>Auto-check while this page stays open<select data-interval><option value="0">Off</option><option value="5">Every 5 minutes</option><option value="15">Every 15 minutes</option></select></label><label><input type="checkbox" data-only> Only games between test teams</label><button type="button" data-export ${!clubs.length?'disabled':''}>Export test archive</button></div><p data-status role="status" aria-live="polite">${esc(saveNote)}</p><div class="ea-test-clubs"></div><p class="hub-help">Archive: up to 100 games per club on this browser. Auto-check stops when you close the page and may pause in background tabs. These games do not feed standings until matched to a scheduled fixture and accepted under Matches → Check EA candidates. Use the same club IDs in your draft teams. Extra time still needs confirmation.</p>`;
+  host.querySelector('summary').textContent='EA diagnostics · Raw match history (optional)';
+  host.querySelector('summary+p').textContent='Troubleshooting tool only. This archive and its timer are separate from automatic league tracking. Turning this timer off does not turn your league checker off.';
+  host.querySelector('.hub-help').textContent='Up to 100 raw games per club are stored in this browser. This diagnostic archive never updates standings or player stats. Manage club IDs and scheduled results inside your league. The automatic EA trial uses standard 3 / 1 / 0 scoring; other leagues retain their configured review rules.';
   host.open=open;host.querySelector('[data-interval]').value=String(interval);
   host.querySelector('[data-only]').checked=only;
   host.querySelector('form').onsubmit=e=>{e.preventDefault();try{if(clubs.length>=8)throw Error('This test supports up to eight teams.');const f=new FormData(e.target),c=testClub(f.get('clubName'),f.get('clubId'));if(clubs.some(x=>x.id===c.id))throw Error('That EA club is already in the test.');clubs.push({...c,matches:[]});save();render();}catch(err){status(err.message);}};

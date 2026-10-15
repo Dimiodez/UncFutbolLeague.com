@@ -7,13 +7,13 @@ import {renderLeaguePage} from './league-page.js?v=20261014-standard1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261014-standard1';
 import {importAutomaticTrial} from './league-ea-auto.js?v=20261014-standard1';
-import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
+import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261015-ux1';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
 import {watchUnsaved} from './league-workspace-status.js';
 import {installAccountDrafts} from './league-account-drafts.js';
-import {installEaTestLab} from './league-ea-test.js?v=20261014-eatest1';
-const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css';document.head.append(uxStyle);
+import {installEaTestLab} from './league-ea-test.js?v=20261015-ux1';
+const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css?v=20261015-ux1';document.head.append(uxStyle);
 installWorkshopBrand();
 installEaTestLab();
 const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
@@ -212,6 +212,7 @@ accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
   const backup=localStorage.getItem(KEY+'-before-account-open');if(!backup)throw Error('No browser backup from an account opening is available on this device yet.');
   const loaded=restoreDrafts(JSON.parse(backup));drafts=loaded;activeLeague=null;review.hidden=true;persistDrafts();renderDrafts();
  }});
+document.querySelector('.workspace-advanced').before(document.querySelector('.account-drafts'));
 async function checkFixture(index,id,button){
  const draft=drafts[index],fixture=draft.fixtures.find(game=>game.id===id);button.disabled=true;review.hidden=false;review.innerHTML='<h2>Checking scheduled matchup…</h2>';
  if(activeLeague!==null)pageHost.querySelector('[data-page-body]').append(review);
