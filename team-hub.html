@@ -10,9 +10,69 @@
 <link rel="stylesheet" href="/team-hub-live.css?v=20261013-recovery2">
 <link rel="stylesheet" href="/team-hub-sidebar.css?v=20261013-recovery2">
 <link rel="stylesheet" href="/team-hub-ux.css?v=20261013-recovery2">
-<script src="/team-hub-loader.js?v=20261013-recovery2" defer></script>
+<script src="/theme-init.js"></script>
+<link rel="stylesheet" href="/matchday-ux.css?v=20261015-ux1">
+<script src="/navigation-ux.js?v=20261015-ux1" defer></script>
+<script src="/team-hub-loader.js?v=20261015-ux1" defer></script>
 </head>
-<body>
-<header class="hub-site-header"><a href="/"><img src="/assets/ufl-mark.webp" width="48" height="48" alt=""><strong>UNC FUTBOL LEAGUE</strong></a><nav><a href="/clubs">Teams</a><a href="/team-hub">My team hubs</a><a href="/account">Account</a></nav></header>
-<main class="team-suite unc-workspace"><header><span class="hub-kicker">Private dressing room</span><h1>Team hub</h1><p>Your dressing room. Your game plan.</p><nav><a href="/team-hub">← My teams</a> · <a href="/team-hub-access">Team access settings (owner/admin)</a></nav></header><p id="hub-message" role="status" aria-live="polite"></p><div id="team-hub-root">Opening your private team hub…</div><noscript>JavaScript is required to open the tactical editor.</noscript></main>
+<body data-standalone-navigation="true">
+<a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="site-brands"><a class="brand" href="/" data-link aria-label="UNC Futbol League home">
+        <img src="/assets/ufl-mark.webp" width="48" height="48" alt="" />
+        <span><strong>UNC</strong> FUTBOL LEAGUE</span>
+      </a><span class="brand-divider" aria-hidden="true"></span><a class="ufb-brand" href="/ufb" data-link aria-label="Open UFB bot documentation"><img src="/assets/ufb-mark.svg" alt="" /><span>UFB</span></a></div>
+      <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menu</b></button>
+      <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+        <div class="nav-hubs" aria-label="UFL sections">
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="utility">
+            <a class="nav-group-link nav-hub-link" href="/utility" data-link aria-label="Utility"><strong>U</strong><span>tility</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Utility menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/utility" data-link><b>Utility hub</b><small>Tools for drafts, teams and game nights</small></a>
+              <a href="/wheel" data-link><b>Unc Wheel</b><small>Draft, randomize and decide</small></a>
+              <a href="/wheel/aggregate-byot" data-link><b>Aggregate BYOT</b><small>Build a four-team aggregate bracket</small></a>
+              <a href="/coaching" data-link><b>Coaching</b><small>Community guides · Share your playbook</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="fun">
+            <a class="nav-group-link nav-hub-link" href="/fun" data-link aria-label="Fun"><strong>F</strong><span>un</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Fun menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/fun" data-link><b>Fun hub</b><small>Cards, predictions and arcade games</small></a>
+              <a href="/func" data-link><b>FUNC Card Studio</b><small>Create your novelty player card</small></a>
+              <a href="/arcade" data-link><b>UFL Arcade</b><small>Play games and chase the boards</small></a>
+              <a href="/pickems" data-link><b>Pick’ems</b><small>Predict every matchweek</small></a>
+              <a href="/sound" data-link><b>Sound</b><small>Coming soon · The clubhouse soundtrack</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="league">
+            <a class="nav-group-link nav-hub-link" href="/league" data-link aria-label="League"><strong>L</strong><span>eague</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open League menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu nav-league-menu">
+              <a class="nav-menu-lead" href="/league" data-link><b>League hub</b><small>Everything official in one place</small></a>
+              <a href="/clubs?division=6v6" data-link><b>Clubs</b><small>Club identities and squads</small></a>
+              <a href="/players" data-link><b>Players</b><small>Meet the league’s lineup</small></a>
+              <a href="/schedules" data-link><b>Schedules</b><small>Fixtures, results and events</small></a>
+              <a href="/standings" data-link><b>Standings</b><small>Current and archived tables</small></a>
+              <a href="/stats" data-link><b>Stats</b><small>Goals, assists and award races</small></a>
+              <a href="/coaching" data-link><b>Coaching</b><small>Community guides and formation tips</small></a>
+              <a href="/totw" data-link><b>TOTW / TOTS</b><small>Gameweek and season selections</small></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <a href="/rules" data-link>Rules</a>
+          <a href="/users" data-link>Users</a>
+          <a href="/account" data-link id="account-nav">Account</a>
+          <div class="theme-switcher" role="group" aria-label="Choose site theme">
+            <button type="button" data-theme-choice="classic" title="Classic red, white, and blue"><i></i><span>Classic</span></button>
+            <button type="button" data-theme-choice="dark" title="Dark navy theme"><i></i><span>Dark</span></button>
+            <button type="button" data-theme-choice="vintage" title="Vintage beige theme"><i></i><span>Vintage</span></button>
+          </div>
+          <a class="nav-cta" href="/contact" data-link>Request invite</a>
+        </div>
+      </nav>
+    </header>
+<main id="main" tabindex="-1" class="team-suite unc-workspace"><header><span class="hub-kicker">Private dressing room</span><h1>Team hub</h1><p>Your dressing room. Your game plan.</p><nav><a href="/team-hub">← My teams</a> · <a href="/team-hub-access">Team access settings (owner/admin)</a></nav></header><p id="hub-message" role="status" aria-live="polite"></p><div id="team-hub-root">Opening your private team hub…</div><noscript>JavaScript is required to open the tactical editor.</noscript></main>
 </body></html>

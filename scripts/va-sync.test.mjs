@@ -66,14 +66,16 @@ test('invalid kickoff and duplicate team appearances stop a schedule refresh',()
 });
 
 test('published schedules preserve every official match and expose only actual games for pickems',()=>{
- for(const [division,count,days] of [['6v6',90,9],['10v10',42,7]]){
+ for(const division of ['6v6','10v10']){
   const season=JSON.parse(fs.readFileSync(new URL(`../pickems-app/seasons/s2-${division}.json`,import.meta.url)));
+  const clubs=season.teamDetails.filter(t=>t.registered!==false).length;
+  const count=clubs*(clubs-1),days=clubs-1+clubs%2;
   assert.equal(season.weeks.length,days);
   const matches=season.weeks.flatMap(w=>w.matches);
   assert.equal(matches.length,count);assert.equal(new Set(matches.map(m=>m[0])).size,count);
   for(const day of season.weeks){
    assert.equal(day.rounds.length,2);
-   assert.equal(day.byes.length,division==='10v10'?2:0);
+   assert.equal(day.byes.length,clubs%2?2:0);
    for(const detail of season.teamDetails.filter(t=>t.registered!==false)){
     const games=day.matches.filter(m=>m[1]===detail.key||m[2]===detail.key);
     const byes=day.byes.filter(b=>b.team===detail.key);

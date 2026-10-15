@@ -6,7 +6,7 @@ test('hub shell has essential styling and bounded logo before modules start',()=
  const html=read('team-hub.html');
  for(const file of ['team-hub-live.css','team-hub-sidebar.css','team-hub-ux.css','team-hub.css'])assert(html.includes('/'+file+'?v=20261013-recovery2'));
  assert(html.includes('width="48" height="48"'));
- assert(html.includes('/team-hub-loader.js?v=20261013-recovery2'));
+ assert(html.includes('/team-hub-loader.js?v=20261015-ux1'));
  assert(read('team-hub-loader.js').includes('.catch('));
  assert(read('team-hub-loader.js').includes('Retry loading team hub'));
 });

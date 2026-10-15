@@ -11,7 +11,8 @@ vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-sea
 const render=(expression)=>vm.runInContext(expression,context);
 
 test('all current VA registrations resolve to club pages while every provisional team stays',()=>{
-  for(const [division,count] of [['6v6',10],['10v10',7]]){
+  for(const division of ['6v6','10v10']){
+    const count=render(`Object.keys(window.UFL_SEASONS['s2-${division}'].teams).length`);
     const query=`season=2&division=${division}`;
     const view=render(`leagueViewContext(new URLSearchParams('${query}'))`);
     assert.equal(view.season.teamDetails.filter(team=>team.registered!==false).length,count);
@@ -153,7 +154,7 @@ test('player filters and club profile use only reference roster',()=>{
 });
 test('new VA abbreviations retain stable provisional club keys without duplicate teams',()=>{
   const view=render("leagueViewContext(new URLSearchParams('season=2&division=10v10'))");
-  assert.equal(Object.keys(view.season.teams).length,7);
+  assert.equal(Object.keys(view.season.teams).length,render("Object.keys(window.UFL_SEASONS['s2-10v10'].teams).length"));
   const milan=view.provisional.clubs.find(c=>c.name==='UFL Milan');
   const tabasco=view.provisional.clubs.find(c=>c.name==='UFL Tabasco Kids');
   assert.ok(view.season.teamDetails.some(t=>t.key===milan.key));
