@@ -99,7 +99,7 @@ function renderSimple() {
   $('#account-state').innerHTML=authState.authenticated?`Signed in as <strong>${escapeHtml(authState.user.displayName)}</strong> · choose your picks, then save your ballot to sync them across devices.`:`<a href="${loginDestination()}" target="_top" data-pickem-signin>Sign in with Discord</a> to save picks across devices and appear on the shared leaderboard.`;
   updateProgress(); renderSimpleLeaders(); renderActivity(open);
 }
-function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-top').textContent=`${count}/${total} picks selected · save your ballot when ready`; $('[data-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.classList.contains('selected')))); $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
+function updateProgress(){ const total=fixturesForWeek(state.simpleWeek).length, count=new Set($$('[data-choice].selected').map(b=>b.dataset.match)).size; $('#progress-label').textContent=`${count}/${total} picks made`; $('#progress-top').textContent=`${count}/${total} picks selected · save your ballot when ready`; $$('[data-choice]').forEach(button=>button.setAttribute('aria-pressed',String(button.classList.contains('selected')))); $('#progress-bar').style.width=`${total?count/total*100:0}%`; }
 function renderSimpleLeaders(){
   $('#simple-leader-title').textContent=`${competitions[state.competition].division} standings`;
   const source=$('#standings-source');if(source)source.href=season.standingsSource||season.seriesSource||'#';
