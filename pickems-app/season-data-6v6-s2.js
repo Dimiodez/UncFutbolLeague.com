@@ -106,7 +106,7 @@ window.UFL_SEASON_6V6_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
-      "rosterSize": 3,
+      "rosterSize": 5,
       "stats": []
     },
     {

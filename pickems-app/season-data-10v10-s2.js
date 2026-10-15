@@ -1234,6 +1234,19 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
+              "name": "Schweinslap",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1786509809.png",
+              "url": "https://ufl.virtualarena.app/users/Schweinslap"
+            },
+            "team": {
+              "name": "UFL Maykop",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+            },
+            "stat": "3",
+            "played": 2
+          },
+          {
+            "data": {
               "name": "Espahr",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/espahr-1784310995.png",
               "url": "https://ufl.virtualarena.app/users/Espahr"
@@ -1273,26 +1286,13 @@ window.UFL_SEASON_10V10_S2 = {
           },
           {
             "data": {
-              "name": "Schweinslap",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1786509809.png",
-              "url": "https://ufl.virtualarena.app/users/Schweinslap"
+              "name": "A_Poon",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/a-poon-1791606103.png",
+              "url": "https://ufl.virtualarena.app/users/A_Poon"
             },
             "team": {
-              "name": "UFL Maykop",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-            },
-            "stat": "2",
-            "played": 2
-          },
-          {
-            "data": {
-              "name": "Bradical",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bradical-1791992573.png",
-              "url": "https://ufl.virtualarena.app/users/Bradical"
-            },
-            "team": {
-              "name": "Palace",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
+              "name": "Real Madrid",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
             },
             "stat": "2",
             "played": 2
