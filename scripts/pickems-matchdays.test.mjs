@@ -23,26 +23,27 @@ test('both rounds share a ballot and lock, while archived rows and picks remain 
  db.prepare("INSERT INTO picks(discord_id,match_id,choice) VALUES('qa',77,'home')").run();
  const archive=db.prepare("SELECT * FROM pickem_matches WHERE competition_key='s1-6v6'").all();
  await syncPickemMatchesFromAsset(request({}),env,'s2-10v10');
- assert.equal(db.prepare("SELECT COUNT(*) n FROM pickem_matches WHERE competition_key='s2-10v10'").get().n,42);
+ assert.equal(db.prepare("SELECT COUNT(*) n FROM pickem_matches WHERE competition_key='s2-10v10'").get().n,season.weeks.flatMap(w=>w.matches).length);
  assert.deepEqual(db.prepare("SELECT * FROM pickem_matches WHERE competition_key='s1-6v6'").all(),archive);
  const first=db.prepare("SELECT * FROM pickem_matches WHERE competition_key='s2-10v10' AND week=1").all();
  assert.equal(first.length,6);assert.equal(new Set(first.map(m=>m.scheduled_at)).size,1);
  const ballot={competition:'s2-10v10',week:1,picks:Object.fromEntries(first.map(m=>[m.id,'home'])),tiebreaker:3};
  assert.equal((await onRequestPost({request:request(ballot),env})).status,200);
- assert.equal(db.prepare("SELECT COUNT(*) n FROM picks").get().n,7);
+ assert.equal(db.prepare("SELECT COUNT(*) n FROM picks").get().n,first.length+1);
  assert.equal((await onRequestPost({request:request({...ballot,picks:{...ballot.picks,999999:'home'}}),env})).status,400);
  // Round two cannot reopen the ballot after the first round starts.
  season.weeks[0].scheduledAt=Math.floor(Date.now()/1000)-1;
  assert.equal((await onRequestPost({request:request(ballot),env})).status,409);
  assert.equal(db.prepare("SELECT choice FROM picks WHERE match_id=77").get().choice,'home');
 });
-test('schedule team links use stable club identities and show two explicit BYEs',()=>{
+test('schedule team links use stable club identities and preserve current BYEs',()=>{
  const app=read('app.js'),context=vm.createContext({window:{},URLSearchParams,console});
  vm.runInContext(read('pickems-app/season-data.js'),context);
- vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+app.slice(app.indexOf('function schedulesPage('),app.indexOf('function communityEventsPage(')),context);
- const html=vm.runInContext("schedulesPage(new URLSearchParams('season=2&type=10v10'))",context);
+ vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+app.slice(app.indexOf('function defaultScheduleWeek('),app.indexOf('function communityEventsPage(')),context);
+ const html=vm.runInContext("schedulesPage(new URLSearchParams('season=2&type=10v10&matchday=all'))",context);
  assert.match(html,/clubs\/club-1790120967830\?season=2&division=10v10/);
- assert.equal((html.match(/No match this round/g)||[]).length,14);
+ const season=JSON.parse(read('pickems-app/seasons/s2-10v10.json'));
+ assert.equal((html.match(/No match this round/g)||[]).length,2*season.weeks.flatMap(w=>w.byes||[]).length);
  assert.match(html,/10:00 PM EDT/);assert.match(html,/10:30 PM EDT/);
  assert.match(html,/Matchday 7/);
 });

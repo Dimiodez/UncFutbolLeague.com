@@ -55,3 +55,5 @@ body[data-standalone-navigation] .site-header .brand img{width:52px;height:58px}
  .home-quick-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
  .home-quick-links a{font-size:.85rem;justify-content:center;text-align:center}
 }
+
+@media(max-width:700px){body.matchday-route .page-hero>div{padding:0}.matchday-page .league-tab-stack{margin-top:0}.matchday-page .tabs{margin-top:0;margin-bottom:0}}
