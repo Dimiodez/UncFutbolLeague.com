@@ -55,7 +55,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  else if(tab==='rules'&&content.items?.length||tab==='videos'&&(content.videos?.length||content.links?.length)){} // Collection cards below replace the empty state.
  else if(tab==='finals'&&content.format)note(content.format==='none'?'Finals are disabled for this league.':'Finals settings saved. Bracket generation and automatic qualification are not connected yet.');
  else if(tab==='awards'&&content.formation)note('Formation and eligibility settings saved. No lineup selected yet; candidate selection and award publishing are not connected.');
- else if(empty[tab]&&!(['stats','standings'].includes(tab)&&draft.acceptedResults?.length))note(empty[tab]);
+ else if(empty[tab]&&!(['stats','standings'].includes(tab)&&draft.acceptedResults?.length))note(settings.trialSchedule&&['stats','standings'].includes(tab)?'Waiting for accepted October 15 fixtures. Historical club games are excluded; these totals update after scheduled EA results are reviewed.':empty[tab]);
  if(tab==='overview'){
   if(!content.text)note('Your league page is ready before any teams register. Set the rules and calendar now; add teams later.');
   note(`First eligible matchnight: ${settings.startDate} · ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.weekday)]}${Number(settings.matchnightCount)===2?' & '+['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.secondWeekday)]:''} · ${settings.time} (${settings.timeZone}) · ${settings.matchnightCount||1} night(s) every ${settings.repeatWeeks||1} week(s).`);
@@ -94,6 +94,6 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   const rows=new Map();for(const p of acceptedAppearances(draft)){const key=JSON.stringify([p.teamId,p.playerId]);if(!rows.has(key))rows.set(key,{...p,apps:0,goals:0,assists:0,goalsKnown:true,assistsKnown:true,ratingSum:0,ratingCount:0});const r=rows.get(key);r.apps++;if(p.goals===null)r.goalsKnown=false;else r.goals+=p.goals;if(p.assists===null)r.assistsKnown=false;else r.assists+=p.assists;if(p.rating>0&&p.rating<=10&&!(p.rating===3&&(content.excludeDisconnectRatings??true))){r.ratingSum+=p.rating;r.ratingCount++;}}
   const table=document.createElement('table');table.innerHTML=`<caption>Accepted local fixture appearances only</caption><thead><tr><th>Player</th><th>Team</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Rating</th></tr></thead><tbody>${[...rows.values()].map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${p.apps}</td><td>${p.goalsKnown?p.goals:'Unavailable'}</td><td>${p.assistsKnown?p.assists:'Unavailable'}</td><td>${p.ratingCount?(p.ratingSum/p.ratingCount).toFixed(2):'Unavailable'}</td></tr>`).join('')}</tbody>`;body.append(table);
  }
- renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
+ if(!(settings.trialSchedule&&['stats','standings'].includes(tab)))renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
  if(tab==='rules')renderSectionTools({host,admin,body:admin,tab:'standings',settings,onSettings,onReport});
 }
