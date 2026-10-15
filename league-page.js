@@ -2,7 +2,7 @@ import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-mo
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
 import {renderAwardsWorkbench} from './league-awards.js';
 import {registrationAllowed} from './league-engine.js';
-import {acceptedAppearances,leagueStandings} from './league-results.js?v=20261014-auto1';
+import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261014-standard1';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
@@ -20,7 +20,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  const moved=[];sectionMoves.set(host,moved);
  const move=(node,target)=>{if(!node)return;moved.push([node,node.parentElement]);target.append(node);};
  const settings=draft.settings,content=settings.pageContent?.[tab]||{};
- if(settings.trialSchedule){const status=document.createElement('p');status.dataset.autoTrialStatus='';status.className='workshop-warning';status.textContent='Automatic EA trial checking enabled every 5 minutes while this workshop stays open. Unique scheduled games populate stats automatically; unknown regulation/extra-time points remain pending.';host.before(status);document.querySelectorAll('[data-auto-trial-status]').forEach((el,i)=>{if(i)el.remove();});}
+ if(settings.trialSchedule){const status=document.createElement('p');status.dataset.autoTrialStatus='';status.className='workshop-warning';status.textContent='Automatic EA trial checking enabled every 5 minutes while this workshop stays open. Scheduled results populate stats and standings automatically. Test scoring: win 3, draw 1, loss 0.';host.before(status);document.querySelectorAll('[data-auto-trial-status]').forEach((el,i)=>{if(i)el.remove();});}
  let awardController=null;
  const guard=action=>{
   if(!awardController?.hasUnsavedChanges()){action();return;}
@@ -88,9 +88,13 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   if(content.videos?.length||content.links?.length)note('Previous video links are preserved in your draft backup. Add team-linked streamers using Manage stream links.');
  }
  if(tab==='standings'){
-  const pending=(draft.acceptedResults||[]).filter(r=>r.finish==='pending');if(pending.length)note(`${pending.length} automatically imported result(s): played, scores and player stats included. Points and regulation/extra-time W/L are pending—not zero-point results. Final ranking is not yet established.`);
-  note(`Regular-time win/loss: ${content.win??3}/${content.loss??0} points · Extra-time win/loss: ${content.extraTimeWin??2}/${content.extraTimeLoss??1} · No draws. Accepted local test fixtures only.`);
+  const pending=(draft.acceptedResults||[]).filter(r=>r.finish==='pending');if(pending.length&&!standardTrial(draft))note(`${pending.length} result(s) awaiting finish classification.`);
+  note(standardTrial(draft)?'Test scoring: win 3 points · draw 1 point · loss 0 points. Regulation and extra time are treated alike. Scheduled EA fixtures only.':`Regular-time win/loss: ${content.win??3}/${content.loss??0} points · Extra-time win/loss: ${content.extraTimeWin??2}/${content.extraTimeLoss??1} · No draws. Accepted local test fixtures only.`);
   const table=document.createElement('table');table.innerHTML=`<caption>Local preview standings · ${(draft.acceptedResults||[]).length} accepted fixtures</caption><thead><tr><th>Team</th><th>P</th><th>W</th><th>ET W</th><th>ET L</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead><tbody>${leagueStandings(draft).map(t=>`<tr><td>${escape(t.name)}</td><td>${t.played}</td><td>${t.regularWins}</td><td>${t.extraWins}</td><td>${t.extraLosses}</td><td>${t.regularLosses}</td><td>${t.goalsFor}</td><td>${t.goalsAgainst}</td><td>${t.points}</td></tr>`).join('')}</tbody>`;body.append(table);
+ }
+ if(tab==='standings'&&standardTrial(draft)){
+  const rows=leagueStandings(draft),table=body.querySelector('table');
+  [...table.rows].forEach((row,index)=>{row.cells[3].textContent=index?String(rows[index-1].draws):'D';row.cells[4].remove();});
  }
  if(tab==='stats'){
   const rows=new Map();for(const p of acceptedAppearances(draft)){const key=JSON.stringify([p.teamId,p.playerId]);if(!rows.has(key))rows.set(key,{...p,apps:0,goals:0,assists:0,goalsKnown:true,assistsKnown:true,ratingSum:0,ratingCount:0});const r=rows.get(key);r.apps++;if(p.goals===null)r.goalsKnown=false;else r.goals+=p.goals;if(p.assists===null)r.assistsKnown=false;else r.assists+=p.assists;if(p.rating>0&&p.rating<=10&&!(p.rating===3&&(content.excludeDisconnectRatings??true))){r.ratingSum+=p.rating;r.ratingCount++;}}

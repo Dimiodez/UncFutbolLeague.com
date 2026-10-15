@@ -2,14 +2,16 @@ import {fixtureCandidates} from './league-engine.js';
 import {awardLeagueKey} from './league-awards-model.js';
 import {FOOTBALL_POSITIONS} from './fc27-formations.js';
 const score=value=>{if(value===null||value===undefined||value==='')throw Error('EA did not provide both scores. Do not guess a result.');const n=Number(value);if(!Number.isInteger(n)||n<0||n>100)throw Error('Invalid EA score.');return n;};
+export const standardTrial=draft=>!!draft.settings.trialSchedule&&draft.settings.scoringMode!=='noDraws';
 export function acceptFixtureResult(draft,fixtureId,game,finish){
  const fixture=draft.fixtures.find(f=>f.id===fixtureId),results=draft.acceptedResults||[];
  if(!fixture||results.some(r=>r.fixtureId===fixtureId))throw Error('Fixture is missing or already accepted.');
- if(!['regular','extraTime'].includes(finish)&&!(finish==='pending'&&draft.settings.trialSchedule))throw Error('Confirm whether the game ended in regular time or extra time.');
+ if(standardTrial(draft))finish='standard';
+ if(!['regular','extraTime'].includes(finish)&&!(draft.settings.trialSchedule&&['pending','standard'].includes(finish)))throw Error('Confirm whether the game ended in regular time or extra time.');
  const candidates=fixtureCandidates(fixture,[game],{timeZone:draft.settings.timeZone,acceptedMatchIds:results.map(r=>r.matchId)});
  if(candidates.candidates.length!==1)throw Error('This EA game does not match the scheduled clubs, date and kickoff window, or was already used.');
  const home=game.clubs[fixture.home.eaClubId],away=game.clubs[fixture.away.eaClubId];if(!home||!away)throw Error('Missing EA club data.');
- const homeScore=score(home.goals??home.score),awayScore=score(away.goals??away.score);if(homeScore===awayScore)throw Error('No draws allowed. A tied/penalty result needs a separate reviewed winner workflow.');
+ const homeScore=score(home.goals??home.score),awayScore=score(away.goals??away.score);if(homeScore===awayScore&&!standardTrial(draft))throw Error('No draws allowed. A tied/penalty result needs a separate reviewed winner workflow.');
  const result={fixtureId,matchId:String(game.matchId??game.id),homeScore,awayScore,finish,timestamp:game.playedAt??Number(game.timestamp)*1000,appearances:[]};
  for(const team of [fixture.home,fixture.away])for(const [playerId,player] of Object.entries(game.players?.[team.eaClubId]||{})){
   const name=player.playername??player.name;if(typeof name!=='string'||!name.trim())continue;
@@ -32,6 +34,11 @@ export function restoreAcceptedResults(draft,results=[]){
 export function acceptedAppearances(draft){return (draft.acceptedResults||[]).flatMap(result=>result.appearances.map(player=>({...player,matchId:result.matchId,timestamp:result.timestamp,status:'accepted',leagueKey:awardLeagueKey(draft.settings),season:draft.settings.season})));}
 export function leagueStandings(draft){
  const policy=draft.settings.pageContent?.standings||{},rows=new Map(draft.settings.teams.map(team=>[team.id,{...team,played:0,wins:0,regularWins:0,extraWins:0,extraLosses:0,regularLosses:0,goalsFor:0,goalsAgainst:0,points:0,headToHead:0}]));
+ if(standardTrial(draft)){
+  for(const t of rows.values())t.draws=0;
+  for(const r of draft.acceptedResults||[]){const f=draft.fixtures.find(f=>f.id===r.fixtureId);if(!f)continue;for(const [id,own,other] of [[f.home.id,r.homeScore,r.awayScore],[f.away.id,r.awayScore,r.homeScore]]){const t=rows.get(id);if(!t)continue;t.played++;t.goalsFor+=own;t.goalsAgainst+=other;if(own>other){t.wins++;t.regularWins++;t.points+=3;}else if(own===other){t.draws++;t.points++;}else t.regularLosses++;}}
+  return [...rows.values()].sort((a,b)=>b.points-a.points||(b.goalsFor-b.goalsAgainst)-(a.goalsFor-a.goalsAgainst)||b.goalsFor-a.goalsFor||a.name.localeCompare(b.name));
+ }
  for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(f=>f.id===result.fixtureId);if(!f)continue;const home=rows.get(f.home.id),away=rows.get(f.away.id);if(!home||!away)continue;
   for(const [team,own,other] of [[home,result.homeScore,result.awayScore],[away,result.awayScore,result.homeScore]]){team.played++;team.goalsFor+=own;team.goalsAgainst+=other;const win=own>other,extra=result.finish==='extraTime';if(win)team.wins++;if(result.finish==='pending'){team.pendingPoints=(team.pendingPoints||0)+1;continue;}team[extra?(win?'extraWins':'extraLosses'):(win?'regularWins':'regularLosses')]++;team.points+=extra?(win?(policy.extraTimeWin??2):(policy.extraTimeLoss??1)):(win?(policy.win??3):(policy.loss??0));}
  }

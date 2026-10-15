@@ -13,7 +13,7 @@ test('real ten-team trial has exact two rounds and only five supplied IDs',()=>{
  assert(leagueStandings(d).every(t=>t.played===0&&t.points===0));assert.equal(acceptedAppearances(d).length,0);
 });
 test('scheduled EA result updates trial once and survives restored exact fixtures',()=>{
- let d=buildLeagueSchedule(eaTrialSettings()),f=d.fixtures[4];const game={matchId:'1001',timestamp:(f.startsAt+15*60000)/1000,clubs:{[f.home.eaClubId]:{goals:'2'},[f.away.eaClubId]:{goals:'1'}},players:{[f.home.eaClubId]:{'p1':{playername:'Test player',goals:'2',assists:'0',rating:'8.2'}}}};
+ let d=buildLeagueSchedule({...eaTrialSettings(),scoringMode:'noDraws'}),f=d.fixtures[4];const game={matchId:'1001',timestamp:(f.startsAt+15*60000)/1000,clubs:{[f.home.eaClubId]:{goals:'2'},[f.away.eaClubId]:{goals:'1'}},players:{[f.home.eaClubId]:{'p1':{playername:'Test player',goals:'2',assists:'0',rating:'8.2'}}}};
  assert.equal(fixtureCandidates(f,[{...game,timestamp:game.timestamp-86400}],{}).candidates.length,0);
  d=acceptFixtureResult(d,f.id,game,'extraTime');assert.equal(leagueStandings(d).find(t=>t.id===f.home.id).points,2);assert.equal(leagueStandings(d).find(t=>t.id===f.away.id).points,1);assert.equal(acceptedAppearances(d)[0].goals,2);
  assert.throws(()=>acceptFixtureResult(d,f.id,game,'regular'));
