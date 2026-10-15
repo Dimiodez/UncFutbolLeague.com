@@ -1,6 +1,6 @@
 import {fixtureCandidates} from './league-engine.js';
 import {awardLeagueKey} from './league-awards-model.js';
-import {FOOTBALL_POSITIONS} from './fc27-formations.js';
+import {PLAYER_POSITIONS,DETAIL_FIELDS,numeric,eaPosition,clubPlayers,detailedStats} from './league-player-stats.js';
 const score=value=>{if(value===null||value===undefined||value==='')throw Error('EA did not provide both scores. Do not guess a result.');const n=Number(value);if(!Number.isInteger(n)||n<0||n>100)throw Error('Invalid EA score.');return n;};
 export const standardTrial=draft=>!!draft.settings.trialSchedule&&draft.settings.scoringMode!=='noDraws';
 export function acceptFixtureResult(draft,fixtureId,game,finish){
@@ -13,11 +13,10 @@ export function acceptFixtureResult(draft,fixtureId,game,finish){
  const home=game.clubs[fixture.home.eaClubId],away=game.clubs[fixture.away.eaClubId];if(!home||!away)throw Error('Missing EA club data.');
  const homeScore=score(home.goals??home.score),awayScore=score(away.goals??away.score);if(homeScore===awayScore&&!standardTrial(draft))throw Error('No draws allowed. A tied/penalty result needs a separate reviewed winner workflow.');
  const result={fixtureId,matchId:String(game.matchId??game.id),homeScore,awayScore,finish,timestamp:game.playedAt??Number(game.timestamp)*1000,appearances:[]};
- for(const team of [fixture.home,fixture.away])for(const [playerId,player] of Object.entries(game.players?.[team.eaClubId]||{})){
+ for(const team of [fixture.home,fixture.away])for(const [playerId,player] of clubPlayers(game,team.eaClubId)){
   const name=player.playername??player.name;if(typeof name!=='string'||!name.trim())continue;
-  const numeric=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value))?Number(value):null;
-  const position=FOOTBALL_POSITIONS.includes(player.position)?player.position:null;
-  result.appearances.push({playerId,name,teamId:team.id,teamName:team.name,position,rating:numeric(player.rating),goals:numeric(player.goals),assists:numeric(player.assists)});
+  const position=eaPosition(player.position??player.vProPosition);
+  result.appearances.push({playerId,name,teamId:team.id,teamName:team.name,position,rating:numeric(player.rating),goals:numeric(player.goals),assists:numeric(player.assists),details:detailedStats(player)});
  }
  return {...draft,acceptedResults:[...results,result]};
 }
@@ -28,7 +27,7 @@ export function restoreAcceptedResults(draft,results=[]){
  for(const result of results){const fixture=checked.fixtures.find(f=>f.id===result.fixtureId);if(!fixture)throw Error('Saved result has no scheduled fixture.');
   checked=acceptFixtureResult(checked,result.fixtureId,{matchId:result.matchId,playedAt:result.timestamp,clubs:{[fixture.home.eaClubId]:{goals:result.homeScore},[fixture.away.eaClubId]:{goals:result.awayScore}}},result.finish);
   if(!Array.isArray(result.appearances)||result.appearances.length>50)throw Error('Invalid saved player appearances.');
-  const seen=new Set();checked.acceptedResults.at(-1).appearances=result.appearances.map(p=>{if(!p||typeof p.playerId!=='string'||!p.playerId||seen.has(p.playerId)||typeof p.name!=='string'||p.name.length>100||!p.name.trim()||![fixture.home.id,fixture.away.id].includes(p.teamId)||p.position!==null&&!FOOTBALL_POSITIONS.includes(p.position)||['rating','goals','assists'].some(key=>p[key]!==null&&(!Number.isFinite(p[key])||p[key]<0))||p.rating>10)throw Error('Invalid saved player appearance.');seen.add(p.playerId);return {...p,teamName:[fixture.home,fixture.away].find(t=>t.id===p.teamId).name};});
+  const seen=new Set();checked.acceptedResults.at(-1).appearances=result.appearances.map(p=>{if(!p||typeof p.playerId!=='string'||!p.playerId||seen.has(p.playerId)||typeof p.name!=='string'||p.name.length>100||!p.name.trim()||![fixture.home.id,fixture.away.id].includes(p.teamId)||p.position!==null&&!PLAYER_POSITIONS.includes(p.position)||['rating','goals','assists'].some(key=>p[key]!==null&&(!Number.isFinite(p[key])||p[key]<0))||p.rating>10)throw Error('Invalid saved player appearance.');if(p.details!==undefined&&(!p.details||typeof p.details!=='object'||Array.isArray(p.details)||Object.entries(p.details).some(([key,value])=>!DETAIL_FIELDS.includes(key)||value!==null&&(!Number.isFinite(value)||value<0))))throw Error('Invalid saved detailed stats.');seen.add(p.playerId);return {...p,teamName:[fixture.home,fixture.away].find(t=>t.id===p.teamId).name};});
  }return checked;
 }
 export function acceptedAppearances(draft){return (draft.acceptedResults||[]).flatMap(result=>result.appearances.map(player=>({...player,matchId:result.matchId,timestamp:result.timestamp,status:'accepted',leagueKey:awardLeagueKey(draft.settings),season:draft.settings.season})));}

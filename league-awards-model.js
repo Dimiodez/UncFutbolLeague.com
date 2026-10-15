@@ -3,6 +3,7 @@ import {FC27_FORMATIONS,FOOTBALL_POSITIONS,FORMATION_CATALOGUE_VERSION,formation
 export const AWARD_POSITIONS=FOOTBALL_POSITIONS;
 export const AWARD_FORMATIONS=FC27_FORMATIONS;
 const defaults={GK:['GK'],CB:['CB','LB','RB'],LB:['LB','LWB'],RB:['RB','RWB'],CDM:['CDM','CM'],CM:['CM','CDM'],CAM:['CAM','CM'],LM:['LM','LW'],RM:['RM','RW'],LW:['LW','LM'],RW:['RW','RM'],ST:['ST','CF']};
+const qualifies=(positions,allowed,slot,manual)=>manual?(slot.position==='GK'?positions.includes('GK'):positions.some(p=>p!=='GK')):positions.some(p=>allowed.includes(p));
 export function awardSlots(formation){
  return formationSlots(formation);
 }
@@ -25,14 +26,14 @@ export function validateAwardBoard(board){
   const allowed=board.eligibility[slot.id]??defaults[slot.position]??[slot.position];
   if(!Array.isArray(allowed)||!allowed.length||new Set(allowed).size!==allowed.length||allowed.some(position=>!AWARD_POSITIONS.includes(position)||(slot.position==='GK'?position!=='GK':position==='GK')))throw Error('Select at least one eligible position. Goalkeepers qualify only for goalkeeper.');
   eligibility[slot.id]=[...allowed];const player=board.selections[slot.id];if(!player)continue;
-  if(typeof player.id!=='string'||!player.id||player.id.length>100||seen.has(player.id)||typeof player.name!=='string'||!player.name.trim()||player.name.length>100||typeof player.teamId!=='string'||typeof player.teamName!=='string'||player.teamName.length>100||!Array.isArray(player.positions)||!player.positions.some(position=>allowed.includes(position))||!Number.isFinite(player.averageRating)||player.averageRating<0||player.averageRating>10||!Number.isInteger(player.appearances)||player.appearances<minAppearances)throw Error('Invalid or duplicate player in the award lineup.');
+  if(typeof player.id!=='string'||!player.id||player.id.length>100||seen.has(player.id)||typeof player.name!=='string'||!player.name.trim()||player.name.length>100||typeof player.teamId!=='string'||typeof player.teamName!=='string'||player.teamName.length>100||!Array.isArray(player.positions)||!qualifies(player.positions,allowed,slot,board.manualPlacement===true)||!Number.isFinite(player.averageRating)||player.averageRating<0||player.averageRating>10||!Number.isInteger(player.appearances)||player.appearances<minAppearances)throw Error('Invalid or duplicate player in the award lineup.');
   const safeImage=url=>{if(!url)return '';if(typeof url!=='string'||url.length>2000)throw Error('Invalid player artwork.');if(/^\/assets\/[a-z0-9_./%-]+$/i.test(url)&&!url.includes('..'))return url;let parsed;try{parsed=new URL(url);}catch{throw Error('Invalid player artwork.');}if(parsed.protocol!=='https:'||parsed.username||parsed.password)throw Error('Use safe HTTPS artwork.');return url;};
   seen.add(player.id);selections[slot.id]={id:player.id,name:player.name,teamId:player.teamId,teamName:player.teamName,positions:[...player.positions],averageRating:player.averageRating,appearances:player.appearances,portraitUrl:safeImage(player.portraitUrl),badgeUrl:safeImage(player.badgeUrl)};
  }
  if(Object.keys(board.selections).some(id=>!slots.some(slot=>slot.id===id)))throw Error('Saved positions do not match the award formation.');
  const aiKeeper=board.aiKeeper??null;
  if(aiKeeper!==null&&(typeof aiKeeper!=='object'||typeof aiKeeper.name!=='string'||!aiKeeper.name.trim()||aiKeeper.name.length>80||selections['GK-1']))throw Error('Enter an AI keeper name, or clear the player keeper first.');
- return {formationVersion:FORMATION_CATALOGUE_VERSION,type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections,aiKeeper:aiKeeper?{name:aiKeeper.name.trim()}:null};
+ return {formationVersion:FORMATION_CATALOGUE_VERSION,type:board.type,weekDate:board.weekDate,formation:board.formation,minAppearances,eligibility,selections,...(board.manualPlacement===true?{manualPlacement:true}:{}),aiKeeper:aiKeeper?{name:aiKeeper.name.trim()}:null};
 }
 export function awardPeriod(board){
  const end=new Date(`${board.weekDate}T12:00:00Z`);end.setUTCDate(end.getUTCDate()+6);
@@ -42,7 +43,7 @@ export function rankAwardCandidates(records,{leagueKey,season,timeZone,board,slo
  const slots=awardSlots(board.formation),slot=slots.find(slot=>slot.id===slotId);if(!slot)throw Error('Choose an award position.');
  const allowed=board.eligibility[slotId]||defaults[slot.position]||[slot.position],period=awardPeriod(board),rows=new Map(),seen=new Set();
  for(const record of records){
-  if(record.status!=='accepted'||record.leagueKey!==leagueKey||record.season!==season||!record.matchId||typeof record.playerId!=='string'||!record.playerId||typeof record.name!=='string'||!record.name.trim()||typeof record.teamId!=='string'||typeof record.teamName!=='string'||!allowed.includes(record.position))continue;
+  if(record.status!=='accepted'||record.leagueKey!==leagueKey||record.season!==season||!record.matchId||typeof record.playerId!=='string'||!record.playerId||typeof record.name!=='string'||!record.name.trim()||typeof record.teamId!=='string'||typeof record.teamName!=='string'||!qualifies([record.position||'UNK'],allowed,slot,board.manualPlacement===true))continue;
   const timestamp=Number(record.timestamp);if(!Number.isFinite(timestamp))continue;
   const day=new Intl.DateTimeFormat('en-CA',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).format(timestamp);
   if(period.from&&(day<period.from||day>period.to))continue;

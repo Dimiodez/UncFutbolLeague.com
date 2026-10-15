@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {buildLeagueSchedule} from '../league-engine.js';
+import {eaTrialSettings} from '../league-ea-trial.js';
+import {importAutomaticTrial} from '../league-ea-auto.js';
+import {restoreAcceptedResults,acceptedAppearances} from '../league-results.js';
+import {playerTotals} from '../league-player-stats.js';
+import {defaultAwardBoard,rankAwardCandidates,awardLeagueKey,assignAwardCandidate,validateAwardBoard} from '../league-awards-model.js';
+test('flat relay player data survives import/reload and feeds detailed totals/manual awards',()=>{
+ const draft=buildLeagueSchedule(eaTrialSettings()),fixture=draft.fixtures[4];
+ const game={matchId:'flat-test',timestamp:(fixture.startsAt+600000)/1000,clubs:{[fixture.home.eaClubId]:{goals:2},[fixture.away.eaClubId]:{goals:1}},players:{p1:{name:'Forward',clubId:fixture.home.eaClubId,position:'forward',rating:'8.5',goals:2,assists:0,passes:30,passesCompleted:24,tackles:4,tacklesWon:3,shots:5,saves:0,manOfTheMatch:1},p2:{name:'Midfielder',clubId:fixture.away.eaClubId,position:'midfielder',rating:7.5,goals:1,assists:0},outsider:{name:'Unrelated',clubId:'99999',rating:10}}};
+ const imported=importAutomaticTrial(draft,[game],fixture.startsAt+1200000);assert.equal(imported.added,1);assert.equal(imported.draft.acceptedResults[0].appearances.length,2);
+ const restored=restoreAcceptedResults(buildLeagueSchedule(draft.settings),JSON.parse(JSON.stringify(imported.draft.acceptedResults)));assert.deepEqual(restored.acceptedResults,imported.draft.acceptedResults);
+ const records=acceptedAppearances(restored),totals=playerTotals(records);assert.equal(totals[0].totals.passesCompleted,24);assert.equal(totals[0].passAccuracy,80);assert.equal(totals[0].tackleAccuracy,75);assert.equal(totals[1].known.passes,false);assert.equal(records[0].position,'FWD');
+ const board={...defaultAwardBoard(draft.settings),manualPlacement:true},slotId='ST-1',options={leagueKey:awardLeagueKey(draft.settings),season:draft.settings.season,timeZone:draft.settings.timeZone,board,slotId};
+ const ranked=rankAwardCandidates(records,options);assert.equal(ranked.length,2);assert.equal(ranked[0].averageRating,8.5);assert.equal(rankAwardCandidates(records,{...options,board:{...board,manualPlacement:false}}).length,0);
+ const assigned=assignAwardCandidate(board,slotId,ranked[0]);assert.equal(validateAwardBoard(JSON.parse(JSON.stringify(assigned))).selections[slotId].positions[0],'FWD');
+ assert.equal(rankAwardCandidates(records,{...options,slotId:'GK-1'}).length,0);
+ const bad=JSON.parse(JSON.stringify(restored.acceptedResults));bad[0].appearances[0].details.passes=-1;assert.throws(()=>restoreAcceptedResults(draft,bad));
+});

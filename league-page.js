@@ -1,8 +1,9 @@
 import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-model.js';
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
-import {renderAwardsWorkbench} from './league-awards.js';
+import {renderAwardsWorkbench} from './league-awards.js?v=20261015-stats1';
 import {registrationAllowed} from './league-engine.js';
-import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261014-standard1';
+import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261015-stats1';
+import {playerTotals} from './league-player-stats.js';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
@@ -97,8 +98,9 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
   [...table.rows].forEach((row,index)=>{row.cells[3].textContent=index?String(rows[index-1].draws):'D';row.cells[4].remove();});
  }
  if(tab==='stats'){
-  const rows=new Map();for(const p of acceptedAppearances(draft)){const key=JSON.stringify([p.teamId,p.playerId]);if(!rows.has(key))rows.set(key,{...p,apps:0,goals:0,assists:0,goalsKnown:true,assistsKnown:true,ratingSum:0,ratingCount:0});const r=rows.get(key);r.apps++;if(p.goals===null)r.goalsKnown=false;else r.goals+=p.goals;if(p.assists===null)r.assistsKnown=false;else r.assists+=p.assists;if(p.rating>0&&p.rating<=10&&!(p.rating===3&&(content.excludeDisconnectRatings??true))){r.ratingSum+=p.rating;r.ratingCount++;}}
-  const table=document.createElement('table');table.innerHTML=`<caption>Accepted local fixture appearances only</caption><thead><tr><th>Player</th><th>Team</th><th>Apps</th><th>Goals</th><th>Assists</th><th>Rating</th></tr></thead><tbody>${[...rows.values()].map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${p.apps}</td><td>${p.goalsKnown?p.goals:'Unavailable'}</td><td>${p.assistsKnown?p.assists:'Unavailable'}</td><td>${p.ratingCount?(p.ratingSum/p.ratingCount).toFixed(2):'Unavailable'}</td></tr>`).join('')}</tbody>`;body.append(table);
+  const rows=playerTotals(acceptedAppearances(draft),{excludeDisconnectRatings:content.excludeDisconnectRatings??true});
+  const columns=[['goals','Goals'],['assists','Assists'],['shots','Shots'],['shotsOnTarget','On target'],['passes','Passes'],['passesCompleted','Completed'],['tackles','Tackles'],['tacklesWon','Won'],['interceptions','Interceptions'],['saves','Saves'],['yellowCards','Yellow'],['redCards','Red'],['manOfTheMatch','MOTM']];
+  const table=document.createElement('table');table.innerHTML=`<caption>Scheduled EA results only · Unavailable means not supplied. Percentages use combined totals, not averages of percentages.</caption><thead><tr><th>Player</th><th>Team</th><th>EA role</th><th>Apps</th><th>Rating</th>${columns.map(([,label])=>`<th>${label}</th>`).join('')}<th>Pass %</th><th>Tackle %</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${escape(p.position||'Unknown')}</td><td>${p.apps}</td><td>${p.averageRating===null?'Unavailable':p.averageRating.toFixed(2)}</td>${columns.map(([key])=>`<td>${p.known[key]?p.totals[key]:'Unavailable'}</td>`).join('')}<td>${p.passAccuracy===null?'—':p.passAccuracy.toFixed(1)}</td><td>${p.tackleAccuracy===null?'—':p.tackleAccuracy.toFixed(1)}</td></tr>`).join('')}</tbody>`;body.append(table);
  }
  if(!(settings.trialSchedule&&['stats','standings'].includes(tab)))renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
  if(tab==='rules')renderSectionTools({host,admin,body:admin,tab:'standings',settings,onSettings,onReport});

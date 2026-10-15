@@ -1,5 +1,5 @@
 import {fixtureCandidates} from './league-engine.js?v=20261014-trial1';
-import {acceptFixtureResult} from './league-results.js?v=20261014-standard1';
+import {acceptFixtureResult} from './league-results.js?v=20261015-stats1';
 export function importAutomaticTrial(draft,games,now=Date.now()){
  if(!draft.settings.trialSchedule)throw Error('Automatic import is restricted to the preview trial.');
  let next=draft,added=0;const warnings=[];
