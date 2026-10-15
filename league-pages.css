@@ -121,3 +121,11 @@ html[data-theme="dark"] .league-standings-table td:last-child { color:var(--sky)
 .featured-rotation-note { margin:1rem 0 0; }
 @media(max-width:800px) { .featured-club { grid-template-columns:1fr; } .featured-club-art { min-height:340px; } .featured-club-content { padding:1.25rem; } }
 @media(max-width:450px) { .featured-club-identity { padding:1.25rem; gap:.8rem; } .featured-club-identity>img { width:65px; height:65px; } .featured-numbers { grid-template-columns:repeat(2,1fr); } .featured-match-panels { grid-template-columns:1fr; gap:.5rem; } .featured-captains { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Put the private dressing room beside the club identity, not below the profile. */
+.league-team-hub-entry{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:20px 0 24px}
+.league-team-hub-entry .button.button-primary{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:14px 24px;background:var(--red);border:2px solid var(--red);color:#fff;text-decoration:none;font-size:1.1rem;line-height:1.25}
+.league-team-hub-entry .button:hover{filter:brightness(1.08)}
+.league-team-hub-entry .button:focus-visible{outline:3px solid var(--sky);outline-offset:4px}
+.league-team-hub-entry small{font-size:.8rem;line-height:1.5;color:var(--muted)}
+@media(max-width:640px){.league-team-hub-entry{align-items:stretch}.league-team-hub-entry .button.button-primary{width:100%;box-sizing:border-box}}
