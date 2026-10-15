@@ -41,7 +41,7 @@ const shapes={
  '5-3-2':[...front2,['CM',25,41],['CDM',50,56],['CM',75,41],...back5],
  '5-4-1':[['ST',50,11],['LM',12,34],['CM',35,50],['CM',65,50],['RM',88,34],...back5]
 };
-// Distinct labels share geometry where they denote the same shape. No game-mode gates.
+// Legacy aliases remain readable for saved boards; selectors use the unique Clubs list below.
 const aliases={
  '3-4-3 Flat':'3-4-3',
  '4-1-2-1-2 Narrow':'4-1-2-1-2 (2)','4-1-2-1-2 Wide':'4-1-2-1-2',
@@ -65,4 +65,14 @@ export const FC27_FORMATIONS=freeze(Object.fromEntries(names.map(name=>{
 export function formationSlots(name){
  if(!Object.hasOwn(FC27_FORMATIONS,name))throw Error('Choose an 11-player formation.');
  return FC27_FORMATIONS[name].slots.map(slot=>({...slot}));
+}
+
+// One entry per Clubs/Stadium formation, using Clubs menu names.
+// Cross-checked 2026-10-15: https://proclubshq.com/blog/best-pro-clubs-formations/
+// Legacy numbered/Kick Off labels above are compatibility keys, not extra options.
+export const FC27_FORMATION_OPTIONS=Object.freeze(["3-1-4-2","3-4-1-2","3-4-2-1","3-4-3 Flat","3-5-2","4-1-2-1-2 Narrow","4-1-2-1-2 Wide","4-1-3-2","4-1-4-1","4-2-1-3","4-2-2-2","4-2-3-1 Narrow","4-2-3-1 Wide","4-2-4","4-3-1-2","4-3-2-1","4-3-3 Attack","4-3-3 Defend","4-3-3 Flat","4-3-3 Holding","4-4-1-1 Midfield","4-4-2 Flat","4-4-2 Holding","4-5-1 Attack","4-5-1 Flat","5-2-1-2","5-2-3","5-3-2 Holding","5-4-1 Flat"]);
+const clubsNameByLayout=new Map(FC27_FORMATION_OPTIONS.map(name=>[FC27_FORMATIONS[name].layoutId,name]));
+export function canonicalFormationName(name){
+ if(!Object.hasOwn(FC27_FORMATIONS,name))throw Error('Choose an 11-player formation.');
+ return clubsNameByLayout.get(FC27_FORMATIONS[name].layoutId);
 }
