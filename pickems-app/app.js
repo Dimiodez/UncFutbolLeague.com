@@ -71,14 +71,48 @@ function readDraft(week){
  return {picks,tiebreaker};}catch{return null;}
 }
 function rememberDraft(){
- const picks={};$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ const picks={};$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
  try{sessionStorage.setItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek),JSON.stringify({picks,tiebreaker:$('#tiebreaker').value,at:Date.now()}));}catch{}
 }
 function loginDestination(){return '/account?returnTo='+encodeURIComponent('/pickems?'+new URLSearchParams({season:state.selectedSeason,division:state.selectedDivision,matchday:state.simpleWeek}));}
 function getBallot(week) { return readDraft(week)||serverBallots.get(ballotKey(state.competition, week))||{}; }
 function showToast(message) { const toast=$('#toast'); toast.textContent=message; toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>toast.classList.remove('show'),2400); }
 
+
+function showSaveStatus(message,kind='error'){
+ const status=$('#save-status');status.textContent=message;status.dataset.state=kind;
+ showToast(message);
+}
+async function saveSimpleBallot(){
+ if(!authState.authenticated){rememberDraft();window.top.location.assign(loginDestination());return;}
+ const button=$('#save-simple');if(button.disabled)return;
+ const competition=state.competition,week=state.simpleWeek,picks={};
+ $$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ const total=fixturesForWeek(week).length;
+ if(Object.keys(picks).length!==total)return showSaveStatus('Choose a result for all '+total+' matches before saving.');
+ const rawGoals=$('#tiebreaker').value,goals=Number(rawGoals);
+ if(rawGoals===''||!Number.isInteger(goals)||goals<0||goals>30)return showSaveStatus('Enter a whole-number total-goals tiebreaker from 0 to 30.');
+ button.disabled=true;button.textContent='Saving…';showSaveStatus('Saving your ballot…','saving');
+ const stillHere=()=>state.competition===competition&&state.simpleWeek===week;
+ try{
+  const response=await fetch('/api/pickems/ballot',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({competition,week,picks,tiebreaker:goals})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||result.ok!==true){
+   if(stillHere())showSaveStatus(result.error||'The server did not confirm this save. Your selections are still here; please try again.');
+   return;
+  }
+  try{sessionStorage.removeItem('ufl-pickem-draft:'+ballotKey(competition,week));}catch{}
+  serverBallots.set(ballotKey(competition,week),{picks,tiebreaker:goals});
+  if(stillHere()){showSaveStatus('Saved to your UFL account. These picks will remain after a refresh.','saved');await loadLeaderboard();}
+ }catch{
+  if(stillHere())showSaveStatus('Could not reach the server. Nothing was confirmed saved. Your selections are still here; please try again.');
+ }finally{
+  if(stillHere()){button.disabled=Date.now()>=weekData(week).scheduledAt*1000;button.textContent='Save shared ballot';}
+ }
+}
+
 function renderSimple() {
+  $('#save-status').textContent='';
   const week=state.simpleWeek, data=weekData(week), fixtures=fixturesForWeek(week), complete=fixtures.every(f=>f.hs!==null&&f.as!==null), open=!complete&&Date.now()<data.scheduledAt*1000, saved=getBallot(week);
   $('#ballot-deadline').textContent=complete?'Final results · voting is closed':open?'Your whole ballot locks '+formatKickoff(week):'Voting locked '+formatKickoff(week)+' · awaiting official results';
   weekTabs('#simple-weeks',week,'simple'); $('#simple-title').textContent=`${data.rounds?'Matchday':'Gameweek'} ${week} · ${fixtures.length} match${fixtures.length===1?'':'es'}`;
@@ -151,17 +185,7 @@ document.addEventListener('click',async event=>{
   const sp=event.target.closest('[data-simple-period]'); if(sp){state.simplePeriod=sp.dataset.simplePeriod;renderSimpleLeaders();}
   const scope=event.target.closest('[data-leader-scope]');if(scope){state.simplePeriod=scope.dataset.leaderScope;await loadLeaderboard();}
   const dp=event.target.closest('[data-detail-period]'); if(dp){state.detailPeriod=dp.dataset.detailPeriod;renderDetailLeaders();}
-  if(event.target.closest('#save-simple')){
-    if(!authState.authenticated){rememberDraft();window.top.location.assign(loginDestination());return;}
-    const picks={};$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
-    if(Object.keys(picks).length<fixturesForWeek(state.simpleWeek).length)return showToast('Make every pick first.');
-    if($('#tiebreaker').value==='')return showToast('Add your total-goals tiebreaker.');
-    const response=await fetch('/api/pickems/ballot',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({competition:state.competition,week:state.simpleWeek,picks,tiebreaker:Number($('#tiebreaker').value)})});
-    const result=await response.json().catch(()=>({error:'Unable to save ballot.'}));
-    if(!response.ok)return showToast(result.error||'Unable to save ballot.');
-    try{sessionStorage.removeItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek));}catch{}
-    serverBallots.set(ballotKey(state.competition,state.simpleWeek),{picks,tiebreaker:Number($('#tiebreaker').value)});showToast('Shared Pick’ems saved to your UFL account.');await loadLeaderboard();
-  }
+  if(event.target.closest('#save-simple'))await saveSimpleBallot();
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});

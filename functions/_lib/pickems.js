@@ -27,7 +27,7 @@ export async function syncPickemMatchesFromAsset(request, env, competition) {
       away_key=excluded.away_key,home_score=excluded.home_score,away_score=excluded.away_score,
       competition_key=excluded.competition_key,updated_at=CURRENT_TIMESTAMP
   `).bind(match.id, match.week, match.scheduledAt, match.home, match.away, match.homeScore, match.awayScore, competition)));
-  return { available: true, matches: matches.length };
+  return { available: true, matches: matches.length, fixtures: matches };
 }
 
 export async function ensurePickemCompetitionSchema(env) {

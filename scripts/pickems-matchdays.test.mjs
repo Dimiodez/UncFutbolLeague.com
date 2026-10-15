@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {DatabaseSync} from 'node:sqlite';
 import {syncPickemMatchesFromAsset} from '../functions/_lib/pickems.js';
-import {onRequestPost} from '../functions/api/pickems/ballot.js';
+import {onRequestPost,onRequestGet} from '../functions/api/pickems/ballot.js';
 import {sha256} from '../functions/_lib/auth.js';
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 async function setup(){
@@ -14,7 +14,7 @@ async function setup(){
  db.prepare("INSERT INTO sessions(id_hash,discord_id,expires_at) VALUES(?,'qa','2099-01-01')").run(await sha256('test-session'));
  const season=JSON.parse(read('pickems-app/seasons/s2-10v10.json'));
  for(const day of season.weeks){day.scheduledAt=Math.floor(Date.now()/1000)+3600*day.week;for(const match of day.matches){match[3]=null;match[4]=null;match[5]=day.scheduledAt;}}
- const env={DB:{prepare(sql){return{params:[],bind(...params){this.params=params;return this;},async run(){return{meta:db.prepare(sql).run(...this.params)};},async all(){return{results:db.prepare(sql).all(...this.params)};},async first(){return db.prepare(sql).get(...this.params);}};},async batch(statements){db.exec('BEGIN');try{const rows=[];for(const s of statements)rows.push(await s.run());db.exec('COMMIT');return rows;}catch(e){db.exec('ROLLBACK');throw e;}}},ASSETS:{async fetch(){return Response.json(season);}}};
+ const env={DB:{prepare(sql){return{sql,params:[],bind(...params){this.params=params;return this;},async run(){return{meta:db.prepare(sql).run(...this.params)};},async all(){return{results:db.prepare(sql).all(...this.params)};},async first(){return db.prepare(sql).get(...this.params);}};},async batch(statements){db.exec('BEGIN');try{const rows=[];for(const s of statements)rows.push(/^\s*(SELECT|PRAGMA)/i.test(s.sql)?await s.all():await s.run());db.exec('COMMIT');return rows;}catch(e){db.exec('ROLLBACK');throw e;}}},ASSETS:{async fetch(){return Response.json(season);}}};
  return{db,env,season};
 }
 const request=body=>new Request('https://www.uncfutbolleague.com/api/pickems/ballot',{method:'POST',headers:{origin:'https://www.uncfutbolleague.com',cookie:'__Host-ufl_session=test-session','content-type':'application/json'},body:JSON.stringify(body)});
@@ -46,4 +46,26 @@ test('schedule team links use stable club identities and preserve current BYEs',
  assert.equal((html.match(/No match this round/g)||[]).length,2*season.weeks.flatMap(w=>w.byes||[]).length);
  assert.match(html,/10:00 PM EDT/);assert.match(html,/10:30 PM EDT/);
  assert.match(html,/Matchday 7/);
+});
+
+test('current official ballots save and reload despite retired schedule rows, without deleting history',async()=>{
+ const {db,env,season}=await setup(),week=season.weeks[0];
+ await syncPickemMatchesFromAsset(request({}),env,'s2-10v10');
+ db.prepare("INSERT INTO pickem_matches(id,week,scheduled_at,home_key,away_key,competition_key) VALUES(999999,1,?,'old-home','old-away','s2-10v10')").run(week.scheduledAt);
+ db.prepare("INSERT INTO picks(discord_id,match_id,choice) VALUES('qa',999999,'away')").run();
+ const picks=Object.fromEntries(week.matches.map(([id],i)=>[String(id),i%2?'draw':'home']));
+ const body={competition:'s2-10v10',week:1,picks,tiebreaker:4};
+ const saved=await onRequestPost({request:request(body),env});
+ assert.equal(saved.status,200);assert.equal((await saved.json()).ok,true);
+ const get=new Request('https://www.uncfutbolleague.com/api/pickems/ballot?competition=s2-10v10&week=1',{headers:{cookie:'__Host-ufl_session=test-session'}});
+ let restored=await onRequestGet({request:get,env});assert.equal(restored.status,200);assert.deepEqual(await restored.json(),{picks,tiebreaker:4});
+ assert.equal(db.prepare('SELECT choice FROM picks WHERE match_id=999999').get().choice,'away');
+ const revised={...picks,[String(week.matches[0][0])]:'away'};
+ assert.equal((await onRequestPost({request:request({...body,picks:revised,tiebreaker:8}),env})).status,200);
+ restored=await onRequestGet({request:get,env});assert.deepEqual(await restored.json(),{picks:revised,tiebreaker:8});
+});
+test('unavailable official ballot fails closed without writing predictions',async()=>{
+ const {db,env}=await setup();env.ASSETS.fetch=async()=>new Response('',{status:503});
+ const response=await onRequestPost({request:request({competition:'s2-10v10',week:1,picks:{},tiebreaker:3}),env});
+ assert.equal(response.status,503);assert.equal(db.prepare('SELECT COUNT(*) n FROM picks').get().n,0);
 });

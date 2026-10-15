@@ -15,13 +15,15 @@ export async function onRequestGet({ request, env }) {
   const week = validWeek(url.searchParams.get('week'));
   const competition = validPickemCompetition(url.searchParams.get('competition'));
   if (!week || !competition) return json({ error: 'Invalid Pick’em competition or gameweek.' }, 400);
-  await syncPickemMatchesFromAsset(request, env, competition);
+  const current = await syncPickemMatchesFromAsset(request, env, competition);
+  if (!current.available) return json({ error: 'The official ballot is temporarily unavailable. Please try again.' }, 503);
+  const activeIds = new Set(current.fixtures.filter(match => match.week === week).map(match => String(match.id)));
   const [picks, tiebreaker] = await env.DB.batch([
     env.DB.prepare(`SELECT p.match_id AS matchId, p.choice FROM picks p JOIN pickem_matches m ON m.id = p.match_id WHERE p.discord_id = ? AND m.competition_key = ? AND m.week = ?`).bind(String(user.discord_id), competition, week),
     env.DB.prepare(`SELECT goals FROM pickem_tiebreakers_v2 WHERE discord_id = ? AND competition_key = ? AND week = ?`).bind(String(user.discord_id), competition, week)
   ]);
   return json({
-    picks: Object.fromEntries(picks.results.map(row => [String(row.matchId), row.choice])),
+    picks: Object.fromEntries(picks.results.filter(row => activeIds.has(String(row.matchId))).map(row => [String(row.matchId), row.choice])),
     tiebreaker: tiebreaker.results[0]?.goals ?? null
   });
 }
@@ -39,10 +41,13 @@ export async function onRequestPost({ request, env }) {
   const goals = Number(body.tiebreaker);
   if (!week || !competition || !Number.isInteger(goals) || goals < 0 || goals > 99 || !body.picks || typeof body.picks !== 'object') return json({ error: 'Complete the ballot and tiebreaker.' }, 400);
   await ensurePickemCompetitionSchema(env);
-  await syncPickemMatchesFromAsset(request, env, competition);
+  const current = await syncPickemMatchesFromAsset(request, env, competition);
+  if (!current.available) return json({ error: 'The official ballot is temporarily unavailable. Please try again.' }, 503);
+  const activeIds = new Set(current.fixtures.filter(match => match.week === week).map(match => String(match.id)));
   const matches = await env.DB.prepare(`SELECT id FROM pickem_matches WHERE competition_key = ? AND week = ? AND home_score IS NULL AND away_score IS NULL AND scheduled_at > unixepoch() ORDER BY id`).bind(competition, week).all();
-  if (!matches.results.length) return json({ error: 'Voting for this gameweek is closed.' }, 409);
-  const expected = matches.results.map(row => String(row.id));
+  const activeMatches = matches.results.filter(row => activeIds.has(String(row.id)));
+  if (!activeMatches.length) return json({ error: 'Voting for this gameweek is closed.' }, 409);
+  const expected = activeMatches.map(row => String(row.id));
   if (expected.some(id => !['home','draw','away'].includes(body.picks[id])) || Object.keys(body.picks).some(id => !expected.includes(String(id)))) return json({ error: 'Submit one valid pick for every open match.' }, 400);
   const statements = expected.map(id => env.DB.prepare(`
     INSERT INTO picks (discord_id, match_id, choice) VALUES (?, ?, ?)
