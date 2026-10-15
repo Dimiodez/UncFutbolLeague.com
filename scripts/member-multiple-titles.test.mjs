@@ -25,7 +25,7 @@ async function setup(){
 }
 const get=(actor,path)=>new Request('https://www.uncfutbolleague.com'+path,{headers:{cookie:'__Host-ufl_session='+actor}});
 const post=(actor,body,origin='https://www.uncfutbolleague.com')=>new Request('https://www.uncfutbolleague.com/api/admin/title',{method:'POST',headers:{origin,cookie:'__Host-ufl_session='+actor,'content-type':'application/json'},body:JSON.stringify({discordId:member,...body})});
-const both=[{title:'manager',teamId:'6v6:ROM'},{title:'manager',teamId:'10v10:MAY'}];
+const both=[{title:'manager',teamId:'6v6:ROM'},{title:'manager',teamId:'10v10:club-1790120967830'}];
 test('owner and admin can save two independent team titles and reload them across member views',async()=>{
  const {env,db}=await setup();
  assert.equal((await save({request:post(owner,{assignments:both}),env})).status,200);
@@ -37,7 +37,7 @@ test('owner and admin can save two independent team titles and reload them acros
  const profile=publicUsers.users.find(u=>u.displayName===member);assert.equal(profile.teamTitles.length,2);
  assert.equal('titleUserId' in profile,false);assert.equal('userId' in profile.teamTitles[0],false);
  assert.equal((await save({request:post(admin,{assignments:[both[0],{...both[1],title:'captain'}]}),env})).status,200);
- const titles=await memberTeamTitles(env,member);assert.equal(titles.find(t=>t.teamId==='10v10:MAY').title,'captain');
+ const titles=await memberTeamTitles(env,member);assert.equal(titles.find(t=>t.teamId==='10v10:club-1790120967830').title,'captain');
  assert.equal(db.prepare('SELECT role FROM users WHERE discord_id=?').get(member).role,'member');
  assert.equal(db.prepare("SELECT COUNT(*) n FROM sqlite_master WHERE name='team_hub_managers'").get().n,0);
 });
@@ -69,7 +69,7 @@ test('duplicates, unknown teams, invalid roles, over-limit and unauthorized writ
 test('selector distinguishes divisions, supports repeatable rows and retains legacy entries',()=>{
  const source=read('app.js'),start=source.indexOf('let adminTitleTeams=[];'),end=source.indexOf('function adminMemberRow(',start);
  const context=vm.createContext({escapeHtml:s=>String(s).replaceAll('<','&lt;')});vm.runInContext(source.slice(start,end),context);
- context.teams=memberTitleTeams();context.user={id:member,displayName:'Test member',teamTitles:[{title:'manager',teamId:'6v6:ROM',teamName:'UFL Roma',division:'6v6'},{title:'manager',teamId:'10v10:MAY',teamName:'UFL Maykop',division:'10v10'}]};
+ context.teams=memberTitleTeams();context.user={id:member,displayName:'Test member',teamTitles:[{title:'manager',teamId:'6v6:ROM',teamName:'UFL Roma',division:'6v6'},{title:'manager',teamId:'10v10:club-1790120967830',teamName:'UFL Maykop',division:'10v10'}]};
  vm.runInContext('adminTitleTeams=teams;',context);
  const html=vm.runInContext('teamTitleControls(user)',context);
  assert.equal((html.match(/data-title-row>/g)||[]).length,2);
