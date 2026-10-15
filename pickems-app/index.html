@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261015-ux1">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261015-save2">
 </head>
 <body>
   <main class="pickems-shell">
@@ -43,7 +43,7 @@
           <div class="ballot-summary"><p id="ballot-deadline" role="status"></p><p id="progress-top" aria-live="polite">Choose your picks below.</p></div>
           <div id="simple-fixtures" class="simple-fixtures"></div>
           <div class="tiebreaker"><span>TB</span><div><strong id="tb-question"></strong><small id="tb-lock"></small></div><input id="tiebreaker" type="number" min="0" max="30" placeholder="Goals" aria-label="Total goals tiebreaker"></div>
-          <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer>
+          <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer><p id="save-status" class="save-status" role="status" aria-live="polite"></p>
         </section>
         <aside class="rail">
           <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
@@ -66,7 +66,7 @@
     </section>
   </main>
   <div class="toast" id="toast" role="status"></div>
-  <script src="/pickems-app/season-data.js?v=20261015-ux1"></script>
-  <script src="/pickems-app/app.js?v=20261015-ux1"></script>
+  <script src="/pickems-app/season-data.js?v=20261015-save2"></script>
+  <script src="/pickems-app/app.js?v=20261015-save2"></script>
 </body>
 </html>
