@@ -59,3 +59,16 @@ body[data-standalone-navigation] .site-header .brand img{width:52px;height:58px}
 @media(max-width:700px){body.matchday-route .page-hero>div{padding:0}.matchday-page .league-tab-stack{margin-top:0}.matchday-page .tabs{margin-top:0;margin-bottom:0}}
 
 .invite-steps{padding-left:24px;line-height:1.7}.invite-steps li{margin:12px 0}.invite-contacts{display:grid;gap:16px;margin:24px 0}.invite-contacts>div{display:flex;align-items:center;gap:16px;flex-wrap:wrap}.invite-contacts button{min-height:44px}#invite-copy-status{min-height:1.5em}
+
+/* Keep the next fixture close to the controls on small screens. */
+@media(max-width:700px){
+ body.matchday-route .page-hero{padding:16px 12px}
+ body.matchday-route .page-hero .eyebrow{margin:0 0 6px}
+ body.matchday-route .page-hero h1{margin:0}
+ body.matchday-route .page-hero p:not(.eyebrow){margin:8px 0 0;font-size:.8rem}
+ .matchday-paging{display:grid;grid-template-columns:1fr 1.5fr 1fr;gap:6px;margin-bottom:16px}
+ .matchday-paging>a{justify-content:center;padding:8px;font-size:.75rem;text-align:center}
+ .matchday-paging>a:not(.button){order:0;width:auto;justify-content:center}
+ .schedule-week-head p,.schedule-week-head .section-kicker{display:none}
+ .schedule-week-head h2{margin:0}
+}

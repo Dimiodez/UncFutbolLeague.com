@@ -71,3 +71,15 @@ test('invite approval and the UFL navigation identity are retained',()=>{
  for(const name of ['Utility','Fun','League'])assert.ok(html.includes('aria-label="'+name+'"'));
  assert.equal((html.match(/href="\/coaching" data-link/g)||[]).length,2);
 });
+
+test('Pick’ems progress updates all choice buttons without stopping standings rendering',()=>{
+ const source=read('pickems-app/app.js'),start=source.indexOf('function updateProgress()'),end=source.indexOf('function renderSimpleLeaders()',start);
+ const elements=new Map(),pressed=[];
+ const element=key=>{if(!elements.has(key))elements.set(key,{style:{},textContent:''});return elements.get(key)};
+ const choices=[{dataset:{match:'1'},classList:{contains:()=>true},setAttribute:(key,value)=>pressed.push([key,value])},{dataset:{match:'2'},classList:{contains:()=>false},setAttribute:(key,value)=>pressed.push([key,value])}];
+ const context=vm.createContext({state:{simpleWeek:2},fixturesForWeek:()=>[{id:'1'},{id:'2'}],$:element,$$:selector=>selector.includes('.selected')?[choices[0]]:choices});
+ vm.runInContext(source.slice(start,end)+'\nupdateProgress();',context);
+ assert.equal(element('#progress-top').textContent,'1/2 picks selected · save your ballot when ready');
+ assert.equal(element('#progress-bar').style.width,'50%');
+ assert.deepEqual(pressed,[['aria-pressed','true'],['aria-pressed','false']]);
+});
