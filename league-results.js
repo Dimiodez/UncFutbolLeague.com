@@ -5,7 +5,7 @@ const score=value=>{if(value===null||value===undefined||value==='')throw Error('
 export function acceptFixtureResult(draft,fixtureId,game,finish){
  const fixture=draft.fixtures.find(f=>f.id===fixtureId),results=draft.acceptedResults||[];
  if(!fixture||results.some(r=>r.fixtureId===fixtureId))throw Error('Fixture is missing or already accepted.');
- if(!['regular','extraTime'].includes(finish))throw Error('Confirm whether the game ended in regular time or extra time.');
+ if(!['regular','extraTime'].includes(finish)&&!(finish==='pending'&&draft.settings.trialSchedule))throw Error('Confirm whether the game ended in regular time or extra time.');
  const candidates=fixtureCandidates(fixture,[game],{timeZone:draft.settings.timeZone,acceptedMatchIds:results.map(r=>r.matchId)});
  if(candidates.candidates.length!==1)throw Error('This EA game does not match the scheduled clubs, date and kickoff window, or was already used.');
  const home=game.clubs[fixture.home.eaClubId],away=game.clubs[fixture.away.eaClubId];if(!home||!away)throw Error('Missing EA club data.');
@@ -33,9 +33,9 @@ export function acceptedAppearances(draft){return (draft.acceptedResults||[]).fl
 export function leagueStandings(draft){
  const policy=draft.settings.pageContent?.standings||{},rows=new Map(draft.settings.teams.map(team=>[team.id,{...team,played:0,wins:0,regularWins:0,extraWins:0,extraLosses:0,regularLosses:0,goalsFor:0,goalsAgainst:0,points:0,headToHead:0}]));
  for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(f=>f.id===result.fixtureId);if(!f)continue;const home=rows.get(f.home.id),away=rows.get(f.away.id);if(!home||!away)continue;
-  for(const [team,own,other] of [[home,result.homeScore,result.awayScore],[away,result.awayScore,result.homeScore]]){team.played++;team.goalsFor+=own;team.goalsAgainst+=other;const win=own>other,extra=result.finish==='extraTime';team[extra?(win?'extraWins':'extraLosses'):(win?'regularWins':'regularLosses')]++;if(win)team.wins++;team.points+=extra?(win?(policy.extraTimeWin??2):(policy.extraTimeLoss??1)):(win?(policy.win??3):(policy.loss??0));}
+  for(const [team,own,other] of [[home,result.homeScore,result.awayScore],[away,result.awayScore,result.homeScore]]){team.played++;team.goalsFor+=own;team.goalsAgainst+=other;const win=own>other,extra=result.finish==='extraTime';if(win)team.wins++;if(result.finish==='pending'){team.pendingPoints=(team.pendingPoints||0)+1;continue;}team[extra?(win?'extraWins':'extraLosses'):(win?'regularWins':'regularLosses')]++;team.points+=extra?(win?(policy.extraTimeWin??2):(policy.extraTimeLoss??1)):(win?(policy.win??3):(policy.loss??0));}
  }
- for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(f=>f.id===result.fixtureId),a=rows.get(f?.home.id),b=rows.get(f?.away.id);if(!a||!b||a.points!==b.points)continue;for(const [team,own,other] of [[a,result.homeScore,result.awayScore],[b,result.awayScore,result.homeScore]])team.headToHead+=result.finish==='extraTime'?(own>other?(policy.extraTimeWin??2):(policy.extraTimeLoss??1)):(own>other?(policy.win??3):(policy.loss??0));}
+ for(const result of draft.acceptedResults||[]){if(result.finish==='pending')continue;const f=draft.fixtures.find(f=>f.id===result.fixtureId),a=rows.get(f?.home.id),b=rows.get(f?.away.id);if(!a||!b||a.points!==b.points)continue;for(const [team,own,other] of [[a,result.homeScore,result.awayScore],[b,result.awayScore,result.homeScore]])team.headToHead+=result.finish==='extraTime'?(own>other?(policy.extraTimeWin??2):(policy.extraTimeLoss??1)):(own>other?(policy.win??3):(policy.loss??0));}
  const metric=(row,key)=>key==='goalDifference'?row.goalsFor-row.goalsAgainst:row[key];
  return [...rows.values()].sort((a,b)=>{let diff=b.points-a.points;for(const key of policy.tiebreakers||['goalDifference','goalsFor','wins','headToHead'])diff||=metric(b,key)-metric(a,key);return diff||a.name.localeCompare(b.name);});
 }

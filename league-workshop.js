@@ -3,9 +3,10 @@ import {EA_TRIAL_ID,eaTrialSettings} from './league-ea-trial.js?v=20261014-trial
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261014-trial2';
+import {renderLeaguePage} from './league-page.js?v=20261014-auto1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
-import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js';
+import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261014-auto1';
+import {importAutomaticTrial} from './league-ea-auto.js?v=20261014-auto1';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
@@ -219,3 +220,29 @@ async function checkFixture(index,id,button){
  review.querySelectorAll('article').forEach((article,i)=>{const controls=document.createElement('div');controls.innerHTML='<label>Confirmed finish<select><option value="">Select after reviewing the game</option><option value="regular">Regular time (3 / 0 points)</option><option value="extraTime">Extra time (2 / 1 points)</option></select></label><button type="button">Accept into this local test league</button><p>Confirm this was the scheduled league game, not a practice/rematch. This is a local preview approval, not a secured official result.</p>';article.append(controls);controls.querySelector('button').onclick=()=>{try{drafts[index]=acceptFixtureResult(drafts[index],id,result.candidates[i],controls.querySelector('select').value);persistDrafts();review.hidden=true;renderDrafts();pageReport('Scheduled result accepted locally. Only accepted fixtures feed this draft’s table, player totals and TOTW candidates.');}catch(error){pageReport(error.message);}};});
  }catch(error){review.innerHTML=`<h2>Could not check EA</h2><p>${escape(error.message)}</p>`;}finally{button.disabled=false;}
 }
+
+let automaticTrialBusy=false;
+async function checkAutomaticTrials(){
+ if(automaticTrialBusy)return;
+ const trials=drafts.filter(d=>d.settings.trialSchedule===EA_TRIAL_ID);
+ if(!trials.length)return;automaticTrialBusy=true;
+ const notes=[];let total=0;
+ try{
+  for(const original of trials){
+   const due=original.fixtures.filter(f=>f.startsAt<=Date.now()&&f.home.eaClubId&&f.away.eaClubId&&!(original.acceptedResults||[]).some(r=>r.fixtureId===f.id));
+   if(!due.length){notes.push('Waiting for linked scheduled fixtures to be played.');continue;}
+   const ids=[...new Set(due.flatMap(f=>[f.home.eaClubId,f.away.eaClubId]))],games=[];
+   for(const id of ids){try{const r=await fetch(`/api/ea/clubs/${id}/matches`,{cache:'no-store',signal:AbortSignal.timeout(30000)}),data=await r.json();if(!r.ok||!Array.isArray(data.matches))throw Error(data.error||'Invalid response');games.push(...data.matches);if(data.partial)notes.push(`Club ${id}: partial EA feed.`);}catch{notes.push(`Club ${id}: EA unavailable; retrying next check.`);}}
+   // A user may edit another league while network calls run; never replace it.
+   const index=drafts.indexOf(original);if(index<0)continue;
+   const imported=importAutomaticTrial(drafts[index],games);drafts[index]=imported.draft;total+=imported.added;notes.push(...imported.warnings);
+  }
+  if(total){persistDrafts();renderDrafts();}
+  const text=`Auto EA check ${new Date().toLocaleTimeString()}: ${total} new scheduled result(s). ${notes.join(' ')} Next check in 5 minutes while this page remains open.`;
+  const el=document.querySelector('[data-auto-trial-status]');if(el)el.textContent=text;
+ }catch(error){pageReport(`Automatic EA trial: ${error.message}. Keep this page open to retry. Check saved state before closing.`);}
+ finally{automaticTrialBusy=false;}
+}
+setInterval(checkAutomaticTrials,5*60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAutomaticTrials();});
+checkAutomaticTrials();
