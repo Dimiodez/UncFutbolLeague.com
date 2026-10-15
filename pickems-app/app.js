@@ -71,7 +71,7 @@ function readDraft(week){
  return {picks,tiebreaker};}catch{return null;}
 }
 function rememberDraft(){
- const picks={};$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ const picks={};$$$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
  try{sessionStorage.setItem('ufl-pickem-draft:'+ballotKey(state.competition,state.simpleWeek),JSON.stringify({picks,tiebreaker:$('#tiebreaker').value,at:Date.now()}));}catch{}
 }
 function loginDestination(){return '/account?returnTo='+encodeURIComponent('/pickems?'+new URLSearchParams({season:state.selectedSeason,division:state.selectedDivision,matchday:state.simpleWeek}));}
@@ -87,7 +87,7 @@ async function saveSimpleBallot(){
  if(!authState.authenticated){rememberDraft();window.top.location.assign(loginDestination());return;}
  const button=$('#save-simple');if(button.disabled)return;
  const competition=state.competition,week=state.simpleWeek,picks={};
- $('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
+ $$('[data-choice].selected').forEach(b=>picks[b.dataset.match]=b.dataset.choice);
  const total=fixturesForWeek(week).length;
  if(Object.keys(picks).length!==total)return showSaveStatus('Choose a result for all '+total+' matches before saving.');
  const rawGoals=$('#tiebreaker').value,goals=Number(rawGoals);
