@@ -1,9 +1,10 @@
 // User-supplied October 15 fixtures. No VA links, fetches or imported results.
 export const EA_TRIAL_ID='ufl-6v6-20261015';
 export const EA_TRIAL_TEAMS=[
- ['UFL Italia','1663550'],['UFL Toluca','1197975'],['UFL Bayern','1194187'],['UFL Rippettes','1642215'],['UFL Arsenal','1597678'],['UFL Druzhba','1597742'],['UFL Ta6asco Kids','1330650'],['UFL Pumas UNAM','1663505'],['UFL LAFC','1565032'],['UFL Roma','1236403']
+ ['UFL Italia','1663550'],['UFL Toluca','1197975'],['UFL Bayern','1194187'],['UFL Rippettes','1642215'],['UFL Arsenal','1664060'],['UFL Druzhba','1597742'],['UFL Ta6asco Kids','1330650'],['UFL Pumas UNAM','1663505'],['UFL LAFC','1565032'],['UFL Roma','1236403']
 ].map(([name,eaClubId],i)=>({id:`team-${i+1}`,name,eaClubId}));
 export const EA_TRIAL_ROUNDS=[[[0,1],[2,3],[4,5],[6,7],[8,9]],[[1,2],[0,4],[3,6],[5,8],[7,9]]];
+export function upgradeTrialClubIds(teams,acceptedResults=[]){return teams.map(team=>{const known=EA_TRIAL_TEAMS.find(t=>t.id===team.id);let eaClubId=team.eaClubId||known?.eaClubId||'';if(team.id==='team-5'&&eaClubId==='1597678'&&!acceptedResults.some(r=>['ea-trial-r1-3','ea-trial-r2-2'].includes(r.fixtureId)))eaClubId='1664060';return {...team,eaClubId};});}
 export function eaTrialSettings(){return {trialSchedule:EA_TRIAL_ID,season:'UFL Season 2 · EA Test',league:'UFL 6v6 · October 15 EA Trial',format:'6v6',size:6,maxTeamSize:8,keepersEnabled:false,startDate:'2026-10-15',weekday:4,time:'21:00',timeZone:'America/Chicago',spacingMinutes:30,repeatWeeks:1,matchnightCount:1,byePolicy:'fullNight',byePolicyRevision:2,breaks:[],windows:[],teams:EA_TRIAL_TEAMS.map(t=>({...t})),pagePublished:true};}
 export function buildEaTrial(settings,toTimestamp){
  if(settings.startDate!=='2026-10-15'||settings.time!=='21:00'||settings.timeZone!=='America/Chicago'||Number(settings.spacingMinutes)!==30)throw Error('The trial follows the supplied October 15, 9:00/9:30 PM Central schedule. Create a separate draft for different dates or times.');

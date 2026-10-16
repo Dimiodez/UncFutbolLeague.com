@@ -46,7 +46,7 @@ export default {
   const response = await env.ASSETS.fetch(request);
   const headers = new Headers(response.headers); headers.set('x-robots-tag','noindex, nofollow');
   if(['/league-workshop','/league-workshop.html'].includes(path)&&request.method==='GET'&&headers.get('content-type')?.includes('text/html')){
-   const html=(await response.text()).replace('src="/league-workshop.js"','src="/league-workshop.js?v=20261015-recovery1"');
+   const html=(await response.text()).replace('src="/league-workshop.js"','src="/league-workshop.js?v=20261016-arsenal1"');
    headers.set('cache-control','no-store');headers.delete('content-length');headers.delete('etag');
    return new Response(html,{status:response.status,headers});
   }
