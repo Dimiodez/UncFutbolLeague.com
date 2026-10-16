@@ -3,18 +3,18 @@ import {EA_TRIAL_ID,upgradeTrialClubIds,eaTrialSettings} from './league-ea-trial
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261016-suite1';
+import {renderLeaguePage} from './league-page.js?v=20261016-layout2';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261016-suite1';
 import {importAutomaticTrial} from './league-ea-auto.js?v=20261016-suite1';
-import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261016-suite1';
+import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261016-layout2';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
 import {watchUnsaved} from './league-workspace-status.js';
 import {installAccountDrafts} from './league-account-drafts.js';
 import {installEaTestLab} from './league-ea-test.js?v=20261015-ux1';
 import {correctFixture,applyConfirmedTrialCorrection} from './league-result-corrections.js';
-const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css?v=20261015-ux1';document.head.append(uxStyle);
+const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css?v=20261016-layout2';document.head.append(uxStyle);
 installWorkshopBrand();
 installEaTestLab();
 const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
@@ -263,5 +263,5 @@ async function syncSharedResults(force=false){
   if(changed){persistDrafts();renderDrafts();}showCollectorHealth();
  }catch(error){const status=document.querySelector('[data-collector-health]');if(status)status.textContent=`Shared collector status unavailable: ${error.message}. Browser draft retained.`;}finally{syncingShared=false;}
 }
-function showCollectorHealth(){const id=activeLeague===null?null:drafts[activeLeague]?.settings.serverLeagueId||drafts[activeLeague]?.settings.trialSchedule,row=sharedLeagues.get(id);document.querySelector('[data-collector-health]')?.remove();if(!row||pageHost.hidden)return;pageHost.querySelectorAll('.league-tracking-summary').forEach(el=>el.remove());const status=document.createElement('section');status.dataset.collectorHealth='';status.className='league-tracking-summary';status.setAttribute('role','status');const label=document.createElement('strong');label.textContent='Shared server collector · every 5 minutes · browser not required';const detail=document.createElement('p');detail.textContent=`Last check: ${row.checked_at?row.checked_at+' UTC':'awaiting first cron'} · Last complete success: ${row.succeeded_at?row.succeeded_at+' UTC':'not yet'} · Revision ${row.revision}.`;const health=document.createElement('p');health.textContent=row.health?.error||row.health?.warnings?.join(' ')||'No collection errors recorded.';status.append(label,detail,health);pageHost.querySelector('.league-page-hero').append(status);}
+function showCollectorHealth(){const id=activeLeague===null?null:drafts[activeLeague]?.settings.serverLeagueId||drafts[activeLeague]?.settings.trialSchedule,row=sharedLeagues.get(id);document.querySelector('[data-collector-health]')?.remove();if(!row||pageHost.hidden)return;pageHost.querySelectorAll('.league-tracking-summary').forEach(el=>el.remove());const status=document.createElement('section');status.dataset.collectorHealth='';status.className='league-tracking-summary';status.setAttribute('role','status');const label=document.createElement('strong');label.textContent='Shared server collector · every 5 minutes · browser not required';const detail=document.createElement('p');detail.textContent=`Last check: ${row.checked_at?row.checked_at+' UTC':'awaiting first cron'} · Last complete success: ${row.succeeded_at?row.succeeded_at+' UTC':'not yet'} · Revision ${row.revision}.`;const health=document.createElement('p');health.textContent=row.health?.error||row.health?.warnings?.join(' ')||'No collection errors recorded.';const disclosure=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Collection status & diagnostics';disclosure.append(summary,detail,health);status.append(label,disclosure);pageHost.querySelector('.league-page-hero').append(status);}
 setInterval(syncSharedResults,60000);syncSharedResults();
