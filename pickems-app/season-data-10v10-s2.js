@@ -11,8 +11,8 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-  "syncedAt": "2026-10-15T07:00:03.000Z",
-  "statsFetchedAt": "2026-10-15T07:00:03.000Z",
+  "syncedAt": "2026-10-16T07:00:02.000Z",
+  "statsFetchedAt": "2026-10-16T07:00:02.000Z",
   "statsStatus": "available",
   "teams": {
     "NSH": [
@@ -1234,6 +1234,19 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
+              "name": "A_Poon",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/a-poon-1791606103.png",
+              "url": "https://ufl.virtualarena.app/users/A_Poon"
+            },
+            "team": {
+              "name": "Real Madrid",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+            },
+            "stat": "4",
+            "played": 2
+          },
+          {
+            "data": {
               "name": "Schweinslap",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1786509809.png",
               "url": "https://ufl.virtualarena.app/users/Schweinslap"
@@ -1273,22 +1286,9 @@ window.UFL_SEASON_10V10_S2 = {
           },
           {
             "data": {
-              "name": "Dlowwtv",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dlowwtv-1784737035.png",
-              "url": "https://ufl.virtualarena.app/users/Dlowwtv"
-            },
-            "team": {
-              "name": "UFL Milan",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
-            },
-            "stat": "2",
-            "played": 2
-          },
-          {
-            "data": {
-              "name": "A_Poon",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/a-poon-1791606103.png",
-              "url": "https://ufl.virtualarena.app/users/A_Poon"
+              "name": "TheFlav",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/theflav-1791980771.png",
+              "url": "https://ufl.virtualarena.app/users/TheFlav"
             },
             "team": {
               "name": "Real Madrid",
