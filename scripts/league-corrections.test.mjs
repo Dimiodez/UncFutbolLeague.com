@@ -7,5 +7,9 @@ test('confirmed quit is a protected draw and manual stats survive reload/recheck
  const correction=correctFixture(draft,quit.fixtureId,{homeScore:0,awayScore:0,reason:'Checked regulation screenshot',appearances:quit.appearances.map((p,i)=>i? p:{...p,rating:9.2})});
  assert.deepEqual(importAutomaticTrial(correction,snapshot.matches).draft.acceptedResults,correction.acceptedResults);
  assert.deepEqual(restoreAcceptedResults(buildLeagueSchedule(correction.settings),correction.acceptedResults).acceptedResults,correction.acceptedResults);
+ correction.acceptedResults.find(r=>r.fixtureId===quit.fixtureId).correction.localOnly=true;
+ assert.equal(restoreAcceptedResults(buildLeagueSchedule(correction.settings),correction.acceptedResults).acceptedResults.find(r=>r.fixtureId===quit.fixtureId).correction.localOnly,true);
+ const shared={...draft,settings:{...draft.settings,trialSchedule:null,collectionEnabled:true}};
+ assert.equal(correctFixture(shared,quit.fixtureId,{homeScore:0,awayScore:0,reason:'Standard shared draw test',finish:'extraTime'}).acceptedResults.at(-1).finish,'standard');
  assert.throws(()=>correctFixture(draft,quit.fixtureId,{homeScore:0,awayScore:0,reason:''}));assert(needsResultReview({clubs:{a:{goals:3},b:{goals:0}}}));assert(!needsResultReview({clubs:{a:{goals:2},b:{goals:1}}}));
 });
