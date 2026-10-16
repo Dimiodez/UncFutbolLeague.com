@@ -3,13 +3,13 @@ import assert from 'node:assert/strict';
 import {eaTrialSettings} from '../league-ea-trial.js';
 import {buildLeagueSchedule,fixtureCandidates} from '../league-engine.js';
 import {acceptFixtureResult,restoreAcceptedResults,leagueStandings,acceptedAppearances} from '../league-results.js';
-test('real ten-team trial has exact two rounds and only five supplied IDs',()=>{
+test('real ten-team trial has exact two rounds and ten verified linked IDs',()=>{
  const d=buildLeagueSchedule(eaTrialSettings());
- assert.equal(d.settings.teams.length,10);assert.equal(d.settings.teams.filter(t=>t.eaClubId).length,5);assert.equal(d.fixtures.length,10);assert.equal(d.nights.length,1);
+ assert.equal(d.settings.teams.length,10);assert.equal(d.settings.teams.filter(t=>t.eaClubId).length,10);assert.equal(d.fixtures.length,10);assert.equal(d.nights.length,1);
  assert.equal(d.fixtures[4].home.name,'UFL LAFC');assert.equal(d.fixtures[4].away.name,'UFL Roma');assert.equal(new Date(d.fixtures[4].startsAt).toISOString(),'2026-10-16T02:00:00.000Z');
  assert.equal(d.fixtures[5].home.name,'UFL Toluca');assert.equal(d.fixtures[5].away.name,'UFL Bayern');assert.equal(new Date(d.fixtures[5].startsAt).toISOString(),'2026-10-16T02:30:00.000Z');
  for(const t of d.settings.teams)assert.equal(d.fixtures.filter(f=>[f.home.id,f.away.id].includes(t.id)).length,2);
- assert.equal(d.fixtures.filter(f=>f.home.eaClubId&&f.away.eaClubId).length,2);
+ assert.equal(d.fixtures.filter(f=>f.home.eaClubId&&f.away.eaClubId).length,10);
  assert(leagueStandings(d).every(t=>t.played===0&&t.points===0));assert.equal(acceptedAppearances(d).length,0);
 });
 test('scheduled EA result updates trial once and survives restored exact fixtures',()=>{

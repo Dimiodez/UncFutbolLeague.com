@@ -1,12 +1,12 @@
 import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261014-trial1';
-import {EA_TRIAL_ID,EA_TRIAL_TEAMS,eaTrialSettings} from './league-ea-trial.js?v=20261015-ids1';
+import {EA_TRIAL_ID,EA_TRIAL_TEAMS,eaTrialSettings} from './league-ea-trial.js?v=20261015-recovery1';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261015-stats1';
+import {renderLeaguePage} from './league-page.js?v=20261015-recovery1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
-import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261015-stats1';
-import {importAutomaticTrial} from './league-ea-auto.js?v=20261015-stats1';
+import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261015-recovery1';
+import {importAutomaticTrial} from './league-ea-auto.js?v=20261015-recovery1';
 import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261015-ux1';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
@@ -228,19 +228,21 @@ async function checkAutomaticTrials(){
  if(automaticTrialBusy)return;
  const trials=drafts.filter(d=>d.settings.trialSchedule===EA_TRIAL_ID);
  if(!trials.length)return;automaticTrialBusy=true;
- const notes=[];let total=0;
+ const notes=[];let total=0,updated=0;
  try{
   for(const original of trials){
-   const due=original.fixtures.filter(f=>f.startsAt<=Date.now()&&f.home.eaClubId&&f.away.eaClubId&&!(original.acceptedResults||[]).some(r=>r.fixtureId===f.id));
+   try{const response=await fetch('/assets/ea-trial-recovery-20261015.json',{cache:'no-store'});if(!response.ok)throw Error('Archive unavailable');const archive=await response.json();if(archive.trialSchedule!==EA_TRIAL_ID||!Array.isArray(archive.matches))throw Error('Invalid archive');const index=drafts.indexOf(original);if(index>=0){const recovered=importAutomaticTrial(drafts[index],archive.matches);drafts[index]=recovered.draft;total+=recovered.added;updated+=recovered.updated;notes.push(...recovered.warnings);if(recovered.added||recovered.updated){persistDrafts();renderDrafts();}}}catch{notes.push('Recovery snapshot unavailable; checking EA history.');}
+   const current=drafts.find(d=>d.settings.trialSchedule===original.settings.trialSchedule);if(!current)continue;
+   const due=current.fixtures.filter(f=>f.startsAt<=Date.now()&&f.home.eaClubId&&f.away.eaClubId&&!(current.acceptedResults||[]).some(r=>r.fixtureId===f.id));
    if(!due.length){notes.push('Waiting for linked scheduled fixtures to be played.');continue;}
    const ids=[...new Set(due.flatMap(f=>[f.home.eaClubId,f.away.eaClubId]))],games=[];
-   for(const id of ids){try{const r=await fetch(`/api/ea/clubs/${id}/matches`,{cache:'no-store',signal:AbortSignal.timeout(30000)}),data=await r.json();if(!r.ok||!Array.isArray(data.matches))throw Error(data.error||'Invalid response');games.push(...data.matches);if(data.partial)notes.push(`Club ${id}: partial EA feed.`);}catch{notes.push(`Club ${id}: EA unavailable; retrying next check.`);}}
+   for(const id of ids){try{const r=await fetch(`/api/ea/clubs/${id}/matches`,{cache:'no-store',signal:AbortSignal.timeout(30000)}),data=await r.json();if(!r.ok||!Array.isArray(data.matches))throw Error(data.error||'Invalid response');games.push(...data.matches);if(data.partial)notes.push(`Club ${id}: ${(data.feeds||[]).filter(f=>!f.available).map(f=>f.type).join(', ')||'some match types'} unavailable. Missing results are not counted as losses.`);}catch{notes.push(`Club ${id}: EA unavailable; retrying next check.`);}}
    // A user may edit another league while network calls run; never replace it.
-   const index=drafts.indexOf(original);if(index<0)continue;
-   const imported=importAutomaticTrial(drafts[index],games);drafts[index]=imported.draft;total+=imported.added;notes.push(...imported.warnings);
+   const index=drafts.indexOf(current);if(index<0)continue;
+   const imported=importAutomaticTrial(drafts[index],games);drafts[index]=imported.draft;total+=imported.added;updated+=imported.updated;notes.push(...imported.warnings);
   }
-  if(total){persistDrafts();renderDrafts();}
-  const text=`Auto EA check ${new Date().toLocaleTimeString()}: ${total} new scheduled result(s). ${notes.join(' ')} Next check in 5 minutes while this page remains open.`;
+  if(total||updated){persistDrafts();renderDrafts();}
+  const text=`Auto EA check ${new Date().toLocaleTimeString()}: ${total} new scheduled result(s), ${updated} player-stat update(s). ${notes.join(' ')} Next check in 5 minutes while this page remains open.`;
   const el=document.querySelector('[data-auto-trial-status]');if(el)el.textContent=text;
  }catch(error){pageReport(`Automatic EA trial: ${error.message}. Keep this page open to retry. Check saved state before closing.`);}
  finally{automaticTrialBusy=false;}

@@ -1,5 +1,6 @@
 import {getSession,json,sameOrigin} from './auth.js';
 import {consumeRateLimit} from './rate-limit.js';
+import {MATCH_TYPES,readMatchType} from './ea-match-feed.js';
 const PLATFORM='common-gen5';
 const ROOT='https://proclubs-api.onrender.com/api';
 async function relay(path){
@@ -23,12 +24,13 @@ export async function previewEaApi(request,env){
   }
   const match=path.match(/^\/api\/ea\/clubs\/(\d{1,20})\/matches$/);
   if(match&&request.method==='GET'){
-   const results=await Promise.allSettled(['leagueMatch','playoffMatch','friendlyMatch'].map(type=>relay(`/clubs/${match[1]}/matches?platform=${PLATFORM}&type=${type}`)));
-   const successful=results.filter(result=>result.status==='fulfilled');
-   if(!successful.length)throw new Error('All EA match feeds failed');
-   const unique=new Map();successful.forEach(result=>result.value.forEach(game=>unique.set(String(game.matchId),game)));
+   const results=await Promise.all(MATCH_TYPES.map(([type,eaType])=>readMatchType(match[1],type,eaType)));
+   const successful=results.filter(result=>result.available);
+   const feeds=results.map(({matches,...status})=>status);
+   if(!successful.length)return json({clubId:match[1],error:'All EA match feeds failed.',feeds,partial:true,checkedAt:Date.now()},502);
+   const unique=new Map();successful.forEach(result=>result.matches.forEach(game=>unique.set(String(game.matchId),game)));
    const matches=[...unique.values()].sort((a,b)=>Number(b.timestamp)-Number(a.timestamp));
-   return json({clubId:match[1],matches,checkedAt:Date.now(),partial:successful.length!==results.length,source:'EA Clubs via relay',note:'These are club games, not accepted league fixtures. A successful check does not mean EA has published new results.'});
+   return json({clubId:match[1],matches,feeds,checkedAt:Date.now(),partial:successful.length!==results.length,source:'EA Clubs via relay with direct fallback',note:'Check feeds for unavailable match types. Missing friendly history is not evidence of no games played.'});
   }
   if(path==='/api/ea/links'){
    const actor=await getSession(request,env);

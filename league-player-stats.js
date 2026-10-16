@@ -9,7 +9,7 @@ export function clubPlayers(game,clubId){
  if(players[clubId]&&typeof players[clubId]==='object'&&!('clubId' in players[clubId])&&!('playername' in players[clubId])&&!('name' in players[clubId]))return Object.entries(players[clubId]);
  return Object.entries(players).filter(([,p])=>p&&String(p.clubId)===String(clubId));
 }
-export function detailedStats(player){return Object.fromEntries(DETAIL_FIELDS.map(key=>[key,numeric(player[key])]));}
+export function detailedStats(player){const aliases={passes:'passattempts',passesCompleted:'passesmade',tackles:'tackleattempts',tacklesWon:'tacklesmade',redCards:'redcards',yellowCards:'yellowcards',manOfTheMatch:'mom'};return Object.fromEntries(DETAIL_FIELDS.map(key=>[key,numeric(player[key]??player[aliases[key]])]));}
 export function playerTotals(records,{excludeDisconnectRatings=true}={}){
  const rows=new Map(),fields=['goals','assists',...DETAIL_FIELDS];
  for(const p of records){const key=JSON.stringify([p.teamId,p.playerId]);if(!rows.has(key))rows.set(key,{...p,apps:0,totals:Object.fromEntries(fields.map(k=>[k,0])),known:Object.fromEntries(fields.map(k=>[k,true])),ratingSum:0,ratingCount:0});const r=rows.get(key);r.apps++;

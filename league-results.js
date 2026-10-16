@@ -1,6 +1,6 @@
 import {fixtureCandidates} from './league-engine.js';
 import {awardLeagueKey} from './league-awards-model.js';
-import {PLAYER_POSITIONS,DETAIL_FIELDS,numeric,eaPosition,clubPlayers,detailedStats} from './league-player-stats.js';
+import {PLAYER_POSITIONS,DETAIL_FIELDS,numeric,eaPosition,clubPlayers,detailedStats} from './league-player-stats.js?v=20261015-recovery1';
 const score=value=>{if(value===null||value===undefined||value==='')throw Error('EA did not provide both scores. Do not guess a result.');const n=Number(value);if(!Number.isInteger(n)||n<0||n>100)throw Error('Invalid EA score.');return n;};
 export const standardTrial=draft=>!!draft.settings.trialSchedule&&draft.settings.scoringMode!=='noDraws';
 export function acceptFixtureResult(draft,fixtureId,game,finish){
@@ -15,7 +15,7 @@ export function acceptFixtureResult(draft,fixtureId,game,finish){
  const result={fixtureId,matchId:String(game.matchId??game.id),homeScore,awayScore,finish,timestamp:game.playedAt??Number(game.timestamp)*1000,appearances:[]};
  for(const team of [fixture.home,fixture.away])for(const [playerId,player] of clubPlayers(game,team.eaClubId)){
   const name=player.playername??player.name;if(typeof name!=='string'||!name.trim())continue;
-  const position=eaPosition(player.position??player.vProPosition);
+  const position=eaPosition(player.position??player.vProPosition??player.pos);
   result.appearances.push({playerId,name,teamId:team.id,teamName:team.name,position,rating:numeric(player.rating),goals:numeric(player.goals),assists:numeric(player.assists),details:detailedStats(player)});
  }
  return {...draft,acceptedResults:[...results,result]};

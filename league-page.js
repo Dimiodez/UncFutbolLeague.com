@@ -2,8 +2,8 @@ import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-mo
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
 import {renderAwardsWorkbench} from './league-awards.js?v=20261015-stats1';
 import {registrationAllowed} from './league-engine.js';
-import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261015-stats1';
-import {playerTotals} from './league-player-stats.js';
+import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261015-recovery1';
+import {playerTotals} from './league-player-stats.js?v=20261015-recovery1';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
