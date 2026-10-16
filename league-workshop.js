@@ -1,5 +1,6 @@
-import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261014-trial1';
+import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261016-ten1';
 import {EA_TRIAL_ID,upgradeTrialClubIds,eaTrialSettings} from './league-ea-trial.js?v=20261016-arsenal1';
+import {EA_TEN_TRIAL_ID,eaTenTrialSettings} from './league-ea-ten-trial.js';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
@@ -119,8 +120,8 @@ function updateLeague(index,values){
  const calendarKey=value=>JSON.stringify([value.startDate,value.weekday,Number(value.matchnightCount??1),Number(value.matchnightCount??1)===2?Number(value.secondWeekday):null,value.time,value.timeZone,value.spacingMinutes,value.repeatWeeks,value.byePolicy??'split',value.breaks,(value.windows||[]).filter(window=>['bye','holiday','cup','break'].includes(window.type))]);
  const calendarChanged=calendarKey(settings)!==calendarKey(draft.settings);
  if(calendarChanged&&draft.acceptedResults?.length)throw Error('Accepted test results exist. Export a backup and create a new league draft instead of rebuilding its fixtures.');
- if(settings.trialSchedule===EA_TRIAL_ID){for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(x=>x.id===result.fixtureId);for(const t of [f.home,f.away])if(settings.teams.find(x=>x.id===t.id)?.eaClubId!==t.eaClubId)throw Error('Cannot change a club ID already used by an accepted result.');}}
- const updated=settings.trialSchedule===EA_TRIAL_ID?{...buildLeagueSchedule(settings),acceptedResults:draft.acceptedResults||[]}:draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
+ if(settings.trialSchedule){for(const result of draft.acceptedResults||[]){const f=draft.fixtures.find(x=>x.id===result.fixtureId);for(const t of [f.home,f.away])if(settings.teams.find(x=>x.id===t.id)?.eaClubId!==t.eaClubId)throw Error('Cannot change a club ID already used by an accepted result.');}}
+ const updated=settings.trialSchedule?{...buildLeagueSchedule(settings),acceptedResults:draft.acceptedResults||[]}:draft.scheduleGenerated&&calendarChanged?buildLeagueSchedule(settings):{...draft,settings};
  if(draft.scheduleGenerated&&calendarChanged&&!approveCalendarChange(`league-${index}:${JSON.stringify(settings)}`,index))return;
  // Keep competition references consistent when a draft league is renamed or moved.
  competitions=competitions.map(cup=>cup.season===draft.settings.season&&cup.league===draft.settings.league?{...cup,season:settings.season,league:settings.league}:cup);
@@ -202,6 +203,7 @@ if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TRIAL_ID)
  try{const previous=localStorage.getItem(KEY);if(previous)localStorage.setItem(KEY+'-before-ea-trial',previous);persistDrafts();}catch{message.textContent='EA trial loaded but could not be saved on this browser.';}
 }
 drafts=drafts.map(applyConfirmedTrialCorrection);
+if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TEN_TRIAL_ID)&&drafts.length<20){drafts.push(buildLeagueSchedule(eaTenTrialSettings()));try{persistDrafts();}catch{message.textContent='10v10 test loaded; browser save unavailable.';}}
 renderDrafts();
 accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
  hasUnappliedChanges:()=>!!document.querySelector('form[data-unsaved="true"]'),
