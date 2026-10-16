@@ -4822,6 +4822,19 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "DMellow",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dmellow-1784401257.png",
+                "url": "https://ufl.virtualarena.app/users/DMellow"
+              },
+              "team": {
+                "name": "Real Madrid",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+              },
+              "stat": "2",
+              "played": 2
+            },
+            {
+              "data": {
                 "name": "DelCidd",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/delcidd-1788014832.png",
                 "url": "https://ufl.virtualarena.app/users/DelCidd"
@@ -4848,6 +4861,19 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
+                "name": "ROSA",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/rosa-1791157550.png",
+                "url": "https://ufl.virtualarena.app/users/ROSA"
+              },
+              "team": {
+                "name": "Real Madrid",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+              },
+              "stat": "2",
+              "played": 2
+            },
+            {
+              "data": {
                 "name": "Luuuiiisss7",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
                 "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
@@ -4855,32 +4881,6 @@ window.UFL_SEASONS = {
               "team": {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "1",
-              "played": 2
-            },
-            {
-              "data": {
-                "name": "thealphabetman",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/thealphabetman-1791852258.png",
-                "url": "https://ufl.virtualarena.app/users/thealphabetman"
-              },
-              "team": {
-                "name": "UFL Maykop",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "1",
-              "played": 2
-            },
-            {
-              "data": {
-                "name": "DMellow",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dmellow-1784401257.png",
-                "url": "https://ufl.virtualarena.app/users/DMellow"
-              },
-              "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
               "stat": "1",
               "played": 2
