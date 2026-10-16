@@ -1284,7 +1284,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
-        "rosterSize": 5,
+        "rosterSize": 7,
         "stats": []
       },
       {
@@ -1323,7 +1323,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
-        "rosterSize": 4,
+        "rosterSize": 8,
         "stats": []
       },
       {
