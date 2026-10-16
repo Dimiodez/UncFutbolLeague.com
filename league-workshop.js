@@ -1,5 +1,5 @@
 import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261014-trial1';
-import {EA_TRIAL_ID,eaTrialSettings} from './league-ea-trial.js?v=20261014-trial1';
+import {EA_TRIAL_ID,EA_TRIAL_TEAMS,eaTrialSettings} from './league-ea-trial.js?v=20261015-ids1';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
@@ -164,6 +164,7 @@ function restoreDrafts(data){
   const upgraded=upgradeDraftByePolicy(original,entry.acceptedResults||[]);
   if(upgraded.byePolicy==='fullNight'&&original.byePolicy!=='fullNight'&&original.teams?.length%2===1&&original.teams.length>=5)migratedByeCount++;
   const settings=settingsFrom(upgraded);
+  if(settings.trialSchedule===EA_TRIAL_ID)settings.teams=settings.teams.map(team=>({...team,eaClubId:team.eaClubId||EA_TRIAL_TEAMS.find(known=>known.id===team.id)?.eaClubId||''}));
   zonedTimestamp(settings.startDate,settings.time,settings.timeZone);
   let validated=createLeagueDraft({...settings,teams:[]});
   for(const team of settings.teams)validated=registerLeagueTeam(validated,team,{restoring:true});
