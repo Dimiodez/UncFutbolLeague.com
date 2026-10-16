@@ -1,13 +1,14 @@
 import {fixtureCandidates} from './league-engine.js';
 import {awardLeagueKey} from './league-awards-model.js';
 import {PLAYER_POSITIONS,DETAIL_FIELDS,numeric,eaPosition,clubPlayers,detailedStats} from './league-player-stats.js?v=20261015-recovery1';
+import {correctFixture} from './league-result-corrections.js';
 const score=value=>{if(value===null||value===undefined||value==='')throw Error('EA did not provide both scores. Do not guess a result.');const n=Number(value);if(!Number.isInteger(n)||n<0||n>100)throw Error('Invalid EA score.');return n;};
-export const standardTrial=draft=>!!draft.settings.trialSchedule&&draft.settings.scoringMode!=='noDraws';
+export const standardTrial=draft=>!!(draft.settings.trialSchedule||draft.settings.collectionEnabled)&&draft.settings.scoringMode!=='noDraws';
 export function acceptFixtureResult(draft,fixtureId,game,finish){
  const fixture=draft.fixtures.find(f=>f.id===fixtureId),results=draft.acceptedResults||[];
  if(!fixture||results.some(r=>r.fixtureId===fixtureId))throw Error('Fixture is missing or already accepted.');
  if(standardTrial(draft))finish='standard';
- if(!['regular','extraTime'].includes(finish)&&!(draft.settings.trialSchedule&&['pending','standard'].includes(finish)))throw Error('Confirm whether the game ended in regular time or extra time.');
+ if(!['regular','extraTime'].includes(finish)&&!((draft.settings.trialSchedule||standardTrial(draft))&&['pending','standard'].includes(finish)))throw Error('Confirm whether the game ended in regular time or extra time.');
  const candidates=fixtureCandidates(fixture,[game],{timeZone:draft.settings.timeZone,acceptedMatchIds:results.map(r=>r.matchId)});
  if(candidates.candidates.length!==1)throw Error('This EA game does not match the scheduled clubs, date and kickoff window, or was already used.');
  const home=game.clubs[fixture.home.eaClubId],away=game.clubs[fixture.away.eaClubId];if(!home||!away)throw Error('Missing EA club data.');
@@ -25,6 +26,7 @@ export function restoreAcceptedResults(draft,results=[]){
  if(!Array.isArray(results)||results.length>1600)throw Error('Invalid saved results.');
  let checked={...draft,acceptedResults:[]};
  for(const result of results){const fixture=checked.fixtures.find(f=>f.id===result.fixtureId);if(!fixture)throw Error('Saved result has no scheduled fixture.');
+  if(result.correction){if(checked.acceptedResults.some(r=>r.fixtureId===result.fixtureId))throw Error('Duplicate saved correction.');checked=correctFixture(checked,result.fixtureId,{...result,reason:result.correction.reason,statsReview:result.correction.statsReview},{actor:result.correction.actor,now:result.correction.at});Object.assign(checked.acceptedResults.at(-1),{matchId:String(result.matchId),timestamp:result.timestamp,eaOriginal:result.eaOriginal||null,history:result.history||[]});if(result.correction.localOnly===true)checked.acceptedResults.at(-1).correction.localOnly=true;continue;}
   checked=acceptFixtureResult(checked,result.fixtureId,{matchId:result.matchId,playedAt:result.timestamp,clubs:{[fixture.home.eaClubId]:{goals:result.homeScore},[fixture.away.eaClubId]:{goals:result.awayScore}}},result.finish);
   if(!Array.isArray(result.appearances)||result.appearances.length>50)throw Error('Invalid saved player appearances.');
   const seen=new Set();checked.acceptedResults.at(-1).appearances=result.appearances.map(p=>{if(!p||typeof p.playerId!=='string'||!p.playerId||seen.has(p.playerId)||typeof p.name!=='string'||p.name.length>100||!p.name.trim()||![fixture.home.id,fixture.away.id].includes(p.teamId)||p.position!==null&&!PLAYER_POSITIONS.includes(p.position)||['rating','goals','assists'].some(key=>p[key]!==null&&(!Number.isFinite(p[key])||p[key]<0))||p.rating>10)throw Error('Invalid saved player appearance.');if(p.details!==undefined&&(!p.details||typeof p.details!=='object'||Array.isArray(p.details)||Object.entries(p.details).some(([key,value])=>!DETAIL_FIELDS.includes(key)||value!==null&&(!Number.isFinite(value)||value<0))))throw Error('Invalid saved detailed stats.');seen.add(p.playerId);return {...p,teamName:[fixture.home,fixture.away].find(t=>t.id===p.teamId).name};});

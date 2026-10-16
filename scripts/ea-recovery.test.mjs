@@ -13,5 +13,5 @@ test('real October 15 EA recovery retains ten results and 116 player appearances
  assert(playerTotals(records).some(p=>p.known.passes&&p.totals.passes>0));assert.equal(leagueStandings(result.draft).reduce((s,t)=>s+t.played,0),20);
  assert.deepEqual(restoreAcceptedResults(draft,JSON.parse(JSON.stringify(result.draft.acceptedResults))).acceptedResults,result.draft.acceptedResults);
  assert.equal(importAutomaticTrial(result.draft,archive.matches).added,0);assert.equal(importAutomaticTrial(result.draft,archive.matches).updated,0);
- const incomplete={...result.draft,acceptedResults:result.draft.acceptedResults.map(r=>({...r,appearances:[]}))},enriched=importAutomaticTrial(incomplete,archive.matches);assert.equal(enriched.added,0);assert.equal(enriched.updated,10);assert.equal(acceptedAppearances(enriched.draft).length,116);
+ const incomplete={...result.draft,acceptedResults:result.draft.acceptedResults.map(r=>r.correction?r:{...r,appearances:[]})},enriched=importAutomaticTrial(incomplete,archive.matches);assert.equal(enriched.added,0);assert.equal(enriched.updated,9);assert.equal(acceptedAppearances(enriched.draft).length,116);
 });

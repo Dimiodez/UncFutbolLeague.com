@@ -2,20 +2,21 @@ import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-mo
 import {renderSectionTools,renderTeamManagement} from './league-editors.js';
 import {renderAwardsWorkbench} from './league-awards.js?v=20261015-stats1';
 import {registrationAllowed} from './league-engine.js';
-import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261015-recovery1';
+import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261016-suite1';
 import {playerTotals} from './league-player-stats.js?v=20261015-recovery1';
 import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
 import {renderSeasonRollover} from './league-season-rollover.js';
+import {renderMatchManagement} from './league-match-management.js?v=20261016-suite1';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
 const ADMIN_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
 const sectionMoves=new WeakMap();
 const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
 
-export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onReport}){
- const LEAGUE_TABS=draft.settings.trialSchedule?SITE_LEAGUE_TABS:ADMIN_TABS;
+export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onCorrect,onRegisterCollection,onReport}){
+ const LEAGUE_TABS=draft.settings.trialSchedule||draft.settings.collectionEnabled?SITE_LEAGUE_TABS:ADMIN_TABS;
  // Return borrowed library controls before replacing the previous section.
  for(const [node,parent] of sectionMoves.get(host)||[])parent.append(node);
  const moved=[];sectionMoves.set(host,moved);
@@ -75,6 +76,8 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  }
  if(tab==='players'){body.replaceChildren();renderSharedRoster(body,draft);}
  if(tab==='matches'){
+  renderMatchManagement(body,draft,onCorrect,onReport);
+  const collection=document.createElement('section');collection.className='card';collection.innerHTML='<h3>Shared background collection</h3><p>Owner/admin can enable this scheduled league for server collection. It runs with the browser closed. Shared writes require Discord sign-in; local corrections remain available.</p><button type="button">Enable background collection for this league</button>';collection.querySelector('button').onclick=()=>onRegisterCollection();body.prepend(collection);
   renderSeasonCalendar({host:body,draft});
   if(!draft.scheduleGenerated)note('No fixtures yet. Add teams in Teams, close registration, then generate the schedule. The league page does not require fixtures to be published.');
   const windows=card.querySelector('.workshop-windows');move(windows,admin);

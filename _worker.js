@@ -9,6 +9,7 @@ import {previewRegistrationApi} from './functions/_lib/preview-registration.js';
 import {previewSoundApi} from './functions/_lib/preview-sound.js';
 import {previewDraftsApi} from './functions/_lib/preview-drafts.js';
 import {previewTeamHubApi} from './functions/_lib/preview-team-hub.js';
+import {previewLeagueResultsApi} from './functions/_lib/preview-league-results.js';
 // Preview boundary: no production DB, storage, OAuth sessions, or bot bindings.
 // Photos remain owned by production; this narrowly scoped GET proxy only displays them.
 const LIVE_ORIGIN = 'https://www.uncfutbolleague.com';
@@ -32,6 +33,7 @@ export default {
   if (path === '/api/sound') return previewSoundApi(request,env);
   if (path === '/api/drafts') return previewDraftsApi(request,env);
   if (path === '/api/team-hub') return previewTeamHubApi(request,env);
+  if (path === '/api/league-results') return previewLeagueResultsApi(request,env);
   if (!['GET','HEAD'].includes(request.method)) return json({error:'Changes are disabled in this read-only development preview. Live data has not been changed.'},403);
   const portrait = /^\/assets\/league\/player-[a-zA-Z0-9._-]+$/.test(path) || path === '/api/player-portraits' || /^\/api\/player-portraits\/[a-zA-Z0-9_-]+$/.test(path);
   if (portrait) {
@@ -46,7 +48,7 @@ export default {
   const response = await env.ASSETS.fetch(request);
   const headers = new Headers(response.headers); headers.set('x-robots-tag','noindex, nofollow');
   if(['/league-workshop','/league-workshop.html'].includes(path)&&request.method==='GET'&&headers.get('content-type')?.includes('text/html')){
-   const html=(await response.text()).replace('src="/league-workshop.js"','src="/league-workshop.js?v=20261016-arsenal1"');
+   const html=(await response.text()).replace('src="/league-workshop.js"','src="/league-workshop.js?v=20261016-suite1"');
    headers.set('cache-control','no-store');headers.delete('content-length');headers.delete('etag');
    return new Response(html,{status:response.status,headers});
   }

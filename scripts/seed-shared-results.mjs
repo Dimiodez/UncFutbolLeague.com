@@ -1,0 +1,10 @@
+import {readFile} from 'node:fs/promises';
+import {buildLeagueSchedule} from '../league-engine.js';
+import {eaTrialSettings,EA_TRIAL_ID} from '../league-ea-trial.js';
+import {importAutomaticTrial} from '../league-ea-auto.js';
+const snapshot=JSON.parse(await readFile(new URL('../assets/ea-trial-recovery-20261015.json',import.meta.url),'utf8'));
+const result=importAutomaticTrial(buildLeagueSchedule({...eaTrialSettings(),serverLeagueId:EA_TRIAL_ID,collectionEnabled:true}),snapshot.matches,Date.now());
+if(result.draft.acceptedResults.length!==10)throw Error('Do not seed an incomplete recovery.');
+const quote=v=>"'"+String(v).replaceAll("'","''")+"'",draft={settings:result.draft.settings,acceptedResults:result.draft.acceptedResults};
+console.log(`INSERT OR IGNORE INTO preview_league_results(id,draft_json) VALUES(${quote(EA_TRIAL_ID)},${quote(JSON.stringify(draft))});`);
+for(const game of snapshot.matches)console.log(`INSERT OR IGNORE INTO preview_ea_match_archive(league_id,match_id,game_json) VALUES(${quote(EA_TRIAL_ID)},${quote(game.matchId)},${quote(JSON.stringify(game))});`);

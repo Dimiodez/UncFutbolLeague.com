@@ -3,16 +3,17 @@ import {EA_TRIAL_ID,upgradeTrialClubIds,eaTrialSettings} from './league-ea-trial
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261015-recovery1';
+import {renderLeaguePage} from './league-page.js?v=20261016-suite1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
-import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261015-recovery1';
-import {importAutomaticTrial} from './league-ea-auto.js?v=20261015-recovery1';
-import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261015-ux1';
+import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261016-suite1';
+import {importAutomaticTrial} from './league-ea-auto.js?v=20261016-suite1';
+import {enhanceLeagueWorkshop} from './league-workshop-ux.js?v=20261016-suite1';
 import {registrationRequest} from './league-registration-invites.js';
 import {installWorkshopBrand} from './league-workshop-brand.js';
 import {watchUnsaved} from './league-workspace-status.js';
 import {installAccountDrafts} from './league-account-drafts.js';
 import {installEaTestLab} from './league-ea-test.js?v=20261015-ux1';
+import {correctFixture,applyConfirmedTrialCorrection} from './league-result-corrections.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-workshop-ux.css?v=20261015-ux1';document.head.append(uxStyle);
 installWorkshopBrand();
 installEaTestLab();
@@ -20,6 +21,7 @@ const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
 const form=document.querySelector('#league-builder'),message=document.querySelector('#workshop-message'),root=document.querySelector('#league-drafts'),review=document.querySelector('#candidate-review'),save=document.querySelector('#save-drafts'),download=document.querySelector('#export-drafts');
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
+const sharedLeagues=new Map();let syncingShared=false;
 let draftStorageReadable=true;
 let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
@@ -95,6 +97,8 @@ function renderDrafts({sectionOnly=false}={}){
   renderLeaguePage({host:pageHost,card:root.querySelector(`#league-${index}`),draft:drafts[index],allDrafts:drafts,index,tab:activeTab,
    onTab:tab=>{if(tab===activeTab)return;activeTab=tab;renderDrafts({sectionOnly:true});const panel=pageHost.querySelector('[role="tabpanel"]');panel.scrollIntoView({block:'start'});const selected=pageHost.querySelector(`[data-tab="${tab}"]`);selected.scrollIntoView({block:'nearest',inline:'nearest'});selected.focus({preventScroll:true});},onClose:()=>{activeLeague=null;renderDrafts();document.querySelector('.league-library-heading').scrollIntoView({block:'start'});document.querySelector('[data-new-league]').focus({preventScroll:true});},
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
+   onCorrect:async(fixtureId,values,destination)=>{if(destination==='online'){const id=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule,row=sharedLeagues.get(id);if(!row)throw Error('Enable shared collection for this league first.');const response=await fetch('/api/league-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,revision:row.revision,fixtureId,values})}),data=await response.json();if(!response.ok)throw Error(data.error);await syncSharedResults(true);pageReport('Correction saved online. Future EA checks will not overwrite it.');}else{drafts[index]=correctFixture(drafts[index],fixtureId,values);drafts[index].acceptedResults.find(r=>r.fixtureId===fixtureId).correction.localOnly=true;persistDrafts();renderDrafts();pageReport('Correction saved on this device only. EA data retained; totals recalculated.');}},
+   onRegisterCollection:async()=>{try{const id=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule||crypto.randomUUID(),response=await fetch('/api/league-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation:'register',id,draft:{settings:{...drafts[index].settings,serverLeagueId:id,collectionEnabled:true},acceptedResults:drafts[index].acceptedResults||[]}})}),data=await response.json();if(!response.ok)throw Error(data.error);drafts[index].settings.serverLeagueId=id;drafts[index].settings.collectionEnabled=true;persistDrafts();await syncSharedResults();pageReport('Shared server collection enabled. Browser can be closed.');}catch(error){pageReport(error.message);}},
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Save drafts online above to continue on mobile or another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
    onImportTeam:(team,{checkOnly=false}={})=>{
@@ -107,6 +111,7 @@ function renderDrafts({sectionOnly=false}={}){
    onTeamRemove:id=>{drafts[index]=removeDraftTeam(drafts[index],id);renderDrafts();persistDrafts();pageReport('Team removed from this draft league only. No live data was changed. Restore an exported draft backup to recover it.');},onReport:pageReport});
  }
  enhanceLeagueWorkshop({drafts,activeLeague,activeTab,pageHost,sectionOnly});
+ showCollectorHealth();
 }
 function updateLeague(index,values){
  const settings=settingsFrom(values),draft=drafts[index];
@@ -196,6 +201,7 @@ if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TRIAL_ID)
  // Do not overwrite an unreadable existing draft backup.
  try{const previous=localStorage.getItem(KEY);if(previous)localStorage.setItem(KEY+'-before-ea-trial',previous);persistDrafts();}catch{message.textContent='EA trial loaded but could not be saved on this browser.';}
 }
+drafts=drafts.map(applyConfirmedTrialCorrection);
 renderDrafts();
 accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
  hasUnappliedChanges:()=>!!document.querySelector('form[data-unsaved="true"]'),
@@ -250,3 +256,12 @@ async function checkAutomaticTrials(){
 setInterval(checkAutomaticTrials,5*60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAutomaticTrials();});
 checkAutomaticTrials();
+async function syncSharedResults(force=false){
+ if(syncingShared||(!force&&document.querySelector('form[data-unsaved="true"]')))return;syncingShared=true;
+ try{const response=await fetch('/api/league-results',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);let changed=false;
+  for(const row of data.leagues||[]){sharedLeagues.set(row.id,row);const index=drafts.findIndex(d=>(d.settings.serverLeagueId||d.settings.trialSchedule)===row.id);if(index<0)continue;const local=drafts[index],merged=new Map((local.acceptedResults||[]).map(r=>[r.fixtureId,r]));for(const result of row.draft.acceptedResults||[]){const prior=merged.get(result.fixtureId);if(!prior?.correction?.localOnly)merged.set(result.fixtureId,result);}const results=[...merged.values()];if(JSON.stringify(results)!==JSON.stringify(local.acceptedResults)){drafts[index]={...local,acceptedResults:results};changed=true;}}
+  if(changed){persistDrafts();renderDrafts();}showCollectorHealth();
+ }catch(error){const status=document.querySelector('[data-collector-health]');if(status)status.textContent=`Shared collector status unavailable: ${error.message}. Browser draft retained.`;}finally{syncingShared=false;}
+}
+function showCollectorHealth(){const id=activeLeague===null?null:drafts[activeLeague]?.settings.serverLeagueId||drafts[activeLeague]?.settings.trialSchedule,row=sharedLeagues.get(id);document.querySelector('[data-collector-health]')?.remove();if(!row||pageHost.hidden)return;pageHost.querySelectorAll('.league-tracking-summary').forEach(el=>el.remove());const status=document.createElement('section');status.dataset.collectorHealth='';status.className='league-tracking-summary';status.setAttribute('role','status');const label=document.createElement('strong');label.textContent='Shared server collector · every 5 minutes · browser not required';const detail=document.createElement('p');detail.textContent=`Last check: ${row.checked_at?row.checked_at+' UTC':'awaiting first cron'} · Last complete success: ${row.succeeded_at?row.succeeded_at+' UTC':'not yet'} · Revision ${row.revision}.`;const health=document.createElement('p');health.textContent=row.health?.error||row.health?.warnings?.join(' ')||'No collection errors recorded.';status.append(label,detail,health);pageHost.querySelector('.league-page-hero').append(status);}
+setInterval(syncSharedResults,60000);syncSharedResults();
