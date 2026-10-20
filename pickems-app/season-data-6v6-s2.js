@@ -301,7 +301,7 @@ window.UFL_SEASON_6V6_S2 = {
       "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png",
       "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-toluca-1791220666.jpg",
       "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
-      "rosterSize": 7,
+      "rosterSize": 8,
       "stats": {
         "played": 2,
         "wins": 2,
