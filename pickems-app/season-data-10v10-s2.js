@@ -1466,9 +1466,9 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
-              "name": "Cam1",
+              "name": "-Cam-",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/cam-1783994559.png",
-              "url": "https://ufl.virtualarena.app/users/Cam1"
+              "url": "https://ufl.virtualarena.app/users/-Cam-"
             },
             "team": {
               "name": "Real Madrid",
