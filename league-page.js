@@ -9,6 +9,7 @@ import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
 import {renderSeasonRollover} from './league-season-rollover.js';
 import {renderMatchManagement} from './league-match-management.js?v=20261016-suite1';
+import {visibleStatColumns} from './league-stat-columns.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
 const ADMIN_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
@@ -103,7 +104,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  }
  if(tab==='stats'){
   const rows=playerTotals(acceptedAppearances(draft),{excludeDisconnectRatings:content.excludeDisconnectRatings??true});
-  const columns=[['goals','Goals'],['assists','Assists'],['shots','Shots'],['shotsOnTarget','On target'],['passes','Passes'],['passesCompleted','Completed'],['tackles','Tackles'],['tacklesWon','Won'],['interceptions','Interceptions'],['saves','Saves'],['yellowCards','Yellow'],['redCards','Red'],['manOfTheMatch','MOTM']];
+  const columns=visibleStatColumns(rows);
   const table=document.createElement('table');table.innerHTML=`<caption>Scheduled EA results only · Unavailable means not supplied. Percentages use combined totals, not averages of percentages.</caption><thead><tr><th>Player</th><th>Team</th><th>EA role</th><th>Apps</th><th>Rating</th>${columns.map(([,label])=>`<th>${label}</th>`).join('')}<th>Pass %</th><th>Tackle %</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${escape(p.position||'Unknown')}</td><td>${p.apps}</td><td>${p.averageRating===null?'Unavailable':p.averageRating.toFixed(2)}</td>${columns.map(([key])=>`<td>${p.known[key]?p.totals[key]:'Unavailable'}</td>`).join('')}<td>${p.passAccuracy===null?'—':p.passAccuracy.toFixed(1)}</td><td>${p.tackleAccuracy===null?'—':p.tackleAccuracy.toFixed(1)}</td></tr>`).join('')}</tbody>`;body.append(table);
  }
  if(!(settings.trialSchedule&&['stats','standings'].includes(tab)))renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
