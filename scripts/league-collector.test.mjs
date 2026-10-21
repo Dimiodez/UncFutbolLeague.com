@@ -17,3 +17,11 @@ test('shared corrections reject signed-out writes before touching stored results
  const response=await previewLeagueResultsApi(new Request('https://preview.example/api/league-results',{method:'POST',headers:{origin:'https://preview.example','content-type':'application/json'},body:'{}'}),{});
  assert.equal(response.status,403);
 });
+test('collector makes no EA requests outside the night window and polls both kickoff slots inside it',async()=>{
+ const draft=buildLeagueSchedule(eaTrialSettings()),start=draft.fixtures[0].startsAt;let calls=0,last;
+ const DB={prepare(sql){return {bind(...args){this.args=args;return this;},async all(){return {results:sql.includes('enabled=1')?[{id:'trial',revision:1,draft_json:JSON.stringify({settings:draft.settings,acceptedResults:[]})}]:[]};},async run(){last=this.args;return {meta:{changes:1}};}};}};
+ const readFeed=async(id,type)=>{calls++;return {type,available:true,matches:[],attempts:[]};};
+ await collectLeagues({DB},{now:start-16*60000,readFeed});assert.equal(calls,0);assert.equal(JSON.parse(last[2]).polling,false);
+ await collectLeagues({DB},{now:start-15*60000,readFeed});assert.equal(calls,18);assert.equal(JSON.parse(last[2]).polling,true);
+ calls=0;await collectLeagues({DB},{now:start+91*60000,readFeed});assert.equal(calls,0);
+});
