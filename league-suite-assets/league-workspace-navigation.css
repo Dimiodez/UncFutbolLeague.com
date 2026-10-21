@@ -1,0 +1,7 @@
+.workspace-back{display:inline-block;margin:0 0 18px;color:var(--ink);font-weight:700;text-underline-offset:4px}
+.workspace-directory-navigation{max-width:1440px;margin:24px auto;padding:20px 28px;background:var(--paper);border-bottom:1px solid var(--line)}
+.workspace-directory-navigation .workshop-nav{display:flex;flex-wrap:wrap;gap:16px 28px}
+.workspace-directory-navigation .workshop-nav a{color:var(--muted);text-decoration:none;padding:12px 0;border-bottom:3px solid transparent;font-weight:700}
+.workspace-directory-navigation .workshop-nav a[aria-current]{color:var(--ink);border-color:var(--red)}
+.workspace-back:focus-visible,.workspace-directory-navigation a:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+@media(max-width:600px){.workspace-directory-navigation{margin:12px 0;padding:16px}.workspace-directory-navigation .workshop-nav{gap:8px 16px}}

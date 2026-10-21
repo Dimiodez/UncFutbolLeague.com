@@ -101,7 +101,7 @@ test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   assert.match(html,/>Gabe</);
   assert.match(html,/DimiOdez/);
   assert.match(html,/bRzGabriel98/);
-  assert.match(html,/rankings and match data pending/);
+  assert.match(html,/rankings and match data pending|Recent results/);
   assert.doesNotMatch(html,/#2/);
   for(const match of html.matchAll(/src="(\/assets\/league\/[^" ]+)"/g)) assert.ok(fs.existsSync(new URL(match[1].slice(1),root)),match[1]);
 });

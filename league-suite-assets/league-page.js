@@ -1,0 +1,112 @@
+import {LEAGUE_TABS as SITE_LEAGUE_TABS,setPagePublished} from './league-page-model.js';
+import {renderSectionTools,renderTeamManagement} from './league-editors.js';
+import {renderAwardsWorkbench} from './league-awards.js?v=20261015-stats1';
+import {registrationAllowed} from './league-engine.js';
+import {acceptedAppearances,leagueStandings,standardTrial} from './league-results.js?v=20261016-suite1';
+import {playerTotals} from './league-player-stats.js?v=20261015-recovery1';
+import {renderSeasonCalendar} from './league-season-tools.js';
+import {renderCupPlanner} from './league-cup-planner.js';
+import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
+import {renderSeasonRollover} from './league-season-rollover.js';
+import {renderMatchManagement} from './league-match-management.js?v=20261016-suite1';
+import {visibleStatColumns} from './league-stat-columns.js';
+const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+// Derived public data pages are not separate league-configuration tasks.
+const ADMIN_TABS=SITE_LEAGUE_TABS.filter(([key])=>!['stats','standings'].includes(key));
+const sectionMoves=new WeakMap();
+const empty={rules:'League rules have not been added yet.',videos:'No videos added yet.',players:'No players registered yet. Shared player registration and roster management will be connected before launch.',finals:'No finals configured yet. Brackets and qualification are not connected.',stats:'No accepted results yet. Player and team statistics will come from accepted league fixtures only; automatic ingestion is not connected.',standings:'No accepted results yet. Standings calculations and official corrections are not connected.',awards:'No Team of the Week selected yet. Formation, candidate selection and award publishing are still to come.'};
+
+export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,onClose,onSettings,onSave,onTeamEdit,onTeamRemove,onImportTeam,onCorrect,onRegisterCollection,onReport}){
+ const LEAGUE_TABS=draft.settings.trialSchedule||draft.settings.collectionEnabled?SITE_LEAGUE_TABS:ADMIN_TABS;
+ // Return borrowed library controls before replacing the previous section.
+ for(const [node,parent] of sectionMoves.get(host)||[])parent.append(node);
+ const moved=[];sectionMoves.set(host,moved);
+ const move=(node,target)=>{if(!node)return;moved.push([node,node.parentElement]);target.append(node);};
+ const settings=draft.settings,content=settings.pageContent?.[tab]||{};
+ if(settings.trialSchedule){const status=document.createElement('p');status.dataset.autoTrialStatus='';status.className='workshop-warning';status.textContent='Automatic EA trial checking enabled every 5 minutes while this workshop stays open. Scheduled results populate stats and standings automatically. Test scoring: win 3, draw 1, loss 0.';host.before(status);document.querySelectorAll('[data-auto-trial-status]').forEach((el,i)=>{if(i)el.remove();});}
+ let awardController=null;
+ const guard=action=>{
+  if(host.querySelector('form[data-unsaved="true"]')){const notice=host.querySelector('[data-page-status]');notice.textContent='You have unsaved match edits. Save the correction, or discard to leave. ';const discard=document.createElement('button');discard.type='button';discard.textContent='Discard edits & continue';discard.onclick=()=>{host.querySelectorAll('form[data-unsaved]').forEach(f=>delete f.dataset.unsaved);action();};const stay=document.createElement('button');stay.type='button';stay.textContent='Keep editing';stay.onclick=()=>notice.replaceChildren();notice.append(discard,stay);notice.scrollIntoView({block:'nearest'});return;}
+  if(!awardController?.hasUnsavedChanges()){action();return;}
+  const notice=host.querySelector('[data-page-status]');notice.textContent='Award selection has unsaved changes. Save it first, or discard to continue. ';
+  const discard=document.createElement('button');discard.type='button';discard.textContent='Discard selection changes & continue';discard.onclick=action;
+  const stay=document.createElement('button');stay.type='button';stay.textContent='Keep editing';stay.onclick=()=>notice.replaceChildren();notice.append(discard,stay);
+ };
+ host.hidden=false;
+ host.innerHTML=`<div class="workshop-toolbar"><button type="button" data-back>← All leagues & seasons</button><button type="button" data-publication>${settings.pagePublished?'Unpublish preview page':'Publish preview page'}</button></div><header class="league-page-hero"><span class="section-kicker">${escape(settings.season)} · ${escape(settings.format)}</span><h1>${escape(settings.league)}</h1><p>${settings.teams.length} teams · ${settings.size} per side · roster max ${settings.maxTeamSize} · keepers ${settings.keepersEnabled?'enabled':'disabled'}</p><p>${registrationAllowed(draft)?'Registration open':draft.registrationOpen?'Outside registration window':'Registration closed'} · ${settings.pagePublished?'Preview page published on this device':'Unpublished preview page'}</p></header><p class="workshop-boundary">Owner/admin screen preview — controls below edit local drafts, not secured shared records. Publishing here saves this device’s preview only, with or without teams. It does not create a public registration link.</p><div role="tablist" aria-label="League sections" class="league-page-tabs">${LEAGUE_TABS.map(([key,label])=>`<button type="button" id="league-tab-${key}" role="tab" aria-selected="${key===tab}" aria-controls="league-tab-panel" tabindex="${key===tab?0:-1}" data-tab="${key}">${label}</button>`).join('')}</div><section id="league-tab-panel" role="tabpanel" aria-labelledby="league-tab-${tab}" class="card league-page-panel"><h2>${LEAGUE_TABS.find(([key])=>key===tab)[1]}</h2><div data-page-body></div><div data-page-admin></div></section><p role="status" aria-live="polite" data-page-status></p>`;
+ host.querySelector('[data-back]').onclick=()=>guard(onClose);
+ const save=document.createElement('button');save.type='button';save.textContent='Save all changes on this device';save.onclick=()=>{try{onSave();}catch(error){onReport(`Could not save: ${error.message}`);}};host.querySelector('.workshop-toolbar').append(save);
+ host.querySelector('[data-publication]').onclick=()=>guard(()=>{try{onSettings(setPagePublished(settings,!settings.pagePublished));onReport('Preview publication saved on this device. Shared/public publishing is not connected yet.');}catch(error){onReport(error.message);}});
+ host.querySelectorAll('[data-tab]').forEach(button=>{
+  button.onclick=()=>guard(()=>onTab(button.dataset.tab));
+  button.onkeydown=event=>{const keys=['ArrowLeft','ArrowRight','Home','End'];if(!keys.includes(event.key))return;event.preventDefault();const current=LEAGUE_TABS.findIndex(([key])=>key===tab),next=event.key==='Home'?0:event.key==='End'?LEAGUE_TABS.length-1:(current+(event.key==='ArrowRight'?1:-1)+LEAGUE_TABS.length)%LEAGUE_TABS.length;guard(()=>{onTab(LEAGUE_TABS[next][0]);host.querySelector(`[data-tab="${LEAGUE_TABS[next][0]}"]`).focus();});};
+ });
+ // Every section, including the early-return awards workbench, has the same way out.
+ const position=LEAGUE_TABS.findIndex(([key])=>key===tab);
+ const sectionLabel=key=>({videos:'Stream links',matches:'Schedule & results',finals:'Cups & finals',awards:'TOTW / TOTS'}[key]||LEAGUE_TABS.find(([id])=>id===key)?.[1]);
+ const navigation=document.createElement('nav');navigation.className='league-section-navigation';navigation.setAttribute('aria-label','Section navigation');
+ const navButton=(text,action)=>{const button=document.createElement('button');button.type='button';button.textContent=text;button.onclick=()=>guard(action);navigation.append(button);};
+ navButton(position?`Back · ${sectionLabel(LEAGUE_TABS[position-1][0])}`:'Back to leagues & seasons',()=>position?onTab(LEAGUE_TABS[position-1][0]):onClose());
+ if(position)navButton('League overview',()=>onTab('overview'));
+ if(position<LEAGUE_TABS.length-1)navButton(`Next · ${sectionLabel(LEAGUE_TABS[position+1][0])}`,()=>onTab(LEAGUE_TABS[position+1][0]));
+ host.querySelector('[role="tabpanel"]').append(navigation);
+ const body=host.querySelector('[data-page-body]'),admin=host.querySelector('[data-page-admin]');
+ const note=text=>{const p=document.createElement('p');p.className='league-page-text';p.textContent=text;body.append(p);};
+ if(tab==='awards'){
+  awardController=renderAwardsWorkbench({host:body,draft,onSettings,records:acceptedAppearances(draft)});
+  return;
+ }
+ if(content.text)note(content.text);
+ else if(tab==='rules'&&content.items?.length||tab==='videos'&&(content.videos?.length||content.links?.length)){} // Collection cards below replace the empty state.
+ else if(tab==='finals'&&content.format)note(content.format==='none'?'Finals are disabled for this league.':'Finals settings saved. Bracket generation and automatic qualification are not connected yet.');
+ else if(tab==='awards'&&content.formation)note('Formation and eligibility settings saved. No lineup selected yet; candidate selection and award publishing are not connected.');
+ else if(empty[tab]&&!(['stats','standings'].includes(tab)&&draft.acceptedResults?.length))note(settings.trialSchedule&&['stats','standings'].includes(tab)?'Waiting for accepted October 15 fixtures. Historical club games are excluded; these totals update after scheduled EA results are reviewed.':empty[tab]);
+ if(tab==='overview'){
+  if(!content.text)note('Your league page is ready before any teams register. Set the rules and calendar now; add teams later.');
+  note(`First eligible matchnight: ${settings.startDate} · ${['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.weekday)]}${Number(settings.matchnightCount)===2?' & '+['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][Number(settings.secondWeekday)]:''} · ${settings.time} (${settings.timeZone}) · ${settings.matchnightCount||1} night(s) every ${settings.repeatWeeks||1} week(s).`);
+  const controls=card.querySelector('.workshop-settings');if(controls){controls.open=false;move(controls,admin);}
+ }
+ if(tab==='teams'){
+  move(card.querySelector('.workshop-registration'),body);
+  renderTeamManagement({host,admin,draft,onTeamEdit,onTeamRemove,onReport});
+  renderRegistrationInvites({host:admin,draft,onSettings,onImport:onImportTeam,onReport});
+  renderSeasonRollover(admin,draft);
+  if(settings.trialSchedule){
+   const links=document.createElement('section');links.className='card';links.innerHTML=`<h3>EA trial club links</h3><p>Add missing numeric EA IDs here without changing the supplied fixtures. IDs alone do not verify club ownership.</p>`;
+   for(const team of settings.teams){const form=document.createElement('form');form.className='workshop-toolbar';form.innerHTML=`<label>${escape(team.name)}<input name="eaId" inputmode="numeric" pattern="[0-9]{1,20}" value="${escape(team.eaClubId||'')}" required placeholder="Awaiting EA club ID"></label><button>Save club ID</button>`;form.onsubmit=e=>{e.preventDefault();try{const id=String(new FormData(form).get('eaId')).trim();if(!/^\d{1,20}$/.test(id))throw Error('Enter a numeric EA club ID.');if(settings.teams.some(t=>t.id!==team.id&&t.eaClubId===id))throw Error('That club ID is already linked to another team.');onSettings({...settings,teams:settings.teams.map(t=>t.id===team.id?{...t,eaClubId:id}:t)});}catch(error){onReport(error.message);}};links.append(form);}body.prepend(links);
+  }
+ }
+ if(tab==='players'){body.replaceChildren();renderSharedRoster(body,draft);}
+ if(tab==='matches'){
+  renderMatchManagement(body,draft,onCorrect,onReport);
+  const collection=document.createElement('section');collection.className='card';collection.innerHTML='<h3>Shared background collection</h3><p>Owner/admin can enable this scheduled league for server collection. It runs with the browser closed. Shared writes require Discord sign-in; local corrections remain available.</p><button type="button">Enable background collection for this league</button>';collection.querySelector('button').dataset.registerCollection='';collection.querySelector('button').onclick=()=>onRegisterCollection();body.prepend(collection);
+  renderSeasonCalendar({host:body,draft});
+  if(!draft.scheduleGenerated)note('No fixtures yet. Add teams in Teams, close registration, then generate the schedule. The league page does not require fixtures to be published.');
+  const windows=card.querySelector('.workshop-windows');move(windows,admin);
+  card.querySelectorAll(':scope > details:not(.workshop-settings)').forEach(night=>move(night,body));
+  const calendar=card.querySelector('.workshop-settings');move(calendar,admin);
+  if(draft.scheduleGenerated)note('Only explicitly accepted scheduled fixtures count in this local preview. EA candidates remain uncounted until reviewed. Exact positions missing from EA cannot qualify for TOTW automatically.');
+ }
+ if(tab==='finals')renderCupPlanner({host:body,draft,allDrafts,onSettings});
+ if(tab==='videos'){
+  body.replaceChildren();const directory=document.createElement('section');directory.innerHTML=`<p>Choose a team to find its streamers.</p><label>Team<select><option value="">All teams</option>${settings.teams.map(t=>`<option value="${escape(t.id)}">${escape(t.name)}</option>`).join('')}</select></label><div data-streamers></div>`;
+  const render=()=>{const teamId=directory.querySelector('select').value,list=directory.querySelector('[data-streamers]');list.replaceChildren();for(const stream of content.streams||[]){const team=settings.teams.find(t=>t.id===stream.teamId);if(!team||teamId&&teamId!==team.id)continue;const card=document.createElement('article');card.className='rule-card';const title=document.createElement('h3'),name=document.createElement('p'),link=document.createElement('a');title.textContent=stream.name;name.textContent=team.name;link.href=stream.url;link.textContent='Open stream ↗';link.target='_blank';link.rel='noopener noreferrer';card.append(title,name,link);list.append(card);}if(!list.children.length){const p=document.createElement('p');p.textContent='No streamers added for this selection yet.';list.append(p);}};directory.querySelector('select').onchange=render;render();body.append(directory);
+  if(content.videos?.length||content.links?.length)note('Previous video links are preserved in your draft backup. Add team-linked streamers using Manage stream links.');
+ }
+ if(tab==='standings'){
+  const pending=(draft.acceptedResults||[]).filter(r=>r.finish==='pending');if(pending.length&&!standardTrial(draft))note(`${pending.length} result(s) awaiting finish classification.`);
+  note(standardTrial(draft)?'Test scoring: win 3 points · draw 1 point · loss 0 points. Regulation and extra time are treated alike. Scheduled EA fixtures only.':`Regular-time win/loss: ${content.win??3}/${content.loss??0} points · Extra-time win/loss: ${content.extraTimeWin??2}/${content.extraTimeLoss??1} · No draws. Accepted local test fixtures only.`);
+  const table=document.createElement('table');table.innerHTML=`<caption>Local preview standings · ${(draft.acceptedResults||[]).length} accepted fixtures</caption><thead><tr><th>Team</th><th>P</th><th>W</th><th>ET W</th><th>ET L</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead><tbody>${leagueStandings(draft).map(t=>`<tr><td>${escape(t.name)}</td><td>${t.played}</td><td>${t.regularWins}</td><td>${t.extraWins}</td><td>${t.extraLosses}</td><td>${t.regularLosses}</td><td>${t.goalsFor}</td><td>${t.goalsAgainst}</td><td>${t.points}</td></tr>`).join('')}</tbody>`;body.append(table);
+ }
+ if(tab==='standings'&&standardTrial(draft)){
+  const rows=leagueStandings(draft),table=body.querySelector('table');
+  [...table.rows].forEach((row,index)=>{row.cells[3].textContent=index?String(rows[index-1].draws):'D';row.cells[4].remove();});
+ }
+ if(tab==='stats'){
+  const rows=playerTotals(acceptedAppearances(draft),{excludeDisconnectRatings:content.excludeDisconnectRatings??true});
+  const columns=visibleStatColumns(rows);
+  const table=document.createElement('table');table.innerHTML=`<caption>Scheduled EA results only · Unavailable means not supplied. Percentages use combined totals, not averages of percentages.</caption><thead><tr><th>Player</th><th>Team</th><th>EA role</th><th>Apps</th><th>Rating</th>${columns.map(([,label])=>`<th>${label}</th>`).join('')}<th>Pass %</th><th>Tackle %</th></tr></thead><tbody>${rows.map(p=>`<tr><td>${escape(p.name)}</td><td>${escape(p.teamName)}</td><td>${escape(p.position||'Unknown')}</td><td>${p.apps}</td><td>${p.averageRating===null?'Unavailable':p.averageRating.toFixed(2)}</td>${columns.map(([key])=>`<td>${p.known[key]?p.totals[key]:'Unavailable'}</td>`).join('')}<td>${p.passAccuracy===null?'—':p.passAccuracy.toFixed(1)}</td><td>${p.tackleAccuracy===null?'—':p.tackleAccuracy.toFixed(1)}</td></tr>`).join('')}</tbody>`;body.append(table);
+ }
+ if(!(settings.trialSchedule&&['stats','standings'].includes(tab)))renderSectionTools({host,admin,body,tab,settings,onSettings,onReport});
+ if(tab==='rules')renderSectionTools({host,admin,body:admin,tab:'standings',settings,onSettings,onReport});
+}

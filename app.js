@@ -1048,6 +1048,9 @@ async function hydrateAccount() {
   const nav = document.querySelector('#account-nav');
   if (nav) nav.textContent = state.authenticated ? state.user.displayName : 'Sign in';
   const mayAdmin = state.authenticated && ['owner','admin'].includes(state.user.role);
+  const leagueMenu=document.querySelector('[data-nav-hub="league"] .nav-menu');
+  document.querySelector('[data-league-suite-link]')?.remove();
+  if(mayAdmin&&leagueMenu){try{const r=await fetch('/api/league-suite/access',{cache:'no-store'}),access=await r.json();if(r.ok&&access.allowed){const link=document.createElement('a');link.href='/league-suite';link.dataset.leagueSuiteLink='';link.innerHTML='<b>League Suite</b><small>Private league management & EA testing</small>';leagueMenu.append(link);}}catch{}}
   let adminNav = document.querySelector('#admin-nav');
   if (mayAdmin && !adminNav && nav) {
     nav.insertAdjacentHTML('beforebegin','<a href="/admin" data-link id="admin-nav">Admin</a>');
