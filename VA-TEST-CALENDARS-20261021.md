@@ -1,0 +1,13 @@
+# Full fixture calendars for isolated EA tests
+
+The existing 6v6/10v10 shared test IDs now support a persisted `settings.vaSchedule` rather than only their fixed first-night schedules. The engine prefers this calendar when present. All existing fixture IDs, accepted scores, human-player appearances, original EA evidence and corrections are preserved. Calendar-only import never reads VA scores, standings, ratings or player stats. It does not change public league data, account roles, team hubs, bot links or official competitions.
+
+Sources: VA competition 1 / season 2 (90 fixtures, 9 nights, October 15–December 17) and competition 3 / season 5 (56 fixtures, 7 nights, October 13–December 1). Names resolve against the existing registered teams/EA IDs, including LA FC/LAFC, Ta6ascoKids/Tabasco Kids, Real Madrid and apostrophe aliases. Unknown teams, duplicate IDs, invalid times, wrong seasons and removal of accepted fixtures reject the refresh.
+
+VA's exact saved UTC kickoff timestamps are authoritative, including breaks and DST. Tomorrow's October 22 rounds 3/4 have ten fixtures at 9:00/9:30 PM America/Chicago, so the worker's polling window is 8:45–10:30 PM Central. Some later VA 6v6 rounds currently list 8:00/8:30 PM Central; they are not silently changed to 9:00/9:30. The next-night status displays the actual kickoff.
+
+The existing Cloudflare collector refreshes the calendar every six hours. A VA outage leaves the validated saved calendar in use and records a warning; EA collection continues. Browser sync adopts the calendar automatically while retaining local-only corrections. Shared drafts and JSON backups retain the full calendar on reload. A future night's fixtures activate automatically; no weekly manual submissions are needed. Match results still depend on the EA feeds being available, and suspected quits/DCs remain pending manual review.
+
+`scripts/import-va-test-schedules.mjs` defaults to a read-only dry run. `--apply` targets only the preview/test DB, saves a local before-snapshot under `.edge-calendar-qa`, writes a full before/after audit record and revision-guarded update, then verifies unchanged accepted results. Import must follow deployment of the calendar-aware runtime and worker. No VA result backfill is performed for the pre-test October 13 10v10 matches.
+
+Regression coverage: both formats' future window activation and exact timestamps, alias mapping, 6v6 result/stat restoration, local-only correction preservation during browser sync, invalid schedule rejection, zero idle EA fetches, successful calendar refresh and continued polling on VA failure.
