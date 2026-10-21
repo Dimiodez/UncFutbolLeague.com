@@ -11,3 +11,9 @@ Read-only feed verification on October 16: all eight club endpoints returned HTT
 Exact position identification and regulation/extra-time classification are not assumed. Quit/3–0 ambiguity requires manual review. Secure shared manual editing still requires preview Discord OAuth configuration. A successful feed check cannot guarantee EA availability on Tuesday. Test one actual scheduled match end-to-end before claiming live ingestion is proven for this new league.
 
 Verified workshop UI lists two leagues, with eight 10v10 teams/fixtures and correct Tuesday kickoff times. Fixed-fixture and preservation regression tests pass. Existing scheduled collector heartbeat confirmed successful on October 16.
+
+## October 21 confirmed completion
+
+Applied the four missing results to shared preview storage following explicit owner direction: Palace 3–0 Newell’s; Maykop 0–0 Milan (EA quit 3–0 retained as original, player stats require review); Real Madrid 6–0 TabascoKids (earlier 3–0 restart excluded); Timbers 3–0 Palace. Original four accepted matches unchanged. Shared league now has eight results and 129 player appearances; every team has two appearances in standings. Maykop and Milan each have four points. Six other clubs: Madrid, Timbers, Palace, Newell’s and Night Shift have three points; TabascoKids has zero.
+
+Previous full shared record backed up in preview_result_audit. Writes used revision protection and appended only the missing fixtures. Existing ten 6v6 results untouched. Browser verification confirmed eight accepted fixtures in standings and two-match player stats. Re-import and reload assertions pass; protected corrections survive repeat collection. The replay/SQL generator is scripts/confirm-ten-results.mjs; its source snapshot and generated SQL are ignored local recovery artifacts, not published assets.
