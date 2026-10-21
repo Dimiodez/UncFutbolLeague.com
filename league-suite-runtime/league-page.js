@@ -8,7 +8,7 @@ import {renderSeasonCalendar} from './league-season-tools.js';
 import {renderCupPlanner} from './league-cup-planner.js';
 import {renderRegistrationInvites,renderSharedRoster} from './league-registration-invites.js';
 import {renderSeasonRollover} from './league-season-rollover.js';
-import {renderMatchManagement} from './league-match-management.js?v=20261016-suite1';
+import {renderMatchManagement} from './league-match-management.js?v=20261021-review3';
 import {visibleStatColumns} from './league-stat-columns.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 // Derived public data pages are not separate league-configuration tasks.
