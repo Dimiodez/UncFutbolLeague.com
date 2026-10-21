@@ -1,0 +1,4 @@
+// Preview public-club entry: private contents always require server authorization.
+const main=document.querySelector('#main');
+function install(){if(!main||!/^\/clubs\/(ROM|club-1790181744567)\/?$/.test(location.pathname)||main.querySelector('[data-team-hub-entry]'))return;const profile=main.querySelector('.league-club-profile');if(!profile)return;const area=document.createElement('section');area.className='section-action-bar';area.dataset.teamHubEntry='';area.innerHTML='<div><span class="section-kicker">The dressing room</span><h2>Private team hub</h2><p>Managers’ tactics, player roles and match preparation.</p></div><a class="button button-primary" href="/team-hub?team=roma-workshop">Open Roma workshop hub →</a>';profile.after(area);}
+if(main){new MutationObserver(install).observe(main,{childList:true,subtree:true});install();}

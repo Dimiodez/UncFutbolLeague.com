@@ -3,7 +3,7 @@
  const routeKey=url=>url.pathname+'|'+(url.searchParams.get('season')||'2')+'|'+(url.searchParams.get('division')||url.searchParams.get('type')||'');
  const safeReturn=value=>{
   if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\\u0000-\u0020]/.test(value))return null;
-  try{const u=new URL(value,'https://www.uncfutbolleague.com');if(u.origin!=='https://www.uncfutbolleague.com'||!['/team-hub','/pickems','/coaching','/arcade'].includes(u.pathname))return null;return u.pathname+u.search;}catch{return null;}
+  try{const u=new URL(value,'https://www.uncfutbolleague.com');if(u.origin!=='https://www.uncfutbolleague.com'||!['/team-hub','/pickems','/coaching','/arcade','/league-suite'].includes(u.pathname))return null;return u.pathname+u.search;}catch{return null;}
  };
  let pending=null;
  function rememberReturn(value){const path=safeReturn(value);if(!path)return false;try{sessionStorage.setItem('ufl-login-return',JSON.stringify({path,at:Date.now()}));return true;}catch{return false;}}

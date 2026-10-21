@@ -12,6 +12,11 @@ database_id = "2e4969ed-3a15-4e07-b0a2-516fb480b58f"
 binding = "DB"
 database_name = "DB"
 
+[[env.production.d1_databases]]
+database_id = "6f0ee529-d74f-443f-9165-ffb746d210f1"
+binding = "LEAGUE_SUITE_DB"
+database_name = "ufl-major-update-preview"
+
 [[env.production.r2_buckets]]
 binding = "PLAYER_PHOTOS"
 bucket_name = "unc-ufl-player-photos"

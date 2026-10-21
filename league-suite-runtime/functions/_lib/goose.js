@@ -1,0 +1,5 @@
+export {VERSION,createGame,replay,pace} from '../../goose-app/engine.mjs';
+export async function ensureGoose(env){await env.DB.batch([
+ env.DB.prepare(`CREATE TABLE IF NOT EXISTS goose_runs (id TEXT PRIMARY KEY, discord_id TEXT NOT NULL, version TEXT NOT NULL, state TEXT NOT NULL, seq INTEGER NOT NULL DEFAULT 0, ticks INTEGER NOT NULL DEFAULT 0, started_at INTEGER NOT NULL, expires_at INTEGER NOT NULL, commit_token TEXT, finished INTEGER NOT NULL DEFAULT 0)`),
+ env.DB.prepare(`CREATE TABLE IF NOT EXISTS goose_bests (discord_id TEXT NOT NULL, version TEXT NOT NULL, score INTEGER NOT NULL, distance INTEGER NOT NULL, pace REAL NOT NULL, honks INTEGER NOT NULL, achieved_at INTEGER NOT NULL, PRIMARY KEY(discord_id,version))`)
+]);}

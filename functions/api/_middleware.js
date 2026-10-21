@@ -18,9 +18,10 @@ export async function onRequest(context) {
   const length = Number(context.request.headers.get('content-length') || 0);
   const photoUpload=context.request.method==='POST'&&/^\/api\/admin\/player-photos(?:\/[a-zA-Z0-9-]+)?$/.test(new URL(context.request.url).pathname);
   const coachingUpload=context.request.method==='POST'&&/^\/api\/coaching(?:\/[a-f0-9-]{36})?$/.test(new URL(context.request.url).pathname);
+  const suiteUpload=context.request.method==='POST'&&/^\/api\/league-suite\/(?:drafts|league-results)$/.test(new URL(context.request.url).pathname);
   let response;
   try {
-    response = length > (coachingUpload?10*1024*1024+131072:photoUpload?5*1024*1024+16384:65536)
+    response = length > (suiteUpload?1000000:coachingUpload?10*1024*1024+131072:photoUpload?5*1024*1024+16384:65536)
       ? jsonError('Request body is too large.', 413)
       : await context.next();
   } catch (error) {
