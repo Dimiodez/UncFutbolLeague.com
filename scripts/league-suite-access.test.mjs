@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {suiteAccess,suiteAccessApi} from '../functions/_lib/league-suite-access.js';
 import {onRequest as suitePage} from '../functions/league-suite.js';
+import {onRequest as suiteSubpage} from '../functions/league-suite/[[path]].js';
 import {onRequest as suiteAsset} from '../functions/league-suite-assets/[[path]].js';
 import {onRequest as suiteApi} from '../functions/api/league-suite/[[path]].js';
 const req=(path='/league-suite',method='GET',input,origin='https://www.uncfutbolleague.com')=>new Request('https://www.uncfutbolleague.com'+path,{method,headers:{cookie:'__Host-ufl_session=test',origin},...(input?{body:JSON.stringify(input)}:{})});
@@ -16,4 +17,16 @@ test('only owner may enable admins; revoked and other roles remain denied; cross
  assert.equal((await suiteAccess(req(),env('manager',1))).allowed,false);
  assert.equal((await suiteAccessApi(req('/api/league-suite/access','POST',{adminsEnabled:true},'https://evil.example'),e)).status,403);
  const page=await suitePage({request:req(),env:e});assert.match(page.headers.get('cache-control'),/no-store/);
+});
+test('optional catch-all serves signed-in suite entry and exact subpages instead of shadowing entry with 404',async()=>{
+ const paths={'/league-suite':'league-workshop.html','/league-suite/':'league-workshop.html','/league-suite/dashboard':'league-dashboard.html','/league-suite/ea-clubs':'ea-clubs.html','/league-suite/join':'league-join.html'};
+ for(const role of ['owner','admin'])for(const [path,file] of Object.entries(paths)){
+  const e=env(role,1);let requested;
+  e.ASSETS.fetch=async request=>{requested=new URL(request.url).pathname;return new Response('Private suite HTML');};
+  const response=await suiteSubpage({request:req(path),env:e});
+  assert.equal(response.status,200,`${role} ${path}`);assert.equal(requested,'/league-suite-assets/'+file);assert.match(response.headers.get('cache-control'),/no-store/);
+ }
+ for(const role of [null,'member','manager'])assert([401,403].includes((await suiteSubpage({request:req(),env:env(role,1)})).status));
+ assert.equal((await suiteSubpage({request:req(),env:env('admin',0)})).status,403);
+ for(const path of ['/league-suite/missing','/league-suite/dashboard/extra','/league-suite/toString'])assert.equal((await suiteSubpage({request:req(path),env:env()})).status,404);
 });
