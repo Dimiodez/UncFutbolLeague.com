@@ -1,6 +1,7 @@
 import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261016-ten1';
 import {EA_TRIAL_ID,upgradeTrialClubIds,eaTrialSettings} from './league-ea-trial.js?v=20261016-arsenal1';
 import {EA_TEN_TRIAL_ID,eaTenTrialSettings} from './league-ea-ten-trial.js';
+import {validWorkshopTeamId} from './league-team-identity.js';
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
@@ -47,7 +48,7 @@ function settingsFrom(values){
  if(values?.inviteBoardId!==undefined&&(typeof values.inviteBoardId!=='string'||!/^[A-Za-z0-9_-]{24}$/.test(values.inviteBoardId)))throw Error('Invalid shared registration board.');
  if(values?.managerInviteUrl!==undefined&&(typeof values.managerInviteUrl!=='string'||!/^https:\/\/(?:[a-zA-Z0-9-]+\.)?ufl-major-update-preview\.pages\.dev\/league-join\.html#[A-Za-z0-9_-]{43}$/.test(values.managerInviteUrl)))throw Error('Invalid preview registration invitation URL.');
  if(!values||typeof values.season!=='string'||typeof values.league!=='string'||!values.season.trim()||!values.league.trim()||values.season.length>80||values.league.length>80)throw Error('Enter a season and league name.');
- if(!Array.isArray(values.teams)||values.teams.some(team=>!team.name?.trim()||team.name.length>80||!/^team-\d+$/.test(team.id)||team.eaClubId&&!/^\d{1,20}$/.test(team.eaClubId)))throw Error('Use valid team names and numeric EA club IDs.');
+ if(!Array.isArray(values.teams)||values.teams.some(team=>!team.name?.trim()||team.name.length>80||!validWorkshopTeamId(team.id,values.trialSchedule)||team.eaClubId&&!/^\d{1,20}$/.test(team.eaClubId)))throw Error('Use valid team names and numeric EA club IDs.');
  const ids=values.teams.map(team=>team.eaClubId).filter(Boolean);if(new Set(ids).size!==ids.length)throw Error('Two teams cannot use the same EA club within this league.');
  if(values.pagePublished!==undefined&&typeof values.pagePublished!=='boolean')throw Error('Invalid preview publication state.');
  if(values.pageContent!==undefined){
