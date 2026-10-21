@@ -1274,7 +1274,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "johnycoach5086",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/johnycoach5086-1791857323.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/johnycoach5086-1792541171.png",
               "url": "https://ufl.virtualarena.app/users/johnycoach5086"
             },
             "team": {
