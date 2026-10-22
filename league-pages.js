@@ -15,7 +15,8 @@ const leagueArtwork = [
 // Explicitly published team uploads retain precedence over these bundled defaults.
 const leagueStadiumPhotos={
   '6v6:ARS':'/assets/league/arsenal-stadium.webp',
-  '6v6:club-1790182556439':'/assets/league/rippettes-stadium.webp'
+  '6v6:club-1790182556439':'/assets/league/rippettes-stadium.webp',
+  '10v10:NSH':'/assets/league/night-shift-stadium.webp'
 };
 // Public reference directory snapshot, explicitly limited to Season 1 6v6.
 const leaguePlayerReference = [
