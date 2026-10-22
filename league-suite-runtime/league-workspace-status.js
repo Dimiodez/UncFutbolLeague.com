@@ -15,7 +15,7 @@ export function nextFixture(draft,teamIds=null,now=Date.now()){
 export function nextMatchText(draft,teamIds){const f=nextFixture(draft,teamIds);return f?`${f.home.name} vs ${f.away.name} · ${new Intl.DateTimeFormat(undefined,{dateStyle:'medium',timeStyle:'short',timeZone:draft.settings.timeZone}).format(f.startsAt)} (${draft.settings.timeZone})`:'No upcoming fixture on this device';}
 export const statusBadge=status=>`<span class="registration-status ${status==='approved'?'is-approved':'is-pending'}">${status==='approved'?'Approved':'Pending approval'}</span>`;
 export function watchUnsaved(root,initial='Saved on this device'){
- const badge=document.createElement('p');badge.className='save-state';badge.setAttribute('role','status');badge.textContent=initial;root.prepend(badge);
+ const badge=document.createElement('p');badge.className='save-state';badge.setAttribute('role','status');badge.textContent=initial;const workspaceNav=root.matches('main')?root.querySelector('.workshop-nav'):null;if(workspaceNav)workspaceNav.after(badge);else root.prepend(badge);
  root.addEventListener('input',event=>{const form=event.target.closest('form');if(form&&(!root.matches('main')||!event.target.closest('[data-shared]'))){form.dataset.unsaved='true';badge.textContent='Unsaved changes';}});return text=>{if(!root.matches('main')&&text.startsWith('Saved')){if(root.matches('form'))delete root.dataset.unsaved;root.querySelectorAll('form[data-unsaved]').forEach(form=>delete form.dataset.unsaved);}badge.textContent=root.matches('main')&&root.querySelector('form[data-unsaved="true"]:not([data-shared] form)')?'Unsaved changes':text;};
 }
 export function invitationCard(host,url,{league,season,kind='Manager',teamName=''}){
