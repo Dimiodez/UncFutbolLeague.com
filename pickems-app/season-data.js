@@ -3461,7 +3461,7 @@ window.UFL_SEASONS = {
     "teams": {
       "NSH": [
         "UFL Night Shift",
-        null
+        "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png"
       ],
       "MAY": [
         "UFL Maykop",
@@ -3500,7 +3500,7 @@ window.UFL_SEASONS = {
         "registered": true,
         "name": "UFL Night Shift",
         "abbreviation": "NSH",
-        "logo": null,
+        "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift",
         "rosterSize": 0,
@@ -5098,7 +5098,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Night Shift",
-                "image": null,
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
               },
               "team": null,
@@ -5193,7 +5193,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "UFL Night Shift",
-                "image": null,
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
               },
               "team": null,
