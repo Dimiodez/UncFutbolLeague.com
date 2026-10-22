@@ -2,7 +2,8 @@
 // Keep only confirmed identity aliases here; never match fuzzy display names.
 const leaguePlayerPortraits = [
   {playerIds:['1790183123676-110','1790179840025','1790040141524'],names:['DimiOdez','Odez'],src:'/assets/league/player-1790183123676-110-white-kit.png'},
-  {playerIds:['1790642010611'],names:['DMellow'],src:'/assets/league/player-1790642010611-white-kit.png'}
+  {playerIds:['1790642010611'],names:['DMellow'],src:'/assets/league/player-1790642010611-white-kit.png'},
+  {playerIds:['1790190859244-598','1790122570549'],names:['Ripp','Rippy Nolan'],src:'/assets/league/player-1790190859244-598-white-kit-v1.webp'}
 ];
 function playerIdentityKey(player){
   const name=String(player.name||'').trim().toLowerCase();

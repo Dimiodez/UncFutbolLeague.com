@@ -190,6 +190,33 @@ test('portraits follow players across divisions, seasons and new membership IDs'
   assert.match(render("leaguePlayerCard({id:'future-10v10',name:'DMellow',club:'ROM',portrait:false},leagueViewContext(new URLSearchParams('season=2&division=10v10')))"),/player-1790642010611-white-kit.png/);
 });
 
+test('Rippy Nolan shares the selected portrait across both teams, names and player IDs',()=>{
+  const src='/assets/league/player-1790190859244-598-white-kit-v1.webp';
+  assert.ok(fs.existsSync(new URL(src.slice(1),root)));
+  assert.ok(fs.statSync(new URL(src.slice(1),root)).size<300000);
+  const teams=[['1790190859244-598','6v6','club-1790182556439'],['1790122570549','10v10','PALA']];
+  for(const [id,division,club] of teams){
+    const query=`season=2&division=${division}`;
+    assert.ok(render(`leaguePlayerProfile('${id}',new URLSearchParams('${query}'))`).includes(src));
+    assert.ok(render(`leagueClubProfile('${club}',new URLSearchParams('${query}'))`).includes(src));
+    assert.ok(render(`leaguePlayersPage(new URLSearchParams('${query}'))`).includes(src));
+    assert.equal(render(`playerPortraitSource({id:'${id}',name:'Updated display name',portrait:false})`),src);
+  }
+  for(const name of ['Ripp','Rippy Nolan']){
+    assert.equal(render(`playerPortraitSource({id:'future-membership',name:'${name}',portrait:false})`),src);
+  }
+  assert.equal(render("playerPortraitSource({id:'unrelated',name:'Rippy Nolan Fan',portrait:false})"),null);
+  render("globalThis.leagueManagedRosterState={players:{'6v6':[{id:'1790190859244-598',identity:'1790190859244-598',name:'Rippy Nolan',club:'club-1790182556439'}],'10v10':[{id:'1790122570549',identity:'1790190859244-598',name:'Rippy Nolan',club:'PALA'}]}};");
+  try{
+    for(const [id,division] of teams){
+      const html=render(`leaguePlayerProfile('${id}',new URLSearchParams('season=2&division=${division}'))`);
+      assert.ok(html.includes(src));
+      assert.match(html,/<figcaption>6v6<\/figcaption>/);
+      assert.match(html,/<figcaption>10v10<\/figcaption>/);
+    }
+  }finally{render('delete globalThis.leagueManagedRosterState');}
+});
+
 test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   const html=render("featuredClubSection(new Date('2026-10-02T12:00:00Z'))");
   assert.match(html,/UFL Roma/);
