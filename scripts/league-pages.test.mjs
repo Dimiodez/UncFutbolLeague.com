@@ -70,6 +70,18 @@ test('uploaded team images flow through club pages, directories and team cards w
   }finally{render('delete globalThis.leagueTeamMediaState');}
 });
 
+test('the supplied Arsenal stadium photo is limited to current 6v6 and keeps explicit upload precedence',()=>{
+  const photo='/assets/league/arsenal-stadium.webp';
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  assert.ok(render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  assert.ok(!render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  assert.ok(!render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:ARS':{image:'/api/team-media/images/new-arsenal-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))"),/new-arsenal-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
