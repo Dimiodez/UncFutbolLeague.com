@@ -81,7 +81,8 @@ function leagueClubArtworkAttributes(image,placement='card') {
   // Never attach bundled renditions to uploaded media or unrelated club artwork.
   if(!sources)return `src="${escapeHtml(image)}" ${loading} decoding="async"`;
   const primary=placement==='card'?sources[0]:sources[sources.length-1];
-  const sizes=placement==='card'?'(max-width: 640px) 92vw, (max-width: 1000px) 45vw, (max-width: 1282px) 30vw, 377px':placement==='featured'?'(max-width: 800px) 92vw, (max-width: 1282px) 46vw, 590px':'(max-width: 640px) 92vw, (max-width: 1282px) 50vw, 644px';
+  // Object-fit:cover can fill a tall desktop column: use the full optimized size there.
+  const sizes=placement==='card'?'(max-width: 640px) 92vw, (max-width: 1000px) 45vw, (max-width: 1282px) 30vw, 377px':placement==='featured'?'(max-width: 800px) 92vw, 1200px':'(max-width: 640px) 92vw, 1200px';
   return `src="${escapeHtml(primary[1])}" srcset="${sources.map(([width,url])=>`${escapeHtml(url)} ${width}w`).join(', ')}" sizes="${sizes}" width="1200" height="800" ${loading} decoding="async"`;
 }
 // Public reference directory snapshot, explicitly limited to Season 1 6v6.
