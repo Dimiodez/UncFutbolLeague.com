@@ -431,3 +431,14 @@ html[data-theme="vintage"] option { background: #f4ead2; color: #30291f; border-
 .member-identity .member-title-badge{display:block}
 @media(max-width:640px){.member-title-row{grid-template-columns:1fr}.member-title-row button{justify-self:start}.member-title-actions button{flex:1}}
 
+/* Shared task context: the homepage and full UFL header keep their identity. */
+.page-context{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;max-width:1360px;margin:20px auto;padding:0 24px;font-size:.9rem}
+.time-preference{display:inline-flex;align-items:center;gap:8px;margin-left:auto;font-size:.8rem;color:var(--muted)}
+.time-preference select{width:auto;max-width:160px;padding:7px 10px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:5px}
+.interior-route .page-hero{min-height:180px;padding-top:40px;padding-bottom:36px}
+.interior-route .page-hero h1{font-size:clamp(2.2rem,5vw,4rem)}
+.guide-navigation{max-width:1280px;margin:20px auto;padding:16px 24px;border:1px solid var(--line)}
+.guide-navigation nav{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px}.guide-navigation input{max-width:100%;margin-top:12px}
+@media(max-width:700px){.page-context{padding:0 16px}.interior-route .page-hero{min-height:0;padding-top:24px;padding-bottom:24px}.time-preference{margin-left:0}}
+.interior-route .page-hero > div{padding:2rem 0 1.75rem}
+.byot-manage{margin:16px 0;border:1px solid var(--line);padding:16px}.byot-manage>summary{cursor:pointer;font-weight:700}

@@ -1,6 +1,6 @@
 // Explicit account saves: browser work is never silently replaced or published.
 export function installAccountDrafts({getData,loadData,saveLocal,hasUnappliedChanges,onSaved,recoverLocal}){
- const panel=document.createElement('section');panel.className='card account-drafts';panel.innerHTML='<h2>My Discord account drafts</h2><p>Save all your leagues, seasons and cup drafts together. Open them here on another device using the same Discord account. This does not publish anything.</p><div class="workshop-toolbar"><button type="button" data-account-save disabled>Save drafts online</button><button type="button" data-account-load disabled>Open account drafts</button><a href="/api/auth/discord">Sign in with Discord</a><button type="button" data-account-refresh>Refresh account status</button></div><p role="status" aria-live="polite">Checking your account…</p>';
+ const panel=document.createElement('section');panel.className='card account-drafts';panel.innerHTML='<h2>Account backup</h2><p>Explicitly back up browser settings and drafts for another device. Server collection continues independently; this does not publish public standings.</p><div class="workshop-toolbar"><button type="button" data-account-save disabled>Save drafts online</button><button type="button" data-account-load disabled>Open account drafts</button><a href="/api/auth/discord">Sign in with Discord</a><button type="button" data-account-refresh>Refresh account status</button></div><p role="status" aria-live="polite">Checking your account…</p>';
  document.querySelector('.league-page').before(panel);
  const recovery=document.createElement('button');recovery.type='button';recovery.textContent='Recover browser backup';panel.querySelector('.workshop-toolbar').append(recovery);
  recovery.onclick=()=>{if(!confirm('Restore the browser backup from before the last account draft opening? This does not change your online drafts.'))return;try{recoverLocal();say('Recovered browser backup on this device. Save online only if you want to replace your account drafts.');}catch(error){say(error.message);}};
@@ -8,7 +8,7 @@ export function installAccountDrafts({getData,loadData,saveLocal,hasUnappliedCha
  let account=null,revision=null,baseline=null,remoteExists=false,attached=false,conflict=false,busy=false;
  const say=text=>status.textContent=text;
  const controls=()=>{save.disabled=busy||!account||conflict;open.disabled=busy||!account||!remoteExists;refresh.disabled=busy;login.hidden=!!account;};
- const request=async body=>{const r=await fetch('/api/drafts',body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});const data=await r.json();if(!r.ok){const error=Error(data.error||'Account drafts unavailable.');error.status=r.status;throw error;}return data;};
+ const request=async body=>{const r=await fetch('/api/league-suite/drafts',body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{});const data=await r.json();if(!r.ok){const error=Error(data.error||'Account drafts unavailable.');error.status=r.status;throw error;}return data;};
  async function check(){busy=true;controls();try{const data=await request();account=data.account;revision=data.revision;remoteExists=!!data.draft;baseline=data.draft?JSON.stringify(data.draft):null;attached=baseline===JSON.stringify(getData());conflict=false;say(`${account.name} · ${remoteExists?'Account drafts available. Open them to continue, or save to replace them.':'No account drafts saved yet. Save your current workspace online.'}`);}catch(error){account=null;say(error.message);}finally{busy=false;controls();}}
  save.onclick=async()=>{
   if(hasUnappliedChanges()){say('Apply or cancel your open form changes before saving online.');return;}
@@ -22,5 +22,5 @@ export function installAccountDrafts({getData,loadData,saveLocal,hasUnappliedCha
  };
  refresh.onclick=check;
  check();
- return {changed(){if(account&&!busy)say('Saved on this device · Use Save drafts online to update your Discord account.');}};
+ return {changed(){if(account&&!busy)say('Browser settings saved · Account backup has newer unsaved changes. Use Save drafts online to update it.');}};
 }

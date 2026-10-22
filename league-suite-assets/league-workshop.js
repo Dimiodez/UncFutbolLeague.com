@@ -18,6 +18,8 @@ import {watchUnsaved} from './league-workspace-status.js';
 import {installAccountDrafts} from './league-account-drafts.js';
 import {installEaTestLab} from './league-ea-test.js?v=20261015-ux1';
 import {correctFixture,applyConfirmedTrialCorrection} from './league-result-corrections.js';
+import {workspaceId,workspaceLocation,workspaceUrl} from './workspace-location.js';
+import {LEAGUE_TABS} from './league-page-model.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-suite-assets/league-workshop-ux.css?v=20261016-layout2';document.head.append(uxStyle);
 installWorkshopBrand();
 installEaTestLab();
@@ -31,7 +33,7 @@ let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
 document.querySelector('.workshop-layout').before(message,pageHost);
 let accountDrafts;
-function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));markLocalSaved('Saved on this device');accountDrafts?.changed();}
+function persistDrafts(){localStorage.setItem(KEY,JSON.stringify(draftFile()));markLocalSaved('Browser settings · Saved on this device at '+new Date().toLocaleTimeString());accountDrafts?.changed();}
 function pageReport(text){message.textContent=text;const status=pageHost.querySelector('[data-page-status]');if(status)status.textContent=text;}
 let pendingCalendarChange=null;
 function approveCalendarChange(signature,index){
@@ -62,14 +64,15 @@ function settingsFrom(values){
   }
   values=validated;
  }
- return validateScheduleSettings({...values,byePolicyRevision:2});
+ return validateScheduleSettings({...values,workspaceId:workspaceId(values),byePolicyRevision:2});
 }
 function renderDrafts({sectionOnly=false}={}){
+ history.replaceState(history.state,'',workspaceUrl(location.href,activeLeague===null?null:drafts[activeLeague]?.settings,activeTab));
  pendingCalendarChange=null;
  if(!sectionOnly){
  root.after(review);
  save.disabled=download.disabled=!(drafts.length||seasons.length||competitions.length);
- root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">No built-in leagues. Create your first draft to see fixtures here.</p>';
+ root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:globalThis.UFLTime?.zone()||draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">No built-in leagues. Create your first draft to see fixtures here.</p>';
  root.querySelectorAll('[data-fixture]').forEach(button=>button.addEventListener('click',()=>checkFixture(Number(button.dataset.league),button.dataset.fixture,button)));
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
   const draft=drafts[index],section=document.createElement('section');section.className='workshop-registration';
@@ -89,17 +92,18 @@ function renderDrafts({sectionOnly=false}={}){
  renderAdministration({drafts,seasons,competitions,updateLeague,addSeason,addCompetition,report:text=>message.textContent=text});
  root.querySelectorAll('[data-registration],[data-generate]').forEach(button=>{const index=Number(button.dataset.registration??button.dataset.generate);if(drafts[index].acceptedResults?.length){button.disabled=true;button.title='Accepted results exist. Export a backup before starting a new season draft.';}});
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
-  const button=document.createElement('button');button.type='button';button.textContent='Open league tabs';button.onclick=()=>{try{persistDrafts();activeLeague=index;activeTab='overview';renderDrafts();pageHost.scrollIntoView({block:'start'});}catch(error){message.textContent=`Could not save this draft: ${error.message}`;}};card.querySelector('h2').after(button);
+  const button=document.createElement('button');button.type='button';button.textContent='Open league tabs';button.onclick=()=>{try{persistDrafts();navigateWorkspace(index,'overview');pageHost.scrollIntoView({block:'start'});}catch(error){message.textContent=`Could not save this draft: ${error.message}`;}};card.querySelector('h2').after(button);
  });
  }
  if(activeLeague!==null&&!drafts[activeLeague])activeLeague=null;
  document.querySelector('.workshop-layout').hidden=activeLeague!==null;
  document.querySelector('#league-overview').hidden=activeLeague!==null;
  pageHost.hidden=activeLeague===null;
+ if(activeLeague===null){pageHost.querySelectorAll('form[data-unsaved]').forEach(form=>delete form.dataset.unsaved);pageHost.hasUnsavedWorkspace=()=>false;}
  if(activeLeague!==null){
   const index=activeLeague;
   renderLeaguePage({host:pageHost,card:root.querySelector(`#league-${index}`),draft:drafts[index],allDrafts:drafts,index,tab:activeTab,
-   onTab:tab=>{if(tab===activeTab)return;activeTab=tab;renderDrafts({sectionOnly:true});const panel=pageHost.querySelector('[role="tabpanel"]');panel.scrollIntoView({block:'start'});const selected=pageHost.querySelector(`[data-tab="${tab}"]`);selected.scrollIntoView({block:'nearest',inline:'nearest'});selected.focus({preventScroll:true});},onClose:()=>{activeLeague=null;renderDrafts();document.querySelector('.league-library-heading').scrollIntoView({block:'start'});document.querySelector('[data-new-league]').focus({preventScroll:true});},
+   onTab:tab=>{if(tab===activeTab)return;navigateWorkspace(activeLeague,tab,true);const panel=pageHost.querySelector('[role="tabpanel"]');panel.scrollIntoView({block:'start'});const selected=pageHost.querySelector(`[data-tab="${tab}"]`);selected.scrollIntoView({block:'nearest',inline:'nearest'});selected.focus({preventScroll:true});},onClose:()=>{navigateWorkspace(null);document.querySelector('.league-library-heading').scrollIntoView({block:'start'});document.querySelector('[data-new-league]').focus({preventScroll:true});},
    onSettings:settings=>{updateLeague(index,settings);persistDrafts();},
    onCorrect:async(fixtureId,values,destination)=>{if(destination==='online'){const id=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule,row=sharedLeagues.get(id);if(!row)throw Error('Enable shared collection for this league first.');const response=await fetch('/api/league-suite/league-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({id,revision:row.revision,fixtureId,values,...(values.acceptPending?{operation:'accept-pending',matchId:values.eaMatchId}:{})})}),data=await response.json();if(!response.ok)throw Error(data.error);await syncSharedResults(true);pageReport('Correction saved online. Future EA checks will not overwrite it.');}else{drafts[index]=values.acceptPending?acceptPendingResult(drafts[index],fixtureId,values.eaMatchId,values):correctFixture(drafts[index],fixtureId,values);drafts[index].acceptedResults.find(r=>r.fixtureId===fixtureId).correction.localOnly=true;persistDrafts();renderDrafts();pageReport('Correction saved on this device only. EA data retained; totals recalculated.');}},
    onRegisterCollection:async()=>{try{const id=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule||crypto.randomUUID(),response=await fetch('/api/league-suite/league-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation:'register',id,draft:{settings:{...drafts[index].settings,serverLeagueId:id,collectionEnabled:true},acceptedResults:drafts[index].acceptedResults||[]}})}),data=await response.json();if(!response.ok)throw Error(data.error);drafts[index].settings.serverLeagueId=id;drafts[index].settings.collectionEnabled=true;persistDrafts();await syncSharedResults();pageReport('Shared server collection enabled. Browser can be closed.');}catch(error){pageReport(error.message);}},
@@ -207,10 +211,30 @@ if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TRIAL_ID)
 }
 drafts=drafts.map(applyConfirmedTrialCorrection);
 if(draftStorageReadable&&!drafts.some(d=>d.settings.trialSchedule===EA_TEN_TRIAL_ID)&&drafts.length<20){drafts.push(buildLeagueSchedule(eaTenTrialSettings()));try{persistDrafts();}catch{message.textContent='10v10 test loaded; browser save unavailable.';}}
-renderDrafts();
+function navigateWorkspace(index,tab='overview',sectionOnly=false){
+ history.pushState(history.state,'',workspaceUrl(location.href,index===null?null:drafts[index].settings,tab));
+ activeLeague=index;activeTab=tab;renderDrafts({sectionOnly});
+}
+function restoreWorkspace(){
+ const next=workspaceLocation(location.href,drafts,LEAGUE_TABS.map(([key])=>key));
+ activeLeague=next.index;activeTab=next.tab;
+ if(activeLeague!==null&&!drafts[activeLeague].settings.trialSchedule&&!drafts[activeLeague].settings.collectionEnabled&&['stats','standings'].includes(activeTab))activeTab='overview';
+}
+restoreWorkspace();renderDrafts();
+window.addEventListener('popstate',()=>{
+ if((document.querySelector('form[data-unsaved="true"]')||pageHost.hasUnsavedWorkspace?.())&&!confirm('Discard unapplied form or award edits and change workspace section?')){
+  history.pushState(history.state,'',workspaceUrl(location.href,activeLeague===null?null:drafts[activeLeague].settings,activeTab));return;
+ }
+ restoreWorkspace();renderDrafts();
+});
+window.addEventListener('beforeunload',event=>{if(document.querySelector('form[data-unsaved="true"]')||pageHost.hasUnsavedWorkspace?.()){event.preventDefault();event.returnValue='';}});
+window.addEventListener('ufl-timezone-change',()=>{
+ if(document.querySelector('form[data-unsaved="true"]')||pageHost.hasUnsavedWorkspace?.()){pageReport('Display timezone updated. Your open edits are retained; reopen the section after saving to refresh displayed times.');return;}
+ renderDrafts({sectionOnly:activeLeague!==null});
+});
 accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
  hasUnappliedChanges:()=>!!document.querySelector('form[data-unsaved="true"]'),
- onSaved:()=>markLocalSaved('Saved online · Discord account'),
+ onSaved:()=>markLocalSaved('Browser settings saved · Account backup updated'),
  loadData:data=>{
   const before=draftFile(),oldSeasons=seasons,oldCompetitions=competitions;
   let loaded;try{loaded=restoreDrafts(data);}catch(error){seasons=oldSeasons;competitions=oldCompetitions;throw error;}
@@ -225,6 +249,7 @@ accountDrafts=installAccountDrafts({getData:draftFile,saveLocal:persistDrafts,
   const loaded=restoreDrafts(JSON.parse(backup));drafts=loaded;activeLeague=null;review.hidden=true;persistDrafts();renderDrafts();
  }});
 document.querySelector('.workspace-advanced').before(document.querySelector('.account-drafts'));
+document.querySelector('.account-drafts').prepend(document.querySelector('main.workshop>.save-state'));
 async function checkFixture(index,id,button){
  const draft=drafts[index],fixture=draft.fixtures.find(game=>game.id===id);button.disabled=true;review.hidden=false;review.innerHTML='<h2>Checking scheduled matchup…</h2>';
  if(activeLeague!==null)pageHost.querySelector('[data-page-body]').append(review);
@@ -262,7 +287,7 @@ setInterval(checkAutomaticTrials,5*60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAutomaticTrials();});
 checkAutomaticTrials();
 async function syncSharedResults(force=false){
- if(syncingShared||(!force&&document.querySelector('form[data-unsaved="true"]')))return;syncingShared=true;
+ if(syncingShared||(!force&&(document.querySelector('form[data-unsaved="true"]')||pageHost.hasUnsavedWorkspace?.())))return;syncingShared=true;
  try{const response=await fetch('/api/league-suite/league-results',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);let changed=false;
   for(const row of data.leagues||[]){sharedLeagues.set(row.id,row);const index=drafts.findIndex(d=>(d.settings.serverLeagueId||d.settings.trialSchedule)===row.id);if(index<0)continue;const local=drafts[index],updated=mergeSharedTestDraft(local,row.draft);if(JSON.stringify(updated.acceptedResults)!==JSON.stringify(local.acceptedResults)||JSON.stringify(updated.pendingResults)!==JSON.stringify(local.pendingResults||[])||JSON.stringify(updated.settings.vaSchedule)!==JSON.stringify(local.settings.vaSchedule)){drafts[index]=updated;changed=true;}}
   if(changed){persistDrafts();renderDrafts();}showCollectorHealth();
@@ -278,7 +303,7 @@ function showCollectorHealth(){
  const schedule=document.createElement('p');schedule.textContent='EA checks run from 15 minutes before the first kickoff until 90 minutes after it. Pending reviews do not count until accepted.';
  const health=document.createElement('p');health.textContent=row.health?.error||row.health?.warnings?.join(' ')||'No collection errors recorded.';
  const disclosure=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Collection status & diagnostics';disclosure.append(summary,detail,schedule,health);status.append(label);
- if(draft.settings.vaSchedule){const calendar=document.createElement('p'),next=draft.fixtures.find(f=>f.startsAt>=Date.now());calendar.textContent=`Full VA calendar · ${draft.fixtures.length} fixtures · refreshes automatically every 6 hours. ${next?'Next kickoff: '+new Date(next.startsAt).toLocaleString('en-US',{timeZone:draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'No remaining fixtures.'}`;status.append(calendar);}
+ if(draft.settings.vaSchedule){const calendar=document.createElement('p'),next=draft.fixtures.find(f=>f.startsAt>=Date.now());calendar.textContent=`Full VA calendar · ${draft.fixtures.length} fixtures · refreshes automatically every 6 hours. ${next?'Next kickoff: '+new Date(next.startsAt).toLocaleString('en-US',{timeZone:globalThis.UFLTime?.zone()||draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'No remaining fixtures.'}`;status.append(calendar);}
  status.append(disclosure);pageHost.querySelector('.league-page-hero').append(status);
 }
 setInterval(syncSharedResults,60000);syncSharedResults();
