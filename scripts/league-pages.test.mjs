@@ -217,6 +217,21 @@ test('Rippy Nolan shares the selected portrait across both teams, names and play
   }finally{render('delete globalThis.leagueManagedRosterState');}
 });
 
+test('existing portraits follow confirmed shared roster identity even with different names and IDs',()=>{
+  render("globalThis.leagueManagedRosterState={players:{'6v6':[{id:'1790190859371-163',identity:'1790190859371-163',name:'Renamed player',portrait:true,club:'ROM'}],'10v10':[{id:'future-membership',identity:'1790190859371-163',name:'Different display',portrait:false,club:'PALA'}]}};");
+  try{
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/assets/league/player-1790190859371-163.jpg');
+    assert.equal(render("playerIdentityKey(leagueManagedRosterState.players['6v6'][0])"),render("playerIdentityKey(leagueManagedRosterState.players['10v10'][0])"));
+    assert.equal(render("playerPortraitSource({id:'other',identity:'different-player',name:'Renamed player',portrait:false})"),null);
+    assert.equal(render("playerPortraitSource({id:'new-membership',identity:'1790183123676-110',name:'Renamed captain',portrait:false})"),'/assets/league/player-1790183123676-110-white-kit.png');
+    render("leagueManagedRosterState.players['10v10'][0].portrait='/assets/league/custom-shared-photo.jpg'");
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['6v6'][0])"),'/assets/league/custom-shared-photo.jpg');
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/assets/league/custom-shared-photo.jpg');
+    render("globalThis.leaguePlayerPhotoState={portraits:{},byIdentity:{'1790190859371-163':'/api/player-portraits/shared?v=new'}}");
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/api/player-portraits/shared?v=new');
+  }finally{render('delete globalThis.leagueManagedRosterState;delete globalThis.leaguePlayerPhotoState');}
+});
+
 test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   const html=render("featuredClubSection(new Date('2026-10-02T12:00:00Z'))");
   assert.match(html,/UFL Roma/);
