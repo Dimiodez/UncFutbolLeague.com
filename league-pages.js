@@ -18,6 +18,72 @@ const leagueStadiumPhotos={
   '6v6:club-1790182556439':'/assets/league/rippettes-stadium.webp',
   '10v10:NSH':'/assets/league/night-shift-stadium.webp'
 };
+// Content-hashed renditions are immutable; originals remain unchanged for recovery.
+const leagueStadiumRenditions = {
+  "/assets/league/arsenal-stadium.webp": [
+    [
+      480,
+      "/assets/league/stadiums/arsenal-480-2755ab2e9868.webp"
+    ],
+    [
+      640,
+      "/assets/league/stadiums/arsenal-640-2f572e14485f.webp"
+    ],
+    [
+      960,
+      "/assets/league/stadiums/arsenal-960-5803ef0f79f7.webp"
+    ],
+    [
+      1200,
+      "/assets/league/stadiums/arsenal-1200-26cd43810f44.webp"
+    ]
+  ],
+  "/assets/league/rippettes-stadium.webp": [
+    [
+      480,
+      "/assets/league/stadiums/rippettes-480-b01141fece45.webp"
+    ],
+    [
+      640,
+      "/assets/league/stadiums/rippettes-640-c227a6824f73.webp"
+    ],
+    [
+      960,
+      "/assets/league/stadiums/rippettes-960-60ac0b0e2bdd.webp"
+    ],
+    [
+      1200,
+      "/assets/league/stadiums/rippettes-1200-fdcbb599e440.webp"
+    ]
+  ],
+  "/assets/league/night-shift-stadium.webp": [
+    [
+      480,
+      "/assets/league/stadiums/night-shift-480-8ba55d096b47.webp"
+    ],
+    [
+      640,
+      "/assets/league/stadiums/night-shift-640-c87b7f042e91.webp"
+    ],
+    [
+      960,
+      "/assets/league/stadiums/night-shift-960-8d5c9e517cdc.webp"
+    ],
+    [
+      1200,
+      "/assets/league/stadiums/night-shift-1200-6b5814ee0a55.webp"
+    ]
+  ]
+};
+function leagueClubArtworkAttributes(image,placement='card') {
+  const sources=leagueStadiumRenditions[image];
+  const loading=placement==='profile'?'loading="eager" fetchpriority="high"':'loading="lazy"';
+  // Never attach bundled renditions to uploaded media or unrelated club artwork.
+  if(!sources)return `src="${escapeHtml(image)}" ${loading} decoding="async"`;
+  const primary=placement==='card'?sources[0]:sources[sources.length-1];
+  const sizes=placement==='card'?'(max-width: 640px) 92vw, (max-width: 1000px) 45vw, (max-width: 1282px) 30vw, 377px':placement==='featured'?'(max-width: 800px) 92vw, (max-width: 1282px) 46vw, 590px':'(max-width: 640px) 92vw, (max-width: 1282px) 50vw, 644px';
+  return `src="${escapeHtml(primary[1])}" srcset="${sources.map(([width,url])=>`${escapeHtml(url)} ${width}w`).join(', ')}" sizes="${sizes}" width="1200" height="800" ${loading} decoding="async"`;
+}
 // Public reference directory snapshot, explicitly limited to Season 1 6v6.
 const leaguePlayerReference = [
   ['1790037122937','A_Poon','GOTH','10'],['1790040167969','BIGHIMUP','COM','',true],
@@ -112,7 +178,7 @@ function leagueClubCard(key,context) {
   const visual=leagueClubVisual(key,context.season);
   const stats=context.season.teamDetails?.find(t=>t.key===key)?.stats;
   const players=context.players.filter(p=>p.club===key).length;
-  return `<a class="league-club-tile" href="${leagueViewLink(`/clubs/${encodeURIComponent(key)}`,context)}" data-link><div class="league-club-art"><img src="${escapeHtml(visual.image)}" alt="${escapeHtml(visual.name)} club artwork" loading="lazy"><span class="league-art-caption">${escapeHtml(visual.location)}</span></div><div class="league-club-body"><img class="league-club-crest" src="${escapeHtml(visual.logo)}" alt="${escapeHtml(visual.name)} crest" loading="lazy"><small>${context.division} · ${context.selected.label}</small><h2>${escapeHtml(visual.name)}</h2><p>${escapeHtml(visual.copy)}</p><div class="league-tile-footer"><span>${stats?.played?`${stats.wins}W · ${stats.draws}D · ${stats.losses}L`:`${players} ${context.archive?'reference':'provisional'} players`}</span><strong>Meet the club →</strong></div></div></a>`;
+  return `<a class="league-club-tile" href="${leagueViewLink(`/clubs/${encodeURIComponent(key)}`,context)}" data-link><div class="league-club-art"><img ${leagueClubArtworkAttributes(visual.image)} alt="${escapeHtml(visual.name)} club artwork"><span class="league-art-caption">${escapeHtml(visual.location)}</span></div><div class="league-club-body"><img class="league-club-crest" src="${escapeHtml(visual.logo)}" alt="${escapeHtml(visual.name)} crest" loading="lazy"><small>${context.division} · ${context.selected.label}</small><h2>${escapeHtml(visual.name)}</h2><p>${escapeHtml(visual.copy)}</p><div class="league-tile-footer"><span>${stats?.played?`${stats.wins}W · ${stats.draws}D · ${stats.losses}L`:`${players} ${context.archive?'reference':'provisional'} players`}</span><strong>Meet the club →</strong></div></div></a>`;
 }
 function leagueClubsPage(params) {
   if(params.get('division')==='house') return teamsPage(params);
@@ -150,7 +216,7 @@ function leagueClubProfile(key,params) {
   if(!context.season?.teams?.[key]) return pageHero('UFL · League','Club not found','This club is not listed in the selected season.')+`<section class="section"><a href="${leagueViewLink('/clubs',context)}" data-link>Back to clubs →</a></section>`;
   const club=leagueClubVisual(key,context.season),players=context.players.filter(p=>p.club===key);
   const stats=context.season.teamDetails?.find(t=>t.key===key)?.stats;
-  return pageHero(`${context.selected.label} · ${context.division}`,club.name,club.location)+`<section class="section league-explorer">${leagueViewNavigation('/clubs',context)}<a class="league-back" href="${leagueViewLink('/clubs',context)}" data-link>← All clubs</a><article class="league-club-profile"><img class="league-profile-art" src="${escapeHtml(club.image)}" alt="${escapeHtml(club.name)} club artwork"><div><img class="league-profile-crest" src="${escapeHtml(club.logo)}" alt="${escapeHtml(club.name)} crest"><span class="section-kicker">Club identity</span><h2>${escapeHtml(club.name)}</h2><p>${escapeHtml(club.copy)}</p><div class="league-mini-stats">${[['Played',stats?.played],['Wins',stats?.wins],['Points',stats?.points]].map(([label,value])=>`<div><strong>${value??'—'}</strong><span>${label}</span></div>`).join('')}</div><a href="${leagueViewLink('/standings',context)}" data-link>View season standings →</a></div></article><div class="league-directory-head"><div><span class="section-kicker">${context.archive?'Archived reference roster':'Provisional squad'}</span><h2>The dressing room.</h2></div><a href="${leagueViewLink('/players',context,`&club=${key}`)}" data-link>All club players →</a></div><div class="league-player-grid">${players.map(p=>leaguePlayerCard(p,context)).join('')}</div>${players.length?'':emptyState('Roster to follow','Player registration and club linking will be connected in the next phase.')}</section>`;
+  return pageHero(`${context.selected.label} · ${context.division}`,club.name,club.location)+`<section class="section league-explorer">${leagueViewNavigation('/clubs',context)}<a class="league-back" href="${leagueViewLink('/clubs',context)}" data-link>← All clubs</a><article class="league-club-profile"><img class="league-profile-art" ${leagueClubArtworkAttributes(club.image,'profile')} alt="${escapeHtml(club.name)} club artwork"><div><img class="league-profile-crest" src="${escapeHtml(club.logo)}" alt="${escapeHtml(club.name)} crest"><span class="section-kicker">Club identity</span><h2>${escapeHtml(club.name)}</h2><p>${escapeHtml(club.copy)}</p><div class="league-mini-stats">${[['Played',stats?.played],['Wins',stats?.wins],['Points',stats?.points]].map(([label,value])=>`<div><strong>${value??'—'}</strong><span>${label}</span></div>`).join('')}</div><a href="${leagueViewLink('/standings',context)}" data-link>View season standings →</a></div></article><div class="league-directory-head"><div><span class="section-kicker">${context.archive?'Archived reference roster':'Provisional squad'}</span><h2>The dressing room.</h2></div><a href="${leagueViewLink('/players',context,`&club=${key}`)}" data-link>All club players →</a></div><div class="league-player-grid">${players.map(p=>leaguePlayerCard(p,context)).join('')}</div>${players.length?'':emptyState('Roster to follow','Player registration and club linking will be connected in the next phase.')}</section>`;
 }
 function leaguePlayerProfile(id,params) {
   const context=leagueViewContext(params),alias=!context.archive&&typeof leagueManagedRosterState!=='undefined'?leagueManagedRosterState.aliases?.[id]:null,player=context.players.find(p=>p.id===id)||(alias?context.players.find(p=>p.identity===alias):null);
