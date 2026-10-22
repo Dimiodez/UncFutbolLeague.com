@@ -1,5 +1,5 @@
 // One navigation set across the workspace destinations; no production data changes.
-const destinations=[['/league-suite','Suite overview'],['/league-suite/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-suite/dashboard','My dashboard'],['/team-hub','Team hubs']];
+const destinations=[['/league-suite','Suite overview'],['/league-suite/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-suite/dashboard','Test registrations'],['/team-hub','Team hubs']];
 function workspacePath(){
  const path=location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';
  if(path==='/league-suite-assets/league-workshop')return '/league-suite';

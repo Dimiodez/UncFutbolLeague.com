@@ -1,6 +1,6 @@
 // Explicit account saves: browser work is never silently replaced or published.
 export function installAccountDrafts({getData,loadData,saveLocal,hasUnappliedChanges,onSaved,recoverLocal}){
- const panel=document.createElement('section');panel.className='card account-drafts';panel.innerHTML='<h2>My Discord account drafts</h2><p>Save all your leagues, seasons and cup drafts together. Open them here on another device using the same Discord account. This does not publish anything.</p><div class="workshop-toolbar"><button type="button" data-account-save disabled>Save drafts online</button><button type="button" data-account-load disabled>Open account drafts</button><a href="/api/auth/discord">Sign in with Discord</a><button type="button" data-account-refresh>Refresh account status</button></div><p role="status" aria-live="polite">Checking your account…</p>';
+ const panel=document.createElement('section');panel.className='card account-drafts';panel.innerHTML='<h2>Account backup</h2><p>Explicitly back up browser settings and drafts for another device. Server collection continues independently; this does not publish public standings.</p><div class="workshop-toolbar"><button type="button" data-account-save disabled>Save drafts online</button><button type="button" data-account-load disabled>Open account drafts</button><a href="/api/auth/discord">Sign in with Discord</a><button type="button" data-account-refresh>Refresh account status</button></div><p role="status" aria-live="polite">Checking your account…</p>';
  document.querySelector('.league-page').before(panel);
  const recovery=document.createElement('button');recovery.type='button';recovery.textContent='Recover browser backup';panel.querySelector('.workshop-toolbar').append(recovery);
  recovery.onclick=()=>{if(!confirm('Restore the browser backup from before the last account draft opening? This does not change your online drafts.'))return;try{recoverLocal();say('Recovered browser backup on this device. Save online only if you want to replace your account drafts.');}catch(error){say(error.message);}};
@@ -22,5 +22,5 @@ export function installAccountDrafts({getData,loadData,saveLocal,hasUnappliedCha
  };
  refresh.onclick=check;
  check();
- return {changed(){if(account&&!busy)say('Saved on this device · Use Save drafts online to update your Discord account.');}};
+ return {changed(){if(account&&!busy)say('Browser settings saved · Account backup has newer unsaved changes. Use Save drafts online to update it.');}};
 }

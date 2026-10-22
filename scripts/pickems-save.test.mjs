@@ -4,10 +4,11 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync(new URL('../pickems-app/app.js',import.meta.url),'utf8');
 function context(fetch){
- const elements=new Map([['#save-simple',{disabled:false,textContent:'Save shared ballot'}],['#save-status',{textContent:'',dataset:{}}],['#tiebreaker',{value:'4'}]]),ballots=new Map();
+ const elements=new Map([['#save-simple',{disabled:false,textContent:'Save shared ballot'}],['#save-status',{textContent:'',dataset:{}}],['#tiebreaker',{value:'4'}],['#progress-top',{}],['#progress-label',{textContent:'2/2 picks made'}]]),ballots=new Map();
  const selected=[{dataset:{match:'101',choice:'home'}},{dataset:{match:'102',choice:'draw'}}];
  const state={competition:'s2-6v6',simpleWeek:1};
- const c=vm.createContext({authState:{authenticated:true},state,serverBallots:ballots,sessionStorage:{removeItem(){}},ballotKey:(c,w)=>c+':'+w,$:key=>elements.get(key),$$:()=>selected,fixturesForWeek:()=>[{id:'101'},{id:'102'}],weekData:()=>({scheduledAt:Date.now()/1000+3600}),showToast(){},fetch,loadLeaderboard:async()=>{}});
+ const c=vm.createContext({saveNotices:new Map(),authState:{authenticated:true},state,serverBallots:ballots,sessionStorage:{removeItem(){}},ballotKey:(c,w)=>c+':'+w,$:key=>elements.get(key),$$:()=>selected,fixturesForWeek:()=>[{id:'101'},{id:'102'}],weekData:()=>({scheduledAt:Date.now()/1000+3600}),showToast(){},fetch,loadLeaderboard:async()=>{}});
+ vm.runInContext(source.slice(source.indexOf('function ballotSignature('),source.indexOf('const escapeHtml')),c);
  const start=source.indexOf('function showSaveStatus('),end=source.indexOf('function renderSimple()',start);
  vm.runInContext(source.slice(start,end),c);
  return {c,elements,ballots,selected,state,save:()=>vm.runInContext('saveSimpleBallot()',c)};
@@ -16,7 +17,7 @@ test('signed-in save sends every selection and confirms success beside the butto
  let sent;const c=context(async(url,options)=>{sent=JSON.parse(options.body);return Response.json({ok:true});});
  await c.save();assert.deepEqual(sent,{competition:'s2-6v6',week:1,picks:{101:'home',102:'draw'},tiebreaker:4});
  assert.equal(c.elements.get('#save-status').dataset.state,'saved');assert.match(c.elements.get('#save-status').textContent,/Saved to your UFL account/);
- assert.equal(c.ballots.get('s2-6v6:1').tiebreaker,4);assert.equal(c.elements.get('#save-simple').disabled,false);
+ assert.equal(c.ballots.get('s2-6v6:1').tiebreaker,4);assert.equal(c.elements.get('#save-simple').disabled,true);assert.equal(c.elements.get('#save-simple').textContent,'Ballot saved');
 });
 test('server rejection is visible and cannot be mistaken for a saved ballot',async()=>{
  const c=context(async()=>Response.json({error:'Submit one valid pick for every open match.'},{status:400}));
@@ -36,4 +37,12 @@ test('login draft capture iterates over every selected button',()=>{
  const c=vm.createContext({state:{competition:'s2-6v6',simpleWeek:1},Date,ballotKey:(c,w)=>c+':'+w,$:()=>({value:'4'}),$$:()=>selected,sessionStorage:{setItem:(key,value)=>saved=JSON.parse(value)}});
  vm.runInContext(source.slice(source.indexOf('function rememberDraft()'),source.indexOf('function loginDestination()'))+'\nrememberDraft();',c);
  assert.deepEqual(saved.picks,{'1':'home','2':'away'});
+});
+test('a loaded saved ballot stays saved across renders; an edit is unsaved without posting',()=>{
+ let requests=0;const c=context(async()=>{requests++;return Response.json({ok:true})});
+ c.ballots.set('s2-6v6:1',{picks:{101:'home',102:'draw'},tiebreaker:4});
+ vm.runInContext('updateSaveState();updateSaveState();',c.c);
+ assert.equal(c.elements.get('#save-simple').disabled,true);assert.match(c.elements.get('#save-status').textContent,/Saved ballot/);
+ c.elements.get('#tiebreaker').value='5';vm.runInContext('updateSaveState();',c.c);
+ assert.equal(c.elements.get('#save-simple').disabled,false);assert.match(c.elements.get('#save-status').textContent,/Unsaved changes/);assert.equal(requests,0);
 });

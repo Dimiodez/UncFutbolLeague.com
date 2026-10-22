@@ -8,7 +8,7 @@ function render(path,search,{already=false}={}){
  const profile={querySelector:selector=>selector==='h2'?{after:node=>{entry=node;inserted=true}}:null,after:()=>afterProfile=true};
  const main={querySelector:selector=>selector==='[data-private-hub-link]'?(already?{}:null):selector==='.league-club-profile'?profile:null};
  const context=vm.createContext({location:{pathname:path,search},URLSearchParams,decodeURIComponent,encodeURIComponent,document:{querySelector:()=>main,createElement:tag=>({tag,dataset:{},children:[],append(...nodes){this.children.push(...nodes)}})}});
- vm.runInContext(source.slice(0,source.indexOf('new MutationObserver'))+'\ninstallTeamHubEntry();',context);
+ vm.runInContext(source.slice(0,source.indexOf('function startTeamHubEntry'))+'\ninstallTeamHubEntry();',context);
  return {entry,inserted,afterProfile};
 }
 test('private hub is a prominent primary action directly beside club identity',()=>{

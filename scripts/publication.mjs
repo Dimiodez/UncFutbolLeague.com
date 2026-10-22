@@ -8,6 +8,8 @@ const publicFolders=new Set(['assets','arcade-app','func-app','goose-app','mount
 publicFolders.add('league-suite-assets');
 publicRoots.add('coaching-format.js');
 publicRoots.add('navigation-ux.js');
+publicRoots.add('time-preference.js');
+publicRoots.add('func-catalog.js');
 publicRoots.add('matchday-ux.css');
 publicRoots.add('league-awards-page.js');
 publicRoots.add('league-awards-page.css');
