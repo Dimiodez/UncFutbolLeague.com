@@ -82,6 +82,22 @@ test('the supplied Arsenal stadium photo is limited to current 6v6 and keeps exp
   finally{render('delete globalThis.leagueTeamMediaState');}
 });
 
+test('the approved Rippettes stadium follows its club alias only in current 6v6 and respects uploads',()=>{
+  const photo='/assets/league/rippettes-stadium.webp';
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  for(const key of ['club-1790182556439','PHN']){
+    assert.ok(render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=6v6'))`).includes(photo));
+  }
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  for(const query of ['season=2&division=10v10','season=1&division=6v6']){
+    assert.ok(!render(`leagueClubsPage(new URLSearchParams('${query}'))`).includes(photo));
+  }
+  assert.ok(!render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:club-1790182556439':{image:'/api/team-media/images/new-rippettes-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('PHN',new URLSearchParams('season=2&division=6v6'))"),/new-rippettes-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
