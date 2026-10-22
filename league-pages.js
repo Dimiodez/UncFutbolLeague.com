@@ -11,9 +11,12 @@ const leagueArtwork = [
   ['PUM','pumas-unam','Mexico City, Mexico','University roots, navy and gold, and the iconic Pumas identity.'],
   ['TAB','tabascokids','Villahermosa, Mexico','Red, white and green, with a little extra heat on match night.']
 ];
-// User-supplied stadium photography, scoped to the current division and club.
+// Owner-approved stadium images, scoped to the current division and club.
 // Explicitly published team uploads retain precedence over these bundled defaults.
-const leagueStadiumPhotos={'6v6:ARS':'/assets/league/arsenal-stadium.webp'};
+const leagueStadiumPhotos={
+  '6v6:ARS':'/assets/league/arsenal-stadium.webp',
+  '6v6:club-1790182556439':'/assets/league/rippettes-stadium.webp'
+};
 // Public reference directory snapshot, explicitly limited to Season 1 6v6.
 const leaguePlayerReference = [
   ['1790037122937','A_Poon','GOTH','10'],['1790040167969','BIGHIMUP','COM','',true],
