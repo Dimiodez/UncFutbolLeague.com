@@ -14,6 +14,7 @@ test('only known player IDs accepted and confirmed aliases share portrait identi
   assert.equal(playerFor('../anywhere'),null);assert.equal(playerFor('not-a-player'),null);
   assert.equal(playerFor('toString'),null);
   assert.equal(playerFor('1790183123676-110').identity,playerFor('1790179840025').identity);
+  assert.equal(playerFor('1790190859244-598').identity,playerFor('1790122570549').identity);
 });
 test('staff guard blocks ordinary members and cross-origin writes',async()=>{
   const env={DB:database({...actor,role:'member'}),PLAYER_PHOTOS:{}};
