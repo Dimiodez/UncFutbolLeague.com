@@ -4,5 +4,6 @@ export async function onRequest(context){
  const access=await suiteAccess(context.request,context.env);if(!access.allowed)return suiteDenied(access);
  const route=new URL(context.request.url).pathname.replace(/^\/league-suite\/?/,'').replace(/\/$/,'');
  const page=Object.hasOwn(pages,route)?pages[route]:null;if(!page||!['GET','HEAD'].includes(context.request.method))return new Response('Not found',{status:404});
- const url=new URL(context.request.url);url.pathname='/league-suite-assets/'+page;return privateSuiteResponse(await context.env.ASSETS.fetch(new Request(url,context.request)));
+ const url=new URL(context.request.url);url.pathname='/league-suite-assets/'+page.replace(/\.html$/,'');return privateSuiteResponse(await context.env.ASSETS.fetch(new Request(url,context.request)));
 }
+

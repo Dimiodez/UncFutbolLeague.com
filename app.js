@@ -239,7 +239,7 @@ function funPage() {
 
 function leaguePage() {
   return pageHero('UFL · League', 'The official match centre', 'Teams, fixtures, tables, rules and every route to a UFL trophy.') +
-    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="hub-card-grid hub-card-grid-league">${[
+    `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="league-suite-entry" data-league-suite-entry hidden></div><div class="hub-card-grid hub-card-grid-league">${[
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
       {mark:'XI',title:'TOTW / TOTS',copy:'Celebrate the official 6v6 and 10v10 selections, grouped by gameweek and season.',href:'/totw',label:'See the selections'},
@@ -1049,8 +1049,11 @@ async function hydrateAccount() {
   if (nav) nav.textContent = state.authenticated ? state.user.displayName : 'Sign in';
   const mayAdmin = state.authenticated && ['owner','admin'].includes(state.user.role);
   const leagueMenu=document.querySelector('[data-nav-hub="league"] .nav-menu');
-  document.querySelector('[data-league-suite-link]')?.remove();
-  if(mayAdmin&&leagueMenu){try{const r=await fetch('/api/league-suite/access',{cache:'no-store'}),access=await r.json();if(r.ok&&access.allowed){const link=document.createElement('a');link.href='/league-suite';link.dataset.leagueSuiteLink='';link.innerHTML='<b>League Suite</b><small>Private league management & EA testing</small>';leagueMenu.append(link);}}catch{}}
+  document.querySelectorAll('[data-league-suite-link]').forEach(link=>link.remove());
+  const suiteEntry=document.querySelector('[data-league-suite-entry]');if(suiteEntry){suiteEntry.hidden=true;suiteEntry.replaceChildren();}
+  if(mayAdmin&&leagueMenu){try{const r=await fetch('/api/league-suite/access',{cache:'no-store'}),access=await r.json();if(r.ok&&access.allowed){const link=document.createElement('a');link.href='/league-suite';link.dataset.leagueSuiteLink='';link.innerHTML='<b>League Suite</b><small>Private league management & EA testing</small>';leagueMenu.append(link);
+    if(suiteEntry?.isConnected){suiteEntry.innerHTML='<a class="card" href="/league-suite"><div><span class="section-kicker">Private league management</span><h2>League Suite</h2><p>Open your leagues, manage fixtures and review automatic EA test results.</p></div><strong class="button button-primary">Open League Suite →</strong></a>';suiteEntry.hidden=false;}
+  }}catch{}}
   let adminNav = document.querySelector('#admin-nav');
   if (mayAdmin && !adminNav && nav) {
     nav.insertAdjacentHTML('beforebegin','<a href="/admin" data-link id="admin-nav">Admin</a>');
@@ -1360,6 +1363,8 @@ document.querySelectorAll('.nav-group').forEach(group => {
     button.setAttribute('aria-expanded', open);
   });
   group.addEventListener('mouseleave', () => {
+    // A tap-open mobile menu stays open until a choice, another menu, or Escape.
+    if (window.matchMedia('(max-width: 1360px)').matches) return;
     group.classList.remove('open');
     button.setAttribute('aria-expanded', 'false');
     button.blur();
@@ -1383,3 +1388,4 @@ document.querySelectorAll('[data-theme-choice]').forEach(button => button.addEve
 setTheme(document.documentElement.dataset.theme);
 setLocation();
 render();
+
