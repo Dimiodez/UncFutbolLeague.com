@@ -98,6 +98,20 @@ test('the approved Rippettes stadium follows its club alias only in current 6v6 
   finally{render('delete globalThis.leagueTeamMediaState');}
 });
 
+test('the approved Night Shift stadium is scoped to current 10v10 and respects uploads',()=>{
+  const photo='/assets/league/night-shift-stadium.webp';
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  assert.ok(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  for(const query of ['season=2&division=6v6','season=1&division=6v6']){
+    assert.ok(!render(`leagueClubsPage(new URLSearchParams('${query}'))`).includes(photo));
+  }
+  assert.ok(!render("leagueClubProfile('PALA',new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'10v10:NSH':{image:'/api/team-media/images/new-night-shift-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))"),/new-night-shift-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
