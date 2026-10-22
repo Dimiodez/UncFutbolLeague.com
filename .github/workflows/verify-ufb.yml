@@ -26,7 +26,7 @@ jobs:
         run: node --test scripts/*.test.mjs mountain-app/tests/*.test.mjs
       - name: Build public-only website
         run: node scripts/build-public.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ufl-site-${{ github.sha }}
           path: |
