@@ -24,6 +24,8 @@ createServer((req,res)=>{
  }
  else if(url.pathname==='/api/team-hub')body=JSON.stringify({teams:[{id:'6v6:QA',name:'QA Managers FC',division:'6v6',season:'2',canEdit:true,isOwner:true},{id:'10v10:QA',name:'QA Inspection FC',division:'10v10',season:'2',canEdit:false,isOwner:true},{id:'6v6:OLD',name:'Place Holder Name',division:'6v6',season:'2',canEdit:false,isOwner:true}]});
  else if(url.pathname==='/api/admin/users')body=JSON.stringify({users:[],teamTitleTeams:[],canManageRoles:true});
+ else if(url.pathname==='/api/player-portraits')body=JSON.stringify({portraits:{},byIdentity:{}});
+ else if(url.pathname==='/api/admin/player-photos')body=JSON.stringify({canReview:true,photos:[]});
  else if(url.pathname==='/api/admin/events'||url.pathname==='/api/events')body=JSON.stringify({events:[]});
  else if(url.pathname.startsWith('/api/'))body=JSON.stringify({matches:[],teams:[],players:[],applications:[],entries:[]});
  else{
