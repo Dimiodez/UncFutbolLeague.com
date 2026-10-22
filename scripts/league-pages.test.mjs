@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {createHash} from 'node:crypto';
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 const app=read('app.js');
@@ -71,7 +72,7 @@ test('uploaded team images flow through club pages, directories and team cards w
 });
 
 test('the supplied Arsenal stadium photo is limited to current 6v6 and keeps explicit upload precedence',()=>{
-  const photo='/assets/league/arsenal-stadium.webp';
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['6v6:ARS']][3][1]");
   assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
   assert.ok(render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").includes(photo));
   assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))").includes(photo));
@@ -83,7 +84,7 @@ test('the supplied Arsenal stadium photo is limited to current 6v6 and keeps exp
 });
 
 test('the approved Rippettes stadium follows its club alias only in current 6v6 and respects uploads',()=>{
-  const photo='/assets/league/rippettes-stadium.webp';
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['6v6:club-1790182556439']][3][1]");
   assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
   for(const key of ['club-1790182556439','PHN']){
     assert.ok(render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=6v6'))`).includes(photo));
@@ -99,7 +100,7 @@ test('the approved Rippettes stadium follows its club alias only in current 6v6 
 });
 
 test('the approved Night Shift stadium is scoped to current 10v10 and respects uploads',()=>{
-  const photo='/assets/league/night-shift-stadium.webp';
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['10v10:NSH']][3][1]");
   assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
   assert.ok(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))").includes(photo));
   assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))").includes(photo));
@@ -110,6 +111,58 @@ test('the approved Night Shift stadium is scoped to current 10v10 and respects u
   render("globalThis.leagueTeamMediaState={teams:{'10v10:NSH':{image:'/api/team-media/images/new-night-shift-stadium'}}}");
   try{assert.match(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))"),/new-night-shift-stadium/);}
   finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
+test('stadium renditions are content-versioned WebP files within transfer budgets',()=>{
+  const manifests=render('leagueStadiumRenditions');
+  assert.equal(Object.keys(manifests).length,3);
+  for(const [original,sources] of Object.entries(manifests)){
+    assert.ok(fs.existsSync(new URL(original.slice(1),root)));
+    assert.deepEqual(Array.from(sources,source=>source[0]),[480,640,960,1200]);
+    for(const [width,url] of sources){
+      const bytes=fs.readFileSync(new URL(url.slice(1),root));
+      const hash=createHash('sha256').update(bytes).digest('hex').slice(0,12);
+      assert.ok(url.endsWith(`-${width}-${hash}.webp`));
+      assert.equal(bytes.toString('ascii',0,4),'RIFF');
+      assert.equal(bytes.toString('ascii',8,12),'WEBP');
+      assert.ok(bytes.length<({480:70000,640:120000,960:260000,1200:400000}[width]),url);
+    }
+  }
+});
+
+test('club images select responsive renditions with bounded layout hints and appropriate priority',()=>{
+  for(const [key,division] of [['ARS','6v6'],['PHN','6v6'],['NSH','10v10']]){
+    const profile=render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=${division}'))`).match(/<img class="league-profile-art"[^>]+>/)[0];
+    assert.match(profile,/srcset="[^\"]+480w, [^\"]+640w, [^\"]+960w, [^\"]+1200w"/);
+    assert.match(profile,/sizes="\(max-width: 640px\) 92vw/);
+    assert.match(profile,/width="1200" height="800" loading="eager" fetchpriority="high" decoding="async"/);
+    const card=render(`leagueClubsPage(new URLSearchParams('season=2&division=${division}'))`);
+    assert.match(card,/-480-[a-f0-9]+\.webp" srcset=/);
+    assert.match(card,/loading="lazy" decoding="async"/);
+  }
+  const featured=render("leagueClubArtworkAttributes(leagueStadiumPhotos['6v6:ARS'],'featured')");
+  assert.match(featured,/max-width: 800px/);
+  assert.match(featured,/loading="lazy"/);
+  assert.ok(read('featured-club.js').includes("leagueClubArtworkAttributes(club.image,'featured')"));
+});
+
+test('responsive stadium optimization never changes uploaded media or archived artwork',()=>{
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:ARS':{image:'/api/team-media/images/custom-stadium'}}}");
+  try{
+    const image=render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").match(/<img class="league-profile-art"[^>]+>/)[0];
+    assert.match(image,/src="\/api\/team-media\/images\/custom-stadium"/);
+    assert.doesNotMatch(image,/srcset|stadiums\//);
+  }finally{render('delete globalThis.leagueTeamMediaState');}
+  assert.doesNotMatch(render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))"),/stadiums\//);
+});
+
+test('immutable stadium caching is limited to the content-hashed public folder',()=>{
+  const headers=read('_headers');
+  assert.match(headers,/\/assets\/league\/stadiums\/\*\r?\n  Cache-Control: public, max-age=31536000, immutable/);
+  assert.doesNotMatch(headers,/\/assets\/league\/\*\r?\n  Cache-Control:.*immutable/);
+  for(const route of ['/app.js','/league-pages.js','/pickems-app/season-data.js','/team-hub-entry.js']){
+    assert.ok(headers.includes(`${route}\n  Cache-Control: no-store, max-age=0`)||headers.includes(`${route}\r\n  Cache-Control: no-store, max-age=0`));
+  }
 });
 
 test('linked dual-division players show both team logos without changing their rosters',()=>{
