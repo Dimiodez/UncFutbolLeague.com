@@ -1,12 +1,15 @@
-// One navigation set across the four workspace destinations; no production data changes.
-const destinations=[['/league-workshop','League administration'],['/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-dashboard','My dashboard'],['/team-hub','Team hubs']];
+// One navigation set across the workspace destinations; no production data changes.
+const destinations=[['/league-workshop','Suite overview'],['/ea-clubs','EA club lookup'],['/players?season=2&division=6v6&workspace=1','Player directory'],['/league-dashboard','My dashboard'],['/team-hub','Team hubs']];
+function workspacePath(){return location.pathname.replace(/\.html$/,'').replace(/\/$/,'')||'/';}
 export function installWorkspaceNavigation(main=document.querySelector('main.workshop')){
- const path=location.pathname.replace(/\.html$/,'');
+ const path=workspacePath();
  let nav=main.querySelector('.workshop-nav');
  if(!nav){nav=document.createElement('nav');main.querySelector('header')?.after(nav);}
  nav.className='workshop-nav';nav.setAttribute('aria-label','League workspace');nav.replaceChildren();
  for(const [href,label] of destinations){const link=document.createElement('a');link.href=href;link.textContent=label;if(path===href.split('?')[0])link.setAttribute('aria-current','page');nav.append(link);}
- if(path!=='/league-workshop'&&!main.querySelector('[data-workspace-back]')){const back=document.createElement('a');back.href='/league-workshop';back.dataset.workspaceBack='';back.className='workspace-back';back.textContent='Back to League Workspace';nav.before(back);}
+ const existingBack=main.querySelector('[data-workspace-back]');
+ if(path==='/league-workshop')existingBack?.remove();
+ else if(!existingBack){const back=document.createElement('a');back.href='/league-workshop';back.dataset.workspaceBack='';back.className='workspace-back';back.textContent='← League Suite overview';nav.before(back);}
 }
 
 // The existing player directory uses the public site router. Retain that router,
