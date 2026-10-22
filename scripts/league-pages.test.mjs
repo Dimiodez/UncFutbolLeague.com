@@ -135,6 +135,7 @@ test('club images select responsive renditions with bounded layout hints and app
     const profile=render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=${division}'))`).match(/<img class="league-profile-art"[^>]+>/)[0];
     assert.match(profile,/srcset="[^\"]+480w, [^\"]+640w, [^\"]+960w, [^\"]+1200w"/);
     assert.match(profile,/sizes="\(max-width: 640px\) 92vw/);
+    assert.match(profile,/sizes="\(max-width: 640px\) 92vw, 1200px"/);
     assert.match(profile,/width="1200" height="800" loading="eager" fetchpriority="high" decoding="async"/);
     const card=render(`leagueClubsPage(new URLSearchParams('season=2&division=${division}'))`);
     assert.match(card,/-480-[a-f0-9]+\.webp" srcset=/);
