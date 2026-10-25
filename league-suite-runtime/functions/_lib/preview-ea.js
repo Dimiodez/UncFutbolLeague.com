@@ -27,7 +27,7 @@ export async function previewEaApi(request,env){
    const results=await Promise.all(MATCH_TYPES.map(([type,eaType])=>readMatchType(match[1],type,eaType)));
    const successful=results.filter(result=>result.available);
    const feeds=results.map(({matches,...status})=>status);
-   if(!successful.length)return json({clubId:match[1],error:'All EA match feeds failed.',feeds,partial:true,checkedAt:Date.now()},502);
+   if(!successful.length||!results.find(f=>f.type==='friendly')?.available)return json({clubId:match[1],error:'Required EA friendly match feed failed. League/playoff availability does not prove league-fixture coverage.',feeds,partial:true,checkedAt:Date.now()},502);
    const unique=new Map();successful.forEach(result=>result.matches.forEach(game=>unique.set(String(game.matchId),game)));
    const matches=[...unique.values()].sort((a,b)=>Number(b.timestamp)-Number(a.timestamp));
    return json({clubId:match[1],matches,feeds,checkedAt:Date.now(),partial:successful.length!==results.length,source:'EA Clubs via relay with direct fallback',note:'Check feeds for unavailable match types. Missing friendly history is not evidence of no games played.'});
