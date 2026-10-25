@@ -1,6 +1,11 @@
 name = "ufl-preview-league-collector"
 main = "worker.js"
 compatibility_date = "2026-09-03"
+[vars]
+LEAGUE_FORMAT = "6v6"
+[observability]
+enabled = true
+head_sampling_rate = 1
 [triggers]
 crons = ["*/5 * * * *"]
 [[d1_databases]]

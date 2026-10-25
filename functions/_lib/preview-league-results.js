@@ -6,6 +6,11 @@ import {acceptPendingResult} from '../../league-pending-results.js';
 const publicDraft=draft=>({pendingResults:draft.pendingResults||[],acceptedResults:draft.acceptedResults||[],settings:Object.fromEntries(['trialSchedule','serverLeagueId','season','league','format','size','maxTeamSize','keepersEnabled','startDate','weekday','secondWeekday','time','timeZone','spacingMinutes','repeatWeeks','matchnightCount','byePolicy','byePolicyRevision','collectionEnabled','scoringMode','vaSchedule'].filter(k=>draft.settings[k]!==undefined).map(k=>[k,draft.settings[k]]).concat([['teams',draft.settings.teams.map(t=>({id:t.id,name:t.name,eaClubId:t.eaClubId}))]]))});
 export async function previewLeagueResultsApi(request,env){
  try{
+  if(request.method==='GET'&&new URL(request.url).searchParams.has('diagnostics')){
+   const id=new URL(request.url).searchParams.get('diagnostics');if(!/^[a-zA-Z0-9_-]{1,100}$/.test(id))throw Error('Invalid league ID.');
+   const rows=await env.DB.prepare('SELECT id,checked_at,mode,status,diagnostics_json FROM preview_collection_runs WHERE league_id=? ORDER BY checked_at DESC LIMIT 20').bind(id).all();
+   return json({runs:rows.results.map(r=>({...r,diagnostics:JSON.parse(r.diagnostics_json),diagnostics_json:undefined}))});
+  }
   if(request.method==='GET'){const rows=await env.DB.prepare('SELECT id,draft_json,revision,enabled,checked_at,succeeded_at,health FROM preview_league_results ORDER BY id').all();return json({leagues:rows.results.map(r=>({...r,draft:publicDraft(JSON.parse(r.draft_json)),draft_json:undefined,health:r.health?JSON.parse(r.health):null}))});}
   if(request.method!=='POST')return json({error:'Method not allowed.'},405);
   if(!sameOrigin(request))return json({error:'Same-origin request required.'},403);

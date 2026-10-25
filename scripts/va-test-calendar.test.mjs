@@ -52,11 +52,11 @@ test('bad, empty, duplicated or mismatched VA schedules fail closed and keep acc
  await assert.rejects(fetchVaSchedule(VA_TEST_SOURCES[draft.settings.trialSchedule],async()=>new Response('Unavailable',{status:503})),/503/);
 });
 test('worker refreshes calendar without EA calls outside windows; VA failure retains saved fixtures and active polling',async()=>{
- const original=buildLeagueSchedule(eaTrialSettings()),props=provider(original),updated=importVaSchedule(original,props,{now:original.fixtures[0].startsAt});
+ const original=buildLeagueSchedule(eaTrialSettings()),props=provider(original),updated=importVaSchedule(original,props,{now:original.fixtures[0].startsAt-2*86400000});
  let stored={settings:updated.settings,acceptedResults:[]},last,calls=0,calendarCalls=0;
  const DB={prepare(sql){return{bind(...args){this.args=args;return this;},async all(){return{results:sql.includes('enabled=1')?[{id:'trial',revision:1,draft_json:JSON.stringify(stored)}]:[]};},async run(){last=this.args;return{meta:{changes:1}};}};}};
  const readFeed=async(id,type)=>{calls++;return{type,available:true,matches:[],attempts:[]};};
- await collectLeagues({DB},{now:original.fixtures[0].startsAt+86400000,readFeed,readCalendar:async()=>{calendarCalls++;return props;}});
+ await collectLeagues({DB},{now:original.fixtures[0].startsAt-86400000,readFeed,readCalendar:async()=>{calendarCalls++;return props;}});
  assert.equal(calendarCalls,1);assert.equal(calls,0);assert.equal(JSON.parse(last[0]).settings.vaSchedule.fixtures.length,20);
  const next=updated.nights[1].fixtures[0].startsAt;
  await collectLeagues({DB},{now:next,readFeed,readCalendar:async()=>{throw Error('VA temporarily offline');}});
