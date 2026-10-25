@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
+import {createHash} from 'node:crypto';
 const root=new URL('../',import.meta.url);
 const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 const app=read('app.js');
@@ -70,6 +71,101 @@ test('uploaded team images flow through club pages, directories and team cards w
   }finally{render('delete globalThis.leagueTeamMediaState');}
 });
 
+test('the supplied Arsenal stadium photo is limited to current 6v6 and keeps explicit upload precedence',()=>{
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['6v6:ARS']][3][1]");
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  assert.ok(render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  assert.ok(!render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  assert.ok(!render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:ARS':{image:'/api/team-media/images/new-arsenal-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))"),/new-arsenal-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
+test('the approved Rippettes stadium follows its club alias only in current 6v6 and respects uploads',()=>{
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['6v6:club-1790182556439']][3][1]");
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  for(const key of ['club-1790182556439','PHN']){
+    assert.ok(render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=6v6'))`).includes(photo));
+  }
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  for(const query of ['season=2&division=10v10','season=1&division=6v6']){
+    assert.ok(!render(`leagueClubsPage(new URLSearchParams('${query}'))`).includes(photo));
+  }
+  assert.ok(!render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:club-1790182556439':{image:'/api/team-media/images/new-rippettes-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('PHN',new URLSearchParams('season=2&division=6v6'))"),/new-rippettes-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
+test('the approved Night Shift stadium is scoped to current 10v10 and respects uploads',()=>{
+  const photo=render("leagueStadiumRenditions[leagueStadiumPhotos['10v10:NSH']][3][1]");
+  assert.ok(fs.existsSync(new URL(photo.slice(1),root)));
+  assert.ok(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  assert.ok(render("leagueClubsPage(new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  for(const query of ['season=2&division=6v6','season=1&division=6v6']){
+    assert.ok(!render(`leagueClubsPage(new URLSearchParams('${query}'))`).includes(photo));
+  }
+  assert.ok(!render("leagueClubProfile('PALA',new URLSearchParams('season=2&division=10v10'))").includes(photo));
+  render("globalThis.leagueTeamMediaState={teams:{'10v10:NSH':{image:'/api/team-media/images/new-night-shift-stadium'}}}");
+  try{assert.match(render("leagueClubProfile('NSH',new URLSearchParams('season=2&division=10v10'))"),/new-night-shift-stadium/);}
+  finally{render('delete globalThis.leagueTeamMediaState');}
+});
+
+test('stadium renditions are content-versioned WebP files within transfer budgets',()=>{
+  const manifests=render('leagueStadiumRenditions');
+  assert.equal(Object.keys(manifests).length,3);
+  for(const [original,sources] of Object.entries(manifests)){
+    assert.ok(fs.existsSync(new URL(original.slice(1),root)));
+    assert.deepEqual(Array.from(sources,source=>source[0]),[480,640,960,1200]);
+    for(const [width,url] of sources){
+      const bytes=fs.readFileSync(new URL(url.slice(1),root));
+      const hash=createHash('sha256').update(bytes).digest('hex').slice(0,12);
+      assert.ok(url.endsWith(`-${width}-${hash}.webp`));
+      assert.equal(bytes.toString('ascii',0,4),'RIFF');
+      assert.equal(bytes.toString('ascii',8,12),'WEBP');
+      assert.ok(bytes.length<({480:70000,640:120000,960:260000,1200:400000}[width]),url);
+    }
+  }
+});
+
+test('club images select responsive renditions with bounded layout hints and appropriate priority',()=>{
+  for(const [key,division] of [['ARS','6v6'],['PHN','6v6'],['NSH','10v10']]){
+    const profile=render(`leagueClubProfile('${key}',new URLSearchParams('season=2&division=${division}'))`).match(/<img class="league-profile-art"[^>]+>/)[0];
+    assert.match(profile,/srcset="[^\"]+480w, [^\"]+640w, [^\"]+960w, [^\"]+1200w"/);
+    assert.match(profile,/sizes="\(max-width: 640px\) 92vw/);
+    assert.match(profile,/sizes="\(max-width: 640px\) 92vw, 1200px"/);
+    assert.match(profile,/width="1200" height="800" loading="eager" fetchpriority="high" decoding="async"/);
+    const card=render(`leagueClubsPage(new URLSearchParams('season=2&division=${division}'))`);
+    assert.match(card,/-480-[a-f0-9]+\.webp" srcset=/);
+    assert.match(card,/loading="lazy" decoding="async"/);
+  }
+  const featured=render("leagueClubArtworkAttributes(leagueStadiumPhotos['6v6:ARS'],'featured')");
+  assert.match(featured,/max-width: 800px/);
+  assert.match(featured,/loading="lazy"/);
+  assert.ok(read('featured-club.js').includes("leagueClubArtworkAttributes(club.image,'featured')"));
+});
+
+test('responsive stadium optimization never changes uploaded media or archived artwork',()=>{
+  render("globalThis.leagueTeamMediaState={teams:{'6v6:ARS':{image:'/api/team-media/images/custom-stadium'}}}");
+  try{
+    const image=render("leagueClubProfile('ARS',new URLSearchParams('season=2&division=6v6'))").match(/<img class="league-profile-art"[^>]+>/)[0];
+    assert.match(image,/src="\/api\/team-media\/images\/custom-stadium"/);
+    assert.doesNotMatch(image,/srcset|stadiums\//);
+  }finally{render('delete globalThis.leagueTeamMediaState');}
+  assert.doesNotMatch(render("leagueClubsPage(new URLSearchParams('season=1&division=6v6'))"),/stadiums\//);
+});
+
+test('immutable stadium caching is limited to the content-hashed public folder',()=>{
+  const headers=read('_headers');
+  assert.match(headers,/\/assets\/league\/stadiums\/\*\r?\n  Cache-Control: public, max-age=31536000, immutable/);
+  assert.doesNotMatch(headers,/\/assets\/league\/\*\r?\n  Cache-Control:.*immutable/);
+  for(const route of ['/app.js','/league-pages.js','/pickems-app/season-data.js','/team-hub-entry.js']){
+    assert.ok(headers.includes(`${route}\n  Cache-Control: no-store, max-age=0`)||headers.includes(`${route}\r\n  Cache-Control: no-store, max-age=0`));
+  }
+});
+
 test('linked dual-division players show both team logos without changing their rosters',()=>{
   const six=render("leaguePlayerProfile('1790183123676-110',new URLSearchParams('season=2&division=6v6'))");
   const ten=render("leaguePlayerProfile('1790179840025',new URLSearchParams('season=2&division=10v10'))");
@@ -92,6 +188,48 @@ test('portraits follow players across divisions, seasons and new membership IDs'
   assert.equal(render("playerPortraitSource({id:'unrelated',name:'DMellowFan',portrait:false})"),null);
   assert.match(render("leaguePlayerProfile('1790040141524',new URLSearchParams('season=1&division=6v6'))"),/player-1790183123676-110-white-kit.png/);
   assert.match(render("leaguePlayerCard({id:'future-10v10',name:'DMellow',club:'ROM',portrait:false},leagueViewContext(new URLSearchParams('season=2&division=10v10')))"),/player-1790642010611-white-kit.png/);
+});
+
+test('Rippy Nolan shares the selected portrait across both teams, names and player IDs',()=>{
+  const src='/assets/league/player-1790190859244-598-white-kit-v1.webp';
+  assert.ok(fs.existsSync(new URL(src.slice(1),root)));
+  assert.ok(fs.statSync(new URL(src.slice(1),root)).size<300000);
+  const teams=[['1790190859244-598','6v6','club-1790182556439'],['1790122570549','10v10','PALA']];
+  for(const [id,division,club] of teams){
+    const query=`season=2&division=${division}`;
+    assert.ok(render(`leaguePlayerProfile('${id}',new URLSearchParams('${query}'))`).includes(src));
+    assert.ok(render(`leagueClubProfile('${club}',new URLSearchParams('${query}'))`).includes(src));
+    assert.ok(render(`leaguePlayersPage(new URLSearchParams('${query}'))`).includes(src));
+    assert.equal(render(`playerPortraitSource({id:'${id}',name:'Updated display name',portrait:false})`),src);
+  }
+  for(const name of ['Ripp','Rippy Nolan']){
+    assert.equal(render(`playerPortraitSource({id:'future-membership',name:'${name}',portrait:false})`),src);
+  }
+  assert.equal(render("playerPortraitSource({id:'unrelated',name:'Rippy Nolan Fan',portrait:false})"),null);
+  render("globalThis.leagueManagedRosterState={players:{'6v6':[{id:'1790190859244-598',identity:'1790190859244-598',name:'Rippy Nolan',club:'club-1790182556439'}],'10v10':[{id:'1790122570549',identity:'1790190859244-598',name:'Rippy Nolan',club:'PALA'}]}};");
+  try{
+    for(const [id,division] of teams){
+      const html=render(`leaguePlayerProfile('${id}',new URLSearchParams('season=2&division=${division}'))`);
+      assert.ok(html.includes(src));
+      assert.match(html,/<figcaption>6v6<\/figcaption>/);
+      assert.match(html,/<figcaption>10v10<\/figcaption>/);
+    }
+  }finally{render('delete globalThis.leagueManagedRosterState');}
+});
+
+test('existing portraits follow confirmed shared roster identity even with different names and IDs',()=>{
+  render("globalThis.leagueManagedRosterState={players:{'6v6':[{id:'1790190859371-163',identity:'1790190859371-163',name:'Renamed player',portrait:true,club:'ROM'}],'10v10':[{id:'future-membership',identity:'1790190859371-163',name:'Different display',portrait:false,club:'PALA'}]}};");
+  try{
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/assets/league/player-1790190859371-163.jpg');
+    assert.equal(render("playerIdentityKey(leagueManagedRosterState.players['6v6'][0])"),render("playerIdentityKey(leagueManagedRosterState.players['10v10'][0])"));
+    assert.equal(render("playerPortraitSource({id:'other',identity:'different-player',name:'Renamed player',portrait:false})"),null);
+    assert.equal(render("playerPortraitSource({id:'new-membership',identity:'1790183123676-110',name:'Renamed captain',portrait:false})"),'/assets/league/player-1790183123676-110-white-kit.png');
+    render("leagueManagedRosterState.players['10v10'][0].portrait='/assets/league/custom-shared-photo.jpg'");
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['6v6'][0])"),'/assets/league/custom-shared-photo.jpg');
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/assets/league/custom-shared-photo.jpg');
+    render("globalThis.leaguePlayerPhotoState={portraits:{},byIdentity:{'1790190859371-163':'/api/player-portraits/shared?v=new'}}");
+    assert.equal(render("playerPortraitSource(leagueManagedRosterState.players['10v10'][0])"),'/api/player-portraits/shared?v=new');
+  }finally{render('delete globalThis.leagueManagedRosterState;delete globalThis.leaguePlayerPhotoState');}
 });
 
 test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{

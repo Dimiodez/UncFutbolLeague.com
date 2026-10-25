@@ -88,3 +88,12 @@
 
 /team-hub-entry.js
   Cache-Control: no-store, max-age=0
+
+/assets/league/stadiums/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/player-photo-review.js
+  Cache-Control: no-store, max-age=0
+
+/player-portraits.js
+  Cache-Control: no-store, max-age=0

@@ -8,4 +8,5 @@ function installTeamHubEntry(){
  const admin=main.querySelector('#admin-root');if(admin&&!admin.querySelector('[data-hub-access-link]')&&admin.querySelector('.member-row')){const a=document.createElement('a');a.dataset.hubAccessLink='';a.className='button button-primary';a.href='/team-hub-access';a.textContent='Team hubs · assign managers & player accounts';admin.prepend(a);}
  const account=main.querySelector('.account-profile');if(account&&!main.querySelector('[data-my-hubs]')){const a=document.createElement('a');a.dataset.myHubs='';a.className='button button-secondary';a.href='/team-hub';a.textContent='My private team hubs';account.after(a);}
 }
-new MutationObserver(installTeamHubEntry).observe(document.querySelector('#main')||document.body,{childList:true,subtree:true});installTeamHubEntry();
+function startTeamHubEntry(){const host=document.querySelector('#main')||document.body;if(!host)return;new MutationObserver(installTeamHubEntry).observe(host,{childList:true,subtree:true});installTeamHubEntry();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',startTeamHubEntry,{once:true});else startTeamHubEntry();

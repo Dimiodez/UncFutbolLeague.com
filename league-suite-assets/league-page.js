@@ -25,6 +25,7 @@ export function renderLeaguePage({host,card,draft,allDrafts=[],index,tab,onTab,o
  const settings=draft.settings,content=settings.pageContent?.[tab]||{};
  if(settings.trialSchedule){const status=document.createElement('p');status.dataset.autoTrialStatus='';status.className='workshop-warning';status.textContent='Automatic EA trial checking enabled every 5 minutes while this workshop stays open. Scheduled results populate stats and standings automatically. Test scoring: win 3, draw 1, loss 0.';host.before(status);document.querySelectorAll('[data-auto-trial-status]').forEach((el,i)=>{if(i)el.remove();});}
  let awardController=null;
+ host.hasUnsavedWorkspace=()=>Boolean(host.querySelector('form[data-unsaved="true"]')||awardController?.hasUnsavedChanges());
  const guard=action=>{
   if(host.querySelector('form[data-unsaved="true"]')){const notice=host.querySelector('[data-page-status]');notice.textContent='You have unsaved match edits. Save the correction, or discard to leave. ';const discard=document.createElement('button');discard.type='button';discard.textContent='Discard edits & continue';discard.onclick=()=>{host.querySelectorAll('form[data-unsaved]').forEach(f=>delete f.dataset.unsaved);action();};const stay=document.createElement('button');stay.type='button';stay.textContent='Keep editing';stay.onclick=()=>notice.replaceChildren();notice.append(discard,stay);notice.scrollIntoView({block:'nearest'});return;}
   if(!awardController?.hasUnsavedChanges()){action();return;}

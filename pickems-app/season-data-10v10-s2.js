@@ -11,13 +11,13 @@ window.UFL_SEASON_10V10_S2 = {
   "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-  "syncedAt": "2026-10-21T07:00:05.000Z",
-  "statsFetchedAt": "2026-10-21T07:00:05.000Z",
+  "syncedAt": "2026-10-23T07:00:07.000Z",
+  "statsFetchedAt": "2026-10-23T07:00:07.000Z",
   "statsStatus": "available",
   "teams": {
     "NSH": [
       "UFL Night Shift",
-      null
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png"
     ],
     "MAY": [
       "UFL Maykop",
@@ -56,7 +56,7 @@ window.UFL_SEASON_10V10_S2 = {
       "registered": true,
       "name": "UFL Night Shift",
       "abbreviation": "NSH",
-      "logo": null,
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
       "cover": null,
       "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift",
       "rosterSize": 0,
@@ -1466,9 +1466,9 @@ window.UFL_SEASON_10V10_S2 = {
         "records": [
           {
             "data": {
-              "name": "Cam1",
+              "name": "-Cam-",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/cam-1783994559.png",
-              "url": "https://ufl.virtualarena.app/users/Cam1"
+              "url": "https://ufl.virtualarena.app/users/-Cam-"
             },
             "team": {
               "name": "Real Madrid",
@@ -1654,7 +1654,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "UFL Night Shift",
-              "image": null,
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
             },
             "team": null,
@@ -1749,7 +1749,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "UFL Night Shift",
-              "image": null,
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
             },
             "team": null,

@@ -21,11 +21,22 @@ function newBoard(){if(playbook.boards.length>=30){message.textContent='Your pla
 async function load(){
  if(dirty&&!confirm('Reloading replaces your unsaved edits with the saved playbook. Continue?'))return;
  try{const teamId=new URLSearchParams(location.search).get('team');
-  if(!teamId){const data=await api();root.innerHTML=`<section class="rule-card"><span class="hub-kicker">Your private dressing rooms</span><h2>Choose your team</h2>${data.teams.map(t=>`<p><a class="hub-link" href="/team-hub?team=${encodeURIComponent(t.id)}">${esc(t.name)} · ${t.canEdit?'Manager suite':'Team playbook'}${t.sandbox?' · Roma test workspace':''}</a></p>`).join('')||'<p>Your approved teams will appear here once you are registered as a manager or player.</p>'}</section>`;return;}
+  if(!teamId){renderTeamChooser(await api());return;}
   context=await api('?team='+encodeURIComponent(teamId));playbook=context.playbook;revision=context.revision;dirty=false;undo=[];selectedSlot=null;selectedPlayer=null;
   if(!playbook.boards.length&&canEdit()){playbook.boards=[newTactic('Build from the back','attack','4-3-3'),newTactic('Compact defensive shape','defence','4-4-2')];dirty=true;}
   activeId=playbook.boards[0]?.id;document.title=`${context.team.name} · Private team hub`;render();message.textContent='';
  }catch(e){message.textContent=e.message;root.innerHTML=e.status===401?`<section class="rule-card"><h2>Your team’s private dressing room</h2><p>Sign in with Discord and we’ll bring you straight back to this team hub. A team manager assignment or a verified roster link is required.</p><a class="hub-link" href="/account?returnTo=${encodeURIComponent(location.pathname+location.search)}">Sign in with Discord</a><p>Not linked to your team yet? <a href="/contact">Ask league staff to check your team access</a>.</p></section>`:'<section class="rule-card"><h2>Team hub unavailable</h2><p>This area is private to authorized team members.</p><a href="/team-hub">Back to my teams</a></section>';root.querySelector('[data-refresh]')?.addEventListener('click',load);}
+}
+function renderTeamChooser(data){
+ document.title='My team hubs · UNC Futbol League';
+ root.innerHTML='<section class="rule-card"><span class="hub-kicker">Private team workspaces</span><h2>My team hubs</h2><p>Manager playbooks and read-only owner inspection are separate. Access is checked by the server.</p><div class="hub-chooser-filters"><label>Find a team<input type="search" data-team-search placeholder="Team name"></label><label>Division<select data-team-division><option value="">All divisions</option><option>6v6</option><option>10v10</option></select></label><label><input type="checkbox" data-team-archive> Include legacy entries</label></div><div data-team-choices></div></section>';
+ const draw=()=>{
+  const query=root.querySelector('[data-team-search]').value.toLowerCase(),division=root.querySelector('[data-team-division]').value,legacy=root.querySelector('[data-team-archive]').checked;
+  const teams=data.teams.filter(t=>(!query||t.name.toLowerCase().includes(query))&&(!division||t.division===division)&&(legacy||!/place\s*holder/i.test(t.name)));
+  const group=(title,rows)=>'<section><h3>'+title+'</h3>'+ (rows.map(t=>`<p><a class="hub-link" href="/team-hub?team=${encodeURIComponent(t.id)}">${esc(t.name)}</a><small> · Season ${esc(t.season||'2')} · ${esc(t.division||'')} · ${t.canEdit?'Assigned manager':t.isOwner?'Owner inspection · read-only':'Team member · read-only'}${/place\s*holder/i.test(t.name)?' · Legacy entry':''}</small></p>`).join('')||'<p>No matching teams in this section.</p>')+'</section>';
+  root.querySelector('[data-team-choices]').innerHTML=group('My teams',teams.filter(t=>t.canEdit||!t.isOwner))+(data.teams.some(t=>t.isOwner)?group('Owner inspection',teams.filter(t=>t.isOwner&&!t.canEdit)):'');
+ };
+ root.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',draw));draw();
 }
 function render(){
  const b=board(),team=context.team,editable=canEdit(),slot=b?.slots.find(s=>s.id===selectedSlot),slots=b?formationSlots(b.formation):[];

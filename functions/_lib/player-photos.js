@@ -6,9 +6,12 @@ export const playerFor=id=>Object.hasOwn(PLAYER_PHOTO_CATALOG,String(id))?PLAYER
 export async function resolvePhotoPlayer(env,id){
  const existing=playerFor(id);
  if(existing){const alias=await env.DB.prepare('SELECT canonical_id FROM league_player_aliases WHERE alias_id=?').bind(existing.identity).first();return {...existing,identity:alias?.canonical_id||existing.identity};}
- if(typeof id!=='string'||!/^player-[a-f0-9-]{36}$/.test(id))return null;
- const player=await env.DB.prepare('SELECT p.id,p.discord_name,a.canonical_id FROM league_players p LEFT JOIN league_player_aliases a ON a.alias_id=p.id WHERE p.id=?').bind(id).first();
- return player?{id:player.id,name:player.discord_name,identity:player.canonical_id||player.id}:null;
+ if(typeof id!=='string'||id.length>80||!/^[a-zA-Z0-9-]+$/.test(id))return null;
+ const player=await env.DB.prepare(`SELECT p.id,p.discord_name,a.canonical_id FROM league_players p
+ LEFT JOIN league_player_aliases a ON a.alias_id=p.id
+ WHERE p.id=? OR p.id IN (SELECT player_id FROM league_roster_memberships WHERE profile_id=?)
+ ORDER BY CASE WHEN p.id=? THEN 0 ELSE 1 END LIMIT 1`).bind(id,id,id).first();
+ return player?.id?{id,name:player.discord_name,identity:player.canonical_id||player.id}:null;
 }
 export async function staffGuard(request,env,write=false,allowManagerSubmission=false){
   const actor=await getSession(request,env);
@@ -25,8 +28,8 @@ export async function boundedBytes(request,maximum=MAX_PHOTO_BYTES+16384){
   while(true){const {done,value}=await reader.read();if(done)break;length+=value.length;if(length>maximum){await reader.cancel();throw new Error('Upload exceeds the 5 MB limit.');}chunks.push(value);}
   const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}return bytes;
 }
-export async function photoForm(request){
-  const bytes=await boundedBytes(request);
+export async function photoForm(request,maximum){
+  const bytes=await boundedBytes(request,maximum);
   return new Response(bytes,{headers:{'content-type':request.headers.get('content-type')||''}}).formData();
 }
 export async function validatePhoto(file,portrait=false){

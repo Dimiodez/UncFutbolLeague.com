@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" data-theme="classic">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8"><script src="/time-preference.js?v=20261022-flow1"></script>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#071b36">
   <title>UFL Pick’ems</title>
@@ -38,12 +38,12 @@
       <div class="week-browser"><div><p class="eyebrow" id="season-heading">FC27 · UFL Season 2</p><h2>Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small></div><div class="week-tabs" id="simple-weeks"></div></div>
       <div class="pick-layout">
         <section class="panel">
-          <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Gameweek 10</h2></div><span class="status open" id="simple-status">Voting open</span></header>
+          <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Loading matchday…</h2></div><span class="status open" id="simple-status">Checking voting window…</span></header>
           <p class="helper">Choose the home team, draw, or away team. Each correct result earns one point.</p><p class="account-state" id="account-state">Checking your Discord account…</p>
           <div class="ballot-summary"><p id="ballot-deadline" role="status"></p><p id="progress-top" aria-live="polite">Choose your picks below.</p></div>
           <div id="simple-fixtures" class="simple-fixtures"></div>
           <div class="tiebreaker"><span>TB</span><div><strong id="tb-question"></strong><small id="tb-lock"></small></div><input id="tiebreaker" type="number" min="0" max="30" placeholder="Goals" aria-label="Total goals tiebreaker"></div>
-          <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">0/5 picks made</strong><span><i id="progress-bar"></i></span></div></footer><p id="save-status" class="save-status" role="status" aria-live="polite"></p>
+          <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">Loading ballot…</strong><span><i id="progress-bar"></i></span></div></footer><p id="save-status" class="save-status" role="status" aria-live="polite"></p>
         </section>
         <aside class="rail">
           <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
@@ -52,7 +52,7 @@
       </div>
     </section>
 
-    <section class="competition-future" id="future-competition">
+    <p id="pickems-loading" role="status">Loading your matchday…</p><section class="competition-future" id="future-competition" hidden>
       <div class="future-mark" id="future-mark">S2</div><p class="eyebrow" id="future-kicker">FC27 · Official season feeds connected</p><h2 id="future-title">UFL Season 2 · 6v6 Pick’ems</h2><p id="future-copy">Teams are registering now. Pick’ems will open automatically when the official schedule is published.</p><div class="future-checklist"><span>Season 1 archived</span><span>6v6 and 10v10 separated</span><span>Shared leaderboards ready</span></div>
     </section>
 
@@ -60,7 +60,7 @@
       <div class="scoring-strip"><div><strong>3</strong><span>Exact score</span></div><div><strong>2</strong><span>Correct result</span></div><div><strong>1</strong><span>Scorer / assist</span></div><div><strong>2×</strong><span>Double Down</span></div></div>
       <div class="week-browser"><div><p class="eyebrow">Choose gameweek</p><h2>Detailed predictions</h2></div><div class="week-tabs" id="detail-weeks"></div></div>
       <div class="detail-layout">
-        <section><div class="panel-heading detail-heading"><div><p class="eyebrow">Make your picks</p><h2 id="detail-title">Gameweek 10</h2></div><span class="status open" id="detail-status">Voting open</span></div><div id="detail-fixtures" class="detail-fixtures"></div></section>
+        <section><div class="panel-heading detail-heading"><div><p class="eyebrow">Make your picks</p><h2 id="detail-title">Loading matchday…</h2></div><span class="status open" id="detail-status">Checking voting window…</span></div><div id="detail-fixtures" class="detail-fixtures"></div></section>
         <aside class="rail"><section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">The table</p><h2 id="detail-leader-title">Week 10</h2></div><div class="period-toggle"><button class="active" data-detail-period="weekly">Weekly</button><button data-detail-period="season">Season</button></div></header><div class="leader-head"><span>Entry</span><span>Exact</span><span>Pts</span></div><div id="detail-leaders"></div></section><section class="panel note"><strong>Discord-ready</strong><p>Live ballots will attach to each member’s Discord account. This preview saves picks on this device.</p></section></aside>
       </div>
     </section>

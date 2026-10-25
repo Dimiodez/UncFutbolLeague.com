@@ -1,3 +1,63 @@
 <!doctype html>
-<html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>EA Clubs · UFL Preview</title><link rel="icon" href="/assets/ufl-mark.png"><link rel="stylesheet" href="/league-suite-assets/styles.css"><link rel="stylesheet" href="/league-suite-assets/preview.css"><link rel="stylesheet" href="/league-suite-assets/league-workshop.css"><script type="module" src="/league-suite-assets/league-workspace-ea.js"></script><script src="/league-suite-assets/preview-ea.js" defer></script></head>
-<body><main class="preview-ea"><a href="/">Back to UFL preview</a><h1>EA Clubs connection</h1><p>Search EA clubs and inspect available match results. These games do not count toward league standings or awards.</p><p id="ea-account">Checking Discord sign-in…</p><form id="ea-search"><label>In-game club name<input name="name" minlength="2" maxlength="80" placeholder="FC Mountains" required></label><button type="submit">Search EA</button></form><p id="ea-status" role="status" aria-live="polite"></p><section id="ea-results" aria-label="Club search results"></section><section id="ea-matches" aria-label="EA match results"></section></main><aside class="preview-notice">UFL preview · Separate test database · Live player images remain untouched</aside></body></html>
+<html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow"><title>EA Clubs · UFL Preview</title><link rel="icon" href="/assets/ufl-mark.png"><script src="/time-preference.js?v=20261022-flow1"></script><script src="/theme-init.js"></script><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="/styles.css?v=20261022-flow1"><link rel="stylesheet" href="/league-suite-assets/preview.css"><link rel="stylesheet" href="/league-suite-assets/league-workshop.css"><script type="module" src="/league-suite-assets/league-workspace-ea.js"></script><script src="/league-suite-assets/preview-ea.js" defer></script><link rel="stylesheet" href="/league-suite-assets/league-workshop-ux.css?v=20261016-layout2"><link rel="stylesheet" href="/league-suite-assets/league-workshop-brand.css?v=20261022-flow1"><link rel="stylesheet" href="/league-suite-assets/league-workspace-navigation.css?v=20261022-flow1"><script src="/navigation-ux.js?v=20261022-flow1" defer></script></head>
+<body data-standalone-navigation="true">
+<a class="skip-link" href="#workshop-main">Skip to content</a>
+<header class="site-header">
+      <div class="site-brands"><a class="brand" href="/" data-link aria-label="UNC Futbol League home">
+        <img src="/assets/ufl-mark.webp" alt="" />
+        <span><strong>UNC</strong> FUTBOL LEAGUE</span>
+      </a><span class="brand-divider" aria-hidden="true"></span><a class="ufb-brand" href="/ufb" data-link aria-label="Open UFB bot documentation"><img src="/assets/ufb-mark.svg" alt="" /><span>UFB</span></a></div>
+      <button class="menu-button" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span><b>Menu</b></button>
+      <nav id="main-nav" class="main-nav" aria-label="Main navigation">
+        <div class="nav-hubs" aria-label="UFL sections">
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="utility">
+            <a class="nav-group-link nav-hub-link" href="/utility" data-link aria-label="Utility"><strong>U</strong><span>tility</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Utility menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/utility" data-link><b>Utility hub</b><small>Tools for drafts, teams and game nights</small></a>
+              <a href="/wheel" data-link><b>Unc Wheel</b><small>Draft, randomize and decide</small></a>
+              <a href="/wheel/aggregate-byot" data-link><b>Aggregate BYOT</b><small>Build a four-team aggregate bracket</small></a>
+              <a href="/coaching" data-link><b>Coaching</b><small>Community guides · Share your playbook</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="fun">
+            <a class="nav-group-link nav-hub-link" href="/fun" data-link aria-label="Fun"><strong>F</strong><span>un</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open Fun menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu">
+              <a class="nav-menu-lead" href="/fun" data-link><b>Fun hub</b><small>Cards, predictions and arcade games</small></a>
+              <a href="/func" data-link><b>FUNC Card Studio</b><small>Create your novelty player card</small></a>
+              <a href="/arcade" data-link><b>UFL Arcade</b><small>Play games and chase the boards</small></a>
+              <a href="/pickems" data-link><b>Pick’ems</b><small>Predict every matchweek</small></a>
+              <a href="/sound" data-link><b>Sound</b><small>Coming soon · The clubhouse soundtrack</small></a>
+            </div>
+          </div>
+          <div class="nav-group nav-split-group nav-hub" data-nav-hub="league">
+            <a class="nav-group-link nav-hub-link" href="/league" data-link aria-label="League"><strong>L</strong><span>eague</span></a>
+            <button class="nav-group-caret" aria-expanded="false" aria-label="Open League menu"><span>⌄</span></button>
+            <div class="nav-menu nav-mega-menu nav-league-menu">
+              <a class="nav-menu-lead" href="/league" data-link><b>League hub</b><small>Everything official in one place</small></a>
+              <a href="/clubs?division=6v6" data-link><b>Clubs</b><small>Club identities and squads</small></a>
+              <a href="/players" data-link><b>Players</b><small>Meet the league’s lineup</small></a>
+              <a href="/schedules" data-link><b>Schedules</b><small>Fixtures, results and events</small></a>
+              <a href="/standings" data-link><b>Standings</b><small>Current and archived tables</small></a>
+              <a href="/stats" data-link><b>Stats</b><small>Goals, assists and award races</small></a>
+              <a href="/coaching" data-link><b>Coaching</b><small>Community guides and formation tips</small></a>
+              <a href="/totw" data-link><b>TOTW / TOTS</b><small>Gameweek and season selections</small></a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <a href="/rules" data-link>Rules</a>
+          <a href="/users" data-link>Users</a>
+          <a href="/account" data-link id="account-nav">Sign in</a>
+          <div class="theme-switcher" role="group" aria-label="Choose site theme">
+            <button type="button" data-theme-choice="classic" title="Classic red, white, and blue"><i></i><span>Classic</span></button>
+            <button type="button" data-theme-choice="dark" title="Dark navy theme"><i></i><span>Dark</span></button>
+            <button type="button" data-theme-choice="vintage" title="Vintage beige theme"><i></i><span>Vintage</span></button>
+          </div>
+          <a class="nav-cta" href="/contact" data-link>Request invite</a>
+        </div>
+      </nav>
+    </header>
+<main class="preview-ea" id="workshop-main" tabindex="-1"><a href="/">Back to UFL preview</a><h1>EA Clubs connection</h1><p>Search EA clubs and inspect available match results. These games do not count toward league standings or awards.</p><p id="ea-account">Checking Discord sign-in…</p><form id="ea-search"><label>In-game club name<input name="name" minlength="2" maxlength="80" placeholder="FC Mountains" required></label><button type="submit">Search EA</button></form><p id="ea-status" role="status" aria-live="polite"></p><section id="ea-results" aria-label="Club search results"></section><section id="ea-matches" aria-label="EA match results"></section></main><aside class="preview-notice">UFL preview · Separate test database · Live player images remain untouched</aside></body></html>
+

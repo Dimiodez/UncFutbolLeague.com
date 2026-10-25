@@ -77,7 +77,7 @@ test('Pick’ems progress updates all choice buttons without stopping standings 
  const elements=new Map(),pressed=[];
  const element=key=>{if(!elements.has(key))elements.set(key,{style:{},textContent:''});return elements.get(key)};
  const choices=[{dataset:{match:'1'},classList:{contains:()=>true},setAttribute:(key,value)=>pressed.push([key,value])},{dataset:{match:'2'},classList:{contains:()=>false},setAttribute:(key,value)=>pressed.push([key,value])}];
- const context=vm.createContext({state:{simpleWeek:2},fixturesForWeek:()=>[{id:'1'},{id:'2'}],$:element,$$:selector=>selector.includes('.selected')?[choices[0]]:choices});
+ const context=vm.createContext({updateSaveState(){},state:{simpleWeek:2},fixturesForWeek:()=>[{id:'1'},{id:'2'}],$:element,$$:selector=>selector.includes('.selected')?[choices[0]]:choices});
  vm.runInContext(source.slice(start,end)+'\nupdateProgress();',context);
  assert.equal(element('#progress-top').textContent,'1/2 picks selected · save your ballot when ready');
  assert.equal(element('#progress-bar').style.width,'50%');

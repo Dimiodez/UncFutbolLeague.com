@@ -11,14 +11,8 @@
 .unc-workspace .invitation-card{padding:16px;background:var(--admin-raised);border:1px solid var(--line);border-radius:7px;margin:12px 0}
 .unc-workspace dialog.league-editor-dialog{max-width:min(560px,90vw);padding:24px;background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px}
 @media(max-width:700px){.unc-workspace .league-timing{grid-template-columns:1fr;gap:0}}
-.unc-admin-preview{--admin-surface:color-mix(in srgb,var(--paper) 92%,var(--blue) 8%);--admin-raised:color-mix(in srgb,var(--paper) 85%,var(--blue) 15%);font-size:15px;line-height:1.55}
-.site-header.workshop-site-header{display:grid;grid-template-columns:minmax(0,1fr) auto auto;height:82px;gap:28px;max-width:100%}
-.workshop-site-header .brand{min-width:0}
-.workshop-site-links{display:flex;gap:24px;align-items:center;font:800 18px 'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase}
-.workshop-site-links a{color:#fff;text-decoration:none;padding:25px 0;border-bottom:3px solid transparent}
-.workshop-site-links a[aria-current]{border-color:var(--red)}.workshop-site-links a:hover{color:var(--sky)}
-.workshop-theme-label{display:flex;align-items:center;gap:8px;color:#c7d4e2;font-size:12px}
-.workshop-theme-label select{background:#10243d;color:white;border:1px solid #39516e;border-radius:5px;padding:6px 8px;font:inherit}
+.unc-admin-preview{--admin-surface:color-mix(in srgb,var(--paper) 92%,var(--blue) 8%);--admin-raised:color-mix(in srgb,var(--paper) 85%,var(--blue) 15%)}
+.unc-workspace{font-size:15px;line-height:1.55}
 .unc-workspace.workshop{max-width:1360px;padding:24px 32px;margin:0 auto 48px}
 .unc-workspace.workshop>header{margin:0 -32px 24px;padding:30px 32px 26px;border-bottom:1px solid var(--line);background:linear-gradient(100deg,var(--paper) 25%,color-mix(in srgb,var(--paper) 80%,transparent)),url('/assets/ufl-banner.jpg') center/cover}
 .unc-workspace>header>a{color:var(--muted);font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.14em;text-decoration:none}
@@ -31,6 +25,7 @@
 .unc-workspace .workshop-nav a{color:var(--muted);text-decoration:none}.unc-workspace .workshop-nav a[aria-current]{color:var(--ink);border-color:var(--red)}
 .unc-workspace .workshop-boundary,.unc-workspace.workshop>.workshop-boundary{background:var(--admin-surface);color:var(--muted);border:1px solid var(--line);border-left:3px solid var(--red);border-radius:5px}
 .unc-workspace .workshop-boundary strong{color:var(--ink)}
+.unc-workspace .workshop-boundary label:has(input[type=checkbox]){display:flex;align-items:center;gap:12px}.unc-workspace .workshop-boundary label input[type=checkbox]{flex:0 0 20px;margin:0}
 .unc-workspace .league-library-heading{margin:28px 0 18px}.unc-workspace .league-library-heading h2{font-size:32px}
 .unc-workspace #league-drafts>.league-library-card{background:var(--admin-surface);border:1px solid var(--line);border-top:3px solid var(--red);border-radius:9px;padding:24px;box-shadow:none}
 .unc-workspace #league-drafts>.league-library-card>h2{font-size:30px}
@@ -70,5 +65,30 @@
 .unc-workspace .league-page-panel th{font:800 16px 'Barlow Condensed',sans-serif;text-transform:uppercase;background:var(--paper)}.unc-workspace .league-page-panel th,.unc-workspace .league-page-panel td{border-color:var(--line);padding:14px;font-size:14px;vertical-align:top}.unc-workspace .workshop-fixture time{color:var(--muted)}
 .unc-workspace .workshop-warning{color:var(--champion-gold)}.unc-workspace .league-page-panel summary{font:700 20px 'Barlow Condensed',sans-serif}
 .unc-admin-preview .preview-notice{background:var(--navy);border-top:2px solid var(--red);color:#d5e0ee;box-shadow:none;font-size:12px;padding:8px 16px}
-@media(max-width:800px){.site-header.workshop-site-header{height:auto;min-height:76px;grid-template-columns:minmax(0,1fr) auto;padding:12px 18px;gap:10px 16px}.workshop-site-header .brand{font-size:17px}.workshop-site-header .brand img{width:38px;height:44px}.workshop-site-links{grid-row:2;grid-column:1/-1;gap:24px}.workshop-site-links a{padding:6px 0}.workshop-theme-label{font-size:11px;grid-column:2;grid-row:1}.unc-workspace.workshop{padding:20px 18px}.unc-workspace.workshop>header{margin:-20px -18px 20px;padding:24px 18px}.unc-workspace .league-dashboard>.league-page-tabs{padding:7px}.unc-workspace .league-dashboard .league-page-hero h1{font-size:32px}}
-@media(max-width:500px){.workshop-theme-label{font-size:0}.workshop-theme-label select{font-size:12px}.unc-workspace .creation-card{padding:18px!important}.unc-workspace.workshop .creation-steps button{font-size:11px}.unc-workspace .workshop-nav{gap:16px!important}.unc-workspace .league-dashboard .league-page-hero h1{font-size:30px}}
+@media(max-width:1120px){.unc-workspace.workshop{padding:20px 18px}.unc-workspace.workshop>header{margin:-20px -18px 20px;padding:24px 18px}.unc-workspace .league-dashboard>.league-page-tabs{padding:7px}.unc-workspace .league-dashboard .league-page-hero h1{font-size:32px}}
+@media(max-width:500px){.unc-workspace .creation-card{padding:18px!important}.unc-workspace.workshop .creation-steps button{font-size:11px}.unc-workspace .workshop-nav{gap:16px!important}.unc-workspace .league-dashboard .league-page-hero h1{font-size:30px}}
+
+/* The site header uses only the public stylesheet, exactly as on the homepage. */
+.unc-admin-preview{padding-bottom:0}.unc-admin-preview .preview-notice{position:static;margin-top:32px}
+
+.unc-workspace.workshop>header{padding-top:16px;padding-bottom:16px;margin-bottom:14px}
+.unc-workspace.workshop>.workshop-boundary{padding:10px 14px;margin:10px 0}
+.unc-workspace.workshop>details.workshop-boundary>summary{cursor:pointer;font-size:14px;font-weight:600}
+.unc-workspace .league-library-heading{margin-top:16px}
+.unc-workspace.workshop>.page-context{margin:0 0 14px;padding:0}
+.unc-workspace .account-drafts{content-visibility:auto}
+.workspace-loading .workshop-layout,.workspace-loading #league-overview{display:none!important}
+.workspace-loading [data-workspace-loading]{padding:24px 0}
+.unc-workspace.workshop>.workshop-boundary{font-size:13px;line-height:1.4}
+.unc-workspace.workshop .workshop-nav{display:flex;flex-wrap:nowrap;white-space:nowrap;overflow-x:auto;gap:22px;padding-bottom:12px}
+.unc-workspace .workshop-nav>a{flex:0 0 auto}
+.unc-workspace .page-context .time-preference{display:flex;flex-direction:row;align-items:center;font-size:12px;gap:6px}
+.unc-workspace .page-context .time-preference select{min-height:36px;padding:4px 8px;max-width:110px}
+@media(max-width:700px){.unc-workspace.workshop>header{padding-top:12px;padding-bottom:12px;margin-bottom:12px}.unc-workspace.workshop>header>p{display:none}.unc-workspace.workshop .workshop-nav{gap:18px;margin-bottom:12px}.unc-workspace .league-library-heading p{display:none}.unc-workspace .league-library-heading{margin:16px 0}.unc-workspace .league-library-filters{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px}.unc-workspace .league-library-filters label{min-width:0}.unc-workspace .league-library-filters input,.unc-workspace .league-library-filters select{min-width:0;width:100%;padding:8px}.unc-workspace .league-library-filters p{grid-column:1/-1;margin:0}}
+@media(max-width:700px){.unc-workspace .league-library-heading{display:flex;align-items:center;gap:12px}.unc-workspace .league-library-heading>div{min-width:0;flex:1}.unc-workspace .league-library-heading h2{font-size:28px;margin-bottom:0}.unc-workspace .league-library-heading [data-new-league]{width:auto;flex:0 0 104px;padding:10px 6px;font-size:12px}.unc-workspace .league-library-card{padding:18px!important}.unc-workspace #league-drafts>.league-library-card>h2{font-size:27px}.unc-workspace .workshop-nav::-webkit-scrollbar{height:4px}}
+.unc-workspace.workshop>header h1{font-size:clamp(32px,3vw,42px);margin:4px 0}
+.unc-workspace.workshop>header>p{margin:6px 0}
+.unc-workspace.workshop .workshop-nav{padding-bottom:4px;margin-bottom:12px}
+.unc-workspace .league-library-heading h2{margin:4px 0 6px}
+.unc-workspace .league-library-heading p{margin:6px 0}
+@media(max-width:700px){.unc-workspace .league-library-heading{flex-direction:row;justify-content:space-between;text-align:left}.unc-workspace .league-library-heading>div{text-align:left}.unc-workspace .league-library-heading [data-new-league]{flex:0 0 auto;max-width:120px;min-height:44px}.unc-workspace .league-library-heading h2{font-size:26px}}
