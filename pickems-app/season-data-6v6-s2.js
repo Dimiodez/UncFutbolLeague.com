@@ -19,9 +19,9 @@ window.UFL_SEASON_6V6_S2 = {
       "UFL Arsenal",
       "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png"
     ],
-    "ITA": [
-      "UFL Italia",
-      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
+    "TEN": [
+      "UFL Tenerife",
+      "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png"
     ],
     "LA": [
       "UFL LA FC",
@@ -86,15 +86,15 @@ window.UFL_SEASON_6V6_S2 = {
       }
     },
     {
-      "key": "ITA",
+      "key": "TEN",
       "teamId": 25,
       "participantId": 29,
       "registered": true,
-      "name": "UFL Italia",
-      "abbreviation": "ITA",
-      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
+      "name": "UFL Tenerife",
+      "abbreviation": "TEN",
+      "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
       "cover": null,
-      "url": "https://ufl.virtualarena.app/teams/UFL%20Italia",
+      "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife",
       "rosterSize": 5,
       "stats": {
         "played": 4,
@@ -417,7 +417,7 @@ window.UFL_SEASON_6V6_S2 = {
       4
     ],
     [
-      "ITA",
+      "TEN",
       4,
       1,
       0,
@@ -458,7 +458,7 @@ window.UFL_SEASON_6V6_S2 = {
       "matches": [
         [
           102,
-          "ITA",
+          "TEN",
           "TLC",
           0,
           4,
@@ -512,7 +512,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           108,
-          "ITA",
+          "TEN",
           "ARS",
           1,
           3,
@@ -589,7 +589,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           114,
           "LA",
-          "ITA",
+          "TEN",
           0,
           4,
           1792720800,
@@ -642,7 +642,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           120,
-          "ITA",
+          "TEN",
           "PUM",
           0,
           2,
@@ -719,7 +719,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           126,
           "PHN",
-          "ITA",
+          "TEN",
           null,
           null,
           1793325600,
@@ -764,7 +764,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           131,
           "FCB",
-          "ITA",
+          "TEN",
           null,
           null,
           1793327400,
@@ -821,7 +821,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           135,
-          "ITA",
+          "TEN",
           "TK",
           null,
           null,
@@ -858,7 +858,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           139,
           "ROM",
-          "ITA",
+          "TEN",
           null,
           null,
           1793935800,
@@ -915,7 +915,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           143,
-          "ITA",
+          "TEN",
           "DRU",
           null,
           null,
@@ -952,7 +952,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           147,
           "TLC",
-          "ITA",
+          "TEN",
           null,
           null,
           1795141800,
@@ -1028,7 +1028,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           153,
           "ARS",
-          "ITA",
+          "TEN",
           null,
           null,
           1795744800,
@@ -1081,7 +1081,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           159,
-          "ITA",
+          "TEN",
           "LA",
           null,
           null,
@@ -1158,7 +1158,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           165,
           "PUM",
-          "ITA",
+          "TEN",
           null,
           null,
           1796349600,
@@ -1211,7 +1211,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           171,
-          "ITA",
+          "TEN",
           "PHN",
           null,
           null,
@@ -1278,7 +1278,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           176,
-          "ITA",
+          "TEN",
           "FCB",
           null,
           null,
@@ -1315,7 +1315,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           180,
           "TK",
-          "ITA",
+          "TEN",
           null,
           null,
           1796956200,
@@ -1372,7 +1372,7 @@ window.UFL_SEASON_6V6_S2 = {
         ],
         [
           184,
-          "ITA",
+          "TEN",
           "ROM",
           null,
           null,
@@ -1409,7 +1409,7 @@ window.UFL_SEASON_6V6_S2 = {
         [
           188,
           "DRU",
-          "ITA",
+          "TEN",
           null,
           null,
           1797561000,
@@ -1730,8 +1730,8 @@ window.UFL_SEASON_6V6_S2 = {
               "url": "https://ufl.virtualarena.app/users/Goose"
             },
             "team": {
-              "name": "UFL Italia",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
+              "name": "UFL Tenerife",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png"
             },
             "stat": "2",
             "played": 4
@@ -1815,8 +1815,8 @@ window.UFL_SEASON_6V6_S2 = {
               "url": "https://ufl.virtualarena.app/users/Goose"
             },
             "team": {
-              "name": "UFL Italia",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png"
+              "name": "UFL Tenerife",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png"
             },
             "stat": "0",
             "played": 4
@@ -2098,9 +2098,9 @@ window.UFL_SEASON_6V6_S2 = {
           },
           {
             "data": {
-              "name": "UFL Italia",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
-              "url": "https://ufl.virtualarena.app/teams/UFL%20Italia"
+              "name": "UFL Tenerife",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife"
             },
             "team": null,
             "stat": 3
@@ -2211,9 +2211,9 @@ window.UFL_SEASON_6V6_S2 = {
           },
           {
             "data": {
-              "name": "UFL Italia",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-italia-1791345393.png",
-              "url": "https://ufl.virtualarena.app/teams/UFL%20Italia"
+              "name": "UFL Tenerife",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife"
             },
             "team": null,
             "stat": 9
