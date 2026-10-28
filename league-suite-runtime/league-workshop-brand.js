@@ -14,7 +14,7 @@ export function installWorkshopBrand(){
  hydrateSiteHeader();
  const notice=document.querySelector('.preview-notice');if(notice)notice.textContent='Private League Suite · Test data only · Public league unchanged';
 }
-async function hydrateSiteHeader(){
+export async function hydrateSiteHeader(){
  try{
   const response=await fetch('/api/auth/session',{credentials:'same-origin',cache:'no-store'});
   if(!response.ok)return;const state=await response.json(),account=document.querySelector('#account-nav');

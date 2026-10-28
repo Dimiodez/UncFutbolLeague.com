@@ -31,6 +31,7 @@ export function projectLeague(row,{now=Date.now()}={}){
   scoring:standardTrial(draft)?'3 points for a win · 1 for a draw · 0 for a loss':'Regulation win 3 · Extra-time win 2 · Extra-time loss 1',
   teams:draft.settings.teams.map(teamView),standings,fixtures,players,sourceCounts,
   totals:{played:results.size,fixtures:fixtures.length,pending:fixtures.filter(f=>f.status==='review').length,awaiting:fixtures.filter(f=>f.status==='awaiting').length,appearances:records.length,goals:fixtures.reduce((n,f)=>n+(f.homeScore??0)+(f.awayScore??0),0)},
+  history:saved.historyReconciliation?{checkedAt:saved.historyReconciliation.checkedAt,throughRound:saved.historyReconciliation.throughRound,compared:saved.historyReconciliation.compared,matched:saved.historyReconciliation.matched,missing:saved.historyReconciliation.missing?.length||0,differences:(saved.historyReconciliation.differences||[]).map(d=>({date:d.date,home:d.home,away:d.away,recordedScore:d.recordedScore,vaScore:d.vaScore}))}:null,
   collection:{enabled:!!row.enabled,lastCheck:stamp(row.checked_at),lastSuccess:stamp(row.succeeded_at)}};
 }
 
