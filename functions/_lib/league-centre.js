@@ -2,12 +2,12 @@ import {buildLeagueSchedule} from '../../league-suite-runtime/league-engine.js';
 import {leagueStandings,acceptedAppearances,standardTrial} from '../../league-suite-runtime/league-results.js';
 import {playerTotals,numeric} from '../../league-suite-runtime/league-player-stats.js';
 
-// Read-only projection of the collector's database. No VA feed, local draft or
-// unaccepted EA candidate can supply a score or an appearance to this view.
+// Read-only projection of saved, accepted records. Live provider feeds, local
+// drafts and unaccepted EA candidates never supply data directly to this view.
 const teamView=team=>({id:team.id,name:team.name});
 const stamp=value=>value?new Date(/Z$|[+]\d\d:\d\d$/.test(value)?value:value.replace(' ','T')+'Z').toISOString():null;
 const fields=['goals','assists','shots','passes','passesCompleted','tackles','tacklesWon','manOfTheMatch'];
-const sourceOf=result=>result.provenance?.kind==='va-score-only'?'va-score':result.correction?(result.eaOriginal?'reviewed-ea':'manual'):'ea';
+const sourceOf=result=>result.provenance?.kind==='va-match-report'?'va-report':result.provenance?.kind==='va-score-only'?'va-score':result.correction?(result.eaOriginal?'reviewed-ea':'manual'):'ea';
 const appearanceView=p=>({name:p.name,playerId:p.playerId,teamId:p.teamId,position:p.position||'UNK',rating:numeric(p.rating),goals:numeric(p.goals),assists:numeric(p.assists),details:Object.fromEntries(fields.filter(k=>!['goals','assists'].includes(k)).map(k=>[k,numeric(p.details?.[k])]))});
 
 export function projectLeague(row,{now=Date.now()}={}){
@@ -18,7 +18,7 @@ export function projectLeague(row,{now=Date.now()}={}){
  for(const result of results.values())if(!draft.fixtures.some(f=>f.id===result.fixtureId)||![result.homeScore,result.awayScore].every(v=>Number.isInteger(v)&&v>=0))throw Error('Invalid saved match result.');
  const pending=new Set((saved.pendingResults||[]).map(r=>r.fixtureId));
  const form=new Map(draft.settings.teams.map(t=>[t.id,[]]));
- const sourceCounts={ea:0,'reviewed-ea':0,manual:0,'va-score':0};
+ const sourceCounts={ea:0,'reviewed-ea':0,manual:0,'va-score':0,'va-report':0};
  const fixtures=draft.fixtures.map(f=>{
   const r=results.get(f.id),status=r?'played':pending.has(f.id)?'review':f.startsAt<now?'awaiting':'scheduled';
   if(r){sourceCounts[sourceOf(r)]++;for(const [team,own,other] of [[f.home,r.homeScore,r.awayScore],[f.away,r.awayScore,r.homeScore]])form.get(team.id).push({fixtureId:f.id,result:own>other?'W':own===other?'D':'L'});}
