@@ -93,6 +93,8 @@ function renderDrafts({sectionOnly=false}={}){
  root.querySelectorAll('[data-registration],[data-generate]').forEach(button=>{const index=Number(button.dataset.registration??button.dataset.generate);if(drafts[index].acceptedResults?.length){button.disabled=true;button.title='Accepted results exist. Export a backup before starting a new season draft.';}});
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
   const button=document.createElement('button');button.type='button';button.textContent='Open league tabs';button.onclick=()=>{try{persistDrafts();navigateWorkspace(index,'overview');pageHost.scrollIntoView({block:'start'});}catch(error){message.textContent=`Could not save this draft: ${error.message}`;}};card.querySelector('h2').after(button);
+  const sharedId=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule;
+  if(sharedLeagues.has(sharedId)){const link=document.createElement('a');link.className='button button-secondary';link.href='/league-suite/view?league='+encodeURIComponent(sharedId);link.textContent='View league centre →';button.after(link);}
  });
  }
  if(activeLeague!==null&&!drafts[activeLeague])activeLeague=null;

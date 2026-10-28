@@ -29,14 +29,14 @@ test('all current VA registrations resolve to club pages while every provisional
   assert.equal(render("leagueViewContext(new URLSearchParams('season=2&division=10v10')).players.length"),65);
 });
 
-test('owner-confirmed Palermo rebrand keeps five players and stadium under Italia only',()=>{
+test('Italia / Tenerife rename preserves the same five players, stable team key and stadium',()=>{
   const view=render("leagueViewContext(new URLSearchParams('season=2&division=6v6'))");
   assert.equal(view.season.teams['club-1790181832909'],undefined);
-  assert.equal(view.season.teams.ITA[0],'UFL Italia');
+  assert.equal(view.season.teams.ITA[0],'UFL Tenerife');
   assert.equal(view.players.filter(p=>p.club==='ITA').length,5);
   assert.equal(view.players.filter(p=>p.club==='club-1790181832909').length,0);
   const html=render("leagueClubProfile('club-1790181832909',new URLSearchParams('season=2&division=6v6'))");
-  assert.match(html,/UFL Italia/);
+  assert.match(html,/UFL Tenerife/);
   assert.match(html,/\/assets\/league\/club-1790181832909.jpg/);
   for(const name of ['afoe000','DTXtre-','Goose','KovacsKitchen','MiaSanMJ']) assert.ok(html.includes(name),name);
   assert.doesNotMatch(html,/UFL Palermo/);
