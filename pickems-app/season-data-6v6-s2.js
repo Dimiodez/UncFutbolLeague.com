@@ -1942,7 +1942,7 @@ window.UFL_SEASON_6V6_S2 = {
           {
             "data": {
               "name": "Schweinslap",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1786509809.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
               "url": "https://ufl.virtualarena.app/users/Schweinslap"
             },
             "team": {
