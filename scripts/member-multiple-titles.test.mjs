@@ -82,7 +82,12 @@ test('title selector retains every currently published league team plus both hou
  const options=memberTitleTeams();
  for(const division of ['6v6','10v10']){
   const season=JSON.parse(read('pickems-app/seasons/s2-'+division+'.json'));
-  for(const [name] of Object.values(season.teams))assert.ok(options.some(t=>t.division===division&&t.name===name),division+': '+name);
+  for(const [name] of Object.values(season.teams)){
+   // VA participant 25 was renamed; account assignments retain the stable ITA
+   // identity and existing manager memberships, rather than create a new team.
+   const identity=division==='6v6'&&name==='UFL Tenerife'?'6v6:ITA':null;
+   assert.ok(options.some(t=>t.division===division&&(identity?t.id===identity:t.name===name)),division+': '+name);
+  }
  }
  assert.equal(options.filter(t=>t.division==='house').length,2);
 });

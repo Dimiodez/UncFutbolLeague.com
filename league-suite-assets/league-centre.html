@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="robots" content="noindex, nofollow"><title>League Centre · UNC Futbol League</title>
+ <link rel="icon" href="/assets/ufl-mark.png">
+ <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap">
+ <link rel="stylesheet" href="/league-suite-assets/league-centre.css?v=20261028-1">
+ <script src="/time-preference.js"></script>
+ <script src="/league-suite-assets/league-centre.js?v=20261028-1" type="module"></script>
+</head>
+<body>
+ <a class="skip-link" href="#main">Skip to league</a>
+ <header class="masthead"><div class="shell masthead-inner">
+  <a class="brand" href="/" aria-label="UNC Futbol League home"><img src="/assets/ufl-mark.webp" alt=""><span><b>UNC</b><small>FUTBOL LEAGUE</small></span></a>
+  <nav aria-label="Site navigation"><a href="/league">Official leagues</a><a href="/league-suite">League Suite <span aria-hidden="true">↗</span></a></nav>
+  <span class="access-label"><span aria-hidden="true">◆</span> Staff preview</span>
+ </div></header>
+ <main id="main" tabindex="-1">
+  <section class="league-hero"><div class="shell">
+   <div class="hero-topline"><a href="/league-suite">← Back to League Suite</a><span class="test-badge">TEST COMPETITION</span></div>
+   <div class="hero-main"><div><p class="eyebrow" id="season-label">UNC FUTBOL LEAGUE</p><h1 id="league-title">League centre<span>.</span></h1><p class="hero-copy">Every match. Every point. Your league.</p></div>
+    <label class="league-select">Competition<select id="league-select" disabled><option>Loading leagues…</option></select></label>
+   </div>
+   <div id="league-summary" class="league-summary"><span>Loading saved results…</span></div>
+  </div></section>
+  <div class="shell">
+   <div class="source-bar"><p><span class="source-dot" aria-hidden="true"></span><b>UFL collected results</b><span class="source-description">EA match data + accepted staff corrections</span></p><span>Separate from official VA leagues</span></div>
+   <div class="page-toolbar"><nav class="section-nav" aria-label="League views"><a href="#overview" data-view="overview" aria-current="page">Overview</a><a href="#standings" data-view="standings">Standings</a><a href="#matches" data-view="matches">Fixtures &amp; results</a><a href="#players" data-view="players">Player stats</a></nav><div class="update-tools"><span id="updated">Connecting…</span><button id="refresh" class="icon-button" aria-label="Refresh saved league data" title="Refresh saved data">↻</button></div></div>
+   <div id="notice" role="status" aria-live="polite"></div>
+   <div id="filters" hidden></div>
+   <section id="content" aria-labelledby="view-heading" aria-busy="true"><div class="loading-state"><span class="eyebrow">LEAGUE CENTRE</span><h2 id="view-heading">Getting the league ready</h2><p>Loading the results saved by your match collector.</p><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div></section>
+   <div class="data-note"><span>TEST LEAGUE · READ-ONLY PREVIEW</span><p>Standings use accepted scores. Player totals use saved match appearances. A dash means unavailable data; pending reviews are not counted.</p><p id="collection-note"></p><p>Saved results refresh here every minute while this page is visible. Match collection runs separately on the server.</p></div>
+  </div>
+ </main>
+ <footer class="shell footer"><a class="footer-brand" href="/">UNC FUTBOL LEAGUE</a><span>Built for match night.</span><a href="/league-suite">Manage test leagues ↗</a></footer>
+ <dialog id="match-dialog" aria-labelledby="match-title"><div class="dialog-bar"><span class="eyebrow">MATCH REPORT</span><button id="close-dialog" class="icon-button" aria-label="Close match report">✕</button></div><div id="match-detail"></div></dialog>
+ <noscript><p class="shell">Enable JavaScript to view saved league results. <a href="/league-suite">Return to League Suite</a>.</p></noscript>
+</body>
+</html>
