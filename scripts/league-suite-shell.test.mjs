@@ -7,13 +7,13 @@ const header=html=>html.match(/<header class="site-header">[\s\S]*?<\/header>/)?
 
 test('every Suite page preserves the complete homepage header before JavaScript loads',()=>{
  const expected=header(read('index.html'));assert(expected);
- for(const name of ['league-workshop','ea-clubs','league-dashboard','league-join']){
+ for(const name of ['league-workshop','ea-clubs','league-dashboard','league-join','league-centre']){
   const html=read('league-suite-assets/'+name+'.html');
   assert.equal(header(html),expected,name);
   assert.match(html,/data-standalone-navigation="true"/);
   assert.match(html,/href="\/styles\.css/);
   assert.match(html,/src="\/navigation-ux\.js/);
-  assert.match(html,/id="workshop-main"/);
+  assert.match(html,name==='league-centre'?/id="main"/:/id="workshop-main"/);
  }
  const brand=read('league-suite-assets/league-workshop-brand.js');
  assert.doesNotMatch(brand,/createElement\('header'\)|workshop-public-links|workshop-site-links|workshop-theme-label/);

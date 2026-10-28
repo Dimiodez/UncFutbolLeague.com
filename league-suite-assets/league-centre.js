@@ -1,3 +1,8 @@
+import {hydrateSiteHeader} from './league-workshop-brand.js';
+import './league-centre-footer.js';
+hydrateSiteHeader();
+document.querySelector('[data-nav-hub="league"]')?.classList.add('active');
+document.querySelector('[data-nav-hub="league"] .nav-group-link')?.classList.add('active');
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=value=>value===null||value===undefined?'—':new Intl.NumberFormat().format(value);
@@ -39,7 +44,11 @@ function renderFilters(){const host=$('#filters');host.hidden=!['matches','playe
  if(state.view==='matches')window.UFLTime?.control(host);
 }
 function content(){if(!current())return;$('#content').innerHTML=state.view==='overview'?overview():state.view==='standings'?`<div class="section-head"><div><h2 id="view-heading">League standings</h2><p>${esc(current().season)} · ${current().teams.length} clubs</p></div><span>Updated from accepted results</span></div>${standings()}`:state.view==='matches'?matches():stats();$('#content').setAttribute('aria-busy','false');}
-function collectionNote(){const c=current()?.collection;$('#collection-note').textContent=c?`Server collection ${c.enabled?'enabled':'paused'} · Last successful EA fetch: ${c.lastSuccess?fullTime(c.lastSuccess):'not yet recorded'}.`:'';}
+function collectionNote(){const league=current(),c=league?.collection;$('#collection-note').textContent=c?`Server collection ${c.enabled?'enabled':'paused'} · Last successful EA fetch: ${c.lastSuccess?fullTime(c.lastSuccess):'not yet recorded'}.`:'';
+ const fallback=league?.sourceCounts['va-score']||0,h=league?.history;
+ $('.source-description').textContent=fallback?'EA data + staff corrections + labeled VA score fallbacks':'EA match data + accepted staff corrections';
+ $('#history-note').innerHTML=h?`<details class="history-note"><summary>Historical results · Rounds 1–${h.throughRound||6} · ${h.compared} accepted${h.missing?` · ${h.missing} missing`:''}</summary><p>Compared with posted VA results on ${esc(fullTime(h.checkedAt))}. ${fallback?`${fallback} historical matches use VA scores because EA no longer returned those games. Player statistics for those matches remain unavailable.`:'All accepted matches retain their saved player statistics.'}</p>${h.differences.length?`<p>${h.differences.length} accepted scores differ from VA. Reviewed results have been preserved:</p><ul>${h.differences.map(d=>`<li>${esc(d.home)} v ${esc(d.away)} · Saved ${esc(d.recordedScore.join('–'))} · VA ${esc(d.vaScore.join('–'))} (${esc(d.date)})</li>`).join('')}</ul>`:'<p>All compared scores match VA.</p>'}</details>`:'';
+}
 function render(){const league=current();if(!league)return;document.title=`${league.format} · League Centre · UNC`;$('#league-title').innerHTML=`UFL ${esc(league.format)}<span>.</span>`;$('#season-label').textContent=league.season.replace(/\s*[·–-]\s*EA Test/i,'');$('#league-select').value=league.id;$('#league-summary').innerHTML=`<span><strong>${league.teams.length}</strong> clubs</span><span><strong>${league.totals.played}</strong> results</span><span><strong>${league.players.length}</strong> players tracked</span><span class="summary-scoring">${esc(league.scoring)}</span>`;document.querySelectorAll('.section-nav a').forEach(a=>{if(a.dataset.view===state.view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});renderFilters();content();notice();}
 let loadError='',lastLoaded=null;
 function notice(){const league=current();$('#notice').innerHTML=loadError?`<p class="notice error">${esc(loadError)} <button data-retry>Try again</button></p>`:league?.totals.pending||league?.totals.awaiting?`<p class="notice">${league.totals.pending?`${league.totals.pending} match${league.totals.pending===1?'':'es'} awaiting review. `:''}${league.totals.awaiting?`${league.totals.awaiting} past fixture${league.totals.awaiting===1?' is':'s are'} still awaiting a result. `:''}These games are excluded from the table and player totals. <button data-outstanding>View outstanding matches →</button></p>`:'';}
