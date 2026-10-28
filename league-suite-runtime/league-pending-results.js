@@ -9,7 +9,7 @@ export function stagePendingResults(draft,games,now=Date.now()){
   const found=fixtureCandidates(fixture,games,{timeZone:draft.settings.timeZone,acceptedMatchIds:(draft.acceptedResults||[]).map(r=>r.matchId)}).candidates;
   if(!found.length||found.length===1&&!needsResultReview(found[0]))continue;
   const candidates=[];for(const game of found.slice(0,20)){try{const result=acceptFixtureResult(draft,fixture.id,game,'pending').acceptedResults.at(-1);candidates.push({...result,eaFlags:Object.fromEntries(Object.entries(game.clubs||{}).map(([id,c])=>[id,{winnerByDnf:c.winnerByDnf??null,result:c.result??null}]))});}catch{}}
-  if(candidates.length)pending.set(fixture.id,{fixtureId:fixture.id,status:'needs-review',reason:found.length>1?'Multiple EA records: choose the completed official game.':'Possible quit/DC or 3–0 record: confirm the regulation score; EA may award a synthetic result.',firstSeenAt:pending.get(fixture.id)?.firstSeenAt||new Date(now).toISOString(),lastSeenAt:new Date(now).toISOString(),candidates});
+  if(candidates.length)pending.set(fixture.id,{fixtureId:fixture.id,status:'needs-review',reason:found.length>1?'Multiple EA records: choose the completed official game.':'3–0 result with missing or 3.0 ratings: confirm the regulation score.',firstSeenAt:pending.get(fixture.id)?.firstSeenAt||new Date(now).toISOString(),lastSeenAt:new Date(now).toISOString(),candidates});
  }
  return {...draft,pendingResults:[...pending.values()]};
 }

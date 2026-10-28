@@ -10,7 +10,7 @@ export function importAutomaticTrial(draft,games,now=Date.now()){
   const found=fixtureCandidates(fixture,games,{timeZone:draft.settings.timeZone,acceptedMatchIds:(next.acceptedResults||[]).map(r=>r.matchId)});
   if(found.candidates.length>1){warnings.push(`${fixture.home.name} vs ${fixture.away.name}: multiple EA games; not guessed.`);continue;}
   if(found.candidates.length!==1)continue;
-  if(needsResultReview(found.candidates[0])&&String(found.candidates[0].matchId)!=='106222996430420'){warnings.push(`${fixture.home.name} vs ${fixture.away.name}: quit/3–0 result requires review; not auto-counted.`);continue;}
+  if(needsResultReview(found.candidates[0])&&String(found.candidates[0].matchId)!=='106222996430420'){warnings.push(`${fixture.home.name} vs ${fixture.away.name}: 3–0 result has missing or 3.0 ratings; review the regulation result.`);continue;}
   try{next=acceptFixtureResult(next,fixture.id,found.candidates[0],'pending');added++;}catch(e){warnings.push(`${fixture.home.name} vs ${fixture.away.name}: ${e.message}`);}
  }
  const corrected=applyConfirmedTrialCorrection(next);if(corrected!==next)updated++;return {draft:corrected,added,updated,warnings};

@@ -1,4 +1,4 @@
-import {DETAIL_FIELDS,PLAYER_POSITIONS,numeric} from './league-player-stats.js';
+import {DETAIL_FIELDS,PLAYER_POSITIONS,numeric,clubPlayers} from './league-player-stats.js';
 export function correctFixture(draft,fixtureId,values,{actor='Workshop editor',now=new Date().toISOString()}={}){
  const fixture=draft.fixtures.find(f=>f.id===fixtureId);if(!fixture)throw Error('Unknown fixture.');
  const reason=String(values.reason||'').trim();if(reason.length<5||reason.length>500)throw Error('Enter a correction reason (5–500 characters).');
@@ -14,4 +14,10 @@ export function correctFixture(draft,fixtureId,values,{actor='Workshop editor',n
  return {...draft,acceptedResults:[...(draft.acceptedResults||[]).filter(r=>r.fixtureId!==fixtureId),result]};
 }
 export function applyConfirmedTrialCorrection(draft){const result=draft.acceptedResults?.find(r=>r.matchId==='106222996430420');if(draft.settings.trialSchedule!=='ufl-6v6-20261015'||!result||result.correction)return draft;return correctFixture(draft,result.fixtureId,{homeScore:0,awayScore:0,reason:'Owner confirmed 0–0 at regulation; forced quit when extra time began. EA quit score is not the league result.',statsReview:true},{actor:'Owner confirmation · October 16',now:'2026-10-16T12:00:00Z'});}
-export function needsResultReview(game){return Object.values(game.clubs||{}).some(c=>Number(c.winnerByDnf)>0)||Object.values(game.clubs||{}).some(c=>Number(c.goals??c.score)===3)&&Object.values(game.clubs||{}).some(c=>Number(c.goals??c.score)===0);}
+export function needsResultReview(game){
+ const clubs=Object.entries(game.clubs||{}),scores=clubs.map(([,c])=>numeric(c.goals??c.score));
+ if(scores.length!==2||!scores.includes(3)||!scores.includes(0))return false;
+ // A 3–0 score or DNF flag alone does not establish a quit. Check the actual
+ // human players on both teams; blank/invalid ratings and 3.0 need review.
+ return clubs.some(([id])=>{const players=clubPlayers(game,id).filter(([,p])=>String(p?.playername??p?.name??'').trim());return !players.length||players.some(([,p])=>{const r=numeric(p.rating);return r===null||r<=0||r>10||r===3;});});
+}
