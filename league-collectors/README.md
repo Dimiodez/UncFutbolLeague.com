@@ -22,12 +22,15 @@ and `/ea-feed` fail closed without it. Only clubs in active/missed fixture
 windows can be submitted, and submission cannot directly accept a result.
 The 10v10 Worker reads the same test-DB cache without exposing an ingest API.
 
-The hosted schedule runs every five minutes from 01:00–06:59 UTC on Wednesday
-and Friday, covering current Tuesday/Thursday Central matchnights across DST.
-GitHub may delay scheduled jobs; a response older than 15 minutes is rejected
-as stale and leaves the upstream status failed. Use `workflow_dispatch` for
-an operator recovery outside those hours. Additional matchnights need matching
-hosted schedule coverage. The PC, browser and Codex need not remain open.
+The hosted schedule starts at 01:15 UTC on Wednesday and Friday, before current
+Tuesday/Thursday Central matchnights across DST. That runner stays active and
+polls every five minutes until 06:55 UTC; it does not depend on GitHub launching
+a new job for each poll. Transient cycles retry without stopping the runner.
+GitHub can delay the initial scheduled launch; a response older than 15 minutes
+is rejected as stale and leaves the upstream status failed. Manual dispatch
+also starts the monitor, or can be set to one recovery fetch. Additional
+matchnights need matching schedule coverage. The PC, browser and Codex need not
+remain open. This workflow uses a standard hosted runner in a public repository.
 
 The cron runs every five minutes. EA polling uses each saved fixture's window,
 15 minutes before kickoff through 90 minutes after kickoff, with missed-fixture

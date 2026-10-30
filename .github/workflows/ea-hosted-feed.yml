@@ -1,9 +1,14 @@
 name: EA hosted feed
 on:
   workflow_dispatch:
+    inputs:
+      monitor:
+        description: Keep polling every five minutes until 06:55 UTC
+        type: boolean
+        default: true
   schedule:
     # UTC coverage for Tuesday/Thursday Central matchnights, including DST.
-    - cron: '*/5 1-6 * * 3,5'
+    - cron: '15 1 * * 3,5'
   pull_request:
     paths:
       - '.github/workflows/ea-hosted-feed.yml'
@@ -33,7 +38,7 @@ jobs:
   collect:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 350
     concurrency:
       group: ea-hosted-collection
       cancel-in-progress: false
@@ -45,4 +50,5 @@ jobs:
       - name: Supply current EA friendly responses to Cloudflare
         env:
           EA_FEED_INGEST_KEY: ${{ secrets.EA_FEED_INGEST_KEY }}
+          EA_FEED_MONITOR: ${{ github.event_name == 'schedule' || inputs.monitor }}
         run: node scripts/collect-ea-hosted.mjs
