@@ -240,7 +240,8 @@ test('weekly spotlight starts with Roma and highlights confirmed captains',()=>{
   assert.match(html,/DimiOdez/);
   assert.match(html,/bRzGabriel98/);
   assert.match(html,/rankings and match data pending|Recent results/);
-  assert.doesNotMatch(html,/#2/);
+  const expectedPosition=render("(()=>{const {season}=leagueViewContext(new URLSearchParams('season=2&division=6v6'));return season.standings.some(row=>row[1]>0)?'#'+(season.standings.findIndex(row=>row[0]==='ROM')+1):'—';})()");
+  assert.ok(html.includes(`<strong>${expectedPosition}</strong><span>Position</span>`),'Spotlight position follows the current committed standings');
   for(const match of html.matchAll(/src="(\/assets\/league\/[^" ]+)"/g)) assert.ok(fs.existsSync(new URL(match[1].slice(1),root)),match[1]);
 });
 
