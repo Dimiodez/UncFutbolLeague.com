@@ -9,6 +9,26 @@ Apply `migrations/0001_ea_observations.sql` to `ufl-major-update-preview` before
 deploying either Worker. This additive migration does not change saved results.
 Then deploy `wrangler-6v6.toml` and `wrangler-10v10.toml` with Wrangler.
 
+Also apply `migrations/0002_ea_hosted_feed.sql`. EA can return 403 to Cloudflare
+while responding successfully to GitHub-hosted runners; the existing relay can
+also fail friendlies. The `EA hosted feed` workflow fetches EA directly and
+supplies real, unmodified friendly responses to an authenticated Worker cache.
+The Worker remains responsible for fixture matching, review, raw archiving and
+accepted stats. No VA scores or stats are used by this transport.
+
+Configure the same randomly generated `EA_FEED_INGEST_KEY` as a GitHub Actions
+secret and a 6v6 Worker secret. Never commit or log its value. `/ea-fetch-plan`
+and `/ea-feed` fail closed without it. Only clubs in active/missed fixture
+windows can be submitted, and submission cannot directly accept a result.
+The 10v10 Worker reads the same test-DB cache without exposing an ingest API.
+
+The hosted schedule runs every five minutes from 01:00–06:59 UTC on Wednesday
+and Friday, covering current Tuesday/Thursday Central matchnights across DST.
+GitHub may delay scheduled jobs; a response older than 15 minutes is rejected
+as stale and leaves the upstream status failed. Use `workflow_dispatch` for
+an operator recovery outside those hours. Additional matchnights need matching
+hosted schedule coverage. The PC, browser and Codex need not remain open.
+
 The cron runs every five minutes. EA polling uses each saved fixture's window,
 15 minutes before kickoff through 90 minutes after kickoff, with missed-fixture
 catch-up every 30 minutes for seven days. This runs without a browser or Codex.

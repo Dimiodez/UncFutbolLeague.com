@@ -1,0 +1,48 @@
+name: EA hosted feed
+on:
+  workflow_dispatch:
+  schedule:
+    # UTC coverage for Tuesday/Thursday Central matchnights, including DST.
+    - cron: '*/5 1-6 * * 3,5'
+  pull_request:
+    paths:
+      - '.github/workflows/ea-hosted-feed.yml'
+      - 'scripts/collect-ea-hosted.mjs'
+      - 'league-collectors/**'
+      - 'league-suite-runtime/functions/_lib/ea-hosted-feed.js'
+permissions:
+  contents: read
+jobs:
+  transport-check:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Verify EA friendly access from hosted runner
+        run: |
+          node --input-type=module <<'JS'
+          import {readMatchType} from './league-suite-runtime/functions/_lib/ea-match-feed.js';
+          const result=await readMatchType('1236403','friendly','friendlyMatch');
+          console.log(JSON.stringify({available:result.available,source:result.source,matches:result.matches.length,attempts:result.attempts}));
+          if(!result.available||result.source!=='EA direct')process.exitCode=1;
+          JS
+  collect:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: ea-hosted-collection
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Supply current EA friendly responses to Cloudflare
+        env:
+          EA_FEED_INGEST_KEY: ${{ secrets.EA_FEED_INGEST_KEY }}
+        run: node scripts/collect-ea-hosted.mjs
