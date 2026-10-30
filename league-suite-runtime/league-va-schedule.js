@@ -54,8 +54,13 @@ export function buildVaSchedule(settings){
  const calendar=settings.vaSchedule,source=VA_TEST_SOURCES[settings.trialSchedule];
  if(!source||calendar?.version!==1||calendar.competitionId!==source.competitionId||calendar.seasonId!==source.seasonId||settings.format!==source.format||!Array.isArray(calendar.fixtures)||!calendar.fixtures.length||calendar.fixtures.length>1600)throw Error('Invalid saved VA test calendar.');
  const teams=new Map(settings.teams.map(t=>[t.id,t])),ids=new Set(),vaIds=new Set(),slots=new Set();
+ const fixtureTeam=(team,date)=>{
+  const replacement=team?.eaClubReplacement;if(!replacement)return team;
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(replacement.from)||!/^\d+$/.test(replacement.previousId)||typeof replacement.name!=='string'||replacement.name.length>80)throw Error('Invalid EA club replacement.');
+  return date<replacement.from?{...team,eaClubId:replacement.previousId}:{...team,name:replacement.name,eaClubId:team.eaClubId===replacement.previousId?'':team.eaClubId};
+ };
  const fixtures=calendar.fixtures.map(f=>{
-  const home=teams.get(f.homeId),away=teams.get(f.awayId);
+  const home=fixtureTeam(teams.get(f.homeId),f.date),away=fixtureTeam(teams.get(f.awayId),f.date);
   if(!home||!away||home.id===away.id||typeof f.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(f.id)||ids.has(f.id)||!/^\d+$/.test(f.vaMatchId)||vaIds.has(f.vaMatchId)||!Number.isSafeInteger(f.startsAt)||localDate(f.startsAt,settings.timeZone)!==f.date||!Number.isInteger(f.round)||f.round<1||!Number.isInteger(f.week)||f.week<1)throw Error('Invalid saved VA fixture.');
   ids.add(f.id);vaIds.add(f.vaMatchId);for(const team of [home,away]){const key=`${f.startsAt}:${team.id}`;if(slots.has(key))throw Error('Team appears twice at one kickoff.');slots.add(key);}
   return {...f,home,away,status:'scheduled'};

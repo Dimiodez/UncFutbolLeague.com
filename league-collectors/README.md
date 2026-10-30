@@ -59,3 +59,9 @@ from our EA-based display. Preserve these distinctions during comparison.
 `scripts/league-collector-integrity.test.mjs` exercises both format pipelines,
 including a VA outage, later finalized EA stats, review rules, raw preservation,
 repeat polling, and protection of staff corrections.
+
+On October 29 the owner supplied and EA confirmed Tenerife club ID `1996085`.
+The existing 6v6 team slot remains `team-1` and its private hub remains `6v6:ITA`.
+Its dated `eaClubReplacement` retains Italia club `1663550` for earlier fixtures
+and uses Tenerife from October 29 onward. Changing this link never rewrites
+accepted results, rosters, manager assignments or tactical boards.

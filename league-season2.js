@@ -53,7 +53,7 @@ const leagueProvisionalSeasons = {
       },
       {
         "id": "ITA",
-        "name": "UFL Italia",
+        "name": "UFL Tenerife",
         "art": true,
         "key": "ITA",
         "logo": "/assets/league/club-1790181832909-crest.png",
