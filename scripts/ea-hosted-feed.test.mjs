@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import fs from 'node:fs';
 import {hostedFetchPlan,hostedFeedApi,readCollectedMatchType} from '../league-suite-runtime/functions/_lib/ea-hosted-feed.js';
-import {collectHosted} from './collect-ea-hosted.mjs';
+import {collectHosted,monitorHosted} from './collect-ea-hosted.mjs';
 import {buildLeagueSchedule} from '../league-suite-runtime/league-engine.js';import {eaTrialSettings} from '../league-suite-runtime/league-ea-trial.js';import {eaTenTrialSettings} from '../league-suite-runtime/league-ea-ten-trial.js';
 import {collectLeagues} from '../league-suite-runtime/functions/_lib/league-collector.js';
 const key='a'.repeat(64),failed=type=>({type,available:false,matches:[],attempts:['EA direct: HTTP 403','relay: HTTP 500']});
@@ -39,4 +39,11 @@ test('hosted runner submits only successful EA-direct friendly responses and rep
  const key='b'.repeat(64),requests=[],fetcher=async(url,opts)=>{requests.push({url,opts});return Response.json(url.endsWith('/ea-fetch-plan')?{clubs:['123']}:{});};
  const result=await collectHosted({key,fetcher,readFeed:async()=>({available:true,source:'EA direct',matches:[]})});assert.equal(result.stored,1);assert.equal(requests.length,2);assert.equal(JSON.parse(requests[1].opts.body).type,'friendly');requests.length=0;
  await assert.rejects(()=>collectHosted({key,fetcher,readFeed:async()=>failed('friendly')}),/failed/);assert.equal(requests.length,1);await assert.rejects(()=>collectHosted({key:'',fetcher}),/credential/);
+});
+
+test('one hosted runner keeps polling after a transient failure without waiting for another scheduled job',async()=>{
+ let at=0,calls=0;const summary=await monitorHosted({deadline:2000,interval:1000,now:()=>at,sleep:async ms=>{at+=ms;},collect:async()=>{calls++;if(calls===2)throw Error('Temporary EA failure');}});assert.equal(calls,3);assert.deepEqual(summary,{polls:3,failedPolls:1});assert.equal(at,2000);
+});
+test('hosted monitor reports an unresolved final feed failure',async()=>{
+ let at=0;await assert.rejects(()=>monitorHosted({deadline:1000,interval:1000,now:()=>at,sleep:async ms=>{at+=ms;},collect:async()=>{throw Error('EA unavailable');}}),/EA unavailable/);
 });
