@@ -3,7 +3,7 @@ import {buildLeagueSchedule} from '../../league-engine.js';
 import {restoreAcceptedResults} from '../../league-results.js';
 import {correctFixture} from '../../league-result-corrections.js';
 import {acceptPendingResult} from '../../league-pending-results.js';
-const publicDraft=draft=>({pendingResults:draft.pendingResults||[],acceptedResults:draft.acceptedResults||[],settings:Object.fromEntries(['trialSchedule','serverLeagueId','season','league','format','size','maxTeamSize','keepersEnabled','startDate','weekday','secondWeekday','time','timeZone','spacingMinutes','repeatWeeks','matchnightCount','byePolicy','byePolicyRevision','collectionEnabled','scoringMode','vaSchedule'].filter(k=>draft.settings[k]!==undefined).map(k=>[k,draft.settings[k]]).concat([['teams',draft.settings.teams.map(t=>({id:t.id,name:t.name,eaClubId:t.eaClubId}))]]))});
+const publicDraft=draft=>({pendingResults:draft.pendingResults||[],acceptedResults:draft.acceptedResults||[],settings:Object.fromEntries(['trialSchedule','serverLeagueId','season','league','format','size','maxTeamSize','keepersEnabled','startDate','weekday','secondWeekday','time','timeZone','spacingMinutes','repeatWeeks','matchnightCount','byePolicy','byePolicyRevision','collectionEnabled','scoringMode','vaSchedule'].filter(k=>draft.settings[k]!==undefined).map(k=>[k,draft.settings[k]]).concat([['teams',draft.settings.teams.map(t=>({id:t.id,name:t.name,eaClubId:t.eaClubId,...(t.eaClubReplacement?{eaClubReplacement:t.eaClubReplacement}:{})}))]]))});
 export async function previewLeagueResultsApi(request,env){
  try{
   if(request.method==='GET'&&new URL(request.url).searchParams.has('diagnostics')){

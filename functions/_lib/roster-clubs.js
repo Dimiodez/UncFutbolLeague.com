@@ -4,7 +4,7 @@ export const ROSTER_CLUBS = {
     {"key":"ARS","name":"UFL Arsenal"},
     {
       "key": "ITA",
-      "name": "UFL Italia"
+      "name": "UFL Tenerife"
     },
     {
       "key": "LA",
