@@ -2731,7 +2731,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -2842,7 +2842,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -2875,7 +2875,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -3091,7 +3091,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -4589,7 +4589,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -4713,7 +4713,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -4759,7 +4759,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
@@ -4949,7 +4949,7 @@ window.UFL_SEASONS = {
             {
               "data": {
                 "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793196254.png",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
