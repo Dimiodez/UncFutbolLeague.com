@@ -72,5 +72,5 @@ jobs:
       - name: Supply current EA friendly responses to Cloudflare
         env:
           EA_FEED_INGEST_KEY: ${{ secrets.EA_FEED_INGEST_KEY }}
-          EA_FEED_MONITOR: ${{ github.event_name == 'workflow_dispatch' && inputs.monitor }}
+          EA_FEED_MONITOR: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.monitor) }}
         run: node scripts/collect-ea-hosted.mjs

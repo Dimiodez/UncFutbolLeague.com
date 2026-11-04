@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import fs from 'node:fs';
 import {hostedFetchPlan,hostedFeedApi,readCollectedMatchType} from '../league-suite-runtime/functions/_lib/ea-hosted-feed.js';
-import {collectHosted,monitorHosted} from './collect-ea-hosted.mjs';
+import {collectHosted,monitorHosted,hostedMonitorDeadline} from './collect-ea-hosted.mjs';
 import {buildLeagueSchedule} from '../league-suite-runtime/league-engine.js';import {eaTrialSettings} from '../league-suite-runtime/league-ea-trial.js';import {eaTenTrialSettings} from '../league-suite-runtime/league-ea-ten-trial.js';
 import {collectLeagues} from '../league-suite-runtime/functions/_lib/league-collector.js';
 const key='a'.repeat(64),failed=type=>({type,available:false,matches:[],attempts:['EA direct: HTTP 403','relay: HTTP 500']});
@@ -58,3 +58,10 @@ test('hosted monitor reports an unresolved final feed failure',async()=>{
  test('hosted matchnight schedule has independent staggered retries, not one nightly trigger',()=>{
  const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert.match(workflow,/7,17,27,37,47,57 0-7 \* \* 3,5/);assert.match(workflow,/github.event_name == 'workflow_dispatch' && inputs.monitor/);
  });
+
+test('scheduled hosted monitor stays below the job timeout and covers the matchnight',()=>{
+ const early=Date.parse('2026-11-06T00:00:00Z'),live=Date.parse('2026-11-06T03:00:00Z');
+ assert.equal(hostedMonitorDeadline(early),Date.parse('2026-11-06T05:30:00Z'));
+ assert.equal(hostedMonitorDeadline(live),Date.parse('2026-11-06T06:55:00Z'));
+ const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert(workflow.includes("EA_FEED_MONITOR: "+'${{ github.event_name == 'schedule''));
+});

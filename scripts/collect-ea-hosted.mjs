@@ -21,8 +21,13 @@ export async function monitorHosted({deadline,interval=5*60000,now=Date.now,slee
  }
  if(lastError)throw lastError;return {polls,failedPolls};
 }
+export function hostedMonitorDeadline(now=Date.now()){
+ const matchnightEnd=new Date(now);matchnightEnd.setUTCHours(6,55,0,0);
+ // Stay below the 350-minute job limit even when a retry starts early.
+ return Math.min(matchnightEnd.getTime(),now+330*60000);
+}
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- const deadline=new Date();deadline.setUTCHours(6,55,0,0);
- const run=/^(1|true)$/.test(process.env.EA_FEED_MONITOR||'')&&Date.now()<deadline.getTime()?monitorHosted({deadline:deadline.getTime()}):collectHosted();
+ const deadline=hostedMonitorDeadline();
+ const run=/^(1|true)$/.test(process.env.EA_FEED_MONITOR||'')&&Date.now()<deadline?monitorHosted({deadline}):collectHosted();
  run.catch(e=>{console.error(String(e.message));process.exitCode=1;});
 }
