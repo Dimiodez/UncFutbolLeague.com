@@ -2,6 +2,14 @@ name: EA hosted feed
 on:
   workflow_dispatch:
     inputs:
+      preflight:
+        description: Read-only EA access check; do not ingest or change results
+        type: boolean
+        default: false
+      clubs:
+        description: JSON array of EA club IDs for the read-only preflight
+        type: string
+        default: "[]"
       monitor:
         description: Keep polling every five minutes until 06:55 UTC
         type: boolean
@@ -19,6 +27,19 @@ on:
 permissions:
   contents: read
 jobs:
+  preflight:
+    if: github.event_name == 'workflow_dispatch' && inputs.preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22
+      - name: Check all requested clubs through the hosted EA route without writing results
+        env:
+          EA_PREFLIGHT_CLUBS: ${{ inputs.clubs }}
+        run: node scripts/preflight-ea-hosted.mjs
   transport-check:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -37,7 +58,7 @@ jobs:
           if(!result.available||result.source!=='EA direct')process.exitCode=1;
           JS
   collect:
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && !(github.event_name == 'workflow_dispatch' && inputs.preflight)
     runs-on: ubuntu-latest
     timeout-minutes: 350
     concurrency:
