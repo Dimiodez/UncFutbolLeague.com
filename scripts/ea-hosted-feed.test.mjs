@@ -63,5 +63,5 @@ test('scheduled hosted monitor stays below the job timeout and covers the matchn
  const early=Date.parse('2026-11-06T00:00:00Z'),live=Date.parse('2026-11-06T03:00:00Z');
  assert.equal(hostedMonitorDeadline(early),Date.parse('2026-11-06T05:30:00Z'));
  assert.equal(hostedMonitorDeadline(live),Date.parse('2026-11-06T06:55:00Z'));
- const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert(workflow.includes("EA_FEED_MONITOR: "+'${{ github.event_name == 'schedule''));
+ const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert.match(workflow,/EA_FEED_MONITOR:.*github.event_name == 'schedule'/);
 });
