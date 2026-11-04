@@ -28,7 +28,7 @@ export async function collectLeagues(env,{now=Date.now(),readFeed,readCalendar=f
    const matching=games.filter(g=>draft.fixtures.some(f=>Object.keys(g.clubs||{}).includes(String(f.home.eaClubId))&&Object.keys(g.clubs||{}).includes(String(f.away.eaClubId))));
    const uniqueIds=new Set(matching.map(g=>String(g.matchId??g.id)));
    const archivedGames=await archiveMatches(env.DB,row.id,matching,{now:checkedAt}),result=importAutomaticTrial(draft,archivedGames,now);notes.push(...result.warnings);
-   const staged=stagePendingResults({...result.draft,pendingResults:saved.pendingResults||[]},archivedGames,now),updated={...saved,acceptedResults:staged.acceptedResults,pendingResults:staged.pendingResults};
+   const staged=stagePendingResults({...result.draft,pendingResults:result.draft.pendingResults||saved.pendingResults||[]},archivedGames,now),updated={...saved,acceptedResults:staged.acceptedResults,pendingResults:staged.pendingResults};
    if(calendarWarning)notes.push(calendarWarning);
    const upcoming=draft.fixtures.find(f=>collectionWindow(draft,f).to>=now);
    const upstreamStatus=batchIds.length?(successful?'healthy':'failed'):(previous.upstreamStatus||'not-tested');

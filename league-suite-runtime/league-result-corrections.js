@@ -19,5 +19,9 @@ export function needsResultReview(game){
  if(scores.length!==2||!scores.includes(3)||!scores.includes(0))return false;
  // A 3–0 score or DNF flag alone does not establish a quit. Check the actual
  // human players on both teams; blank/invalid ratings and 3.0 need review.
+ // Club-only 3–0 scores with no recorded human goals are inconsistent evidence,
+ // even with normal ratings and no DNF flag. They need confirmation, not a guessed draw.
+ const humanPlayers=clubs.flatMap(([id])=>clubPlayers(game,id).filter(([,p])=>String(p?.playername??p?.name??'').trim()).map(([,p])=>p));
+ if(humanPlayers.length&&humanPlayers.every(p=>numeric(p.goals)===null||numeric(p.goals)===0))return true;
  return clubs.some(([id])=>{const players=clubPlayers(game,id).filter(([,p])=>String(p?.playername??p?.name??'').trim());return !players.length||players.some(([,p])=>{const r=numeric(p.rating);return r===null||r<=0||r>10||r===3;});});
 }
