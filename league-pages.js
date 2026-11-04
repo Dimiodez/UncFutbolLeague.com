@@ -247,9 +247,30 @@ function leagueStatsPage(params) {
   return pageHero('UFL · League','The numbers game','Goals, creators, ball winners and the season’s standout performers.')+`<section class="section league-explorer">${leagueViewNavigation('/stats',context)}${leagueFeedNote(context,'stats')}<div class="league-directory-head"><div><span class="section-kicker">Award watch</span><h2>Who sets the standard?</h2></div><span class="season-chip">Official match statistics</span></div><div class="league-award-watch">${leagueStatCategories.filter(c=>['goals','assists','contributions','rating'].includes(c[0])).map(([id,title,metric])=>{const first=records(id)[0];return `<a href="#stats-${id}" class="league-award-card"><span>${title}</span><h3>${metric}</h3><strong>${escapeHtml(first?.stat??'—')}</strong><small>${escapeHtml(first?.data?.name||'Awaiting recorded results')}</small></a>`;}).join('')}</div><div class="league-directory-head"><div><span class="section-kicker">Leaderboards</span><h2>Every kind of impact.</h2></div></div><nav class="league-club-filters" aria-label="Statistics category">${[['All','All leaderboards'],['Attack','Attack'],['Playmaking','Playmaking & G+A'],['Defense','Defense & shutouts'],['MVP','MVP']].map(([value,label])=>`<a class="${group===value?'active':''}" href="${leagueViewLink('/stats',context,`&category=${value}`)}" data-link>${label}</a>`).join('')}</nav><div class="league-stats-grid">${leagueStatCategories.filter(c=>group==='All'||c[3]===group).map(([id,title,metric,,copy])=>`<article class="league-stat-board" id="stats-${id}"><header><span class="section-kicker">${title}</span><h2>${metric}</h2><p>${copy}</p><a href="${leagueOfficialSource(context,'stats')}/players/${leagueStatFeedKeys[id]}" target="_blank" rel="noopener noreferrer">Full official leaderboard ↗</a></header><div class="league-stat-columns"><span>Player / club</span><span>${metric}</span></div>${records(id).length?`<ol class="league-stat-records">${records(id).map(row=>`<li><div><strong>${player(row)}</strong><small>${club(row)}${row.played!=null?` · ${escapeHtml(row.played)} appearances`:''}</small></div><b>${escapeHtml(row.stat??'—')}</b></li>`).join('')}</ol>`:`<div class="league-stat-empty"><span aria-hidden="true">—</span><h3>Waiting for the first numbers.</h3><p>No recorded ${metric.toLowerCase()} yet for ${context.selected.label} ${context.division}. Results will appear here as Virtual Arena publishes them.</p></div>`}</article>`).join('')}</div></section>`;
 }
 let leagueLiveRefreshTimer;
+async function refreshPublicScheduleSnapshot(path) {
+  const search=window.location.search, params=new URLSearchParams(search), selected=selectedLeagueSeason(params), division=params.get('type');
+  if(selected.id!=='2'||!['6v6','10v10'].includes(division))return;
+  const seasonKey='s2-'+division, key=division+':schedules', previous=leagueLiveFeeds.get(key);
+  if(leagueLivePending.has(key))return;
+  if(previous&&Date.now()-previous.loadedAt<300000){leagueLiveRefreshTimer=setTimeout(refreshLeagueFeed,300000-(Date.now()-previous.loadedAt));return;}
+  leagueLivePending.add(key);
+  try {
+    const response=await fetch('/pickems-app/seasons/'+seasonKey+'.json',{cache:'no-store'});
+    if(!response.ok)throw Error('Schedule snapshot unavailable');
+    const data=await response.json();
+    if(data.key!==seasonKey||data.division!==division||data.uflSeason!==2||data.competitionId!==(division==='10v10'?3:1)||data.seasonId!==(division==='10v10'?5:2)||!Array.isArray(data.weeks)||!data.weeks.length||!data.teams)throw Error('Wrong schedule snapshot');
+    leagueLiveFeeds.set(key,{loadedAt:Date.now()});
+    if(JSON.stringify(leagueSeasons[seasonKey])!==JSON.stringify(data)){
+      leagueSeasons[seasonKey]=data;
+      if(window.location.pathname===path&&window.location.search===search)render();
+    }
+  } catch { /* Keep all saved fixtures/results when the public snapshot is unavailable. */ }
+  finally {leagueLivePending.delete(key);leagueLiveRefreshTimer=setTimeout(refreshLeagueFeed,300000);}
+}
 async function refreshLeagueFeed() {
   clearTimeout(leagueLiveRefreshTimer);
   const path=window.location.pathname;
+  if(path==='/schedules')return refreshPublicScheduleSnapshot(path);
   if(!['/standings','/stats'].includes(path))return;
   const search=window.location.search, params=new URLSearchParams(search), context=leagueViewContext(params);
   if(context.selected.id!=='2')return;
