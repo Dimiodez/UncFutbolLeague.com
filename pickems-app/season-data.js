@@ -3485,8 +3485,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-10-28T07:00:08.000Z",
-    "statsFetchedAt": "2026-10-28T07:00:08.000Z",
+    "syncedAt": "2026-11-04T08:00:11.000Z",
+    "statsFetchedAt": "2026-11-04T08:00:11.000Z",
     "statsStatus": "available",
     "teams": {
       "NSH": [
@@ -3535,19 +3535,19 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift",
         "rosterSize": 0,
         "stats": {
-          "played": 6,
+          "played": 8,
           "wins": 1,
-          "draws": 0,
-          "losses": 5,
-          "goals_for": 5,
-          "goals_against": 22,
-          "goal_difference": -17,
-          "points": 3,
+          "draws": 1,
+          "losses": 6,
+          "goals_for": 6,
+          "goals_against": 27,
+          "goal_difference": -21,
+          "points": 4,
           "form": [
-            "L",
-            "L",
             "W",
             "L",
+            "L",
+            "D",
             "L"
           ]
         }
@@ -3564,17 +3564,17 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
         "rosterSize": 9,
         "stats": {
-          "played": 6,
-          "wins": 4,
+          "played": 8,
+          "wins": 6,
           "draws": 2,
           "losses": 0,
-          "goals_for": 15,
-          "goals_against": 2,
-          "goal_difference": 13,
-          "points": 14,
+          "goals_for": 21,
+          "goals_against": 3,
+          "goal_difference": 18,
+          "points": 20,
           "form": [
             "W",
-            "D",
+            "W",
             "W",
             "W",
             "W"
@@ -3593,20 +3593,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
         "rosterSize": 11,
         "stats": {
-          "played": 6,
+          "played": 8,
           "wins": 3,
           "draws": 1,
-          "losses": 2,
-          "goals_for": 17,
-          "goals_against": 8,
-          "goal_difference": 9,
+          "losses": 4,
+          "goals_for": 18,
+          "goals_against": 12,
+          "goal_difference": 6,
           "points": 10,
           "form": [
-            "D",
+            "W",
             "L",
             "W",
             "L",
-            "W"
+            "L"
           ]
         }
       },
@@ -3622,20 +3622,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/Palace",
         "rosterSize": 11,
         "stats": {
-          "played": 6,
-          "wins": 1,
-          "draws": 2,
+          "played": 8,
+          "wins": 2,
+          "draws": 3,
           "losses": 3,
-          "goals_for": 6,
-          "goals_against": 10,
-          "goal_difference": -4,
-          "points": 5,
+          "goals_for": 9,
+          "goals_against": 11,
+          "goal_difference": -2,
+          "points": 9,
           "form": [
-            "D",
-            "L",
             "W",
             "L",
-            "L"
+            "L",
+            "D",
+            "W"
           ]
         }
       },
@@ -3651,20 +3651,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids",
         "rosterSize": 10,
         "stats": {
-          "played": 6,
+          "played": 8,
           "wins": 1,
-          "draws": 1,
-          "losses": 4,
-          "goals_for": 10,
-          "goals_against": 17,
-          "goal_difference": -7,
-          "points": 4,
+          "draws": 2,
+          "losses": 5,
+          "goals_for": 11,
+          "goals_against": 20,
+          "goal_difference": -9,
+          "points": 5,
           "form": [
-            "D",
-            "L",
             "L",
             "W",
-            "L"
+            "L",
+            "L",
+            "D"
           ]
         }
       },
@@ -3680,17 +3680,17 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
         "rosterSize": 13,
         "stats": {
-          "played": 6,
-          "wins": 3,
+          "played": 8,
+          "wins": 5,
           "draws": 2,
           "losses": 1,
-          "goals_for": 10,
-          "goals_against": 2,
-          "goal_difference": 8,
-          "points": 11,
+          "goals_for": 20,
+          "goals_against": 3,
+          "goal_difference": 17,
+          "points": 17,
           "form": [
-            "D",
-            "L",
+            "W",
+            "W",
             "W",
             "W",
             "W"
@@ -3709,20 +3709,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
         "rosterSize": 12,
         "stats": {
-          "played": 6,
-          "wins": 5,
-          "draws": 1,
+          "played": 8,
+          "wins": 6,
+          "draws": 2,
           "losses": 0,
-          "goals_for": 11,
+          "goals_for": 12,
           "goals_against": 2,
-          "goal_difference": 9,
-          "points": 16,
+          "goal_difference": 10,
+          "points": 20,
           "form": [
-            "W",
-            "W",
             "D",
             "W",
-            "W"
+            "W",
+            "W",
+            "D"
           ]
         }
       },
@@ -3736,19 +3736,19 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB",
-        "rosterSize": 11,
+        "rosterSize": 13,
         "stats": {
-          "played": 6,
+          "played": 8,
           "wins": 1,
           "draws": 1,
-          "losses": 4,
+          "losses": 6,
           "goals_for": 7,
-          "goals_against": 18,
-          "goal_difference": -11,
+          "goals_against": 26,
+          "goal_difference": -19,
           "points": 4,
           "form": [
             "L",
-            "W",
+            "L",
             "L",
             "L",
             "L"
@@ -3758,92 +3758,92 @@ window.UFL_SEASONS = {
     ],
     "standings": [
       [
-        "ACM",
+        "MAY",
+        8,
         6,
-        5,
-        1,
-        0,
-        11,
         2,
-        9,
-        16
+        0,
+        21,
+        3,
+        18,
+        20
       ],
       [
-        "MAY",
+        "ACM",
+        8,
         6,
-        4,
         2,
         0,
-        15,
+        12,
         2,
-        13,
-        14
+        10,
+        20
       ],
       [
         "TFC",
-        6,
-        3,
+        8,
+        5,
         2,
         1,
-        10,
-        2,
-        8,
-        11
+        20,
+        3,
+        17,
+        17
       ],
       [
         "RM",
-        6,
+        8,
         3,
         1,
-        2,
-        17,
-        8,
-        9,
+        4,
+        18,
+        12,
+        6,
         10
       ],
       [
         "PALA",
-        6,
-        1,
+        8,
         2,
         3,
-        6,
-        10,
-        -4,
-        5
+        3,
+        9,
+        11,
+        -2,
+        9
       ],
       [
         "TK",
-        6,
+        8,
         1,
-        1,
-        4,
-        10,
-        17,
-        -7,
-        4
+        2,
+        5,
+        11,
+        20,
+        -9,
+        5
       ],
       [
         "NOB",
+        8,
+        1,
+        1,
         6,
-        1,
-        1,
-        4,
         7,
-        18,
-        -11,
+        26,
+        -19,
         4
       ],
       [
         "NSH",
-        6,
+        8,
         1,
-        0,
-        5,
-        5,
-        22,
-        -17,
-        3
+        1,
+        6,
+        6,
+        27,
+        -21,
+        4
       ]
     ],
     "weeks": [
@@ -4138,8 +4138,8 @@ window.UFL_SEASONS = {
             300,
             "NOB",
             "MAY",
-            null,
-            null,
+            0,
+            1,
             1793761200,
             7
           ],
@@ -4147,8 +4147,8 @@ window.UFL_SEASONS = {
             301,
             "NSH",
             "PALA",
-            null,
-            null,
+            0,
+            0,
             1793761200,
             7
           ],
@@ -4156,8 +4156,8 @@ window.UFL_SEASONS = {
             302,
             "TFC",
             "TK",
-            null,
-            null,
+            3,
+            1,
             1793761200,
             7
           ],
@@ -4165,8 +4165,8 @@ window.UFL_SEASONS = {
             303,
             "RM",
             "ACM",
-            null,
-            null,
+            0,
+            1,
             1793761200,
             7
           ],
@@ -4174,8 +4174,8 @@ window.UFL_SEASONS = {
             304,
             "MAY",
             "NSH",
-            null,
-            null,
+            5,
+            1,
             1793763000,
             8
           ],
@@ -4183,8 +4183,8 @@ window.UFL_SEASONS = {
             305,
             "NOB",
             "TFC",
-            null,
-            null,
+            0,
+            7,
             1793763000,
             8
           ],
@@ -4192,8 +4192,8 @@ window.UFL_SEASONS = {
             306,
             "PALA",
             "RM",
-            null,
-            null,
+            3,
+            1,
             1793763000,
             8
           ],
@@ -4201,8 +4201,8 @@ window.UFL_SEASONS = {
             307,
             "TK",
             "ACM",
-            null,
-            null,
+            0,
+            0,
             1793763000,
             8
           ]
@@ -4524,8 +4524,21 @@ window.UFL_SEASONS = {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
-              "stat": "10",
-              "played": 4
+              "stat": "13",
+              "played": 6
+            },
+            {
+              "data": {
+                "name": "elgucci_",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
+                "url": "https://ufl.virtualarena.app/users/elgucci_"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "9",
+              "played": 6
             },
             {
               "data": {
@@ -4537,21 +4550,21 @@ window.UFL_SEASONS = {
                 "name": "Real Madrid",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
-              "stat": "7",
-              "played": 6
+              "stat": "8",
+              "played": 8
             },
             {
               "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
               },
               "team": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
               },
-              "stat": "5",
-              "played": 6
+              "stat": "7",
+              "played": 8
             },
             {
               "data": {
@@ -4563,21 +4576,8 @@ window.UFL_SEASONS = {
                 "name": "UFL TabascoKids",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png"
               },
-              "stat": "5",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "liz4",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/liz-1784062432.png",
-                "url": "https://ufl.virtualarena.app/users/liz4"
-              },
-              "team": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
-              },
-              "stat": "4",
-              "played": 6
+              "stat": "6",
+              "played": 8
             }
           ]
         },
@@ -4588,6 +4588,32 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "Sesmas",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/Sesmas"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "8",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "zo54",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/zo-1783612765.png",
+                "url": "https://ufl.virtualarena.app/users/zo54"
+              },
+              "team": {
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+              },
+              "stat": "5",
+              "played": 8
+            },
+            {
+              "data": {
                 "name": "Schweinslap",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
                 "url": "https://ufl.virtualarena.app/users/Schweinslap"
@@ -4596,8 +4622,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
-              "stat": "4",
-              "played": 6
+              "stat": "5",
+              "played": 8
             },
             {
               "data": {
@@ -4614,42 +4640,16 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Sesmas",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/users/Sesmas"
-              },
-              "team": {
-                "name": "UFL Timbers",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
-              },
-              "stat": "3",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Salmon",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1791373480.png",
-                "url": "https://ufl.virtualarena.app/users/Salmon"
+                "name": "DimiOdez",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dimiodez-1791862353.png",
+                "url": "https://ufl.virtualarena.app/users/DimiOdez"
               },
               "team": {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "3",
-              "played": 4
-            },
-            {
-              "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
-              },
-              "team": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
-              },
-              "stat": "2",
-              "played": 6
+              "played": 8
             }
           ]
         },
@@ -4660,6 +4660,45 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "Salmon",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1791373480.png",
+                "url": "https://ufl.virtualarena.app/users/Salmon"
+              },
+              "team": {
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+              },
+              "stat": "16",
+              "played": 6
+            },
+            {
+              "data": {
+                "name": "Sesmas",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/Sesmas"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "11",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "elgucci_",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
+                "url": "https://ufl.virtualarena.app/users/elgucci_"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "11",
+              "played": 6
+            },
+            {
+              "data": {
                 "name": "bRzGabriel98",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/brzgabriel98-1787290717.png",
                 "url": "https://ufl.virtualarena.app/users/bRzGabriel98"
@@ -4668,60 +4707,21 @@ window.UFL_SEASONS = {
                 "name": "Real Madrid",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
-              "stat": "9",
-              "played": 6
+              "stat": "10",
+              "played": 8
             },
             {
               "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
               },
               "team": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
               },
-              "stat": "7",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Espahr",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/espahr-1784310995.png",
-                "url": "https://ufl.virtualarena.app/users/Espahr"
-              },
-              "team": {
-                "name": "UFL TabascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png"
-              },
-              "stat": "6",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Vinicimnj",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/vinicimnj-1782960433.png",
-                "url": "https://ufl.virtualarena.app/users/Vinicimnj"
-              },
-              "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
-              },
-              "stat": "5",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
-                "url": "https://ufl.virtualarena.app/users/Schweinslap"
-              },
-              "team": {
-                "name": "UFL Maykop",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "5",
-              "played": 6
+              "stat": "10",
+              "played": 8
             }
           ]
         },
@@ -4732,13 +4732,13 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "Bradical",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bradical-1791992573.png",
-                "url": "https://ufl.virtualarena.app/users/Bradical"
+                "name": "SamLoscarinho",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/SamLoscarinho"
               },
               "team": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
               },
               "stat": "2.2",
               "played": 6
@@ -4758,19 +4758,6 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
-                "url": "https://ufl.virtualarena.app/users/Schweinslap"
-              },
-              "team": {
-                "name": "UFL Maykop",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "2",
-              "played": 6
-            },
-            {
-              "data": {
                 "name": "A_Poon",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/a-poon-1791606103.png",
                 "url": "https://ufl.virtualarena.app/users/A_Poon"
@@ -4779,21 +4766,34 @@ window.UFL_SEASONS = {
                 "name": "Real Madrid",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
-              "stat": "1.8",
-              "played": 6
+              "stat": "2",
+              "played": 8
             },
             {
               "data": {
-                "name": "XALESHX",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/xaleshx-1785510506.png",
-                "url": "https://ufl.virtualarena.app/users/XALESHX"
+                "name": "Schweinslap",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
+                "url": "https://ufl.virtualarena.app/users/Schweinslap"
               },
               "team": {
-                "name": "UFL TabascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
-              "stat": "1.7",
-              "played": 6
+              "stat": "1.8",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Bradical",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bradical-1791992573.png",
+                "url": "https://ufl.virtualarena.app/users/Bradical"
+              },
+              "team": {
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
+              },
+              "stat": "1.8",
+              "played": 8
             }
           ]
         },
@@ -4813,7 +4813,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
@@ -4826,7 +4826,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
@@ -4839,7 +4839,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
@@ -4852,7 +4852,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
@@ -4865,7 +4865,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             }
           ]
         },
@@ -4876,19 +4876,6 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "Luuuiiisss7",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
-                "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
-              },
-              "team": {
-                "name": "UFL Maykop",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "4",
-              "played": 6
-            },
-            {
-              "data": {
                 "name": "BIGHIMUP",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bighimup-1790618012.png",
                 "url": "https://ufl.virtualarena.app/users/BIGHIMUP"
@@ -4897,8 +4884,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Milan",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
               },
-              "stat": "4",
-              "played": 6
+              "stat": "6",
+              "played": 8
             },
             {
               "data": {
@@ -4910,8 +4897,34 @@ window.UFL_SEASONS = {
                 "name": "UFL Milan",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
               },
-              "stat": "4",
-              "played": 6
+              "stat": "6",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "nb70",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/nb-1791238844.png",
+                "url": "https://ufl.virtualarena.app/users/nb70"
+              },
+              "team": {
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
+              },
+              "stat": "6",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Luuuiiisss7",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
+                "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
+              },
+              "team": {
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
+              },
+              "stat": "5",
+              "played": 8
             },
             {
               "data": {
@@ -4923,21 +4936,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Timbers",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
               },
-              "stat": "4",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Darco",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/darco-1790975052.png",
-                "url": "https://ufl.virtualarena.app/users/Darco"
-              },
-              "team": {
-                "name": "UFL Timbers",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
-              },
-              "stat": "4",
-              "played": 6
+              "stat": "5",
+              "played": 8
             }
           ]
         },
@@ -4956,8 +4956,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
-              "stat": "8",
-              "played": 6
+              "stat": "7.9",
+              "played": 8
             },
             {
               "data": {
@@ -4969,47 +4969,47 @@ window.UFL_SEASONS = {
                 "name": "Real Madrid",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
               },
-              "stat": "7.9",
-              "played": 6
+              "stat": "7.8",
+              "played": 8
             },
             {
               "data": {
-                "name": "KLee",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/klee-1784692103.png",
-                "url": "https://ufl.virtualarena.app/users/KLee"
+                "name": "thealphabetman",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/thealphabetman-1791852258.png",
+                "url": "https://ufl.virtualarena.app/users/thealphabetman"
               },
               "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
-              },
-              "stat": "7.9",
-              "played": 5
-            },
-            {
-              "data": {
-                "name": "Vinicimnj",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/vinicimnj-1782960433.png",
-                "url": "https://ufl.virtualarena.app/users/Vinicimnj"
-              },
-              "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
-              },
-              "stat": "7.7",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "bRzGabriel98",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/brzgabriel98-1787290717.png",
-                "url": "https://ufl.virtualarena.app/users/bRzGabriel98"
-              },
-              "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "7.6",
-              "played": 6
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "7.6",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Akindele",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/akindele-1790802841.png",
+                "url": "https://ufl.virtualarena.app/users/Akindele"
+              },
+              "team": {
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
+              },
+              "stat": "7.6",
+              "played": 8
             }
           ]
         }
@@ -5022,21 +5022,21 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
-              },
-              "team": null,
-              "stat": 5
-            },
-            {
-              "data": {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
-              "stat": 4
+              "stat": 6
+            },
+            {
+              "data": {
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+              },
+              "team": null,
+              "stat": 6
             },
             {
               "data": {
@@ -5045,7 +5045,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
               },
               "team": null,
-              "stat": 3
+              "stat": 5
             },
             {
               "data": {
@@ -5058,12 +5058,12 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "UFL TabascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
-              "stat": 1
+              "stat": 2
             }
           ]
         },
@@ -5074,6 +5074,24 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
+              },
+              "team": null,
+              "stat": 3
+            },
+            {
+              "data": {
+                "name": "UFL TabascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+              },
+              "team": null,
+              "stat": 2
+            },
+            {
+              "data": {
                 "name": "UFL Timbers",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
@@ -5092,30 +5110,12 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
               },
               "team": null,
               "stat": 2
-            },
-            {
-              "data": {
-                "name": "UFL TabascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
-              },
-              "team": null,
-              "stat": 1
-            },
-            {
-              "data": {
-                "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
-              },
-              "team": null,
-              "stat": 1
             }
           ]
         },
@@ -5126,12 +5126,21 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
+                "name": "UFL Newell's OB",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+              },
+              "team": null,
+              "stat": 6
+            },
+            {
+              "data": {
                 "name": "UFL Night Shift",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-night-shift-1792622753.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
               },
               "team": null,
-              "stat": 5
+              "stat": 6
             },
             {
               "data": {
@@ -5140,13 +5149,13 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
               },
               "team": null,
-              "stat": 4
+              "stat": 5
             },
             {
               "data": {
-                "name": "UFL Newell's OB",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-newells-ob-1791345066.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
+                "name": "Real Madrid",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
+                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
               },
               "team": null,
               "stat": 4
@@ -5159,15 +5168,6 @@ window.UFL_SEASONS = {
               },
               "team": null,
               "stat": 3
-            },
-            {
-              "data": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
-                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
-              },
-              "team": null,
-              "stat": 2
             }
           ]
         },
@@ -5178,39 +5178,12 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
-                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
-              },
-              "team": null,
-              "stat": 17
-            },
-            {
-              "data": {
                 "name": "UFL Maykop",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
-              "stat": 15
-            },
-            {
-              "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
-              },
-              "team": null,
-              "stat": 11
-            },
-            {
-              "data": {
-                "name": "UFL TabascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
-              },
-              "team": null,
-              "stat": 10
+              "stat": 21
             },
             {
               "data": {
@@ -5219,7 +5192,34 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
               },
               "team": null,
-              "stat": 10
+              "stat": 20
+            },
+            {
+              "data": {
+                "name": "Real Madrid",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
+                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
+              },
+              "team": null,
+              "stat": 18
+            },
+            {
+              "data": {
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+              },
+              "team": null,
+              "stat": 12
+            },
+            {
+              "data": {
+                "name": "UFL TabascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tabascokids-1784564033.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
+              },
+              "team": null,
+              "stat": 11
             }
           ]
         },
@@ -5235,7 +5235,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Night%20Shift"
               },
               "team": null,
-              "stat": 22
+              "stat": 27
             },
             {
               "data": {
@@ -5244,7 +5244,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Newell%27s%20OB"
               },
               "team": null,
-              "stat": 18
+              "stat": 26
             },
             {
               "data": {
@@ -5253,16 +5253,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20TabascoKids"
               },
               "team": null,
-              "stat": 17
-            },
-            {
-              "data": {
-                "name": "Palace",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
-                "url": "https://ufl.virtualarena.app/teams/Palace"
-              },
-              "team": null,
-              "stat": 10
+              "stat": 20
             },
             {
               "data": {
@@ -5271,7 +5262,16 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
               },
               "team": null,
-              "stat": 8
+              "stat": 12
+            },
+            {
+              "data": {
+                "name": "Palace",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png",
+                "url": "https://ufl.virtualarena.app/teams/Palace"
+              },
+              "team": null,
+              "stat": 11
             }
           ]
         },
@@ -5287,25 +5287,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop"
               },
               "team": null,
-              "stat": 13
-            },
-            {
-              "data": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
-              },
-              "team": null,
-              "stat": 9
-            },
-            {
-              "data": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
-                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
-              },
-              "team": null,
-              "stat": 9
+              "stat": 18
             },
             {
               "data": {
@@ -5314,7 +5296,25 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers"
               },
               "team": null,
-              "stat": 8
+              "stat": 17
+            },
+            {
+              "data": {
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Milan"
+              },
+              "team": null,
+              "stat": 10
+            },
+            {
+              "data": {
+                "name": "Real Madrid",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
+                "url": "https://ufl.virtualarena.app/teams/Real%20Madrid"
+              },
+              "team": null,
+              "stat": 6
             },
             {
               "data": {
@@ -5323,7 +5323,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/Palace"
               },
               "team": null,
-              "stat": -4
+              "stat": -2
             }
           ]
         }
