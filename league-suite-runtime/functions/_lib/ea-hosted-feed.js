@@ -31,10 +31,17 @@ export async function hostedFeedApi(request,env,{now=Date.now()}={}){
  }catch(error){return reply({error:String(error.message)},400);}
 }
 export async function readCollectedMatchType(env,clubId,type,eaType,{now=Date.now(),readDirect=readMatchType}={}){
- const direct=await readDirect(clubId,type,eaType);if(direct.available||type!=='friendly')return direct;
- try{const cached=await env.DB.prepare("SELECT body_json,checked_at FROM preview_ea_feed_cache WHERE club_id=? AND match_type='friendly'").bind(String(clubId)).first(),stamp=Date.parse(cached?.checked_at||'');
-  if(!cached||!Number.isFinite(stamp)||stamp>now+60000||now-stamp>MAX_AGE)return {...direct,attempts:[...direct.attempts,'Hosted EA feed: missing or older than 15 minutes']};
-  const matches=JSON.parse(cached.body_json);if(!Array.isArray(matches))throw Error('Invalid stored feed');
-  return {type,available:true,source:'EA direct via GitHub-hosted transport',matches,attempts:direct.attempts,fetchedAt:cached.checked_at};
- }catch{return {...direct,attempts:[...direct.attempts,'Hosted EA feed unavailable']};}
+ // Fresh authenticated hosted data is the primary friendly route. Do not retry
+ // EA from Cloudflare when the working hosted transport has already supplied it.
+ if(type!=='friendly')return readDirect(clubId,type,eaType);
+ let cacheStatus='Hosted EA feed: missing or older than 15 minutes';
+ try{
+  const cached=await env.DB.prepare("SELECT body_json,checked_at FROM preview_ea_feed_cache WHERE club_id=? AND match_type='friendly'").bind(String(clubId)).first(),stamp=Date.parse(cached?.checked_at||'');
+  if(cached&&Number.isFinite(stamp)&&stamp<=now+60000&&now-stamp<=MAX_AGE){
+   const matches=JSON.parse(cached.body_json);if(!Array.isArray(matches))throw Error('Invalid stored feed');
+   return {type,available:true,source:'EA direct via GitHub-hosted transport',matches,attempts:[],fetchedAt:cached.checked_at};
+  }
+ }catch{cacheStatus='Hosted EA feed unavailable';}
+ const direct=await readDirect(clubId,type,eaType);
+ return direct.available?direct:{...direct,attempts:[...direct.attempts,cacheStatus]};
 }

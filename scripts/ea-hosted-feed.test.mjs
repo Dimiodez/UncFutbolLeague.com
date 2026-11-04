@@ -25,7 +25,7 @@ test('machine feed is authenticated, scoped, fresh, and never writes scores dire
 
 test('failed Cloudflare fetch uses only fresh real EA cache and does not turn stale/missing feeds into empty success',async()=>{
  const s=setup(),readDirect=async(id,type)=>failed(type);let feed=await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now,readDirect});assert.equal(feed.available,false);
- s.sqlite.prepare("INSERT INTO preview_ea_feed_cache VALUES(?,'friendly',?,?)").run(s.f.home.eaClubId,JSON.stringify([s.game]),new Date(s.now).toISOString());feed=await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now,readDirect});assert.equal(feed.available,true);assert.match(feed.source,/hosted/);assert.deepEqual(feed.matches,[s.game]);assert.equal(feed.attempts[0],'EA direct: HTTP 403');
+ s.sqlite.prepare("INSERT INTO preview_ea_feed_cache VALUES(?,'friendly',?,?)").run(s.f.home.eaClubId,JSON.stringify([s.game]),new Date(s.now).toISOString());feed=await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now,readDirect});assert.equal(feed.available,true);assert.match(feed.source,/hosted/);assert.deepEqual(feed.matches,[s.game]);assert.deepEqual(feed.attempts,[]);
  assert.equal((await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now+16*60000,readDirect})).available,false);assert.equal((await readCollectedMatchType(s.env,s.f.home.eaClubId,'league','leagueMatch',{now:s.now,readDirect})).available,false);s.sqlite.close();
 });
 
@@ -47,3 +47,14 @@ test('one hosted runner keeps polling after a transient failure without waiting 
 test('hosted monitor reports an unresolved final feed failure',async()=>{
  let at=0;await assert.rejects(()=>monitorHosted({deadline:1000,interval:1000,now:()=>at,sleep:async ms=>{at+=ms;},collect:async()=>{throw Error('EA unavailable');}}),/EA unavailable/);
 });
+
+ test('fresh hosted routing never calls blocked Cloudflare EA; stale data still fails honestly',async()=>{
+ const s=setup();let directCalls=0;
+ s.sqlite.prepare("INSERT INTO preview_ea_feed_cache VALUES(?,'friendly',?,?)").run(s.f.home.eaClubId,JSON.stringify([s.game]),new Date(s.now).toISOString());
+ const readDirect=async(id,type)=>{directCalls++;return failed(type);};
+ const feed=await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now,readDirect});assert.equal(feed.available,true);assert.equal(directCalls,0);assert.deepEqual(feed.matches,[s.game]);
+ const stale=await readCollectedMatchType(s.env,s.f.home.eaClubId,'friendly','friendlyMatch',{now:s.now+16*60000,readDirect});assert.equal(stale.available,false);assert.equal(directCalls,1);s.sqlite.close();
+ });
+ test('hosted matchnight schedule has independent staggered retries, not one nightly trigger',()=>{
+ const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert.match(workflow,/7,17,27,37,47,57 0-7 \* \* 3,5/);assert.match(workflow,/github.event_name == 'workflow_dispatch' && inputs.monitor/);
+ });

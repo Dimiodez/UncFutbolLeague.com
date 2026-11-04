@@ -26,6 +26,15 @@ jobs:
         run: node --test scripts/*.test.mjs mountain-app/tests/*.test.mjs
       - name: Build public-only website
         run: node scripts/build-public.mjs
+      - name: Build immutable league collector artifact
+        run: |
+          mkdir -p collector-dist
+          npx --yes esbuild@0.28.2 league-collectors/worker.js --bundle --format=esm --platform=browser --outfile=collector-dist/worker.js
+          cp league-collectors/wrangler-6v6.toml league-collectors/wrangler-10v10.toml collector-dist/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ufl-collectors-${{ github.sha }}
+          path: collector-dist/
       - uses: actions/upload-artifact@v4
         with:
           name: ufl-site-${{ github.sha }}
