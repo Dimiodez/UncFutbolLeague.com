@@ -4771,19 +4771,6 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
-                "url": "https://ufl.virtualarena.app/users/Schweinslap"
-              },
-              "team": {
-                "name": "UFL Maykop",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
-              },
-              "stat": "1.8",
-              "played": 8
-            },
-            {
-              "data": {
                 "name": "Bradical",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bradical-1791992573.png",
                 "url": "https://ufl.virtualarena.app/users/Bradical"
@@ -4791,6 +4778,19 @@ window.UFL_SEASONS = {
               "team": {
                 "name": "Palace",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/palace-1790866961.png"
+              },
+              "stat": "1.9",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Schweinslap",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
+                "url": "https://ufl.virtualarena.app/users/Schweinslap"
+              },
+              "team": {
+                "name": "UFL Maykop",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png"
               },
               "stat": "1.8",
               "played": 8
