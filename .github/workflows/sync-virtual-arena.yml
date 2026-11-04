@@ -3,7 +3,11 @@ name: Sync UNC Futbol League data
 on:
   workflow_dispatch:
   schedule:
+    # Baseline refresh outside matchnights.
     - cron: '15 5,11,17,23 * * *'
+    # Tuesday/Thursday Central matchnights (UTC Wednesday/Friday), including DST.
+    # The public schedules/standings snapshot must not wait six hours for results.
+    - cron: '7,22,37,52 0-8 * * 3,5'
 
 permissions:
   contents: write
