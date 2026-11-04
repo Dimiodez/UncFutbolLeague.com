@@ -22,15 +22,9 @@ and `/ea-feed` fail closed without it. Only clubs in active/missed fixture
 windows can be submitted, and submission cannot directly accept a result.
 The 10v10 Worker reads the same test-DB cache without exposing an ingest API.
 
-The hosted schedule starts at 01:15 UTC on Wednesday and Friday, before current
-Tuesday/Thursday Central matchnights across DST. That runner stays active and
-polls every five minutes until 06:55 UTC; it does not depend on GitHub launching
-a new job for each poll. Transient cycles retry without stopping the runner.
-GitHub can delay the initial scheduled launch; a response older than 15 minutes
-is rejected as stale and leaves the upstream status failed. Manual dispatch
-also starts the monitor, or can be set to one recovery fetch. Additional
-matchnights need matching schedule coverage. The PC, browser and Codex need not
-remain open. This workflow uses a standard hosted runner in a public repository.
+The hosted workflow has staggered retry starts every ten minutes during 00:00–07:59 UTC on Wednesday and Friday, covering Tuesday/Thursday Central matchnights across DST. Scheduled jobs perform one authenticated collection cycle; the next retry does not depend on the previous night's single launch. A manual monitor polls every five minutes until 06:55 UTC and is available for immediate matchnight recovery. Concurrency prevents duplicate active transport jobs.
+
+For friendlies, Workers read fresh authenticated hosted data FIRST. They do not issue a known-blocked direct Cloudflare request when current hosted data exists. If the cache is absent or older than 15 minutes they try the direct/relay routes and report failures honestly, never inventing an empty successful feed. Standard GitHub schedules can still be delayed or dropped; repeated starts improve recovery but are not a delivery-time guarantee. The PC, browser and Codex do not need to remain open. Additional matchnights need matching UTC coverage.
 
 The cron runs every five minutes. EA polling uses each saved fixture's window,
 15 minutes before kickoff through 90 minutes after kickoff, with missed-fixture
