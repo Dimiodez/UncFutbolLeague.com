@@ -3485,8 +3485,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-11-04T08:00:11.000Z",
-    "statsFetchedAt": "2026-11-04T08:00:11.000Z",
+    "syncedAt": "2026-11-05T08:00:12.000Z",
+    "statsFetchedAt": "2026-11-05T08:00:12.000Z",
     "statsStatus": "available",
     "teams": {
       "NSH": [
