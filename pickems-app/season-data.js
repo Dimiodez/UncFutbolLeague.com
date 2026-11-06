@@ -1189,8 +1189,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-10-30T07:00:10.000Z",
-    "statsFetchedAt": "2026-10-30T07:00:10.000Z",
+    "syncedAt": "2026-11-06T03:59:02.000Z",
+    "statsFetchedAt": "2026-11-06T03:59:02.000Z",
     "statsStatus": "available",
     "teams": {
       "ARS": [
@@ -1247,20 +1247,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal",
         "rosterSize": 7,
         "stats": {
-          "played": 6,
+          "played": 7,
           "wins": 1,
           "draws": 2,
-          "losses": 3,
+          "losses": 4,
           "goals_for": 4,
-          "goals_against": 14,
-          "goal_difference": -10,
+          "goals_against": 16,
+          "goal_difference": -12,
           "points": 5,
           "form": [
+            "L",
+            "L",
+            "L",
             "D",
-            "L",
-            "L",
-            "L",
-            "D"
+            "L"
           ]
         }
       },
@@ -1276,19 +1276,19 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife",
         "rosterSize": 5,
         "stats": {
-          "played": 6,
+          "played": 7,
           "wins": 1,
           "draws": 1,
-          "losses": 4,
+          "losses": 5,
           "goals_for": 7,
-          "goals_against": 13,
-          "goal_difference": -6,
+          "goals_against": 16,
+          "goal_difference": -9,
           "points": 4,
           "form": [
-            "L",
             "W",
             "L",
             "D",
+            "L",
             "L"
           ]
         }
@@ -1305,19 +1305,19 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC",
         "rosterSize": 6,
         "stats": {
-          "played": 6,
-          "wins": 1,
+          "played": 8,
+          "wins": 2,
           "draws": 0,
-          "losses": 5,
-          "goals_for": 2,
-          "goals_against": 10,
+          "losses": 6,
+          "goals_for": 4,
+          "goals_against": 12,
           "goal_difference": -8,
-          "points": 3,
+          "points": 6,
           "form": [
+            "W",
             "L",
             "L",
             "W",
-            "L",
             "L"
           ]
         }
@@ -1334,20 +1334,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern",
         "rosterSize": 6,
         "stats": {
-          "played": 6,
-          "wins": 1,
+          "played": 7,
+          "wins": 2,
           "draws": 1,
           "losses": 4,
-          "goals_for": 8,
+          "goals_for": 10,
           "goals_against": 21,
-          "goal_difference": -13,
-          "points": 4,
+          "goal_difference": -11,
+          "points": 7,
           "form": [
-            "L",
             "W",
             "L",
             "L",
-            "D"
+            "D",
+            "W"
           ]
         }
       },
@@ -1363,20 +1363,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM",
         "rosterSize": 7,
         "stats": {
-          "played": 6,
+          "played": 7,
           "wins": 4,
           "draws": 1,
-          "losses": 1,
-          "goals_for": 10,
-          "goals_against": 6,
-          "goal_difference": 4,
+          "losses": 2,
+          "goals_for": 13,
+          "goals_against": 10,
+          "goal_difference": 3,
           "points": 13,
           "form": [
             "W",
             "W",
             "W",
-            "W",
-            "D"
+            "D",
+            "L"
           ]
         }
       },
@@ -1392,20 +1392,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Druzhba",
         "rosterSize": 7,
         "stats": {
-          "played": 6,
+          "played": 7,
           "wins": 3,
           "draws": 1,
-          "losses": 2,
-          "goals_for": 15,
-          "goals_against": 6,
-          "goal_difference": 9,
+          "losses": 3,
+          "goals_for": 16,
+          "goals_against": 11,
+          "goal_difference": 5,
           "points": 10,
           "form": [
-            "D",
             "L",
             "L",
             "W",
-            "W"
+            "W",
+            "L"
           ]
         }
       },
@@ -1421,20 +1421,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids",
         "rosterSize": 8,
         "stats": {
-          "played": 6,
-          "wins": 2,
+          "played": 8,
+          "wins": 4,
           "draws": 0,
           "losses": 4,
-          "goals_for": 7,
+          "goals_for": 12,
           "goals_against": 17,
-          "goal_difference": -10,
-          "points": 6,
+          "goal_difference": -5,
+          "points": 12,
           "form": [
+            "L",
+            "L",
+            "L",
             "W",
-            "L",
-            "L",
-            "L",
-            "L"
+            "W"
           ]
         }
       },
@@ -1450,20 +1450,20 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes",
         "rosterSize": 8,
         "stats": {
-          "played": 6,
+          "played": 7,
           "wins": 4,
           "draws": 0,
-          "losses": 2,
+          "losses": 3,
           "goals_for": 5,
-          "goals_against": 3,
-          "goal_difference": 2,
+          "goals_against": 5,
+          "goal_difference": 0,
           "points": 12,
           "form": [
             "L",
-            "L",
             "W",
             "W",
-            "W"
+            "W",
+            "L"
           ]
         }
       },
@@ -1508,14 +1508,14 @@ window.UFL_SEASONS = {
         "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
         "rosterSize": 8,
         "stats": {
-          "played": 6,
-          "wins": 6,
+          "played": 8,
+          "wins": 8,
           "draws": 0,
           "losses": 0,
-          "goals_for": 30,
-          "goals_against": 3,
-          "goal_difference": 27,
-          "points": 18,
+          "goals_for": 39,
+          "goals_against": 7,
+          "goal_difference": 32,
+          "points": 24,
           "form": [
             "W",
             "W",
@@ -1529,113 +1529,113 @@ window.UFL_SEASONS = {
     "standings": [
       [
         "TLC",
-        6,
-        6,
+        8,
+        8,
         0,
         0,
-        30,
-        3,
-        27,
-        18
-      ],
-      [
-        "PUM",
-        6,
-        4,
-        1,
-        1,
-        10,
-        6,
-        4,
-        13
+        39,
+        7,
+        32,
+        24
       ],
       [
         "ROM",
-        6,
-        4,
+        7,
+        5,
         0,
         2,
+        13,
+        5,
+        8,
+        15
+      ],
+      [
+        "PUM",
+        7,
+        4,
+        1,
+        2,
+        13,
         10,
-        5,
-        5,
-        12
+        3,
+        13
       ],
       [
         "PHN",
-        6,
+        7,
         4,
         0,
-        2,
-        5,
         3,
-        2,
+        5,
+        5,
+        0,
+        12
+      ],
+      [
+        "TK",
+        8,
+        4,
+        0,
+        4,
+        12,
+        17,
+        -5,
         12
       ],
       [
         "DRU",
-        6,
+        7,
         3,
         1,
-        2,
-        15,
-        6,
-        9,
+        3,
+        16,
+        11,
+        5,
         10
       ],
       [
-        "TK",
-        6,
+        "FCB",
+        7,
+        2,
+        1,
+        4,
+        10,
+        21,
+        -11,
+        7
+      ],
+      [
+        "LA",
+        8,
         2,
         0,
+        6,
         4,
-        7,
-        17,
-        -10,
+        12,
+        -8,
         6
       ],
       [
         "ARS",
-        6,
+        7,
         1,
         2,
-        3,
         4,
-        14,
-        -10,
+        4,
+        16,
+        -12,
         5
       ],
       [
         "TEN",
-        6,
-        1,
-        1,
-        4,
-        7,
-        13,
-        -6,
-        4
-      ],
-      [
-        "FCB",
-        6,
-        1,
-        1,
-        4,
         8,
-        21,
-        -13,
-        4
-      ],
-      [
-        "LA",
-        6,
         1,
-        0,
-        5,
-        2,
-        10,
-        -8,
-        3
+        1,
+        6,
+        7,
+        19,
+        -12,
+        4
       ]
     ],
     "weeks": [
@@ -1984,8 +1984,8 @@ window.UFL_SEASONS = {
             132,
             "PUM",
             "TLC",
-            null,
-            null,
+            3,
+            4,
             1793934000,
             7
           ],
@@ -2002,8 +2002,8 @@ window.UFL_SEASONS = {
             134,
             "PHN",
             "LA",
-            null,
-            null,
+            0,
+            2,
             1793934000,
             7
           ],
@@ -2011,8 +2011,8 @@ window.UFL_SEASONS = {
             135,
             "TEN",
             "TK",
-            null,
-            null,
+            0,
+            3,
             1793934000,
             7
           ],
@@ -2029,8 +2029,8 @@ window.UFL_SEASONS = {
             137,
             "TLC",
             "DRU",
-            null,
-            null,
+            5,
+            1,
             1793935800,
             8
           ],
@@ -2047,8 +2047,8 @@ window.UFL_SEASONS = {
             139,
             "ROM",
             "TEN",
-            null,
-            null,
+            3,
+            0,
             1793935800,
             8
           ],
@@ -2056,8 +2056,8 @@ window.UFL_SEASONS = {
             140,
             "LA",
             "FCB",
-            null,
-            null,
+            0,
+            2,
             1793935800,
             8
           ],
@@ -2065,8 +2065,8 @@ window.UFL_SEASONS = {
             141,
             "TK",
             "ARS",
-            null,
-            null,
+            2,
+            0,
             1793935800,
             8
           ]
@@ -2666,8 +2666,21 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "13",
-              "played": 6
+              "stat": "18",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "10",
+              "played": 8
             },
             {
               "data": {
@@ -2680,7 +2693,7 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
               },
               "stat": "9",
-              "played": 2
+              "played": 3
             },
             {
               "data": {
@@ -2697,29 +2710,16 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "Starnesy",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
-                "url": "https://ufl.virtualarena.app/users/Starnesy"
+                "name": "Sesmas",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/Sesmas"
               },
               "team": {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "8",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
-              },
-              "team": {
-                "name": "UFL Pumas UNAM",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
-              },
-              "stat": "6",
-              "played": 6
+              "stat": "7",
+              "played": 8
             }
           ]
         },
@@ -2730,19 +2730,6 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "Schweinslap",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
-                "url": "https://ufl.virtualarena.app/users/Schweinslap"
-              },
-              "team": {
-                "name": "UFL Druzhba",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
-              },
-              "stat": "9",
-              "played": 6
-            },
-            {
-              "data": {
                 "name": "Dlowwtv",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dlowwtv-1784737035.png",
                 "url": "https://ufl.virtualarena.app/users/Dlowwtv"
@@ -2751,8 +2738,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "8",
-              "played": 6
+              "stat": "11",
+              "played": 8
             },
             {
               "data": {
@@ -2764,80 +2751,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "8",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Starnesy",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
-                "url": "https://ufl.virtualarena.app/users/Starnesy"
-              },
-              "team": {
-                "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-              },
-              "stat": "7",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "zo54",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/zo-1783612765.png",
-                "url": "https://ufl.virtualarena.app/users/zo54"
-              },
-              "team": {
-                "name": "UFL Pumas UNAM",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
-              },
-              "stat": "5",
-              "played": 6
-            }
-          ]
-        },
-        "goals_and_assists": {
-          "name": "Ball",
-          "stat": "Goals And Assists",
-          "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/goals_and_assists",
-          "records": [
-            {
-              "data": {
-                "name": "Starnesy",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
-                "url": "https://ufl.virtualarena.app/users/Starnesy"
-              },
-              "team": {
-                "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-              },
-              "stat": "15",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "elgucci_",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
-                "url": "https://ufl.virtualarena.app/users/elgucci_"
-              },
-              "team": {
-                "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-              },
-              "stat": "15",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Sesmas",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/users/Sesmas"
-              },
-              "team": {
-                "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-              },
-              "stat": "14",
-              "played": 6
+              "stat": "11",
+              "played": 8
             },
             {
               "data": {
@@ -2850,7 +2765,79 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
               },
               "stat": "10",
-              "played": 6
+              "played": 7
+            },
+            {
+              "data": {
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "7",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "zo54",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/zo-1783612765.png",
+                "url": "https://ufl.virtualarena.app/users/zo54"
+              },
+              "team": {
+                "name": "UFL Pumas UNAM",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
+              },
+              "stat": "6",
+              "played": 7
+            }
+          ]
+        },
+        "goals_and_assists": {
+          "name": "Ball",
+          "stat": "Goals And Assists",
+          "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/goals_and_assists",
+          "records": [
+            {
+              "data": {
+                "name": "elgucci_",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
+                "url": "https://ufl.virtualarena.app/users/elgucci_"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "23",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Sesmas",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/Sesmas"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "18",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "17",
+              "played": 8
             },
             {
               "data": {
@@ -2862,16 +2849,9 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "9",
-              "played": 6
-            }
-          ]
-        },
-        "tackles_per_game": {
-          "name": "Enforcer",
-          "stat": "Tackles Per Game",
-          "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/tackles_per_game",
-          "records": [
+              "stat": "12",
+              "played": 8
+            },
             {
               "data": {
                 "name": "Schweinslap",
@@ -2882,8 +2862,41 @@ window.UFL_SEASONS = {
                 "name": "UFL Druzhba",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
               },
-              "stat": "2.5",
+              "stat": "11",
+              "played": 7
+            }
+          ]
+        },
+        "tackles_per_game": {
+          "name": "Enforcer",
+          "stat": "Tackles Per Game",
+          "url": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats/players/tackles_per_game",
+          "records": [
+            {
+              "data": {
+                "name": "percadin",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/percadin-1790617550.png",
+                "url": "https://ufl.virtualarena.app/users/percadin"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "3.3",
               "played": 6
+            },
+            {
+              "data": {
+                "name": "Schweinslap",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
+                "url": "https://ufl.virtualarena.app/users/Schweinslap"
+              },
+              "team": {
+                "name": "UFL Druzhba",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
+              },
+              "stat": "2.3",
+              "played": 7
             },
             {
               "data": {
@@ -2896,19 +2909,6 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-rippettes-1791852327.png"
               },
               "stat": "2.3",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
-              },
-              "team": {
-                "name": "UFL Pumas UNAM",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
-              },
-              "stat": "2.2",
               "played": 6
             },
             {
@@ -2926,16 +2926,16 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "MateoEaves",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/users/MateoEaves"
+                "name": "BravoAnte",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
+                "url": "https://ufl.virtualarena.app/users/BravoAnte"
               },
               "team": {
-                "name": "UFL Ta6ascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
+                "name": "UFL Pumas UNAM",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
               },
-              "stat": "2",
-              "played": 5
+              "stat": "2.1",
+              "played": 7
             }
           ]
         },
@@ -2946,68 +2946,68 @@ window.UFL_SEASONS = {
           "records": [
             {
               "data": {
-                "name": "Luuuiiisss7",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
-                "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
+                "name": "Dlowwtv",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dlowwtv-1784737035.png",
+                "url": "https://ufl.virtualarena.app/users/Dlowwtv"
               },
               "team": {
-                "name": "UFL Druzhba",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
-                "name": "thealphabetman",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/thealphabetman-1791852258.png",
-                "url": "https://ufl.virtualarena.app/users/thealphabetman"
+                "name": "Starnesy",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+                "url": "https://ufl.virtualarena.app/users/Starnesy"
               },
               "team": {
-                "name": "UFL Druzhba",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
-                "name": "BravoAnte",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bravoante-1782833974.png",
-                "url": "https://ufl.virtualarena.app/users/BravoAnte"
+                "name": "elgucci_",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
+                "url": "https://ufl.virtualarena.app/users/elgucci_"
               },
               "team": {
-                "name": "UFL Pumas UNAM",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
-                "name": "Vinicimnj",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/vinicimnj-1782960433.png",
-                "url": "https://ufl.virtualarena.app/users/Vinicimnj"
+                "name": "Sesmas",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/Sesmas"
               },
               "team": {
-                "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png"
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             },
             {
               "data": {
-                "name": "Goose",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/goose-1791343836.png",
-                "url": "https://ufl.virtualarena.app/users/Goose"
+                "name": "rfpqgold",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/rfpqgold-1791335498.png",
+                "url": "https://ufl.virtualarena.app/users/rfpqgold"
               },
               "team": {
-                "name": "UFL Tenerife",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png"
+                "name": "UFL LA FC",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-la-fc-1791384437.png"
               },
               "stat": "0",
-              "played": 6
+              "played": 8
             }
           ]
         },
@@ -3027,7 +3027,20 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
               },
               "stat": "2",
-              "played": 6
+              "played": 7
+            },
+            {
+              "data": {
+                "name": "mystahdeek",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/mystahdeek-1784522832.png",
+                "url": "https://ufl.virtualarena.app/users/mystahdeek"
+              },
+              "team": {
+                "name": "UFL Ta6ascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
+              },
+              "stat": "2",
+              "played": 7
             },
             {
               "data": {
@@ -3040,7 +3053,20 @@ window.UFL_SEASONS = {
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
               "stat": "2",
-              "played": 4
+              "played": 6
+            },
+            {
+              "data": {
+                "name": "MateoEaves",
+                "image": null,
+                "url": "https://ufl.virtualarena.app/users/MateoEaves"
+              },
+              "team": {
+                "name": "UFL Ta6ascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
+              },
+              "stat": "2",
+              "played": 6
             },
             {
               "data": {
@@ -3054,32 +3080,6 @@ window.UFL_SEASONS = {
               },
               "stat": "2",
               "played": 4
-            },
-            {
-              "data": {
-                "name": "mystahdeek",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/mystahdeek-1784522832.png",
-                "url": "https://ufl.virtualarena.app/users/mystahdeek"
-              },
-              "team": {
-                "name": "UFL Ta6ascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
-              },
-              "stat": "1",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "MateoEaves",
-                "image": null,
-                "url": "https://ufl.virtualarena.app/users/MateoEaves"
-              },
-              "team": {
-                "name": "UFL Ta6ascoKids",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png"
-              },
-              "stat": "1",
-              "played": 5
             }
           ]
         },
@@ -3098,8 +3098,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Druzhba",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
               },
-              "stat": "9",
-              "played": 6
+              "stat": "8.9",
+              "played": 7
             },
             {
               "data": {
@@ -3111,21 +3111,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "8.7",
-              "played": 6
-            },
-            {
-              "data": {
-                "name": "Starnesy",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
-                "url": "https://ufl.virtualarena.app/users/Starnesy"
-              },
-              "team": {
-                "name": "UFL Toluca",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-              },
-              "stat": "8.4",
-              "played": 6
+              "stat": "8.8",
+              "played": 8
             },
             {
               "data": {
@@ -3137,8 +3124,8 @@ window.UFL_SEASONS = {
                 "name": "UFL Toluca",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
               },
-              "stat": "8.4",
-              "played": 6
+              "stat": "8.7",
+              "played": 8
             },
             {
               "data": {
@@ -3150,8 +3137,21 @@ window.UFL_SEASONS = {
                 "name": "UFL LA FC",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-la-fc-1791384437.png"
               },
-              "stat": "8.3",
-              "played": 6
+              "stat": "8.2",
+              "played": 8
+            },
+            {
+              "data": {
+                "name": "Dlowwtv",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dlowwtv-1784737035.png",
+                "url": "https://ufl.virtualarena.app/users/Dlowwtv"
+              },
+              "team": {
+                "name": "UFL Toluca",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+              },
+              "stat": "8.1",
+              "played": 8
             }
           ]
         }
@@ -3169,7 +3169,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
-              "stat": 6
+              "stat": 8
             },
             {
               "data": {
@@ -3200,12 +3200,12 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "UFL Druzhba",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Druzhba"
+                "name": "UFL Ta6ascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
               },
               "team": null,
-              "stat": 3
+              "stat": 4
             }
           ]
         },
@@ -3273,6 +3273,15 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC"
               },
               "team": null,
+              "stat": 6
+            },
+            {
+              "data": {
+                "name": "UFL Tenerife",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife"
+              },
+              "team": null,
               "stat": 5
             },
             {
@@ -3295,21 +3304,12 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "UFL Tenerife",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife"
-              },
-              "team": null,
-              "stat": 4
-            },
-            {
-              "data": {
                 "name": "UFL Arsenal",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal"
               },
               "team": null,
-              "stat": 3
+              "stat": 4
             }
           ]
         },
@@ -3325,7 +3325,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
-              "stat": 30
+              "stat": 39
             },
             {
               "data": {
@@ -3334,7 +3334,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Druzhba"
               },
               "team": null,
-              "stat": 15
+              "stat": 16
             },
             {
               "data": {
@@ -3343,16 +3343,16 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
               },
               "team": null,
-              "stat": 10
+              "stat": 13
             },
             {
               "data": {
-                "name": "UFL Roma",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
+                "name": "UFL Ta6ascoKids",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-ta6ascokids-1791421735.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Ta6ascoKids"
               },
               "team": null,
-              "stat": 10
+              "stat": 12
             },
             {
               "data": {
@@ -3361,7 +3361,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Bayern"
               },
               "team": null,
-              "stat": 8
+              "stat": 10
             }
           ]
         },
@@ -3390,21 +3390,21 @@ window.UFL_SEASONS = {
             },
             {
               "data": {
-                "name": "UFL Arsenal",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png",
-                "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal"
-              },
-              "team": null,
-              "stat": 14
-            },
-            {
-              "data": {
                 "name": "UFL Tenerife",
                 "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-tenerife-1792971049.png",
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Tenerife"
               },
               "team": null,
-              "stat": 13
+              "stat": 16
+            },
+            {
+              "data": {
+                "name": "UFL Arsenal",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-arsenal-1791484425.png",
+                "url": "https://ufl.virtualarena.app/teams/UFL%20Arsenal"
+              },
+              "team": null,
+              "stat": 16
             },
             {
               "data": {
@@ -3413,7 +3413,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20LA%20FC"
               },
               "team": null,
-              "stat": 10
+              "stat": 12
             }
           ]
         },
@@ -3429,7 +3429,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
               },
               "team": null,
-              "stat": 27
+              "stat": 32
             },
             {
               "data": {
@@ -3438,7 +3438,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Druzhba"
               },
               "team": null,
-              "stat": 9
+              "stat": 5
             },
             {
               "data": {
@@ -3456,7 +3456,7 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Pumas%20UNAM"
               },
               "team": null,
-              "stat": 4
+              "stat": 3
             },
             {
               "data": {
@@ -3465,12 +3465,45 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes"
               },
               "team": null,
-              "stat": 2
+              "stat": 0
             }
           ]
         }
       }
-    }
+    },
+    "resultOverrides": {
+      "135": {
+        "seasonKey": "s2-6v6",
+        "matchId": 135,
+        "home": "TEN",
+        "away": "TK",
+        "homeScore": 0,
+        "awayScore": 3,
+        "kind": "forfeit",
+        "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+        "confirmedDate": "2026-11-05",
+        "providerScore": [
+          0,
+          3
+        ]
+      },
+      "139": {
+        "seasonKey": "s2-6v6",
+        "matchId": 139,
+        "home": "ROM",
+        "away": "TEN",
+        "homeScore": 3,
+        "awayScore": 0,
+        "kind": "forfeit",
+        "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+        "confirmedDate": "2026-11-05",
+        "providerScore": [
+          null,
+          null
+        ]
+      }
+    },
+    "ownerOverridesAffectStandings": true
   },
   "s2-10v10": {
     "key": "s2-10v10",
