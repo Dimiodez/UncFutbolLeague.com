@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
-const source=fs.readFileSync(new URL('sync-virtual-arena.mjs',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'').split('const archivedSeason =')[0];
+const source=fs.readFileSync(new URL('sync-virtual-arena.mjs',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'').split('const archivedSeason =')[0];
 function setup(status,props) {
   const context=vm.createContext({console:{warn(){}},fetch:async()=>({status,ok:status===200,text:async()=>`<div data-page="${JSON.stringify({props}).replaceAll('"','&quot;')}"></div>`})});
   vm.runInContext(source,context);
@@ -20,7 +20,7 @@ test('optional stats still reject access errors and wrong seasons',async()=>{
 });
 
 const completeSource=fs.readFileSync(new URL('sync-virtual-arena.mjs',import.meta.url),'utf8');
-const recoverySource=completeSource.slice(completeSource.indexOf('const syncResults ='),completeSource.indexOf('const output ='));
+const recoverySource=completeSource.slice(completeSource.indexOf('const syncResults ='),completeSource.indexOf('const ownerResultOverrides='));
 function recover({allFail=false,wrongPrevious=false}={}) {
   const context=vm.createContext({console:{warn(){}},seasons:[{key:'six',competitionId:1,seasonId:2},{key:'ten',competitionId:2,seasonId:4}],buildSeason:async config=>{
     if(config.key==='ten'||allFail) throw new Error('VA unavailable');
