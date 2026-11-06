@@ -48,3 +48,11 @@ test('published source failures are not disguised as an empty successful table',
 });
 
 test('national flags render as inline vectors rather than platform-dependent emoji',()=>{const view=internationalContent({teams:[{id:'ITA',name:'Italy',color:'#16875a',roster:[]}],totals:{played:0}},'teams');assert(view.includes('class="intl-flag-svg"'));assert(view.includes('viewBox="0 0 36 24"'));});
+
+test('adding a known national nickname reuses its linked canonical profile instead of creating a duplicate',async()=>{
+ const s=setup('owner'),id=INITIAL_NATIONS.find(t=>t.id==='ITA').roster.find(p=>p.name==='Bravo').playerId;
+ s.sqlite.prepare("UPDATE league_players SET discord_name='BravoAnte',normalized_name='bravoante' WHERE id=?").run(id);
+ const before=s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n;
+ assert.equal((await api({request:request({action:'addRoster',teamId:'FRA',name:'Bravo'}),env:s.env})).status,409);
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n,before);s.sqlite.close();
+});

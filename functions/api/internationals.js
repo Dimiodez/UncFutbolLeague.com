@@ -15,7 +15,7 @@ export async function onRequest({request,env}){
    const p=await env.DB.prepare('SELECT id,discord_name FROM league_players WHERE id=COALESCE((SELECT canonical_id FROM league_player_aliases WHERE alias_id=?),?)').bind(playerId,playerId).first();if(!p)throw Error('Choose an existing player.');playerId=p.id;name=discordName(body.name||p.discord_name).name;
   }else{
    const parsed=discordName(body.name);name=parsed.name;
-   const matches=await env.DB.prepare('SELECT p.id FROM league_players p WHERE normalized_name=? AND NOT EXISTS(SELECT 1 FROM league_player_aliases a WHERE a.alias_id=p.id)').bind(parsed.normalized).all();
+   const matches=await env.DB.prepare('SELECT p.id FROM league_players p WHERE (normalized_name=? OR p.id IN (SELECT COALESCE((SELECT canonical_id FROM league_player_aliases WHERE alias_id=r.player_id),r.player_id) FROM international_rosters r WHERE lower(r.display_name)=?)) AND NOT EXISTS(SELECT 1 FROM league_player_aliases a WHERE a.alias_id=p.id)').bind(parsed.normalized,parsed.normalized).all();
    if(matches.results.length>1)throw Error('Multiple matching profiles exist. Choose the correct player.');
    playerId=matches.results[0]?.id||'player-'+crypto.randomUUID();
    if(!matches.results.length){await env.DB.prepare('INSERT INTO league_players(id,discord_name,normalized_name,created_by) SELECT ?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM league_players WHERE normalized_name=?)').bind(playerId,name,parsed.normalized,actor,parsed.normalized).run();const selected=await env.DB.prepare('SELECT id FROM league_players WHERE normalized_name=? ORDER BY created_at,id LIMIT 1').bind(parsed.normalized).first();playerId=selected.id;}
