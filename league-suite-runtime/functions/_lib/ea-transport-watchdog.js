@@ -35,7 +35,8 @@ export async function checkHostedDispatch(env,{now=Date.now(),fetcher=fetch}={})
  // A fingerprint identifies rotations without storing or returning the token.
  const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(credential));
  const fingerprint=Array.from(new Uint8Array(bytes)).map(n=>n.toString(16).padStart(2,'0')).join('').slice(0,24);
- const id='ea-feed-readiness:'+fingerprint,at=new Date(now).toISOString(),cutoff=new Date(now-RETRY_AFTER).toISOString();
+ // Version the check so updated diagnostics retain the earlier rejection record.
+ const id='ea-feed-readiness:v2:'+fingerprint,at=new Date(now).toISOString(),cutoff=new Date(now-RETRY_AFTER).toISOString();
  const claimed=await env.DB.prepare("INSERT INTO preview_collection_runs(id,league_id,checked_at,mode,status,diagnostics_json) VALUES(?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET checked_at=excluded.checked_at,status=excluded.status,diagnostics_json=excluded.diagnostics_json WHERE preview_collection_runs.status!='readiness-dispatched' AND preview_collection_runs.checked_at<=?").bind(id,'__ea_feed_watchdog__',at,'readiness','readiness-starting','{}',cutoff).run();
  if(!claimed.meta.changes)return {status:'already-dispatched-or-cooldown'};
  let status='readiness-dispatched',error;
