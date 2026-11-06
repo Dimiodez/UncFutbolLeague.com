@@ -5,9 +5,9 @@
     "home": "TEN",
     "away": "TK",
     "homeScore": 0,
-    "awayScore": 3,
+    "awayScore": 1,
     "kind": "forfeit",
-    "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+    "reason": "League owner confirmed both Tenerife November 5 forfeits must be 1–0 wins for their opponents.",
     "confirmedDate": "2026-11-05"
   },
   {
@@ -15,10 +15,41 @@
     "matchId": 139,
     "home": "ROM",
     "away": "TEN",
-    "homeScore": 3,
+    "homeScore": 1,
     "awayScore": 0,
     "kind": "forfeit",
-    "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+    "reason": "League owner confirmed both Tenerife November 5 forfeits must be 1–0 wins for their opponents.",
     "confirmedDate": "2026-11-05"
+  },
+  {
+    "seasonKey": "s2-6v6",
+    "matchId": 133,
+    "home": "DRU",
+    "away": "ROM",
+    "homeScore": 2,
+    "awayScore": 0,
+    "kind": "ea-recovery",
+    "eaMatchId": "170546268510101",
+    "reason": "Actual EA friendly result recovered while the VA report is unposted; no player stats inferred."
+  },
+  {
+    "seasonKey": "s2-6v6",
+    "matchId": 138,
+    "home": "PUM",
+    "away": "PHN",
+    "homeScore": 0,
+    "awayScore": 1,
+    "kind": "ea-recovery",
+    "eaMatchId": "170440382010184",
+    "reason": "Actual EA friendly result recovered while the VA report is unposted; no player stats inferred."
+  },
+  {
+    "seasonKey": "s2-6v6",
+    "matchId": 136,
+    "home": "FCB",
+    "away": "ARS",
+    "kind": "review",
+    "eaMatchId": "170520155810049",
+    "reason": "Awaiting owner verification of regulation score; EA club score is 3–0 with one human goal."
   }
 ]

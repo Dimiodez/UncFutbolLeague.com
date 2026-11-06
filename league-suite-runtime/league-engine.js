@@ -147,7 +147,7 @@ export function buildLeagueSchedule(settings){
  for(const night of nights)night.byes=teams.filter(team=>!night.fixtures.some(f=>f.home.id===team.id||f.away.id===team.id));
  return {settings,registrationOpen:false,scheduleGenerated:true,fixtures,nights,skippedDates,warnings:teams.length%2?[settings.byePolicy==='fullNight'?'Full-night double byes: each team has one night off and two different opponents on every playing night. Byes award no points or appearances.':'An odd number of teams requires byes; some teams will have one game rather than two on a night.']:[]};
 }
-export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=90,acceptedMatchIds=[],timeZone}={}){
+export function fixtureCandidates(fixture,games,{beforeMinutes=15,afterMinutes=120,acceptedMatchIds=[],timeZone}={}){
  const home=String(fixture.home.eaClubId||''),away=String(fixture.away.eaClubId||'');
  if(!home||!away||home===away)return {status:'unlinked',candidates:[]};
  const unique=new Map(),used=new Set(acceptedMatchIds.map(String));

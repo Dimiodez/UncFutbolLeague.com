@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {fixtureCandidates} from '../league-suite-runtime/league-engine.js';import {collectionWindow,activeCollectionFixtures} from '../league-suite-runtime/league-collection-window.js';
+const start=Date.parse('2026-11-06T03:00:00Z'),f={id:'delayed',date:'2026-11-05',startsAt:start,home:{eaClubId:'1597742'},away:{eaClubId:'1236403'}};
+const game=(minutes,id='delayed-real')=>({matchId:id,timestamp:(start+minutes*60000)/1000,clubs:{1597742:{goals:2},1236403:{goals:0}}});
+test('a real late 6v6 result at 97 minutes is matchable without accepting unrelated dates or clubs',()=>{assert.equal(fixtureCandidates(f,[game(97)],{timeZone:'America/Chicago'}).candidates.length,1);assert.equal(fixtureCandidates(f,[game(121)],{timeZone:'America/Chicago'}).candidates.length,0);assert.equal(fixtureCandidates(f,[game(97,'a'),game(98,'b')],{timeZone:'America/Chicago'}).status,'ambiguous');});
+test('collection remains live through two hours after the last kickoff',()=>{const draft={fixtures:[f,{...f,id:'second',startsAt:start+30*60000}]},w=collectionWindow(draft,f);assert.equal(w.from,start-15*60000);assert.equal(w.to,start+150*60000);assert.equal(activeCollectionFixtures(draft,start+97*60000).length,2);assert.equal(activeCollectionFixtures(draft,w.to+1).length,0);});

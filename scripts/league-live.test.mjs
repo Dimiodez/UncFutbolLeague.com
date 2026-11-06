@@ -42,6 +42,7 @@ test('live numbers render correctly, preserve club links, escape names and never
   const app=read('app.js');
   vm.runInContext(read('pickems-app/season-data.js')+app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js'),context);
   const run=script=>vm.runInContext(script,context);
+  run("leagueSeasons['s2-6v6'].ownerOverridesAffectStandings=false;");
   const archived=run("JSON.stringify(leagueViewContext(new URLSearchParams('season=1&division=6v6')).season.standings)");
   run(`leagueLiveFeeds.set('6v6:standings',{syncedAt:'2026-10-12T12:00:00Z',standings:[{teamId:5,name:'UFL Bayern',stats:[2,2,0,0,7,1,6,6]}]});leagueLiveFeeds.set('6v6:stats',{leaderboards:{players:{goals:{records:[{data:{name:'<script>alert(1)</script>'},team:{name:'UFL Bayern'},stat:7,played:2}]}}}});`);
   const table=run("leagueStandingsPage(new URLSearchParams('season=2&division=6v6'))");
@@ -53,4 +54,13 @@ test('live numbers render correctly, preserve club links, escape names and never
   assert.match(stats,/\/clubs\/club-1790623010463\?season=2&amp;division=6v6|\/clubs\/club-1790623010463\?season=2&division=6v6/);
   assert.doesNotMatch(stats,/<script>/);
   assert.equal(run("JSON.stringify(leagueViewContext(new URLSearchParams('season=1&division=6v6')).season.standings)"),archived);
+});
+
+test('live VA standings do not erase explicit unposted owner-result adjustments',()=>{
+ const context=vm.createContext({window:{},URLSearchParams,console});const app=read('app.js');
+ vm.runInContext(read('pickems-app/season-data.js')+app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js'),context);
+ const run=script=>vm.runInContext(script,context);run("leagueSeasons['s2-6v6'].ownerOverridesAffectStandings=true;");
+ const before=run("JSON.stringify(leagueViewContext(new URLSearchParams('season=2&division=6v6')).season.standings)");
+ run("leagueLiveFeeds.set('6v6:standings',{standings:[{teamId:5,name:'UFL Bayern',stats:[99,99,0,0,999,0,999,999]}]});");
+ assert.equal(run("JSON.stringify(leagueViewContext(new URLSearchParams('season=2&division=6v6')).season.standings)"),before);
 });
