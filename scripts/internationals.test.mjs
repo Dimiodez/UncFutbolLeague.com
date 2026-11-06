@@ -56,3 +56,22 @@ test('adding a known national nickname reuses its linked canonical profile inste
  assert.equal((await api({request:request({action:'addRoster',teamId:'FRA',name:'Bravo'}),env:s.env})).status,409);
  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n,before);s.sqlite.close();
 });
+
+test('owner calendar dates seed idempotently without club fixtures or invented kickoff times',async()=>{
+ const s=setup(),migration=fs.readFileSync(new URL('../migrations/20261106_internationals_dates.sql',import.meta.url),'utf8');
+ s.sqlite.exec(migration);s.sqlite.exec(migration);
+ const data=await internationalData(s.env);
+ assert.deepEqual(data.windows.map(w=>w.starts_on),["2026-11-10","2026-11-12","2027-01-05","2027-01-07","2027-01-12","2027-01-14","2027-01-19","2027-01-21","2027-03-16","2027-03-18","2027-05-11","2027-05-13","2027-05-18","2027-05-20","2027-07-13","2027-07-15","2027-08-31","2027-09-02"]);
+ assert(data.windows.every(w=>w.starts_on===w.ends_on));
+ assert.equal(data.windows.find(w=>w.starts_on==='2027-07-15').name,'World Cup · Quarterfinals (2 legs)');
+ assert.equal(data.windows.find(w=>w.starts_on==='2027-09-02').name,'World Cup · Final (2 legs)');
+ assert.equal(data.fixtures.length,0);assert.equal(data.resultsPublished,false);
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_roster_memberships').get().n,50);
+ const html=internationalContent(data,'schedules');
+ assert(html.includes('18 scheduled international dates'));
+ assert(html.includes('Tuesday, Nov 10'));assert(html.includes('Thursday, Sep 2'));
+ assert(html.includes('November 2026'));assert(html.includes('September 2027'));
+ assert(!html.includes('2027-09-01'));assert(!html.includes('6v6 Matchday'));assert(!html.includes('10v10 Matchday'));
+ assert(!html.includes('2026-11-03'));assert(!html.includes('Champions League'));
+ s.sqlite.close();
+});
