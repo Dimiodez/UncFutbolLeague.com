@@ -362,36 +362,47 @@ window.UFL_SEASON_6V6_S2 = {
     ],
     [
       "ROM",
-      7,
+      8,
       5,
       0,
-      2,
-      13,
-      5,
-      8,
+      3,
+      11,
+      7,
+      4,
       15
     ],
     [
-      "PUM",
-      7,
+      "PHN",
+      8,
+      5,
+      0,
+      3,
+      6,
+      5,
+      1,
+      15
+    ],
+    [
+      "DRU",
+      8,
       4,
       1,
-      2,
-      13,
-      10,
       3,
+      18,
+      11,
+      7,
       13
     ],
     [
-      "PHN",
-      7,
+      "PUM",
+      8,
       4,
-      0,
+      1,
       3,
-      5,
-      5,
-      0,
-      12
+      13,
+      11,
+      2,
+      13
     ],
     [
       "TK",
@@ -399,21 +410,10 @@ window.UFL_SEASON_6V6_S2 = {
       4,
       0,
       4,
-      12,
+      10,
       17,
-      -5,
+      -7,
       12
-    ],
-    [
-      "DRU",
-      7,
-      3,
-      1,
-      3,
-      16,
-      11,
-      5,
-      10
     ],
     [
       "FCB",
@@ -455,8 +455,8 @@ window.UFL_SEASON_6V6_S2 = {
       1,
       6,
       7,
-      19,
-      -12,
+      15,
+      -8,
       4
     ]
   ],
@@ -815,8 +815,8 @@ window.UFL_SEASON_6V6_S2 = {
           133,
           "DRU",
           "ROM",
-          null,
-          null,
+          2,
+          0,
           1793934000,
           7
         ],
@@ -834,7 +834,7 @@ window.UFL_SEASON_6V6_S2 = {
           "TEN",
           "TK",
           0,
-          3,
+          1,
           1793934000,
           7
         ],
@@ -860,8 +860,8 @@ window.UFL_SEASON_6V6_S2 = {
           138,
           "PUM",
           "PHN",
-          null,
-          null,
+          0,
+          1,
           1793935800,
           8
         ],
@@ -869,7 +869,7 @@ window.UFL_SEASON_6V6_S2 = {
           139,
           "ROM",
           "TEN",
-          3,
+          1,
           0,
           1793935800,
           8
@@ -2294,19 +2294,62 @@ window.UFL_SEASON_6V6_S2 = {
     }
   },
   "resultOverrides": {
+    "133": {
+      "seasonKey": "s2-6v6",
+      "matchId": 133,
+      "home": "DRU",
+      "away": "ROM",
+      "homeScore": 2,
+      "awayScore": 0,
+      "kind": "ea-recovery",
+      "eaMatchId": "170546268510101",
+      "reason": "Actual EA friendly result recovered while the VA report is unposted; no player stats inferred.",
+      "providerScore": [
+        null,
+        null
+      ]
+    },
     "135": {
       "seasonKey": "s2-6v6",
       "matchId": 135,
       "home": "TEN",
       "away": "TK",
       "homeScore": 0,
-      "awayScore": 3,
+      "awayScore": 1,
       "kind": "forfeit",
-      "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+      "reason": "League owner confirmed both Tenerife November 5 forfeits must be 1–0 wins for their opponents.",
       "confirmedDate": "2026-11-05",
       "providerScore": [
         0,
         3
+      ]
+    },
+    "136": {
+      "seasonKey": "s2-6v6",
+      "matchId": 136,
+      "home": "FCB",
+      "away": "ARS",
+      "kind": "review",
+      "eaMatchId": "170520155810049",
+      "reason": "Awaiting owner verification of regulation score; EA club score is 3–0 with one human goal.",
+      "providerScore": [
+        null,
+        null
+      ]
+    },
+    "138": {
+      "seasonKey": "s2-6v6",
+      "matchId": 138,
+      "home": "PUM",
+      "away": "PHN",
+      "homeScore": 0,
+      "awayScore": 1,
+      "kind": "ea-recovery",
+      "eaMatchId": "170440382010184",
+      "reason": "Actual EA friendly result recovered while the VA report is unposted; no player stats inferred.",
+      "providerScore": [
+        null,
+        null
       ]
     },
     "139": {
@@ -2314,10 +2357,10 @@ window.UFL_SEASON_6V6_S2 = {
       "matchId": 139,
       "home": "ROM",
       "away": "TEN",
-      "homeScore": 3,
+      "homeScore": 1,
       "awayScore": 0,
       "kind": "forfeit",
-      "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+      "reason": "League owner confirmed both Tenerife November 5 forfeits must be 1–0 wins for their opponents.",
       "confirmedDate": "2026-11-05",
       "providerScore": [
         null,
