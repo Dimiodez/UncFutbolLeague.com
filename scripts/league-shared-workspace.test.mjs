@@ -28,3 +28,12 @@ test('invalid shared response fails without clearing existing data; disabled lea
  assert.equal(JSON.stringify(local),before);
  assert.equal(reconcileSharedLeagues([],rows().map(r=>({...r,enabled:0}))).length,0);
 });
+
+test('server-accepted late results and review holds survive fresh-device recovery',()=>{
+ const remote=rows(),fixture=buildLeagueSchedule(remote[0].draft.settings).fixtures[0];
+ const accepted={fixtureId:fixture.id,homeScore:2,awayScore:0,raw:{timestamp:Math.floor(fixture.startsAt/1000)+97*60}};
+ const hold={fixtureId:'awaiting-review',staffReviewRequired:true};
+ remote[0].draft.acceptedResults=[accepted];remote[0].draft.pendingResults=[hold];
+ const [draft]=reconcileSharedLeagues([],remote);
+ assert.deepEqual(draft.acceptedResults,[accepted]);assert.deepEqual(draft.pendingResults,[hold]);
+});

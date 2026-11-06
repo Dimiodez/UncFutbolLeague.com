@@ -1,6 +1,4 @@
 import {buildLeagueSchedule} from './league-engine.js';
-import {restoreAcceptedResults} from './league-results.js';
-import {restorePendingResults} from './league-pending-results.js';
 import {mergeSharedTestDraft} from './league-va-schedule.js';
 
 // Hydrate authorized server records even when this device has no browser drafts.
@@ -17,7 +15,9 @@ export function reconcileSharedLeagues(localDrafts,rows){
    const settings={...row.draft.settings,serverLeagueId:row.id};
    if(settings.trialSchedule&&settings.trialSchedule!==row.id)throw Error('Shared league identity does not match its calendar.');
    const draft=buildLeagueSchedule(settings);
-   next.push(restorePendingResults(restoreAcceptedResults(draft,row.draft.acceptedResults||[]),row.draft.pendingResults||[]));
+   // Server-accepted decisions are authoritative, including late games and staff corrections.
+   // Do not re-run today's candidate window against previously accepted evidence.
+   next.push(mergeSharedTestDraft(draft,row.draft));
   }else next[index]=mergeSharedTestDraft(next[index],row.draft);
  }
  return next;
