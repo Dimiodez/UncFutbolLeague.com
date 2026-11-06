@@ -132,3 +132,12 @@ test('readiness records GitHub permission rejection details without disclosing a
  assert.match(result.credentialCheck.error,/actions=write/);
  assert(!JSON.stringify(result).includes(env.EA_FEED_DISPATCH_TOKEN));s.sqlite.close();
 });
+
+test('current GitHub 200 dispatch responses and legacy 204 responses both count as accepted',async()=>{
+ for(const status of [200,204]){
+  const s=setup(),env={...s.env,EA_FEED_DISPATCH_TOKEN:'successful-dispatch-test'.repeat(3)};
+  const fetcher=async()=>status===200?Response.json({workflow_run_id:123},{status:200}):new Response(null,{status:204});
+  assert.equal((await ensureHostedTransport(env,{now:s.now,fetcher})).status,'dispatched');
+  assert.equal((await ensureHostedTransport(env,{now:s.now+8*86400000,fetcher})).credentialCheck.status,'readiness-dispatched');s.sqlite.close();
+ }
+});
