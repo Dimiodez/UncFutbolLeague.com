@@ -40,3 +40,5 @@ export function listFiles(root=siteRoot){
   }
   visit(root);return files.sort();
 }
+
+publicRoots.add('internationals.css');publicRoots.add('internationals.js');
