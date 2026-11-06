@@ -32,11 +32,11 @@ jobs:
           npx --yes esbuild@0.28.2 league-collectors/worker.js --bundle --external:cloudflare:workers --format=esm --platform=browser --outfile=collector-dist/worker.js
           cp league-collectors/wrangler-6v6.toml league-collectors/wrangler-10v10.toml collector-dist/
           cp -r league-collectors/migrations collector-dist/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ufl-collectors-${{ github.sha }}
           path: collector-dist/
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ufl-site-${{ github.sha }}
           path: |
