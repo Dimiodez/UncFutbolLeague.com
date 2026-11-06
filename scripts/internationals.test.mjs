@@ -46,3 +46,5 @@ test('published source failures are not disguised as an empty successful table',
  const s=setup();s.sqlite.prepare("UPDATE international_competitions SET publish_results=1,shared_league_id='future-verified-source'").run();
  assert.equal((await api({request:request(),env:s.env})).status,503);s.sqlite.close();
 });
+
+test('national flags render as inline vectors rather than platform-dependent emoji',()=>{const view=internationalContent({teams:[{id:'ITA',name:'Italy',color:'#16875a',roster:[]}],totals:{played:0}},'teams');assert(view.includes('class="intl-flag-svg"'));assert(view.includes('viewBox="0 0 36 24"'));});

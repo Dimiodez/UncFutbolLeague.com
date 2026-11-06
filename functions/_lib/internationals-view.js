@@ -1,7 +1,8 @@
+import {nationalFlag} from './international-flags.js';
 import {escape as e} from './internationals.js';
 export const SECTIONS=['overview','teams','schedules','results','standings','stats','totw'];
 const path=s=>s==='overview'?'/internationals':'/internationals/'+s;
-const flag=t=>t.id==='ENG'?'<span class="intl-england" role="img" aria-label="England flag"></span>':'<span class="intl-flag" aria-hidden="true">'+e(t.flag)+'</span>';
+const flag=t=>nationalFlag(t.id);
 const empty=(title,copy)=>'<div class="intl-empty"><span class="section-kicker">UFL Internationals</span><h2>'+e(title)+'</h2><p>'+e(copy)+'</p></div>';
 const teamLink=t=>'/internationals/teams/'+t.id;
 export function internationalContent(data,section='overview',country=null,manage=false,people=[]){
