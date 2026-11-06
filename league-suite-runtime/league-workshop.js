@@ -8,7 +8,7 @@ import {acceptPendingResult,restorePendingResults} from './league-pending-result
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261021-review3';
+import {renderLeaguePage} from './league-page.js?v=20261106-agenda1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261016-suite1';
 import {importAutomaticTrial} from './league-ea-auto.js?v=20261016-suite1';

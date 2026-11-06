@@ -325,6 +325,21 @@ function defaultScheduleWeek(weeks,now=Date.now()){
     return ends>0&&ends*1000+7200000>=now;
   })||weeks.at(-1);
 }
+
+function scheduleMatchState(match,season,now=Date.now()){
+ if(Number.isFinite(match[3])&&Number.isFinite(match[4]))return 'played';
+ if(season.resultOverrides?.[String(match[0])]?.kind==='review')return 'missing';
+ return Number(match[5])>0&&Number(match[5])*1000+7200000<now?'missing':'upcoming';
+}
+function scheduleDateLabel(week){
+ return Number(week.scheduledAt)>0?new Intl.DateTimeFormat('en-US',{timeZone:window.UFLTime?.zone?.()||'America/New_York',month:'short',day:'numeric'}).format(new Date(week.scheduledAt*1000)):week.date||'Date pending';
+}
+function bindScheduleAgenda(){
+ const host=document.querySelector('[data-schedule-agenda-key]');if(!host)return;
+ const save=()=>{schedulesPage.openState??=new Map();schedulesPage.openState.set(host.dataset.scheduleAgendaKey,new Set([...host.querySelectorAll('.schedule-week[open]')].map(d=>d.id.replace('matchday-',''))));};
+ host.querySelectorAll('.schedule-week').forEach(d=>d.addEventListener('toggle',save));
+ host.querySelectorAll('[data-schedule-jump]').forEach(a=>a.addEventListener('click',event=>{const target=host.querySelector('#matchday-'+a.dataset.scheduleJump);if(!target)return;event.preventDefault();target.open=true;save();target.scrollIntoView({block:'start',behavior:'smooth'});}));
+}
 function schedulesPage(params) {
   const requestedType=params.get('type');
   if(!requestedType){
@@ -333,29 +348,36 @@ function schedulesPage(params) {
   }
   const type=requestedType==='10v10'?'10v10':'6v6',data=scheduleTypes[type],selectedSeason=selectedLeagueSeason(params);
   const context=leagueViewContext(new URLSearchParams({season:selectedSeason.id,division:type})),season=context.season;
-  const allWeeks=season?.weeks||[],requestedDay=params.get('matchday'),showAll=requestedDay==='all';
+  const allWeeks=season?.weeks||[],requestedDay=params.get('matchday'),status=['missing','played','upcoming'].includes(params.get('status'))?params.get('status'):'',showAll=requestedDay==='all';
   const current=allWeeks.find(week=>String(week.week)===requestedDay)||defaultScheduleWeek(allWeeks);
   const team=Object.hasOwn(season?.teams||{},params.get('team'))?params.get('team'):'';
   const clubLink=key=>'<a href="'+leagueViewLink('/clubs/'+encodeURIComponent(key),context)+'" data-link>'+escapeHtml(leagueTeam(key,season)[0])+'</a>';
-  const destination=day=>'/schedules?'+new URLSearchParams({season:selectedSeason.id,type,matchday:String(day),...(team?{team}:{})});
+  const agendaKey=new URLSearchParams({season:selectedSeason.id,type,matchday:requestedDay||'',team:team||'',status}).toString(),remembered=schedulesPage.openState?.get(agendaKey);
+  const destination=day=>'/schedules?'+new URLSearchParams({season:selectedSeason.id,type,matchday:String(day),...(team?{team}:{}),...(status?{status}:{})});
   const currentIndex=allWeeks.indexOf(current);
   const navigation='<div class="league-tab-stack">'+leagueSeasonTabs('/schedules',selectedSeason.id,'type',type)+scheduleLandingTabs(type,selectedSeason.id)+'</div>';
-  const controls=allWeeks.length?'<form class="matchday-controls" action="/schedules" method="get" aria-label="Find fixtures"><input type="hidden" name="season" value="'+selectedSeason.id+'"><input type="hidden" name="type" value="'+type+'"><label>Matchday<select name="matchday" id="schedule-matchday">'+allWeeks.map(week=>'<option value="'+week.week+'" '+(!showAll&&week===current?'selected':'')+'>Matchday '+week.week+' · '+escapeHtml(window.UFLTime?.format(week.scheduledAt*1000)||week.date||'Date pending')+'</option>').join('')+'<option value="all" '+(showAll?'selected':'')+'>Whole season</option></select></label><label>Team<select name="team" id="schedule-team"><option value="">All teams</option>'+Object.entries(season.teams).sort((a,b)=>a[1][0].localeCompare(b[1][0])).map(([key,value])=>'<option value="'+escapeHtml(key)+'" '+(team===key?'selected':'')+'>'+escapeHtml(value[0])+'</option>').join('')+'</select></label><button class="button button-primary" type="submit">View matches</button></form><nav class="matchday-paging" aria-label="Matchday navigation">'+(!showAll&&currentIndex>0?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex-1].week)+'" data-link>← Previous</a>':'<span></span>')+'<a href="/schedules?season='+selectedSeason.id+'&type='+type+'" data-link>Jump to today / next matchday</a>'+(!showAll&&currentIndex<allWeeks.length-1?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex+1].week)+'" data-link>Next →</a>':'<span></span>')+'</nav>':'';
-  const weeks=(showAll?allWeeks:current?[current]:[]).map(week=>{
-    const matches=week.matches.filter(([,home,away])=>!team||home===team||away===team),byes=(week.byes||[]).filter(bye=>!team||bye.team===team);
+  const missingCount=allWeeks.reduce((n,w)=>n+w.matches.filter(m=>(!team||m[1]===team||m[2]===team)&&scheduleMatchState(m,season)==='missing').length,0);
+  const filterLink=(mode,day='all')=>'/schedules?'+new URLSearchParams({season:selectedSeason.id,type,matchday:day,...(team?{team}:{}),...(mode?{status:mode}:{})});
+  const shortcuts=allWeeks.length?'<div class="schedule-quick-actions"><a class="button button-secondary" href="'+filterLink('','')+'" data-link>Current / next matchday</a><a class="button button-secondary" href="'+filterLink('missing')+'" data-link>Missing results ('+missingCount+')</a><a class="button button-secondary" href="'+filterLink('')+'" data-link>All matchdays</a></div><nav class="schedule-date-shortcuts" aria-label="Schedule dates">'+allWeeks.filter(w=>!status||w.matches.some(m=>(!team||m[1]===team||m[2]===team)&&scheduleMatchState(m,season)===status)).map(w=>'<a href="#matchday-'+w.week+'" data-schedule-jump="'+w.week+'"><strong>'+escapeHtml(scheduleDateLabel(w))+'</strong><span>Matchday '+w.week+'</span></a>').join('')+'</nav>':'';
+  const controls=allWeeks.length?'<details class="schedule-filter-panel" '+(team||status?'open':'')+'><summary>Filter by team, matchday or result</summary><form class="matchday-controls" action="/schedules" method="get" aria-label="Find fixtures"><input type="hidden" name="season" value="'+selectedSeason.id+'"><input type="hidden" name="type" value="'+type+'"><label>Matchday<select name="matchday" id="schedule-matchday">'+allWeeks.map(week=>'<option value="'+week.week+'" '+(!showAll&&week===current?'selected':'')+'>Matchday '+week.week+' · '+escapeHtml(window.UFLTime?.format(week.scheduledAt*1000)||week.date||'Date pending')+'</option>').join('')+'<option value="all" '+(showAll?'selected':'')+'>Whole season</option></select></label><label>Team<select name="team" id="schedule-team"><option value="">All teams</option>'+Object.entries(season.teams).sort((a,b)=>a[1][0].localeCompare(b[1][0])).map(([key,value])=>'<option value="'+escapeHtml(key)+'" '+(team===key?'selected':'')+'>'+escapeHtml(value[0])+'</option>').join('')+'</select></label><label>Results<select name="status"><option value="">All matches</option>'+[['missing','Missing / needs review'],['played','Completed'],['upcoming','Upcoming / in progress']].map(([key,label])=>'<option value="'+key+'" '+(status===key?'selected':'')+'>'+label+'</option>').join('')+'</select></label><button class="button button-primary" type="submit">View matches</button></form><nav class="matchday-paging" aria-label="Matchday navigation">'+(!showAll&&currentIndex>0?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex-1].week)+'" data-link>← Previous</a>':'<span></span>')+'<a href="/schedules?season='+selectedSeason.id+'&type='+type+'" data-link>Jump to today / next matchday</a>'+(!showAll&&currentIndex<allWeeks.length-1?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex+1].week)+'" data-link>Next →</a>':'<span></span>')+'</nav></details>':'';
+  const weeks=allWeeks.map(week=>{
+    const matches=week.matches.filter(m=>(!team||m[1]===team||m[2]===team)&&(!status||scheduleMatchState(m,season)===status)),byes=status?[]:(week.byes||[]).filter(bye=>!team||bye.team===team);
+    if(status&&!matches.length)return '';
+    const complete=matches.filter(m=>scheduleMatchState(m,season)==='played').length,missing=matches.filter(m=>scheduleMatchState(m,season)==='missing').length,upcoming=matches.length-complete-missing;
+    const opened=remembered?remembered.has(String(week.week)):status==='missing'||(!showAll&&week===current);
     const rows=matches.map(([id,home,away,homeScore,awayScore,kickoff,round],index)=>{
       const played=Number.isFinite(homeScore)&&Number.isFinite(awayScore),date=window.UFLTime?.format(kickoff*1000)||week.rounds?.find(r=>r.scheduledAt===kickoff)?.date||week.date;
-      const label=round?'Round '+round:'Match '+(index+1),result=played?homeScore+'–'+awayScore+' · '+(season.resultOverrides?.[String(id)]?.kind==='forfeit'?'Forfeit':season.resultOverrides?.[String(id)]?.kind==='ea-recovery'?'EA result':'Final'):season.resultOverrides?.[String(id)]?.kind==='review'?'Awaiting score confirmation':'Upcoming';
+      const label=round?'Round '+round:'Match '+(index+1),result=played?homeScore+'–'+awayScore+' · '+(season.resultOverrides?.[String(id)]?.kind==='forfeit'?'Forfeit':season.resultOverrides?.[String(id)]?.kind==='ea-recovery'?'EA result':'Final'):season.resultOverrides?.[String(id)]?.kind==='review'?'Awaiting score confirmation':scheduleMatchState([id,home,away,homeScore,awayScore,kickoff],season)==='missing'?'Awaiting result':'Upcoming';
       return {table:'<tr><td><strong>'+label+'</strong><br><small>'+escapeHtml(date)+'</small></td><td>'+clubLink(home)+'</td><td>'+clubLink(away)+'</td><td><a class="result-link '+(played?'final':'upcoming')+'" href="https://ufl.virtualarena.app/matches/'+id+'" target="_blank" rel="noopener noreferrer">'+result+' ↗</a></td></tr>',
       card:'<article class="mobile-fixture"><header><strong>'+label+'</strong><span>'+escapeHtml(date)+'</span></header><div class="mobile-fixture-clubs"><div><small>Home</small>'+clubLink(home)+'</div><span aria-hidden="true">vs</span><div><small>Away</small>'+clubLink(away)+'</div></div><a class="result-link '+(played?'final':'upcoming')+'" href="https://ufl.virtualarena.app/matches/'+id+'" target="_blank" rel="noopener noreferrer">'+result+' · Match details ↗</a></article>'};
     });
     const byeTable=byes.map(bye=>'<tr class="schedule-bye"><td><strong>Round '+bye.round+'</strong><br><small>'+escapeHtml(bye.date)+'</small></td><td>'+clubLink(bye.team)+'</td><td>BYE</td><td>No match this round</td></tr>').join('');
     const byeCards=byes.map(bye=>'<article class="mobile-fixture schedule-bye"><header><strong>Round '+bye.round+'</strong><span>'+escapeHtml(bye.date)+'</span></header><div>'+clubLink(bye.team)+'</div><p>BYE · No match this round</p></article>').join('');
-    return '<section class="schedule-week" aria-labelledby="matchday-'+week.week+'"><div class="schedule-week-head"><span class="section-kicker">Matchday</span><h2 id="matchday-'+week.week+'">Matchday '+week.week+'</h2><p>'+escapeHtml(week.rounds?.map(r=>'Round '+r.round+' · '+(window.UFLTime?.format(r.scheduledAt*1000)||r.date)).join(' / ')||week.date)+'</p></div>'+(rows.length||byes.length?'<div class="schedule-desktop-table table-wrap"><table><caption class="sr-only">Matchday '+week.week+' fixtures and results</caption><thead><tr><th>Round / kickoff</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>'+rows.map(r=>r.table).join('')+byeTable+'</tbody></table></div><div class="schedule-mobile-matches">'+rows.map(r=>r.card).join('')+byeCards+'</div>':'<p class="matchday-empty">No fixtures for this team on this matchday. Try another matchday or select All teams.</p>')+'</section>';
+    return '<details class="schedule-week" id="matchday-'+week.week+'" '+(opened?'open':'')+'><summary class="schedule-week-head"><span class="section-kicker">Matchday</span><h2 id="matchday-title-'+week.week+'">Matchday '+week.week+'</h2><p>'+escapeHtml(week.rounds?.map(r=>'Round '+r.round+' · '+(window.UFLTime?.format(r.scheduledAt*1000)||r.date)).join(' / ')||week.date)+'</p><small class="schedule-day-counts">'+complete+' final · '+missing+' missing · '+upcoming+' upcoming'+(byes.length?' · '+byes.length+' BYEs':'')+'</small></summary>'+(rows.length||byes.length?'<div class="schedule-desktop-table table-wrap"><table><caption class="sr-only">Matchday '+week.week+' fixtures and results</caption><thead><tr><th>Round / kickoff</th><th>Home</th><th>Away</th><th>Result</th></tr></thead><tbody>'+rows.map(r=>r.table).join('')+byeTable+'</tbody></table></div><div class="schedule-mobile-matches">'+rows.map(r=>r.card).join('')+byeCards+'</div>':'<p class="matchday-empty">No fixtures for this team on this matchday. Try another matchday or select All teams.</p>')+'</details>';
   }).join('');
   const unavailable=selectedSeason.archived&&!selectedSeason.divisions[type];
   const empty=emptyState(unavailable?type+' was not contested in '+selectedSeason.label:'No published fixtures yet',unavailable?'There is no official schedule for this division and season.':'Fixtures will appear as Virtual Arena publishes them.');
-  return pageHero('UFL '+selectedSeason.label+(selectedSeason.archived?' archive':''),data[0],data[1])+'<section class="section matchday-page">'+navigation+'<p class="sync-note">Official fixtures and results · synced from Virtual Arena. Two rounds per matchday; a BYE means no game in that round. Times use your display timezone preference; each kickoff includes its zone.</p>'+controls+'<div class="schedule-weeks">'+(weeks||empty)+'</div></section>';
+  return pageHero('UFL '+selectedSeason.label+(selectedSeason.archived?' archive':''),data[0],data[1])+'<section class="section matchday-page" data-schedule-agenda-key="'+escapeHtml(agendaKey)+'">'+navigation+'<p class="sync-note">Official fixtures and results · synced from Virtual Arena. Two rounds per matchday; a BYE means no game in that round. Times use your display timezone preference; each kickoff includes its zone.</p>'+shortcuts+controls+'<div class="schedule-weeks">'+(weeks||(status?emptyState('No '+(status==='missing'?'missing results':status==='played'?'completed results':'upcoming matches'),'Choose another filter or matchday.'):empty))+'</div></section>';
 }
 
 function scheduleLandingTabs(active, seasonId = '2') {
@@ -1312,6 +1334,7 @@ function setLocation() {
   if (contact) contact.textContent = `Currently ${location}.`;
 }
 function bindDynamicActions() {
+  bindScheduleAgenda();
   document.querySelectorAll('[data-copy-discord]').forEach(button=>button.addEventListener('click',async()=>{
     const status=document.querySelector('#invite-copy-status'),name=button.dataset.copyDiscord;
     try{await navigator.clipboard.writeText(name);status.textContent='Copied '+name+'. Paste it into Discord → Friends → Add Friend.';}

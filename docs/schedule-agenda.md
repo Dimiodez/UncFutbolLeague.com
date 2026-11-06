@@ -1,0 +1,7 @@
+# Schedule agenda navigation
+
+Public 6v6/10v10 schedules and League Suite match management use date shortcuts and collapsible matchday groups. Current/next opens by default; All matchdays collapses groups and preserves access to history. Missing results means unaccepted fixtures more than two hours after kickoff, or an explicit review item. Future and in-progress fixtures are not mislabeled overdue. Completed 0–0 games and forfeits remain completed.
+
+Public season/team/result filters and stable club/VA links are retained. Matchday expansion is remembered in memory per route/filter during automatic refresh. Archives, both rounds and per-round BYEs remain available. The workshop adds date grouping, team search, status filtering and quick access to current/missing fixtures. Filtering hides existing form DOM rather than rebuilding it, preserving unsaved correction input. Accepted results and correction history are not modified by navigation. Result saving, authorization, shared synchronization, polling and collector configuration are unchanged.
+
+Source remains canonical GitHub. Workshop browser modules and runtime mirrors remain synchronized; all changed imports/styles are versioned to refresh cached copies. No data migration, database writes or Cloudflare configuration change is required. Validate with schedule-agenda, matchday UX, pickems matchdays and public schedule refresh tests, plus browser checks for both public divisions and workshop controls.
