@@ -86,3 +86,15 @@ accepted results, rosters, manager assignments or tactical boards.
 ## Publication integrity
 
 Shared browser/server result modules are checked by scripts/check-league-runtime-parity.mjs. The public build refuses to publish if they differ. Update both copies from the same reviewed source; changes to only the runtime collector do not update browser recovery logic. Passing a build is not proof that the live Workers use that commit: verify their deployed bundle separately.
+
+## Independent feed starter (requires activation)
+
+The 6v6 collector's existing Cloudflare timer checks the shared hosted-feed cache for both leagues. If an eligible club's feed is absent or ten minutes old, it can dispatch the existing EA hosted workflow directly. A D1 unique time-bucket lease limits dispatch to one attempt per ten minutes, including overlapping cron invocations. GitHub cron remains a fallback; it is no longer the only starter once this feature is configured. The 10v10 worker does not dispatch duplicate jobs.
+
+Activation requires a fine-grained GitHub credential scoped only to this repository with Actions: write. Store it as the 6v6 Worker secret EA_FEED_DISPATCH_TOKEN; never commit it, paste it into chat, or log it. This adds the ability to start workflow jobs; it does not allow source-code changes. Use GitHub's token settings and Cloudflare's secret entry to provision it after owner approval. Missing/expired credentials and dispatch failures are recorded honestly in preview_collection_runs under __ea_feed_watchdog__ and in worker logs. They do not stop result collection through an already available feed. No schema migration is required.
+
+A successful dispatch is not proof of successful collection. Verify that the hosted job starts, each required club cache becomes fresh, the collector accepts every eligible fixture once, and the page displays those accepted results. An external provider outage or an unavailable runner still needs a visible operational alert. Never label this feature active until the secret is installed and a real dispatch has been verified. Maintain credential expiration as an operational dependency.
+
+Fixtures explicitly held for staff score confirmation stay in review and are excluded from post-window catch-up. This prevents repeated futile upstream requests for a decision that requires staff input. Their live-window evidence collection remains enabled, and other unresolved fixtures continue automatic recovery.
+
+Before recommending migration, complete consecutive unattended matchnights for both formats with all unambiguous EA results and available player statistics captured, no manual job starts or VA score imports, duplicate-free repeat polling, and visible failure/recovery evidence. Administrative forfeits and ambiguous EA quit scores remain explicit staff decisions.

@@ -7,7 +7,7 @@ import {collectionPlan} from '../../league-collection-policy.js';
 import {stagePendingResults} from '../../league-pending-results.js';
 import {VA_TEST_SOURCES,fetchVaSchedule,importVaSchedule} from '../../league-va-schedule.js';
 import {archiveMatches} from './ea-match-archive.js';
-export async function collectLeagues(env,{now=Date.now(),readFeed,readCalendar=fetchVaSchedule}={}){
+export async function collectLeagues(env,{now=Date.now(),readFeed,readCalendar=fetchVaSchedule,transport}={}){
  const pullFeed=readFeed||((id,type,eaType)=>readCollectedMatchType(env,id,type,eaType,{now}));
  const rows=await env.DB.prepare('SELECT * FROM preview_league_results WHERE enabled=1').all();
  for(const row of rows.results){const checkedAt=new Date(now).toISOString(),runId=crypto.randomUUID();let previous={},mode='idle',feeds=[];
@@ -33,7 +33,7 @@ export async function collectLeagues(env,{now=Date.now(),readFeed,readCalendar=f
    const upcoming=draft.fixtures.find(f=>collectionWindow(draft,f).to>=now);
    const upstreamStatus=batchIds.length?(successful?'healthy':'failed'):(previous.upstreamStatus||'not-tested');
    if(!batchIds.length&&upstreamStatus==='failed')notes.push('Last friendly feed check failed; idle scheduler ticks do not clear this failure.');
-   const health={warnings:notes,added:result.added,updated:result.updated,pending:staged.pendingResults.length,polling:mode==='live',mode,clubsChecked:batchIds.length,window:mode==='live'?collectionWindow(draft,due[0]):null,nextWindow:upcoming?collectionWindow(draft,upcoming):null,fixtureCount:draft.fixtures.length,calendarCheckedAt:draft.settings.vaSchedule?.checkedAt||null,intervalMinutes:5,lastEAcheck:batchIds.length?checkedAt:previous.lastEAcheck||null,
+   const health={...(transport?{transport}:{}),warnings:notes,added:result.added,updated:result.updated,pending:staged.pendingResults.length,polling:mode==='live',mode,clubsChecked:batchIds.length,window:mode==='live'?collectionWindow(draft,due[0]):null,nextWindow:upcoming?collectionWindow(draft,upcoming):null,fixtureCount:draft.fixtures.length,calendarCheckedAt:draft.settings.vaSchedule?.checkedAt||null,intervalMinutes:5,lastEAcheck:batchIds.length?checkedAt:previous.lastEAcheck||null,
     lastEAsuccess:successful?feeds.filter(f=>f.type==='friendly').map(f=>f.fetchedAt).sort()[0]||checkedAt:previous.lastEAsuccess||null,upstreamStatus,lastFeedFailure:failures.length?{at:checkedAt,feeds:failures}:previous.lastFeedFailure||null,lastFeedDiagnostics:feeds.length?feeds:previous.lastFeedDiagnostics||[],lastCatchupCheck:mode==='catchup'?checkedAt:previous.lastCatchupCheck||null,catchupIntervalMinutes:30,catchupDays:7,unresolvedFixtures:plan.missingCount,runId};
    const status=failures.length?'feed-failure':mode==='idle'?'idle':staged.pendingResults.length?'needs-review':'success';
    await env.DB.prepare('INSERT INTO preview_collection_runs(id,league_id,checked_at,mode,status,diagnostics_json) VALUES(?,?,?,?,?,?)').bind(runId,row.id,checkedAt,mode,status,JSON.stringify({feeds,received:games.length,matching:uniqueIds.size,added:result.added,updated:result.updated,pending:staged.pendingResults.length,warnings:notes})).run();

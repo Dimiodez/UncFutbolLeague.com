@@ -1,3 +1,5 @@
+import {ensureHostedTransport} from '../league-suite-runtime/functions/_lib/ea-transport-watchdog.js';
+import {collectionPlan} from '../league-suite-runtime/league-collection-policy.js';
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import fs from 'node:fs';
 import {hostedFetchPlan,hostedFeedApi,readCollectedMatchType} from '../league-suite-runtime/functions/_lib/ea-hosted-feed.js';
 import {collectHosted,monitorHosted,hostedMonitorDeadline} from './collect-ea-hosted.mjs';
@@ -64,4 +66,42 @@ test('scheduled hosted monitor stays below the job timeout and covers the matchn
  assert.equal(hostedMonitorDeadline(early),Date.parse('2026-11-06T05:30:00Z'));
  assert.equal(hostedMonitorDeadline(live),Date.parse('2026-11-06T06:55:00Z'));
  const workflow=fs.readFileSync(new URL('../.github/workflows/ea-hosted-feed.yml',import.meta.url),'utf8');assert.match(workflow,/EA_FEED_MONITOR:.*github.event_name == 'schedule'/);
+});
+
+test('independent timer dispatches stale hosted transport once per cooldown without changing league records',async()=>{
+ const s=setup(),before=s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json,requests=[];
+ const env={...s.env,EA_FEED_DISPATCH_TOKEN:'test-only-credential'.repeat(3)},fetcher=async(url,options)=>{requests.push({url,options});return new Response(null,{status:204});};
+ const results=await Promise.all([ensureHostedTransport(env,{now:s.now,fetcher}),ensureHostedTransport(env,{now:s.now,fetcher})]);
+ assert.equal(requests.length,1);assert(results.some(r=>r.status==='dispatched'));assert(results.some(r=>r.status==='cooldown'));
+ assert.equal(requests[0].url,'https://api.github.com/repos/Dimiodez/UncFutbolLeague.com/actions/workflows/ea-hosted-feed.yml/dispatches');
+ assert.equal(requests[0].options.redirect,'manual');assert.deepEqual(JSON.parse(requests[0].options.body),{ref:'master',inputs:{monitor:true}});
+ assert.equal(s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json,before);
+ await ensureHostedTransport(env,{now:s.now+10*60000,fetcher});assert.equal(requests.length,2);s.sqlite.close();
+});
+test('fresh feed and non-coordinator worker do not dispatch or require additional access',async()=>{
+ const s=setup();for(const t of s.draft.settings.teams)s.sqlite.prepare("INSERT INTO preview_ea_feed_cache VALUES(?,'friendly','[]',?)").run(t.eaClubId,new Date(s.now).toISOString());
+ const fetcher=async()=>{throw Error('Unexpected GitHub request');};
+ assert.equal((await ensureHostedTransport(s.env,{now:s.now,fetcher})).status,'fresh');
+ assert.equal((await ensureHostedTransport({...s.env,LEAGUE_FORMAT:'10v10'},{now:s.now,fetcher})).status,'not-coordinator');
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM preview_collection_runs').get().n,0);s.sqlite.close();
+});
+test('watchdog records unavailable credential and dispatch rejection honestly without exposing credentials',async()=>{
+ const s=setup();let calls=0;
+ assert.equal((await ensureHostedTransport(s.env,{now:s.now,fetcher:async()=>{calls++;}})).status,'not-configured');assert.equal(calls,0);
+ const credential='secret-test-value'.repeat(3);
+ const result=await ensureHostedTransport({...s.env,EA_FEED_DISPATCH_TOKEN:credential},{now:s.now+10*60000,fetcher:async()=>new Response(null,{status:401})});
+ assert.equal(result.status,'dispatch-failed');assert.equal(result.error,'GitHub dispatch HTTP 401');
+ assert(!JSON.stringify(s.sqlite.prepare('SELECT * FROM preview_collection_runs').all()).includes(credential));s.sqlite.close();
+});
+test('staff-held score review does not repeatedly fetch blocked feeds after the match window',async()=>{
+ const s=setup(),held=s.draft.fixtures[0].id;
+ const draft={...s.draft,acceptedResults:s.draft.fixtures.slice(1).map(f=>({fixtureId:f.id})),pendingResults:[{fixtureId:held,staffReviewRequired:true}]};
+ s.sqlite.prepare('UPDATE preview_league_results SET draft_json=?').run(JSON.stringify(draft));
+ const now=Math.max(...draft.fixtures.map(f=>f.startsAt))+4*3600000;
+ assert.equal(collectionPlan(draft,{},now).mode,'idle');assert.equal(collectionPlan(draft,{},now).missingCount,0);
+ assert.deepEqual((await hostedFetchPlan(s.db,now)).clubs,[]);
+ assert.equal((await ensureHostedTransport(s.env,{now,fetcher:async()=>{throw Error('Review must not dispatch');}})).status,'not-needed');
+ assert((await hostedFetchPlan(s.db,s.now)).clubs.length>0,'Live collection still retains evidence during the match window');
+ s.sqlite.prepare('UPDATE preview_league_results SET draft_json=?').run(JSON.stringify({...draft,pendingResults:[]}));
+ assert((await hostedFetchPlan(s.db,now)).clubs.length>0,'Unresolved non-held fixtures remain eligible for automatic recovery');s.sqlite.close();
 });
