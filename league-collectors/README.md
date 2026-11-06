@@ -27,7 +27,7 @@ The hosted workflow has staggered retry starts every ten minutes during 00:00–
 For friendlies, Workers read fresh authenticated hosted data FIRST. They do not issue a known-blocked direct Cloudflare request when current hosted data exists. If the cache is absent or older than 15 minutes they try the direct/relay routes and report failures honestly, never inventing an empty successful feed. Standard GitHub schedules can still be delayed or dropped; repeated starts improve recovery but are not a delivery-time guarantee. The PC, browser and Codex do not need to remain open. Additional matchnights need matching UTC coverage.
 
 The cron runs every five minutes. EA polling uses each saved fixture's window,
-15 minutes before kickoff through 90 minutes after kickoff, with missed-fixture
+15 minutes before the first kickoff through 120 minutes after the last kickoff, with missed-fixture
 catch-up every 30 minutes for seven days. This runs without a browser or Codex.
 Saved calendars are sufficient for collection if VA is unavailable. For these
 current comparison leagues only, VA can refresh the calendar; it never supplies
@@ -82,3 +82,7 @@ The existing 6v6 team slot remains `team-1` and its private hub remains `6v6:ITA
 Its dated `eaClubReplacement` retains Italia club `1663550` for earlier fixtures
 and uses Tenerife from October 29 onward. Changing this link never rewrites
 accepted results, rosters, manager assignments or tactical boards.
+
+## Publication integrity
+
+Shared browser/server result modules are checked by scripts/check-league-runtime-parity.mjs. The public build refuses to publish if they differ. Update both copies from the same reviewed source; changes to only the runtime collector do not update browser recovery logic. Passing a build is not proof that the live Workers use that commit: verify their deployed bundle separately.

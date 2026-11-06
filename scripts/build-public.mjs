@@ -3,8 +3,10 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';
 import {siteRoot,listFiles} from './publication.mjs';
+import {verifyLeagueRuntimeParity} from './check-league-runtime-parity.mjs';
 
 export function buildPublic(output=path.join(siteRoot,'dist')){
+  verifyLeagueRuntimeParity();
   const resolved=path.resolve(output);
   // Never delete or overwrite an existing directory; builds run in clean checkouts.
   fs.mkdirSync(resolved,{recursive:false});
