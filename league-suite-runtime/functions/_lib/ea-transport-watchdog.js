@@ -21,7 +21,7 @@ export async function ensureHostedTransport(env,{now=Date.now(),fetcher=fetch}={
  let outcome='dispatched',error;
  try{
   const response=await fetcher(DISPATCH_URL,{method:'POST',redirect:'manual',headers:{authorization:'Bearer '+credential,accept:'application/vnd.github+json','content-type':'application/json','x-github-api-version':'2022-11-28','user-agent':'UFL-EA-transport-watchdog'},body:JSON.stringify({ref:'master',inputs:{monitor:true}}),signal:AbortSignal.timeout(15000)});
-  if(response.status!==204)throw Error('GitHub dispatch HTTP '+response.status);
+  if(response.status!==204)throw Error(await dispatchFailure(response,'GitHub dispatch'));
  }catch(e){outcome='dispatch-failed';error=String(e.message);}
  const report={status:outcome,...details,...(error?{error}:{})};
  await env.DB.prepare('UPDATE preview_collection_runs SET status=?,diagnostics_json=? WHERE id=?').bind(outcome,JSON.stringify(report),id).run();
@@ -42,10 +42,17 @@ export async function checkHostedDispatch(env,{now=Date.now(),fetcher=fetch}={})
  try{
   // This workflow path reads EA only: no feed ingest, scores or stats are written.
   const response=await fetcher(DISPATCH_URL,{method:'POST',redirect:'manual',headers:{authorization:'Bearer '+credential,accept:'application/vnd.github+json','content-type':'application/json','x-github-api-version':'2022-11-28','user-agent':'UFL-EA-transport-watchdog'},body:JSON.stringify({ref:'master',inputs:{preflight:true,clubs:'["374656"]',monitor:false}}),signal:AbortSignal.timeout(15000)});
-  if(response.status!==204)throw Error('GitHub readiness dispatch HTTP '+response.status);
+  if(response.status!==204)throw Error(await dispatchFailure(response,'GitHub readiness dispatch'));
  }catch(e){status='readiness-failed';error=String(e.message);}
  const report={status,...(error?{error}:{})};
  await env.DB.prepare('UPDATE preview_collection_runs SET status=?,diagnostics_json=? WHERE id=?').bind(status,JSON.stringify(report),id).run();
  console[error?'error':'log'](JSON.stringify({event:'ea_transport_readiness',...report}));
  return report;
+}
+
+async function dispatchFailure(response,label){
+ const data=await response.json().catch(()=>({}));
+ const message=typeof data.message==='string'?data.message.slice(0,180):'';
+ const required=response.headers.get('x-accepted-github-permissions');
+ return label+' HTTP '+response.status+(message?': '+message:'')+(required?' (required permission: '+required.slice(0,100)+')':'');
 }

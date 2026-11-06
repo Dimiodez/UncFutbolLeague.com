@@ -124,3 +124,11 @@ test('idle credential check retries rejection after cooldown rather than claimin
  await ensureHostedTransport(env,{now:now+5*60000,fetcher});assert.equal(calls,1);
  await ensureHostedTransport(env,{now:now+10*60000,fetcher});assert.equal(calls,2);s.sqlite.close();
 });
+
+test('readiness records GitHub permission rejection details without disclosing authorization',async()=>{
+ const s=setup(),now=s.now+8*86400000,env={...s.env,EA_FEED_DISPATCH_TOKEN:'permission-check-test'.repeat(3)};
+ const result=await ensureHostedTransport(env,{now,fetcher:async()=>Response.json({message:'Resource not accessible by personal access token'},{status:403,headers:{'x-accepted-github-permissions':'actions=write'}})});
+ assert.match(result.credentialCheck.error,/Resource not accessible by personal access token/);
+ assert.match(result.credentialCheck.error,/actions=write/);
+ assert(!JSON.stringify(result).includes(env.EA_FEED_DISPATCH_TOKEN));s.sqlite.close();
+});
