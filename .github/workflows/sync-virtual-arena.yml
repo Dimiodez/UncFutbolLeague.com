@@ -2,6 +2,9 @@ name: Sync UNC Futbol League data
 
 on:
   workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['scripts/sync-virtual-arena.mjs', 'scripts/public-result-overrides.mjs', 'league-result-overrides.json', '.github/workflows/sync-virtual-arena.yml']
   schedule:
     # Baseline refresh outside matchnights.
     - cron: '15 5,11,17,23 * * *'

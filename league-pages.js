@@ -118,7 +118,7 @@ function leagueOfficialSource(context,kind) {
 }
 function leagueFeedNote(context,kind) {
   if(!context.selected.divisions[context.division])return '<p class="sync-note">This division was not contested in the selected season.</p>';
-  const live=context.selected.current?leagueLiveFeeds.get(`${context.division}:${kind}`):null, stamp=live?.syncedAt||context.season?.syncedAt;
+  const live=context.selected.current&&!context.season?.ownerOverridesAffectStandings?leagueLiveFeeds.get(`${context.division}:${kind}`):null, stamp=live?.syncedAt||context.season?.syncedAt;
   return `<p class="sync-note">${context.archive?'Archived official results':live?'Official VA feed · refreshes every 5 minutes':'Official VA feed · showing the last saved update'}${stamp?` · ${escapeHtml(new Date(stamp).toLocaleString())}`:''}. Updates follow results recorded on Virtual Arena.</p><a class="button button-secondary" href="${leagueOfficialSource(context,kind)}" target="_blank" rel="noopener noreferrer">Open official ${kind} ↗</a>`;
 }
 function leagueViewContext(params) {
@@ -127,7 +127,7 @@ function leagueViewContext(params) {
   let official=leagueSeasonFor(division,selected.id);
   if(selected.id==='2'&&official){
     const live=leagueLiveFeeds.get(`${division}:standings`), stats=leagueLiveFeeds.get(`${division}:stats`);
-    const mapped=live?.standings.map(row=>{const team=official.teamDetails?.find(t=>t.teamId===row.teamId)||official.teamDetails?.find(t=>t.name===row.name);return team?[team.key,...row.stats]:null;});
+    const mapped=!official.ownerOverridesAffectStandings&&live?.standings.map(row=>{const team=official.teamDetails?.find(t=>t.teamId===row.teamId)||official.teamDetails?.find(t=>t.name===row.name);return team?[team.key,...row.stats]:null;});
     official={...official,...(mapped?.length&&mapped.every(Boolean)?{standings:mapped}:{}),...(stats?{leaderboards:stats.leaderboards}:{})};
   }
   const provisional=selected.id==='2'?leagueProvisionalSeasons[division]:null;

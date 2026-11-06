@@ -1,4 +1,5 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import {applyPublicResultOverrides} from './public-result-overrides.mjs';
 
 const BASE = 'https://ufl.virtualarena.app';
 const seasons = [
@@ -229,6 +230,8 @@ const liveSeasons = await Promise.all(syncResults.map(async (result, index) => {
   }
   return previous;
 }));
+const ownerResultOverrides=JSON.parse(await readFile('league-result-overrides.json','utf8'));
+for(let i=0;i<liveSeasons.length;i++)liveSeasons[i]=applyPublicResultOverrides(liveSeasons[i],ownerResultOverrides);
 const output = { 's1-6v6': archivedSeason, ...Object.fromEntries(liveSeasons.map(season => [season.key, season])) };
 
 await mkdir('pickems-app/seasons', { recursive: true });

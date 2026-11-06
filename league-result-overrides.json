@@ -1,0 +1,24 @@
+[
+  {
+    "seasonKey": "s2-6v6",
+    "matchId": 135,
+    "home": "TEN",
+    "away": "TK",
+    "homeScore": 0,
+    "awayScore": 3,
+    "kind": "forfeit",
+    "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+    "confirmedDate": "2026-11-05"
+  },
+  {
+    "seasonKey": "s2-6v6",
+    "matchId": 139,
+    "home": "ROM",
+    "away": "TEN",
+    "homeScore": 3,
+    "awayScore": 0,
+    "kind": "forfeit",
+    "reason": "League owner confirmed Tenerife forfeited both November 5 fixtures to their opponents.",
+    "confirmedDate": "2026-11-05"
+  }
+]
