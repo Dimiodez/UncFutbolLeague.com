@@ -1,3 +1,4 @@
+import {INTERNATIONAL_VA_FIXTURES,INTERNATIONAL_VA_SOURCE} from './international-va-fixtures.js';
 import {projectLeague} from './league-centre.js';
 export const INTL_ID='ufl-internationals';
 export const INTERNATIONAL_DIVISIONS=[
@@ -28,8 +29,19 @@ export async function internationalData(env){
   if(league.teams.length!==expected.size||league.teams.some(t=>!expected.has(t.id)))throw Error('International team mappings need review.');
  }
  return {competition:{id:competition.id,name:competition.name,minPlayers:competition.match_min,maxPlayers:competition.match_max,humanKeepers:!!competition.human_keepers},
+ source:{...INTERNATIONAL_VA_SOURCE},
  divisions:INTERNATIONAL_DIVISIONS.map(d=>({...d,teamIds:[...d.teamIds]})),
  teams:teams.map(t=>({id:t.id,divisionId:internationalDivisionFor(t.id),name:t.name,flag:t.flag,color:t.color,linked:!!t.ea_club_id,roster:rows.filter(r=>r.team_id===t.id).map(r=>({id:r.id,name:r.display_name,playerId:r.canonical_id||r.player_id,profileUrl:r.player_id?'/players/'+encodeURIComponent(r.profile_id||r.player_id)+'?season=2&division='+(r.division||'6v6'):null}))})),
- windows,selections,fixtures:league?.fixtures||[],standings:league?.standings||teams.map(t=>({id:t.id,name:t.name,played:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,goalDifference:0,points:0})),
- players:league?.players||[],resultsPublished:!!league,totals:league?.totals||{played:0,fixtures:0,pending:0,goals:0}};
+ windows,selections,fixtures:internationalFixtures(teams,league?.fixtures||[]),standings:league?.standings||teams.map(t=>({id:t.id,name:t.name,played:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,goalDifference:0,points:0})),
+ players:league?.players||[],resultsPublished:!!league,totals:league?.totals||{played:0,fixtures:INTERNATIONAL_VA_FIXTURES.length,pending:0,goals:0}};
+}
+
+export function internationalFixtures(teams,projected=[]){
+ const validLeagueIds=new Set(INTERNATIONAL_VA_FIXTURES.filter(f=>f.stage==='league').map(f=>f.id));
+ if(projected.some(f=>!validLeagueIds.has(f.id)))throw Error('International fixture mappings need review.');
+ const byId=new Map(projected.map(f=>[f.id,f])),team=id=>id?{id,name:teams.find(t=>t.id===id)?.name||id}:null;
+ return INTERNATIONAL_VA_FIXTURES.map(f=>{
+  const live=byId.get(f.id);
+  return {...f,home:team(f.homeId),away:team(f.awayId),status:'scheduled',homeScore:null,awayScore:null,...live,stage:f.stage,round:f.round,sourceUrl:f.sourceUrl,sourceMatchId:f.sourceMatchId};
+ });
 }

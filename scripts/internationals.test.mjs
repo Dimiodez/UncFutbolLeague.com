@@ -1,5 +1,6 @@
+import {INTERNATIONAL_VA_FIXTURES} from '../functions/_lib/international-va-fixtures.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {DatabaseSync} from 'node:sqlite';
-import {internationalData} from '../functions/_lib/internationals.js';
+import {internationalData,internationalFixtures} from '../functions/_lib/internationals.js';
 import {internationalContent} from '../functions/_lib/internationals-view.js';
 import {internationalPage} from '../functions/_lib/internationals-page.js';
 import {onRequest as api} from '../functions/api/internationals.js';
@@ -19,7 +20,7 @@ test('initial squads reuse fifty profiles, add ten, and seed idempotently withou
  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM international_rosters').get().n,60);
  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n,60);
  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_roster_memberships WHERE team_key=?').get('original-club').n,50);
- const data=await internationalData(s.env);assert.equal(data.fixtures.length,0);assert.equal(data.windows.length,0);assert.equal(data.players.length,0);assert.equal(data.selections.length,0);assert.equal(data.resultsPublished,false);assert.equal(data.competition.minPlayers,5);assert.equal(data.competition.maxPlayers,6);s.sqlite.close();
+ const data=await internationalData(s.env);assert.equal(data.fixtures.length,52);assert.equal(data.windows.length,0);assert.equal(data.players.length,0);assert.equal(data.selections.length,0);assert.equal(data.resultsPublished,false);assert.equal(data.competition.minPlayers,5);assert.equal(data.competition.maxPlayers,6);s.sqlite.close();
 });
 test('public readers see squads but cannot mutate them; cross-origin administrative writes fail',async()=>{
  for(const role of [null,'member']){const s=setup(role);assert.equal((await api({request:request(),env:s.env})).status,200);assert.equal((await api({request:request({action:'addRoster',teamId:'ITA',name:'Unexpected'}),env:s.env})).status,403);s.sqlite.close();}
@@ -65,10 +66,10 @@ test('owner calendar dates seed idempotently without club fixtures or invented k
  assert(data.windows.every(w=>w.starts_on===w.ends_on));
  assert.equal(data.windows.find(w=>w.starts_on==='2027-07-15').name,'World Cup · Quarterfinals (2 legs)');
  assert.equal(data.windows.find(w=>w.starts_on==='2027-09-02').name,'World Cup · Final (2 legs)');
- assert.equal(data.fixtures.length,0);assert.equal(data.resultsPublished,false);
+ assert.equal(data.fixtures.length,52);assert.equal(data.resultsPublished,false);
  assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_roster_memberships').get().n,50);
  const html=internationalContent(data,'schedules');
- assert(html.includes('18 scheduled international dates'));
+ assert(html.includes('18 international dates'));
  assert(html.includes('Tuesday, Nov 10'));assert(html.includes('Thursday, Sep 2'));
  assert(html.includes('November 2026'));assert(html.includes('September 2027'));
  assert(!html.includes('2027-09-01'));assert(!html.includes('6v6 Matchday'));assert(!html.includes('10v10 Matchday'));
@@ -102,4 +103,38 @@ test('calendar month shortcuts preserve exact dates and two-leg stage labels in 
  assert.equal((html.match(/class="intl-stage-tag">2 legs/g)||[]).length,3);
  assert(html.includes('Quarterfinals'));assert(html.includes('Semifinals'));assert(html.includes('Final'));
  assert(html.includes('1 date</span>'));s.sqlite.close();
+});
+
+test('VA schedule contains a complete single round robin and seven unassigned knockout slots',async()=>{
+ const s=setup(),data=await internationalData(s.env),league=data.fixtures.filter(f=>f.stage==='league'),knockouts=data.fixtures.filter(f=>f.stage==='knockout');
+ assert.equal(league.length,45);assert.equal(knockouts.length,7);
+ assert.equal(new Set(league.map(f=>[f.home.id,f.away.id].sort().join('/'))).size,45);
+ for(const t of data.teams)assert.equal(league.filter(f=>[f.home.id,f.away.id].includes(t.id)).length,9);
+ assert(knockouts.every(f=>f.home===null&&f.away===null));
+ assert(data.fixtures.every(f=>f.status==='scheduled'&&f.homeScore===null&&f.awayScore===null));
+ assert.equal(data.source.url,'https://ufl.virtualarena.app/competitions/4/seasons/6');
+ assert.equal(data.resultsPublished,false);assert(data.standings.every(r=>r.points===0&&r.played===0));
+ s.sqlite.close();
+});
+test('official kickoff instants render on the correct Central calendar day with 6 PM and 6:30 PM slots',async()=>{
+ const s=setup();s.sqlite.exec(fs.readFileSync(new URL('../migrations/20261106_internationals_dates.sql',import.meta.url),'utf8'));
+ const data=await internationalData(s.env),html=internationalContent(data,'schedules');
+ const november=html.split('id="intl-month-2026-11"')[1].split('id="intl-month-2027-01"')[0];
+ assert(november.includes('6:00 PM CST'));assert(november.includes('6:30 PM CST'));
+ assert(november.includes('USA'));assert(november.includes('Brazil'));
+ assert.equal((november.match(/View 10 fixtures/g)||[]).length,2);
+ assert.equal((html.match(/class="intl-date-fixtures"/g)||[]).length,6);
+ assert(html.includes('Quarter Finals'));assert(html.includes('To be confirmed'));s.sqlite.close();
+});
+test('overall and regional standings show the same approved result values, while cup fixtures cannot enter league projection',async()=>{
+ const s=setup(),data=await internationalData(s.env);data.standings.find(r=>r.id==='USA').points=3;
+ const html=internationalContent(data,'standings'),overall=html.split('id="intl-division-overall"')[1].split('</section>')[0],americas=html.split('id="intl-division-americas"')[1].split('</section>')[0];
+ assert.equal((overall.match(/<tr><th scope="row">/g)||[]).length,10);
+ assert(overall.includes('<td>3</td>'));assert(americas.includes('<td>3</td>'));
+ const projected={id:'va-intl-339',status:'played',homeScore:2,awayScore:1,home:{id:'USA',name:'USA'},away:{id:'BRA',name:'Brazil'},startsAt:INTERNATIONAL_VA_FIXTURES[0].startsAt};
+ const fixtures=internationalFixtures(data.teams,[projected]);
+ assert.equal(fixtures.length,52);assert.equal(fixtures.filter(f=>f.status==='played').length,1);
+ assert.equal(fixtures.find(f=>f.id==='va-intl-339').homeScore,2);
+ assert.throws(()=>internationalFixtures(data.teams,[{...projected,id:'va-intl-332'}]),/mappings need review/);
+ assert.throws(()=>internationalFixtures(data.teams,[{...projected,id:'unknown'}]),/mappings need review/);s.sqlite.close();
 });

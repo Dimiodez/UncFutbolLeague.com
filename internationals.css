@@ -36,3 +36,21 @@
 .intl-division .intl-flag-svg{width:27px;height:18px;flex-basis:27px;margin-right:.5rem}
 @media(max-width:1000px){.intl-division-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.intl-month-nav{gap:.4rem;margin-bottom:2rem}.intl-month-nav a{flex:1 0 auto;justify-content:center;padding:.6rem .65rem}.intl-agenda-event{grid-template-columns:48px minmax(0,1fr);gap:1rem;padding:1rem}.intl-agenda-date{min-height:56px}.intl-agenda-date b{font-size:1.8rem}.intl-stage-tag{grid-column:2;justify-self:start;margin-top:-.5rem}.intl-agenda-month{scroll-margin-top:200px}.intl-division-heading{padding:1rem}}
+
+.intl-source-link{font-size:.85rem;line-height:1.5;margin:1rem 0 1.5rem}.intl-source-link a{color:#b7d8fa}
+.intl-overall{margin-top:2rem}.intl-overall .intl-table{min-width:620px}
+.intl-agenda-list>li+li{border-top:1px solid #29415b}
+.intl-date-fixtures{border-top:1px solid #29415b;background:#0b1e31}
+.intl-date-fixtures summary{display:list-item;min-height:48px;align-content:center;padding:.85rem 1.25rem;cursor:pointer;color:#b7d8fa;font-size:.85rem;font-weight:600}
+.intl-date-fixtures summary:hover{background:#18314a}
+.intl-date-fixtures summary:focus-visible{outline:3px solid #ead396;outline-offset:-3px}
+.intl-round{padding:0 1.25rem 1rem}
+.intl-round h4{display:flex;justify-content:space-between;gap:1rem;font:700 .85rem/1.5 Inter,sans-serif;color:#f2f6fc;margin:.75rem 0;padding:.5rem 0;border-bottom:1px solid #29415b}
+.intl-round h4 span{font-weight:500;color:#ead396;white-space:nowrap}
+.intl-round ul{list-style:none;margin:0;padding:0}
+.intl-round li{display:grid;grid-template-columns:minmax(0,1fr) 48px;align-items:center;gap:1rem;min-height:48px;border-bottom:1px solid #29415b70}
+.intl-round li>div{display:grid;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);align-items:center;gap:.5rem;font-size:.9rem;line-height:1.4}
+.intl-round li>div>span:last-child{text-align:right}
+.intl-round li b{text-align:center;color:#8ea9c6;font-size:.8rem}
+.intl-round li a{display:flex;align-items:center;justify-content:center;min-height:44px;color:#b7d8fa;font-size:.75rem}
+@media(max-width:650px){.intl-round{padding:0 1rem 1rem}.intl-round li{gap:.5rem}.intl-round li>div{font-size:.8rem;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr)}.intl-round h4{font-size:.8rem}}
