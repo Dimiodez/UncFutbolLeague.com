@@ -105,3 +105,22 @@ test('staff-held score review does not repeatedly fetch blocked feeds after the 
  s.sqlite.prepare('UPDATE preview_league_results SET draft_json=?').run(JSON.stringify({...draft,pendingResults:[]}));
  assert((await hostedFetchPlan(s.db,now)).clubs.length>0,'Unresolved non-held fixtures remain eligible for automatic recovery');s.sqlite.close();
 });
+
+test('idle timer verifies each installed credential with one read-only preflight dispatch',async()=>{
+ const s=setup(),now=s.now+8*86400000,credential='readiness-test-value'.repeat(3),requests=[],before=s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json;
+ const env={...s.env,EA_FEED_DISPATCH_TOKEN:credential},fetcher=async(url,options)=>{requests.push({url,options});return new Response(null,{status:204});};
+ const results=await Promise.all([ensureHostedTransport(env,{now,fetcher}),ensureHostedTransport(env,{now,fetcher})]);
+ assert.equal(requests.length,1);assert(results.some(r=>r.credentialCheck?.status==='readiness-dispatched'));
+ assert.deepEqual(JSON.parse(requests[0].options.body),{ref:'master',inputs:{preflight:true,clubs:'["374656"]',monitor:false}});
+ await ensureHostedTransport(env,{now:now+86400000,fetcher});assert.equal(requests.length,1);
+ await ensureHostedTransport({...env,EA_FEED_DISPATCH_TOKEN:credential+'rotated'},{now:now+86400000,fetcher});assert.equal(requests.length,2);
+ assert.equal(s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json,before);
+ assert(!JSON.stringify(s.sqlite.prepare('SELECT * FROM preview_collection_runs').all()).includes(credential));s.sqlite.close();
+});
+test('idle credential check retries rejection after cooldown rather than claiming success',async()=>{
+ const s=setup(),now=s.now+8*86400000,env={...s.env,EA_FEED_DISPATCH_TOKEN:'test-readiness-token'.repeat(3)};let calls=0;
+ const fetcher=async()=>{calls++;return new Response(null,{status:403});};
+ assert.equal((await ensureHostedTransport(env,{now,fetcher})).credentialCheck.status,'readiness-failed');
+ await ensureHostedTransport(env,{now:now+5*60000,fetcher});assert.equal(calls,1);
+ await ensureHostedTransport(env,{now:now+10*60000,fetcher});assert.equal(calls,2);s.sqlite.close();
+});
