@@ -6,7 +6,10 @@ export async function hostedFetchPlan(db,now=Date.now()){
  const rows=await db.prepare('SELECT id,draft_json FROM preview_league_results WHERE enabled=1').all(),clubs=new Set();
  for(const row of rows.results){const saved=JSON.parse(row.draft_json),draft=buildLeagueSchedule(saved.settings),accepted=new Set((saved.acceptedResults||[]).map(r=>r.fixtureId)),held=new Set((saved.pendingResults||[]).filter(p=>p.staffReviewRequired===true).map(p=>p.fixtureId));
   for(const f of draft.fixtures){const window=collectionWindow(draft,f),live=now>=window.from&&now<=window.to,missed=!accepted.has(f.id)&&!held.has(f.id)&&f.startsAt<=now&&now-f.startsAt<=7*86400000;if(live||missed)for(const t of [f.home,f.away])if(/^\d{1,20}$/.test(t.eaClubId||''))clubs.add(t.eaClubId);}
- }return {clubs:[...clubs],generatedAt:new Date(now).toISOString(),matchType:'friendlyMatch',platform:'common-gen5'};
+ }
+ const requests=await db.prepare('SELECT club_id FROM preview_ea_feed_requests WHERE requested_until>? ORDER BY requested_until DESC LIMIT 50').bind(new Date(now).toISOString()).all();
+ for(const request of requests.results)if(/^\d{1,20}$/.test(request.club_id))clubs.add(request.club_id);
+ return {clubs:[...clubs],generatedAt:new Date(now).toISOString(),matchType:'friendlyMatch',platform:'common-gen5'};
 }
 async function authenticated(request,key){
  if(typeof key!=='string'||key.length<40)return false;

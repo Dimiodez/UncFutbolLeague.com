@@ -98,3 +98,9 @@ A successful dispatch is not proof of successful collection. Verify that the hos
 Fixtures explicitly held for staff score confirmation stay in review and are excluded from post-window catch-up. This prevents repeated futile upstream requests for a decision that requires staff input. Their live-window evidence collection remains enabled, and other unresolved fixtures continue automatic recovery.
 
 Before recommending migration, complete consecutive unattended matchnights for both formats with all unambiguous EA results and available player statistics captured, no manual job starts or VA score imports, duplicate-free repeat polling, and visible failure/recovery evidence. Administrative forfeits and ambiguous EA quit scores remain explicit staff decisions.
+
+## Private bot feed service
+
+The EaFeedService RPC entrypoint exposes friendlyFeed only through a configured Cloudflare service binding. It accepts a numeric club ID on common-gen5, records a thirty-minute refresh request, and returns only fresh real EA cache data. No public HTTP request endpoint or new credential is added. The coordinator includes unexpired bot requests in the existing GitHub-hosted fetch plan, including outside league fixture windows. Existing match-review, scoring and registration rules are untouched. A cold cache reports refreshing; it never fabricates an empty successful feed.
+
+Apply migrations/0003_ea_feed_requests.sql before deploying the RPC build. It only creates a request table with club IDs and expiration timestamps. Bind the bot's EA_FEED_SERVICE to ufl-preview-league-collector, entrypoint EaFeedService. The existing dispatch credential remains on the coordinator. The bot does not receive that credential or broad D1 access to League Suite.

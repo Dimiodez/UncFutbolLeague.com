@@ -1,5 +1,6 @@
 import {ensureHostedTransport} from '../league-suite-runtime/functions/_lib/ea-transport-watchdog.js';
 import {collectionPlan} from '../league-suite-runtime/league-collection-policy.js';
+import {requestHostedFriendly} from '../league-suite-runtime/functions/_lib/ea-bot-feed.js';
 import test from 'node:test';import assert from 'node:assert/strict';import {DatabaseSync} from 'node:sqlite';import fs from 'node:fs';
 import {hostedFetchPlan,hostedFeedApi,readCollectedMatchType} from '../league-suite-runtime/functions/_lib/ea-hosted-feed.js';
 import {collectHosted,monitorHosted,hostedMonitorDeadline} from './collect-ea-hosted.mjs';
@@ -7,7 +8,7 @@ import {buildLeagueSchedule} from '../league-suite-runtime/league-engine.js';imp
 import {collectLeagues} from '../league-suite-runtime/functions/_lib/league-collector.js';
 const key='a'.repeat(64),failed=type=>({type,available:false,matches:[],attempts:['EA direct: HTTP 403','relay: HTTP 500']});
 function setup(settings=eaTrialSettings()){
- const sqlite=new DatabaseSync(':memory:');sqlite.exec('CREATE TABLE preview_league_results(id TEXT PRIMARY KEY,draft_json TEXT,revision INTEGER DEFAULT 1,enabled INTEGER DEFAULT 1,checked_at TEXT,succeeded_at TEXT,health TEXT,updated_at TEXT);CREATE TABLE preview_collection_runs(id TEXT PRIMARY KEY,league_id TEXT,checked_at TEXT,mode TEXT,status TEXT,diagnostics_json TEXT);CREATE TABLE preview_ea_match_archive(league_id TEXT,match_id TEXT,game_json TEXT,PRIMARY KEY(league_id,match_id));');for(const name of ['0001_ea_observations.sql','0002_ea_hosted_feed.sql'])sqlite.exec(fs.readFileSync(new URL('../league-collectors/migrations/'+name,import.meta.url),'utf8'));
+ const sqlite=new DatabaseSync(':memory:');sqlite.exec('CREATE TABLE preview_league_results(id TEXT PRIMARY KEY,draft_json TEXT,revision INTEGER DEFAULT 1,enabled INTEGER DEFAULT 1,checked_at TEXT,succeeded_at TEXT,health TEXT,updated_at TEXT);CREATE TABLE preview_collection_runs(id TEXT PRIMARY KEY,league_id TEXT,checked_at TEXT,mode TEXT,status TEXT,diagnostics_json TEXT);CREATE TABLE preview_ea_match_archive(league_id TEXT,match_id TEXT,game_json TEXT,PRIMARY KEY(league_id,match_id));');for(const name of ['0001_ea_observations.sql','0002_ea_hosted_feed.sql','0003_ea_feed_requests.sql'])sqlite.exec(fs.readFileSync(new URL('../league-collectors/migrations/'+name,import.meta.url),'utf8'));
  const draft=buildLeagueSchedule(settings),f=draft.fixtures[0],now=f.startsAt+30*60000;sqlite.prepare('INSERT INTO preview_league_results(id,draft_json) VALUES(?,?)').run('test',JSON.stringify(draft));
  const db={prepare(sql){return {args:[],bind(...args){this.args=args;return this;},async first(){return sqlite.prepare(sql).get(...this.args)||null;},async all(){return {results:sqlite.prepare(sql).all(...this.args)};},async run(){return {meta:{changes:Number(sqlite.prepare(sql).run(...this.args).changes)}};}};},async batch(statements){sqlite.exec('BEGIN');try{const results=[];for(const s of statements)results.push(await s.run());sqlite.exec('COMMIT');return results;}catch(e){sqlite.exec('ROLLBACK');throw e;}}};
  const game={matchId:'900001',timestamp:(f.startsAt+10*60000)/1000,clubs:{[f.home.eaClubId]:{goals:2},[f.away.eaClubId]:{goals:1}},players:{[f.home.eaClubId]:{one:{playername:'One',rating:8,goals:2,assists:0,passattempts:10,passesmade:9}},[f.away.eaClubId]:{two:{playername:'Two',rating:7,goals:1,assists:0}}}};
@@ -140,4 +141,32 @@ test('current GitHub 200 dispatch responses and legacy 204 responses both count 
   assert.equal((await ensureHostedTransport(env,{now:s.now,fetcher})).status,'dispatched');
   assert.equal((await ensureHostedTransport(env,{now:s.now+8*86400000,fetcher})).credentialCheck.status,'readiness-dispatched');s.sqlite.close();
  }
+});
+
+test('private bot requests refresh the shared hosted plan outside league fixture windows',async()=>{
+ const s=setup(),now=s.now+8*86400000,clubId=s.f.home.eaClubId,background=[];
+ assert.deepEqual((await hostedFetchPlan(s.db,now)).clubs,[]);
+ const before=s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json;
+ const pending=await requestHostedFriendly(s.env,{clubId,platform:'common-gen5'},{now,schedule:p=>background.push(p)});
+ assert.equal(pending.available,false);assert.equal(pending.status,'refreshing');
+ assert((await hostedFetchPlan(s.db,now)).clubs.includes(clubId));
+ await Promise.all(background);
+ const requestBody={clubId,type:'friendly',fetchedAt:new Date(now).toISOString(),matches:[s.game]};
+ assert.equal((await hostedFeedApi(request('/ea-feed',requestBody),s.env,{now})).status,200);
+ const ready=await requestHostedFriendly(s.env,{clubId,platform:'common-gen5'},{now,schedule:()=>{throw Error('Fresh feed should not dispatch');}});
+ assert.equal(ready.available,true);assert.deepEqual(ready.matches,[s.game]);assert.match(ready.source,/GitHub-hosted/);
+ assert.equal(s.sqlite.prepare('SELECT draft_json FROM preview_league_results').get().draft_json,before);
+ assert.deepEqual((await hostedFetchPlan(s.db,now+31*60000)).clubs,[]);s.sqlite.close();
+});
+test('bot feed rejects malformed identifiers and unsupported platforms before writing requests',async()=>{
+ const s=setup();
+ for(const input of [{clubId:'../evil'},{clubId:'123',platform:'nx'}])await assert.rejects(()=>requestHostedFriendly(s.env,input),/Unsupported/);
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM preview_ea_feed_requests').get().n,0);s.sqlite.close();
+});
+test('fresh empty EA response is available while stale or unrelated cached games are not passed to the bot',async()=>{
+ const s=setup(),clubId=s.f.home.eaClubId,background=[];
+ s.sqlite.prepare("INSERT INTO preview_ea_feed_cache VALUES(?,'friendly','[]',?)").run(clubId,new Date(s.now).toISOString());
+ assert.equal((await requestHostedFriendly(s.env,{clubId},{now:s.now})).available,true);
+ assert.equal((await requestHostedFriendly(s.env,{clubId},{now:s.now+16*60000,schedule:p=>background.push(p)})).available,false);
+ await Promise.all(background);s.sqlite.close();
 });
