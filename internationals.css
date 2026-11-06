@@ -3,3 +3,36 @@
 .intl-flag-svg{display:inline-block;width:36px;height:24px;flex:0 0 36px;vertical-align:middle;margin-right:.65rem;border-radius:2px;box-shadow:0 0 0 1px #ffffff24}.intl-nation-top .intl-flag-svg{width:42px;height:28px}
 
 @media(max-width:650px){.intl-tabs{flex-wrap:wrap;overflow:visible;gap:.1rem}.intl-tabs a{flex:1 0 auto;text-align:center}}
+
+/* Compact international agenda and regional league tables. */
+.intl-visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.intl-month-nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.5rem 0 2.5rem}
+.intl-month-nav a{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;padding:.6rem .9rem;border:1px solid #35516d;border-radius:6px;text-decoration:none;font-size:.86rem;font-weight:700;background:#10253c;color:#edf3fb}
+.intl-month-nav a span{font-size:.75rem;font-weight:400;color:#adbfD6}
+.intl-month-nav a:hover{border-color:#ed3657;background:#17304a}
+.intl-agenda{max-width:960px;display:grid;gap:2.5rem}
+.intl-agenda-month{scroll-margin-top:180px}
+.intl-month-heading{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:0 0 .75rem;border-bottom:1px solid #35516d}
+.internationals-page .intl-month-heading h2{font-size:1.8rem;margin:0}
+.intl-month-heading>span{color:#adbfD6;font-size:.8rem;white-space:nowrap}
+.intl-agenda-list{list-style:none;padding:0;margin:.75rem 0 0;border:1px solid #29415b;border-radius:10px;overflow:hidden;background:#10253c}
+.intl-agenda-event{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:1.25rem;align-items:center;padding:1.1rem 1.25rem;min-height:104px}
+.intl-agenda-event+.intl-agenda-event{border-top:1px solid #29415b}
+.intl-agenda-date{display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:3px solid #ff3657;min-height:64px;color:#ff7188}
+.intl-agenda-date b{font:800 2rem/1 "Barlow Condensed",sans-serif}
+.intl-agenda-date>span:not(.intl-visually-hidden){font-size:.75rem;line-height:1.6;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.internationals-page .intl-agenda-details h3{font:700 1rem/1.4 Inter,sans-serif;text-transform:none;margin:0 0 .25rem;color:#f1f5fc;overflow-wrap:anywhere}
+.intl-agenda-details p{font-size:.875rem;line-height:1.45;margin:0;color:#b2c6df}
+.intl-stage-tag{display:inline-flex;justify-content:center;align-items:center;padding:.3rem .55rem;border:1px solid #5e5660;border-radius:4px;color:#ead396;font-size:.75rem;white-space:nowrap;background:#ead3960a}
+.intl-division-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;margin-top:2rem}
+.intl-division{min-width:0}
+.intl-division-heading{position:relative;padding:1.25rem;background:#10253c;border:1px solid #29415b;border-top:3px solid #ed3657;border-radius:10px 10px 0 0}
+.internationals-page .intl-division-heading h2{font-size:2rem;margin:.5rem 0}
+.intl-division-count{color:#b2c6df;font-size:.8rem}
+.intl-division .intl-table-scroll{border-top:0;border-radius:0 0 10px 10px}
+.intl-division .intl-table{min-width:510px;font-size:.85rem}
+.intl-division .intl-table th,.intl-division .intl-table td{padding:1rem .45rem}
+.intl-division .intl-table th:first-child{min-width:145px}
+.intl-division .intl-flag-svg{width:27px;height:18px;flex-basis:27px;margin-right:.5rem}
+@media(max-width:1000px){.intl-division-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.intl-month-nav{gap:.4rem;margin-bottom:2rem}.intl-month-nav a{flex:1 0 auto;justify-content:center;padding:.6rem .65rem}.intl-agenda-event{grid-template-columns:48px minmax(0,1fr);gap:1rem;padding:1rem}.intl-agenda-date{min-height:56px}.intl-agenda-date b{font-size:1.8rem}.intl-stage-tag{grid-column:2;justify-self:start;margin-top:-.5rem}.intl-agenda-month{scroll-margin-top:200px}.intl-division-heading{padding:1rem}}

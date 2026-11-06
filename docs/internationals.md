@@ -15,3 +15,9 @@ Published international_selections are reserved for approved TOTW selections tie
 All roster writes require an active owner/admin session, same origin and rate limiting. Public API is read-only without those permissions. Adding an existing player to a second country is rejected, and removal retains an audit record and global profile. Later assignments of national managers should use explicit country-scoped authorization; none have been invented.
 
 Source is canonical GitHub. Preserve Cloudflare's existing repository/branch/deployment integration. Validate both migrations, access controls, growth beyond six, identity reuse, zero invented fixtures and safe HTML in scripts/internationals.test.mjs before deployment.
+
+## Regional divisions and schedule presentation
+
+League standings display two divisions: European (ENG, FRA, GER, ITA, ESP) and Americas (ARG, BRA, CAN, MEX, USA). The canonical mapping is INTERNATIONAL_DIVISIONS in functions/_lib/internationals.js and is exposed as divisions plus each team's divisionId in the public API. Country identities, rosters and global player records are unchanged. Teams appear once in the matching table. Tables preserve approved source order and statistics; display grouping does not recalculate or invent points, qualification spots or tournament rules. The source linked for league standings must contain the relevant league results only; Euro/Copa and World Cup stage results must not be silently mixed into league points. Actual stage/source configuration awaits club IDs, fixtures and competition rules.
+
+The schedule uses a compact agenda with month shortcuts, consistent day/weekday columns, sentence-case competition titles, separate stage descriptions and two-leg badges. Dates remain calendar dates; the approved 18 events are unchanged. Month jumps have sticky-header offsets; navigation and tables keep keyboard focus styles and mobile layouts. No official CONCACAF or UEFA branding or rules are implied.

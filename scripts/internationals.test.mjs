@@ -75,3 +75,31 @@ test('owner calendar dates seed idempotently without club fixtures or invented k
  assert(!html.includes('2026-11-03'));assert(!html.includes('Champions League'));
  s.sqlite.close();
 });
+
+test('regional divisions cover every nation exactly once and retain confirmed source standings order and totals',async()=>{
+ const s=setup(),data=await internationalData(s.env);
+ assert.deepEqual(data.divisions.map(d=>[d.id,d.teamIds.slice().sort()]),[
+ ['europe',['ENG','ESP','FRA','GER','ITA']],['americas',['ARG','BRA','CAN','MEX','USA']]]);
+ assert.equal(new Set(data.divisions.flatMap(d=>d.teamIds)).size,data.teams.length);
+ assert(data.teams.every(t=>data.divisions.find(d=>d.id===t.divisionId)?.teamIds.includes(t.id)));
+ data.standings=data.standings.map(r=>({...r,points:r.id==='ESP'?9:r.id==='BRA'?6:0})).sort((a,b)=>b.points-a.points);
+ data.totals.played=3;
+ const before=JSON.stringify(data.standings),html=internationalContent(data,'standings');
+ assert.equal(JSON.stringify(data.standings),before);
+ const europe=html.split('id="intl-division-europe"')[1].split('</section>')[0];
+ const americas=html.split('id="intl-division-americas"')[1].split('</section>')[0];
+ for(const id of ['ENG','FRA','GER','ITA','ESP']){assert(europe.includes('/teams/'+id));assert(!americas.includes('/teams/'+id));}
+ for(const id of ['ARG','BRA','CAN','MEX','USA']){assert(americas.includes('/teams/'+id));assert(!europe.includes('/teams/'+id));}
+ assert(europe.indexOf('/teams/ESP')<europe.indexOf('/teams/ENG'));assert(americas.indexOf('/teams/BRA')<americas.indexOf('/teams/ARG'));
+ assert(europe.includes('<td>9</td>'));assert(americas.includes('<td>6</td>'));s.sqlite.close();
+});
+test('calendar month shortcuts preserve exact dates and two-leg stage labels in the compact agenda',async()=>{
+ const s=setup();s.sqlite.exec(fs.readFileSync(new URL('../migrations/20261106_internationals_dates.sql',import.meta.url),'utf8'));
+ const html=internationalContent(await internationalData(s.env),'schedules');
+ assert(html.includes('aria-label="Jump to a schedule month"'));
+ for(const month of ['2026-11','2027-01','2027-03','2027-05','2027-07','2027-08','2027-09']){assert(html.includes('href="#intl-month-'+month+'"'));assert(html.includes('id="intl-month-'+month+'"'));}
+ assert.equal((html.match(/class="intl-agenda-event"/g)||[]).length,18);
+ assert.equal((html.match(/class="intl-stage-tag">2 legs/g)||[]).length,3);
+ assert(html.includes('Quarterfinals'));assert(html.includes('Semifinals'));assert(html.includes('Final'));
+ assert(html.includes('1 date</span>'));s.sqlite.close();
+});
