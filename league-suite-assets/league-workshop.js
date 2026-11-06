@@ -1,5 +1,6 @@
 import {createLeagueDraft,registerLeagueTeam,buildLeagueSchedule,fixtureCandidates,zonedTimestamp,validateScheduleSettings,validateTeamRules,registrationAllowed,upgradeDraftByePolicy} from './league-engine.js?v=20261021-calendar1';
 import {mergeSharedTestDraft} from './league-va-schedule.js';
+import {reconcileSharedLeagues} from './league-shared-workspace.js';
 import {EA_TRIAL_ID,upgradeTrialClubIds,eaTrialSettings} from './league-ea-trial.js?v=20261016-arsenal1';
 import {EA_TEN_TRIAL_ID,eaTenTrialSettings} from './league-ea-ten-trial.js';
 import {validWorkshopTeamId} from './league-team-identity.js';
@@ -72,7 +73,7 @@ function renderDrafts({sectionOnly=false}={}){
  if(!sectionOnly){
  root.after(review);
  save.disabled=download.disabled=!(drafts.length||seasons.length||competitions.length);
- root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:globalThis.UFLTime?.zone()||draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">No built-in leagues. Create your first draft to see fixtures here.</p>';
+ root.innerHTML=drafts.length?drafts.map((draft,index)=>`<article class="card workshop-league"><span class="section-kicker">${escape(draft.settings.season)} · ${escape(draft.settings.format)} · Draft only</span><h2>${escape(draft.settings.league)}</h2><p>${draft.settings.teams.length} teams · ${draft.fixtures.length} fixtures · ${draft.nights.length} nights${draft.scheduleGenerated?' · Everyone meets twice':' · Waiting for teams'}</p>${draft.warnings.map(warning=>`<p class="workshop-warning">${escape(warning)}</p>`).join('')}${draft.nights.map(night=>`<details ${night.week===1?'open':''}><summary>Night ${night.week} · ${escape(night.date)}</summary>${night.fixtures.map(fixture=>`<div class="workshop-fixture"><div><strong>${escape(fixture.home.name)} vs ${escape(fixture.away.name)}</strong><time>${escape(new Intl.DateTimeFormat('en-US',{timeZone:globalThis.UFLTime?.zone()||draft.settings.timeZone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}).format(fixture.startsAt))}</time></div><button data-league="${index}" data-fixture="${escape(fixture.id)}" ${fixture.home.eaClubId&&fixture.away.eaClubId?'':'disabled'}>Check EA candidates</button></div>`).join('')}</details>`).join('')}</article>`).join(''):'<p class="empty-state">Loading shared leagues. You can also create a new draft.</p>';
  root.querySelectorAll('[data-fixture]').forEach(button=>button.addEventListener('click',()=>checkFixture(Number(button.dataset.league),button.dataset.fixture,button)));
  root.querySelectorAll('.workshop-league').forEach((card,index)=>{
   const draft=drafts[index],section=document.createElement('section');section.className='workshop-registration';
@@ -290,10 +291,12 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkAutom
 checkAutomaticTrials();
 async function syncSharedResults(force=false){
  if(syncingShared||(!force&&(document.querySelector('form[data-unsaved="true"]')||pageHost.hasUnsavedWorkspace?.())))return;syncingShared=true;
- try{const response=await fetch('/api/league-suite/league-results',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);let changed=false;
-  for(const row of data.leagues||[]){sharedLeagues.set(row.id,row);const index=drafts.findIndex(d=>(d.settings.serverLeagueId||d.settings.trialSchedule)===row.id);if(index<0)continue;const local=drafts[index],updated=mergeSharedTestDraft(local,row.draft);if(JSON.stringify(updated.acceptedResults)!==JSON.stringify(local.acceptedResults)||JSON.stringify(updated.pendingResults)!==JSON.stringify(local.pendingResults||[])||JSON.stringify(updated.settings.vaSchedule)!==JSON.stringify(local.settings.vaSchedule)){drafts[index]=updated;changed=true;}}
-  if(changed){persistDrafts();renderDrafts();}showCollectorHealth();
- }catch(error){const status=document.querySelector('[data-collector-health]');if(status)status.textContent=`Shared collector status unavailable: ${error.message}. Browser draft retained.`;}finally{syncingShared=false;}
+ try{const response=await fetch('/api/league-suite/league-results',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error||'Could not load shared leagues.');
+  const updated=reconcileSharedLeagues(drafts,data.leagues),changed=JSON.stringify(updated)!==JSON.stringify(drafts);
+  for(const row of data.leagues)sharedLeagues.set(row.id,row);
+  if(changed){drafts=updated;restoreWorkspace();renderDrafts();if(draftStorageReadable){try{persistDrafts();}catch{message.textContent='Shared leagues loaded. Browser backup could not be saved; server records are safe.';}}}
+  showCollectorHealth();
+ }catch(error){message.textContent=`Shared leagues could not be loaded: ${error.message}. Existing browser drafts and server records have not been cleared. Reload to retry.`;const status=document.querySelector('[data-collector-health]');if(status)status.textContent=message.textContent;}finally{syncingShared=false;}
 }
 function showCollectorHealth(){
  const draft=activeLeague===null?null:drafts[activeLeague],id=draft?.settings.serverLeagueId||draft?.settings.trialSchedule,row=sharedLeagues.get(id);
