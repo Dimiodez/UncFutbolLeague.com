@@ -118,3 +118,15 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
  .collapsible-panel>summary{padding:14px 12px;gap:10px;flex-wrap:wrap}.collapsible-summary-meta{font-size:.75rem}
 }
 @media(prefers-reduced-motion:reduce){button,.wheel-rotor,.captain-wheel-button img{transition:none!important}.is-spinning .roll-button img,.is-auto .roll-button img{animation:none!important}}
+
+/* Theme-aware values and statuses remain readable on light panels. */
+:root{--wheel-ui-value:#865a08;--wheel-ui-available:#176b42;--wheel-ui-assigned:#b32140}
+:root[data-theme="dark"]{--wheel-ui-value:#ead396;--wheel-ui-available:#7fe2af;--wheel-ui-assigned:#ff92a4}
+:root[data-theme="vintage"]{--wheel-ui-value:#70510e;--wheel-ui-available:#3c6540;--wheel-ui-assigned:#892d34}
+.draft-player>strong,.draft-order em,.test-tools-panel strong,.team-card-head span.over{color:var(--wheel-ui-value)}
+.draft-player label,.draft-team-head label,.draft-team-head>span,.captain-row>span,.captain-pool em{color:var(--uwu-muted)}
+.budget-row>strong{color:var(--uwu-ink)}
+.entry-row.available>span:nth-of-type(2){color:var(--wheel-ui-available)}
+.entry-row.assigned>span:nth-of-type(2){color:var(--wheel-ui-assigned)}
+.entry-row.next>span:nth-of-type(2){color:var(--wheel-ui-value)}
+.league-controls button,.league-fixture-card button,.league-playoffs>button{min-height:44px;color:var(--uwu-ink);border-color:var(--uwu-line);background:var(--uwu-panel)}
