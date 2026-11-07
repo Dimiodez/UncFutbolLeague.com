@@ -1,0 +1,120 @@
+/* UNC Wheel Utility presentation. Draw algorithms and saved-state code are unchanged. */
+:root{
+ --wheel-ui-radius:10px;
+ --wheel-ui-shadow:0 8px 24px #0010200d;
+ font-family:Inter,system-ui,sans-serif;
+}
+:root[data-theme="dark"]{
+ --uwu-bg:#071624;--uwu-bg-deep:#061321;--uwu-panel:#10253c;
+ --uwu-panel-alt:#0b1e31;--uwu-ink:#f1f5fc;--uwu-muted:#b2c6df;
+ --uwu-line:#2b4561;--uwu-accent:#ed123b;--uwu-accent-2:#74b4e5;--uwu-highlight:#17344f;
+}
+html,body{background:var(--uwu-bg);color:var(--uwu-ink)}
+body{background-image:none}
+.app-shell{width:min(1320px,100%);padding:24px clamp(16px,3vw,36px) 48px}
+.topbar{flex-wrap:wrap;gap:16px;padding:4px 0 24px;border-bottom:1px solid var(--uwu-line)}
+.brand-mark{width:56px;height:56px;border:1px solid var(--uwu-line);box-shadow:none;background:var(--uwu-panel)}
+.eyebrow{color:var(--uwu-accent);font-size:.7rem;letter-spacing:.15em;font-weight:800;line-height:1.5}
+h1,h2,h3,h4{font-family:"Barlow Condensed",Impact,sans-serif;letter-spacing:.015em;line-height:1.1}
+h1{font-size:clamp(2rem,4vw,3rem);text-transform:uppercase}
+h2{font-size:1.8rem}h3{font-size:1.45rem}
+p{line-height:1.6}
+.progress-block{padding:10px 14px;border:1px solid var(--uwu-line);border-radius:6px;background:var(--uwu-panel);font-size:.75rem;gap:4px 12px}
+.progress-block strong{color:var(--uwu-ink);font:800 1.25rem "Barlow Condensed",sans-serif}
+.add-wheel-control{margin-left:0;gap:7px;font-size:.65rem;color:var(--uwu-muted)}
+.add-wheel-control select{min-width:185px}
+.workspace-tabs{flex-wrap:wrap;gap:4px;border:0;border-bottom:1px solid var(--uwu-line);border-radius:0;background:transparent;margin:16px 0 20px;padding:0 0 8px;box-shadow:none}
+.workspace-tabs button{flex:1 0 auto;min-height:48px;padding:12px 14px;border:1px solid transparent;border-radius:4px;background:transparent;color:var(--uwu-muted);font:800 1rem/1.2 "Barlow Condensed",sans-serif;text-transform:uppercase;letter-spacing:.04em;box-shadow:none}
+.workspace-tabs button:hover{background:var(--uwu-panel-alt);color:var(--uwu-ink)}
+.workspace-tabs button.active{background:var(--uwu-accent);color:#fff;border-color:var(--uwu-accent);box-shadow:none}
+button{transition:background-color .15s,border-color .15s,color .15s}
+button:disabled{opacity:.45}
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{min-height:44px;border-color:var(--uwu-line);border-radius:6px;padding:10px 12px;background:var(--uwu-panel-alt);color:var(--uwu-ink);font-size:.875rem}
+textarea{line-height:1.6}
+input[type="checkbox"],input[type="radio"]{accent-color:var(--uwu-accent)}
+select option{background:var(--uwu-panel);color:var(--uwu-ink)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--uwu-accent-2);outline-offset:3px}
+.team-card,.add-card,.next-panel,.player-editor,.draft-player-pool,.draft-team,.entrant-panel,.league-table-card,.league-fixture-card,.bracket-match,.group-card,.group-player-pool,.manual-groups article,.pickem-panel,.standings-panel{
+ border-color:var(--uwu-line);border-radius:var(--wheel-ui-radius);background:var(--uwu-panel);box-shadow:var(--wheel-ui-shadow)
+}
+.toolbar-panel,.position-panel,.custom-wheel-panel,.draft-hero,.standings-hero,.group-stage-board,.group-draw-board,.league-controls,.league-playoffs,.bracket-board,.match-centre,.test-tools-panel,.competition-save-panel,.competition-controls{
+ border-color:var(--uwu-line);border-radius:var(--wheel-ui-radius);background:var(--uwu-panel-alt);box-shadow:none
+}
+.draw-stage{grid-template-columns:minmax(0,1fr) 220px minmax(0,1fr);gap:24px;min-height:0;padding:16px 0 24px;align-items:center}
+.wheel-card{min-width:0;border:1px solid var(--uwu-line);border-radius:12px;background:var(--uwu-panel);padding:24px 16px}
+.wheel-card .eyebrow{color:var(--uwu-muted)}
+.wheel-card h2{font-size:clamp(1.7rem,3vw,2.2rem);margin:20px 0 8px}
+.wheel-card>p:last-child{color:var(--uwu-muted);font-size:.8rem;margin-bottom:0}
+.wheel{--wheel-size:min(285px,23vw);border:9px solid var(--uwu-line);background:var(--uwu-panel-alt);box-shadow:0 10px 26px #00000024}
+.wheel:after{background:var(--uwu-panel-alt);box-shadow:0 0 0 4px #ffffff18}
+.wheel-center{font:800 2.4rem "Barlow Condensed",sans-serif;color:var(--uwu-ink)}
+.wheel-pointer{filter:drop-shadow(0 3px 3px #00132766)}
+.segment-label{font-family:Inter,sans-serif}
+.connector{color:var(--uwu-muted);font-size:.7rem;letter-spacing:.12em}
+.connector span{color:var(--uwu-accent)}
+.roll-button{width:140px;height:140px;border:4px solid var(--uwu-accent);background:var(--uwu-panel);box-shadow:0 8px 24px #00000024}
+.roll-button:hover{box-shadow:0 12px 28px #00000030;transform:translateY(-2px)}
+.roll-button span{color:var(--uwu-ink);text-shadow:none;font:800 1rem "Barlow Condensed",sans-serif;letter-spacing:.08em;bottom:-32px}
+.auto-button{min-height:44px;margin-top:44px;padding:10px 18px;border-radius:6px;color:var(--uwu-ink);border-color:var(--uwu-line);background:var(--uwu-panel)}
+.auto-button.active{background:var(--uwu-accent);border-color:var(--uwu-accent);color:#fff}
+.auto-speed{font-size:.7rem;color:var(--uwu-muted);margin-top:12px}
+.auto-speed select{padding:7px 10px;font-size:.8rem}
+.status-message{color:var(--uwu-muted);font-size:.8rem;line-height:1.6}
+.secondary-actions{flex-wrap:wrap;gap:8px}
+.secondary-actions button,.input-actions button,.waiting-row button{min-height:44px;border-radius:6px;padding:10px 14px;color:var(--uwu-ink);border-color:var(--uwu-line);background:var(--uwu-panel)}
+.input-actions button:first-child,.add-card button,.draft-actions button:not(.secondary):not(.quiet),.standings-hero button,.group-draw-actions button:first-of-type,.save-actions .publish-button{
+ min-height:44px;background:var(--uwu-accent);border-color:var(--uwu-accent);color:#fff;box-shadow:none
+}
+.draft-actions button.secondary{min-height:44px;background:var(--uwu-panel);border-color:var(--uwu-line);color:var(--uwu-ink)}
+.draft-actions button.quiet{min-height:44px;color:var(--uwu-muted)}
+.toolbar-panel{gap:24px;flex-wrap:wrap;padding:16px 20px}
+.toolbar-panel div,.toolbar-panel label{color:var(--uwu-muted);font-size:.8rem}
+.toolbar-panel strong{font:800 1.7rem "Barlow Condensed",sans-serif}
+.collapsible-panel>summary{min-height:56px;border-color:var(--uwu-line);border-radius:var(--wheel-ui-radius);background:var(--uwu-panel);padding:14px 16px}
+.collapsible-panel>summary strong{font:800 1.2rem "Barlow Condensed",sans-serif}
+.collapsible-panel>summary span,.collapsible-summary-meta{color:var(--uwu-muted)}
+.collapsible-summary-meta i{border-color:var(--uwu-accent)}
+.collapsible-panel>summary:hover{background:var(--uwu-panel-alt);border-color:var(--uwu-accent)}
+.collapsible-panel.player-editor>summary,.collapsible-panel.next-panel>summary,.collapsible-panel.draft-player-pool>summary{border-radius:var(--wheel-ui-radius) var(--wheel-ui-radius) 0 0}
+.team-card-head input{font-size:1rem;border-color:var(--uwu-line);box-shadow:none}
+.team-settings label,.draft-actions label,.position-limits label,.custom-wheel-panel>label{font-size:.7rem;color:var(--uwu-muted);letter-spacing:.06em}
+.team-settings select{min-width:72px}
+.team-color-slider{min-height:24px}
+.draft-hero{border-top:3px solid var(--uwu-accent);gap:24px;padding:24px}
+.draft-hero h2{font-size:2rem;color:var(--uwu-ink)}
+.draft-hero p:last-child,.holiday-draft .draft-hero p,.holiday-draft .draft-actions label{color:var(--uwu-muted);font-size:.9rem}
+.captain-wheel-button{color:var(--uwu-ink);font-size:.85rem;line-height:1.5}
+.captain-wheel-button img{width:136px;height:136px;box-shadow:0 0 0 3px var(--uwu-accent),0 10px 24px #00000024}
+.holiday-draft{background:var(--uwu-panel-alt);border-color:var(--uwu-line);border-radius:12px}
+.holiday-draft .draft-hero{background:var(--uwu-panel);border-color:var(--uwu-line);border-top-color:#cdbb79;padding-top:4.3rem}
+.holiday-draft .draft-hero h2{color:var(--uwu-ink)}
+.holiday-draft .white-elephant-settings,.white-elephant-settings{background:var(--uwu-panel);color:var(--uwu-ink);border-color:var(--uwu-line);border-left-color:var(--uwu-accent)}
+.white-elephant-settings p,.white-elephant-settings small{color:var(--uwu-muted)}
+.draft-team.current-pick{border-color:var(--uwu-accent);box-shadow:0 0 0 1px var(--uwu-accent)}
+.position-chips span{border-radius:6px;background:var(--uwu-panel);border-color:var(--uwu-line);color:var(--uwu-ink)}
+.position-chips span.selected{background:var(--uwu-accent);color:#fff;border-color:var(--uwu-accent);box-shadow:none}
+.player-heading-actions button{min-height:44px}
+.entry-row{background:var(--uwu-panel-alt);border-color:var(--uwu-line);border-radius:6px}
+.entry-row input{padding:4px 6px!important}
+.entry-row button{min-width:36px;min-height:44px;color:var(--uwu-muted)}
+.draft-player,.draft-order{border-color:var(--uwu-line);background:var(--uwu-panel-alt)}
+.draft-player-pool:after{border-color:var(--uwu-line);color:var(--uwu-muted)}
+.draft-player-pool .section-heading h2{font-size:1.6rem}
+.competition-save-panel{padding:16px;border-radius:8px;margin-bottom:20px}
+.competition-save-panel>summary{padding:6px;min-height:44px;align-content:center}
+.competition-save-panel:not([open]){padding:10px 16px}
+.competition-save-panel label{font-size:.7rem;line-height:1.5;color:var(--uwu-muted)}
+.competition-save-panel>button,.save-actions button{min-height:44px;border-radius:6px}
+@media(max-width:1050px){.draw-stage{grid-template-columns:minmax(0,1fr) 180px minmax(0,1fr);gap:16px}.wheel{--wheel-size:min(265px,24vw)}.wheel-card{padding:20px 12px}.roll-button{width:124px;height:124px}.workspace-tabs button{flex:1 0 auto}}
+@media(max-width:760px){
+ .app-shell{padding:16px 12px 32px}.topbar{gap:12px;padding-bottom:16px}.brand-mark{width:48px;height:48px}.topbar>div:nth-child(2){min-width:0;flex:1}h1{font-size:2rem}.progress-block{margin-left:0;font-size:.7rem}.add-wheel-control{flex:1;margin-left:0}.add-wheel-control select{min-width:0;width:100%}
+ .workspace-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0 0 12px}.workspace-tabs button{padding:12px 8px;font-size:1rem;min-height:46px;border-color:var(--uwu-line);border-radius:5px;background:var(--uwu-panel-alt);box-shadow:none}.workspace-tabs button:last-child{grid-column:1/-1}.workspace-tabs button.active{border-color:var(--uwu-accent);background:var(--uwu-accent);box-shadow:none}
+ .draw-stage{grid-template-columns:1fr;gap:20px;padding-top:0}.wheel{--wheel-size:min(275px,74vw)}.wheel-card{padding:20px 12px}.draw-controls{padding:8px 0 12px}.roll-button{width:120px;height:120px}.connector{margin-bottom:18px}.secondary-actions{margin-top:12px}.auto-button{margin-top:42px}.draw-controls .status-message{margin:16px 0 8px;min-height:0}
+ .draft-hero{grid-template-columns:1fr;gap:24px;padding:20px}.captain-wheel-button{justify-self:center}.draft-actions{width:100%}.draft-hero h2{font-size:1.8rem}.team-grid{grid-template-columns:1fr}.team-settings{grid-template-columns:repeat(2,minmax(0,1fr))}.team-settings select{width:100%}
+ .toolbar-panel{align-items:stretch;gap:14px;padding:16px}.toolbar-panel>div,.toolbar-panel>label{width:100%;justify-content:space-between}.toolbar-panel select{max-width:65%}
+ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),select,textarea{font-size:16px}
+ .custom-wheel-panel,.position-panel{grid-template-columns:1fr;padding:18px}.competition-save-panel{grid-template-columns:1fr}.competition-save-panel>summary{padding:4px}
+ .entry-row{grid-template-columns:8px minmax(0,1fr) auto auto;gap:6px}.entry-row select{grid-column:2;width:100%}.entry-row>button{grid-column:4;grid-row:1/3}.entry-row>span:nth-of-type(2){grid-column:3;font-size:.65rem}
+ .collapsible-panel>summary{padding:14px 12px;gap:10px;flex-wrap:wrap}.collapsible-summary-meta{font-size:.75rem}
+}
+@media(prefers-reduced-motion:reduce){button,.wheel-rotor,.captain-wheel-button img{transition:none!important}.is-spinning .roll-button img,.is-auto .roll-button img{animation:none!important}}
