@@ -96,7 +96,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .player-heading-actions button{min-height:44px}
 .entry-row{background:var(--uwu-panel-alt);border-color:var(--uwu-line);border-radius:6px}
 .entry-row input{padding:4px 6px!important}
-.entry-row button{min-width:36px;min-height:44px;color:var(--uwu-muted)}
+.entry-row button{min-width:44px;min-height:44px;color:var(--uwu-muted)}
 .draft-player,.draft-order{border-color:var(--uwu-line);background:var(--uwu-panel-alt)}
 .draft-player-pool:after{border-color:var(--uwu-line);color:var(--uwu-muted)}
 .draft-player-pool .section-heading h2{font-size:1.6rem}
@@ -154,3 +154,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
  .draw-controls>.status-message,.draw-controls>.secondary-actions{grid-column:1/-1;margin:0}
  .draw-controls>.secondary-actions button{flex:1}
 }
+
+/* Shared minimum touch target for secondary and icon controls. */
+button{min-width:44px;min-height:44px}
