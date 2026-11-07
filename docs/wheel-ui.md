@@ -1,7 +1,9 @@
-# UNC Wheel Utility presentation
+# UNC Wheel Utility
 
-The wheel UI uses the site's Inter / Barlow Condensed typography, UNC navy panels, red primary actions, consistent borders/radii, visible focus states, and mobile touch targets. The additive wheel-app/unc-theme.css loads after the existing base/theme bridge styles. Existing classic/dark/vintage tokens are respected; direct wheel entry reads the same existing theme preference using theme-init.js. Optional White Elephant holiday decoration stays an explicit user setting.
+The wheel utility is organized into Team Draws (Cup Night, Captain Draft, Fantasy Value Draft) and Tournaments (Competitions, Live Group Draw, Aggregate BYOT). FUNC Card Studio is available from the main site's Fun menu and does not belong in Wheel Utility. The navigation allowlist redirects legacy wheel snapshots with obsolete mode names to Cup Night.
 
-The wheel.js runtime bundle, draw algorithms, player/team colors, presets, captain/fantasy draft rules, drag/drop, undo/reset, saved-event payloads, storage keys, and publication/auth endpoints are unchanged. Presentation files only, plus versioned parent iframe/app references. Aggregate BYOT and FUNC retain their existing embedded app behavior and source.
+Cup Night offers direct controls for drawing teams, playing the bracket and viewing results. Sending assigned teams to the double elimination bracket copies their rosters and positions. The bracket supports 2–16 teams with automatic byes and a reset final when needed. Ready to play lets organizers record scores without scrolling the bracket horizontally.
 
-Verify Cup Night draw/undo in an isolated preview, both position presets, Captain Draft, Fantasy Value Draft, Competitions and Live Drawings. Check desktop/mobile overflow and classic/dark/vintage contrast. Do not overwrite the canonical GitHub wheel runtime with an unrelated local src/App.tsx checkout. The local workshop files in UncWheelUnited are not the source for this update.
+A named Cup Night snapshot stores the draw and its associated bracket together in the current browser. Existing automatic draw and bracket storage is retained. The existing account event controls remain available for publishing a draw or reopening an account event.
+
+The UI uses the site's Inter and Barlow Condensed typography, navy panels and red primary actions. Classic, Dark and Vintage use the existing theme preference.

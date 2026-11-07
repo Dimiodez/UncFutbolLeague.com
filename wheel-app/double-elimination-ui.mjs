@@ -9,8 +9,33 @@ function matchName(id) {
 export function makeDoubleEliminationView(React) {
   const h = React.createElement;
 
-  function MatchCard({ match, teams, onScore }) {
+  function ScoreForm({ match, participants, onScore, onSaved }) {
     const [error, setError] = React.useState('');
+    function submit(event) {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      try {
+        onScore(match.id, data.get('home'), data.get('away'));
+        setError('');
+        onSaved();
+      } catch (failure) {
+        setError(failure.message);
+      }
+    }
+    return h('form', { onSubmit: submit },
+      h('div', { className: 'de-score-fields' },
+        ...participants.map((name, index) => h('label', { key: index }, name,
+          h('input', {
+            name: index === 0 ? 'home' : 'away',
+            type: 'text', inputMode: 'numeric', pattern: '[0-9]{1,2}', maxLength: 2, required: true,
+            defaultValue: index === 0 ? match.score?.homeScore : match.score?.awayScore,
+          })))),
+      h('button', { className: 'de-primary', type: 'submit' }, 'Save score'),
+      error && h('p', { role: 'alert', className: 'de-error' }, error));
+  }
+
+  function MatchCard({ match, teams, onScore }) {
+    const details = React.useRef(null);
     const ready = match.status === 'ready' || match.status === 'complete';
     const teamsInMatch = [match.home, match.away];
     const participants = teamsInMatch.map((id, index) => {
@@ -19,20 +44,6 @@ export function makeDoubleEliminationView(React) {
       const source = match.sources[index];
       return (source.outcome === 'loser' ? 'Loser of ' : 'Winner of ') + matchName(source.match.id);
     });
-    function submit(event) {
-      event.preventDefault();
-      const form = event.currentTarget;
-      const data = new FormData(form);
-      try {
-        onScore(match.id, data.get('home'), data.get('away'));
-        setError('');
-        const editor = form.closest('details');
-        editor.open = false;
-        editor.querySelector('summary').focus();
-      } catch (failure) {
-        setError(failure.message);
-      }
-    }
     return h('article', { className: 'de-match', 'data-match': match.id },
       h('header', null, h('strong', null, matchName(match.id)),
         h('span', null, { complete: 'Final', ready: 'Ready', waiting: 'Waiting', bye: 'Bye' }[match.status])),
@@ -45,19 +56,48 @@ export function makeDoubleEliminationView(React) {
           won && h('span', { title: 'Winner', 'aria-label': 'Winner' }, '✓'),
           score !== undefined && h('strong', null, score));
       }),
-      ready && h('details', { className: 'de-score-editor' },
+      ready && h('details', { className: 'de-score-editor', ref: details },
         h('summary', { 'aria-label': (match.score ? 'Edit score for ' : 'Enter score for ') + matchName(match.id) },
           match.score ? 'Edit score' : 'Enter score'),
-        h('form', { onSubmit: submit, key: match.score ? match.score.homeScore + '-' + match.score.awayScore : 'new' },
-          h('div', { className: 'de-score-fields' },
-            ...participants.map((name, index) => h('label', { key: index }, name,
-              h('input', {
-                name: index === 0 ? 'home' : 'away',
-                type: 'text', inputMode: 'numeric', pattern: '[0-9]{1,2}', maxLength: 2, required: true,
-                defaultValue: index === 0 ? match.score?.homeScore : match.score?.awayScore,
-              })))),
-          h('button', { className: 'de-primary', type: 'submit' }, 'Save score'),
-          error && h('p', { role: 'alert', className: 'de-error' }, error))));
+        h(ScoreForm, {
+          key: match.score ? match.score.homeScore + '-' + match.score.awayScore : 'new',
+          match, participants, onScore,
+          onSaved: () => {
+            details.current.open = false;
+            details.current.querySelector('summary').focus();
+          },
+        })));
+  }
+
+  function ReadyMatches({ board, teams, onScore }) {
+    const title = React.useRef(null);
+    const matches = [...board.matches.values()].filter(match => match.status === 'ready');
+    return h('section', { className: 'de-ready', 'aria-labelledby': 'de-ready-title' },
+      h('h3', { id: 'de-ready-title', tabIndex: -1, ref: title }, 'Ready to play'),
+      matches.length
+        ? h('ul', { className: 'de-ready-list' }, ...matches.map(match => {
+          const participants = [teams.get(match.home).name, teams.get(match.away).name];
+          return h('li', { key: JSON.stringify([match.id, match.home, match.away]) },
+            h('details', { className: 'de-score-editor' },
+              h('summary', null,
+                h('small', null, match.id.startsWith('GF') ? matchName(match.id) :
+                  (match.id.startsWith('W') ? 'Winners · ' : 'Losers · ') + matchName(match.id)),
+                h('strong', null, participants.join(' vs ')),
+                h('span', null, 'Enter score')),
+              h(ScoreForm, { match, participants, onScore, onSaved: () => title.current?.focus() })));
+        }))
+        : h('p', null, board.champion ? 'Every match is complete.' : 'The next matchup will appear after both teams advance.'));
+  }
+
+  function TournamentResults({ board, teams }) {
+    const final = board.finals.at(-1);
+    const completed = [...board.matches.values()].filter(match => match.status === 'complete').length;
+    return h('section', { className: 'de-results', 'aria-label': 'Cup Night results' },
+      h('p', { className: 'eyebrow' }, 'CUP NIGHT CHAMPION'),
+      h('h3', null, teams.get(board.champion).name),
+      h('p', null, matchName(final.id) + ' · ' + teams.get(final.home).name + ' ' +
+        final.score.homeScore + '–' + final.score.awayScore + ' ' + teams.get(final.away).name),
+      h('p', null, completed + ' matches played'));
   }
 
   function Lane({ title, rounds, teams, onScore, final }) {
@@ -104,7 +144,7 @@ export function makeDoubleEliminationView(React) {
             })))))));
   }
 
-  return function DoubleElimination({ bracket, onChange, saved }) {
+  return function DoubleElimination({ bracket, onChange, saved, showResults }) {
     const [count, setCount] = React.useState(4);
     const [names, setNames] = React.useState([]);
     const [error, setError] = React.useState('');
@@ -161,6 +201,9 @@ export function makeDoubleEliminationView(React) {
           h('button', { type: 'submit', className: 'de-primary' }, 'Generate bracket'),
           error && h('p', { role: 'alert', className: 'de-error' }, error))),
       board && h(React.Fragment, null,
+        showResults && board.champion
+          ? h(TournamentResults, { board, teams })
+          : h(ReadyMatches, { board, teams, onScore }),
         h('div', { className: 'de-info' },
           h('p', { role: 'status' }, board.champion
             ? 'Champion · ' + teams.get(board.champion).name
