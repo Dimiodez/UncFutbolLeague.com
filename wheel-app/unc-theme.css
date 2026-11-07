@@ -130,3 +130,27 @@ button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-vis
 .entry-row.assigned>span:nth-of-type(2){color:var(--wheel-ui-assigned)}
 .entry-row.next>span:nth-of-type(2){color:var(--wheel-ui-value)}
 .league-controls button,.league-fixture-card button,.league-playoffs>button{min-height:44px;color:var(--uwu-ink);border-color:var(--uwu-line);background:var(--uwu-panel)}
+
+/* Keep both sides of a draw visible together on phones. */
+@media(max-width:760px){
+ .topbar .add-wheel-control{flex:1 0 100%;display:flex;align-items:center;gap:12px;min-width:0}
+ .topbar .add-wheel-control select{flex:1;min-width:0;width:auto;font-size:14px}
+ .draw-stage{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch}
+ .draw-stage>.wheel-card{order:0;padding:16px 8px}
+ .draw-stage>.wheel-card .wheel{--wheel-size:min(155px,36vw);border-width:6px;margin:12px auto}
+ .draw-stage>.wheel-card h2{font-size:1.4rem;margin:16px 0 6px}
+ .draw-stage>.wheel-card>p:last-child{font-size:.72rem}
+ .draw-stage>.wheel-card .wheel-center{font-size:1.8rem}
+ .draw-stage>.wheel-card .segment-label{width:18px;height:18px;font-size:8px}
+ .draw-stage>.wheel-card .segment-label.team-label{width:auto;min-width:22px;height:20px;padding:0 3px;font-size:7px;border-radius:4px}
+ .draw-stage>.wheel-card .wheel-pointer{border-left-width:9px;border-right-width:9px;border-top-width:20px;top:-12px}
+ .draw-stage>.draw-controls{order:2;grid-column:1/-1;display:grid;grid-template-columns:112px minmax(0,1fr);gap:12px;align-items:center;padding:16px;border:1px solid var(--uwu-line);border-radius:10px;background:var(--uwu-panel)}
+ .draw-controls>.connector{grid-column:1/-1;margin:0}
+ .draw-controls>.roll-button{grid-column:1;grid-row:2/5;justify-self:center;width:96px;height:96px;margin:0 0 20px}
+ .draw-controls>.roll-button span{font-size:.9rem;bottom:-28px}
+ .draw-controls>.auto-button{grid-column:2;margin:0;min-width:0;padding:10px}
+ .draw-controls>.auto-speed{grid-column:2;flex-wrap:wrap;margin:0}
+ .draw-controls>.auto-speed select{max-width:100%;min-width:0;font-size:.8rem}
+ .draw-controls>.status-message,.draw-controls>.secondary-actions{grid-column:1/-1;margin:0}
+ .draw-controls>.secondary-actions button{flex:1}
+}
