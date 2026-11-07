@@ -1,0 +1,44 @@
+.player-screenshot-import {
+  margin: 12px 0;
+  padding: 0 12px 8px;
+  border: 1px solid var(--uwu-line);
+  border-radius: var(--wheel-ui-radius);
+  background: var(--uwu-panel-alt);
+}
+.player-screenshot-import summary {
+  min-height: 44px;
+  align-content: center;
+  cursor: pointer;
+  font-weight: 700;
+}
+.player-screenshot-import p {
+  margin: 6px 0;
+  color: var(--uwu-muted);
+  font-size: .82rem;
+}
+.player-screenshot-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+  gap: 10px;
+  margin: 10px 0;
+}
+.player-screenshot-import label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--uwu-ink);
+  font-size: .82rem;
+  font-weight: 700;
+}
+.player-screenshot-controls input,
+.player-screenshot-controls select,
+.player-screenshot-review textarea {
+  min-width: 0;
+  width: 100%;
+}
+.player-screenshot-controls .player-screenshot-paste {
+  grid-column: 1 / -1;
+  border-style: dashed;
+}
+.player-screenshot-import [role="status"]:empty { margin: 0; }
+.player-screenshot-review .input-actions { margin-top: 8px; }

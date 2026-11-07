@@ -21,4 +21,9 @@ export function buildPublic(output=path.join(siteRoot,'dist')){
   console.log(`Verified ${files.length} public files. Functions source remains outside public assets.`);
   return files;
 }
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url))buildPublic();
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const output = path.join(siteRoot, 'dist');
+  buildPublic(output);
+  const { buildWheelOcrAssets } = await import('./wheel-ocr-assets.mjs');
+  await buildWheelOcrAssets(output);
+}
