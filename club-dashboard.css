@@ -11,7 +11,15 @@
 .club-dashboard{padding-top:1.5rem}
 .club-profile-dashboard>h1,.club-profile-dashboard h1{font-size:clamp(2rem,5vw,4rem);line-height:1;margin:.4rem 0}
 .club-profile-dashboard .league-profile-art{width:100%;height:100%;min-height:250px;object-fit:cover}
-.club-profile-dashboard .club-profile-banner{grid-column:1/-1;width:100%;height:clamp(100px,20vw,220px);object-fit:cover}
+.club-profile-dashboard .club-profile-banner {
+  grid-column: 1 / -1;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: contain;
+  background: var(--white);
+}
 .club-profile-dashboard .league-mini-stats,.hub-view-panel .league-mini-stats{gap:.85rem 1.25rem;flex-wrap:wrap;margin:1rem 0 0;padding:1rem 0}
 .club-profile-dashboard .league-mini-stats strong,.hub-view-panel .league-mini-stats strong{font-size:1.45rem}
 .club-dashboard-tabs{display:flex;gap:.45rem;flex-wrap:wrap;margin:1rem 0;padding:.4rem;border:1px solid var(--line);border-radius:10px;background:var(--white)}
@@ -46,8 +54,19 @@
 .team-suite .club-dash-panel,.team-suite .club-dashboard-tabs{background:#0b1d30;border-color:#30465d}
 .team-suite .club-dashboard-tabs a[aria-current="page"]{color:#fff}
 .team-suite [data-hub-view][hidden],.hub-face[hidden]{display:none!important}
-.team-suite .hub-hero{position:relative;isolation:isolate;overflow:hidden}
-.hub-hero .hub-club-banner{position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;opacity:.28;border:0;border-radius:0}
+.team-suite .hub-hero { flex-wrap: wrap; }
+.team-suite .hub-hero .hub-club-banner {
+  order: -1;
+  flex: 0 0 100%;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 380px;
+  object-fit: contain;
+  background: #0b1d30;
+  border: 1px solid #30465d;
+  border-radius: 12px;
+}
 .hub-face:not([hidden]){display:inline-flex;flex:none;width:34px;height:34px;overflow:hidden;border-radius:50%;border:1px solid #52647b}
 .hub-face img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
 .tactic-token .hub-face:not([hidden]){width:26px;height:26px}
@@ -56,7 +75,8 @@
 .club-brand-grid article{display:grid;align-content:start;gap:.6rem;padding:.8rem;border:1px solid #30465d;border-radius:8px;min-width:0}
 .club-brand-grid h4,.club-brand-grid p{margin:0}
 .club-brand-grid img{width:100%;height:145px;object-fit:cover;border-radius:6px}
-.club-brand-grid img[data-club-preview="logo"]{object-fit:contain}
+.club-brand-grid img[data-club-preview="logo"],
+.club-brand-grid img[data-club-preview="banner"] { object-fit: contain; }
 .club-brand-grid form{display:grid;gap:.6rem}
 .club-brand-grid button{min-height:44px}
 @media(max-width:800px){.club-dash-grid{grid-template-columns:minmax(0,1fr)}.club-table-scroll th[scope="row"]{white-space:normal}}
