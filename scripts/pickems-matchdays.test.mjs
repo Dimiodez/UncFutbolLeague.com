@@ -128,3 +128,26 @@ test('International ballots save and reload independently and lock at round one'
  assert.equal(db.prepare('SELECT choice FROM picks WHERE match_id=77').get().choice,'away');
  db.close();
 });
+
+test('Pick’ems switches between International and domestic competition controls', () => {
+ const control = dataset => ({dataset, classList:{toggle(){}}, setAttribute(name, value){this[name]=value;}});
+ const seasons = [control({pickemSeason:'2'}),control({pickemSeason:'1'})];
+ const divisions = [control({pickemDivision:'6v6'}),control({pickemDivision:'10v10'})];
+ const international = control({}), divisionSwitch = {};
+ const controls = {
+  '[data-pickem-season]': seasons, '[data-pickem-division]': divisions,
+  '[data-pickem-internationals]': [international], '.competition-division-switch': [divisionSwitch],
+ };
+ const document = {querySelectorAll: selector => controls[selector], querySelector: selector => controls[selector][0]};
+ const app = read('pickems-app/app.js');
+ const context = vm.createContext({document,window:{UFL_SEASONS:{}}});
+ vm.runInContext(app.slice(0, app.indexOf('const rosters =')) +
+  "let leaderboardEntries=[]; selectCompetition('s1-internationals');", context);
+ assert.equal(international['aria-pressed'], 'true');
+ assert.equal(divisionSwitch.hidden, true);
+ assert.deepEqual(seasons.map(button => button['aria-pressed']), ['false','false']);
+ vm.runInContext("selectCompetition('s2-10v10');", context);
+ assert.equal(international['aria-pressed'], 'false');
+ assert.equal(divisionSwitch.hidden, false);
+ assert.deepEqual(divisions.map(button => button['aria-pressed']), ['false','true']);
+});

@@ -38,8 +38,8 @@ function selectCompetition(key, requestedWeek) {
     button.classList.toggle('active', active);
     button.setAttribute('aria-pressed', String(active));
   };
-  $('[data-pickem-season]').forEach(button => setActive(button, !international && Number(button.dataset.pickemSeason) === state.selectedSeason));
-  $('[data-pickem-division]').forEach(button => setActive(button, !international && button.dataset.pickemDivision === state.selectedDivision));
+  $$('[data-pickem-season]').forEach(button => setActive(button, !international && Number(button.dataset.pickemSeason) === state.selectedSeason));
+  $$('[data-pickem-division]').forEach(button => setActive(button, !international && button.dataset.pickemDivision === state.selectedDivision));
   setActive($('[data-pickem-internationals]'), international);
   $('.competition-division-switch').hidden = international;
 }
