@@ -37,7 +37,7 @@ test('new view inherits the main site shell and themes without introducing a pal
  const html=read('league-suite-assets/league-centre.html'),site=read('index.html'),css=read('league-suite-assets/league-centre.css');
  const fragment=(s,tag)=>s.match(new RegExp(`<${tag} class="site-${tag}">[\\s\\S]*?<\\/${tag}>`))[0].replace(/\s+/g,' ');
  assert.equal(fragment(html,'header'),fragment(site,'header'));assert.equal(fragment(html,'footer'),fragment(site,'footer'));
- assert.match(html,/src="\/theme-init\.js"/);assert.match(html,/src="\/navigation-ux\.js"/);assert.match(html,/href="\/styles\.css/);
+ assert.match(html,/src="\/theme-init\.js"/);assert.match(html,/src="\/navigation-ux\.js(?:\?v=[^"]+)?"/);assert.match(html,/href="\/styles\.css/);
  assert.doesNotMatch(css,/--(?:navy|red|blue|sky|paper|ink|muted|white|line)\s*:|color-scheme\s*:|#[\da-f]{3,8}\b/i);
  assert.doesNotMatch(css,/\.site-header|\.main-nav|\.brand\s*[{,]/);
  assert.equal(read('league-suite-runtime/league-history.js'),read('league-suite-assets/league-history.js'));
