@@ -83,6 +83,8 @@ test('International Pick’ems use the published schedule, excluding unassigned 
  const windows = [...read('migrations/20261106_internationals_dates.sql').matchAll(/VALUES\('intl-date-(\d{4}-\d{2}-\d{2})'/g)];
  const schedule = internationalPickemSeason({teams: INITIAL_NATIONS, standings: [], fixtures, windows});
  assert.equal(schedule.calendarDates, 18);
+ assert.deepEqual(schedule.rosters.ITA, INITIAL_NATIONS.find(team => team.id === 'ITA').roster.map(player => player.name));
+ assert.equal(Object.keys(schedule.rosters).length, INITIAL_NATIONS.length);
  assert.deepEqual(schedule.weeks.map(day => day.matches.length), [10,10,10,10,5]);
  const openingWeek = schedule.weeks.slice(0, 2);
  assert.deepEqual(openingWeek.map(day => day.rounds.map(row => row.round)), [[1,2],[3,4]]);

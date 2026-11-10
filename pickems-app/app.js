@@ -260,6 +260,28 @@ document.addEventListener('click',async event=>{
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
+function renderInternationalRoster() {
+  const select = $('#pickem-roster-team');
+  const status = $('#pickem-roster-status');
+  const list = $('#pickem-roster-list');
+  const link = $('#pickem-roster-link');
+  const team = select.value ? teamByKey[select.value] : null;
+  const names = team ? season.rosters?.[team.key] ?? [] : [];
+
+  status.hidden = !team;
+  status.textContent = names.length ? `${names.length} registered player${names.length === 1 ? '' : 's'}` : 'No players are listed for this nation yet.';
+  list.hidden = names.length === 0;
+  list.replaceChildren(...names.map(name => {
+    const player = document.createElement('li');
+    player.textContent = name;
+    return player;
+  }));
+  link.hidden = !team;
+  if (team) {
+    link.href = clubUrl(team);
+    link.textContent = `View ${team.name} squad ↗`;
+  }
+}
 let competitionRender = 0;
 async function renderCompetition(requestedWeek){
   const renderId = ++competitionRender, competition = state.competition;
@@ -291,7 +313,17 @@ async function renderCompetition(requestedWeek){
   const ready = Boolean(season.weeks?.length);
   $('#pickem-calendar-heading').textContent = international ? 'Intercontinental Cup match nights' : 'Official matchweeks';
   $('#pickem-international-calendar').hidden = !international;
+  const rosterPanel = $('#pickem-roster-panel');
+  if (rosterPanel) rosterPanel.hidden = !international;
   if (international) {
+    if (rosterPanel) {
+      const rosterSelect = $('#pickem-roster-team');
+      const selectedTeam = rosterSelect.value;
+      rosterSelect.replaceChildren(new Option('Choose a nation', ''),
+        ...teams.map(team => new Option(team.name, team.key)));
+      if (Object.hasOwn(teamByKey, selectedTeam)) rosterSelect.value = selectedTeam;
+      renderInternationalRoster();
+    }
     const dates = season.calendarDates ? `The FC27 Internationals calendar has ${season.calendarDates} scheduled dates.` : 'Internationals runs throughout FC27.';
     $('#pickem-calendar-note').textContent = `${dates} The ballots below cover confirmed Intercontinental Cup league fixtures. Knockouts, Euro / Copa, and World Cup dates are listed in the full calendar.`;
   }
@@ -324,6 +356,11 @@ async function renderCompetition(requestedWeek){
   window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
 }
 document.addEventListener('change',async event=>{
+ if (event.target.id === 'pickem-roster-team') {
+   renderInternationalRoster();
+   window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
+   return;
+ }
  if(event.target.id!=='pickem-matchday')return;
  state.simpleWeek=Number(event.target.value);await loadBallot(state.simpleWeek);await loadLeaderboard();renderSimple();
 });

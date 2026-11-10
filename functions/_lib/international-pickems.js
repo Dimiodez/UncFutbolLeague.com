@@ -41,6 +41,7 @@ export function internationalPickemSeason(data) {
   }
   return {
     teams,
+    rosters: Object.fromEntries(data.teams.map(({id, roster = []}) => [id, roster.map(player => player.name)])),
     calendarDates: data.windows?.length ?? 0,
     standingsSource: '/internationals/standings',
     standings: data.standings.map(row => [row.id, row.played, row.wins, row.draws, row.losses,
