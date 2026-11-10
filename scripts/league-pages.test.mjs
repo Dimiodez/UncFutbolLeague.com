@@ -8,7 +8,8 @@ const read=path=>fs.readFileSync(new URL(path,root),'utf8');
 const app=read('app.js');
 const context=vm.createContext({window:{},URLSearchParams,console});
 vm.runInContext(read('pickems-app/season-data.js'),context);
-vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
+const fixtureStatus=app.slice(app.indexOf('function scheduleMatchState('),app.indexOf('function scheduleDateLabel('));
+vm.runInContext(app.slice(0,app.indexOf('function homePage()'))+fixtureStatus+read('league-season2.js')+read('player-portraits.js')+read('league-pages.js')+read('featured-club.js'),context);
 const render=(expression)=>vm.runInContext(expression,context);
 
 test('all current VA registrations resolve to club pages while every provisional team stays',()=>{

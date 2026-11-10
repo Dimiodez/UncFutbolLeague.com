@@ -295,7 +295,7 @@ function leagueClubProfile(key,params) {
     fixturePanel('Next matchday',nextDay,viewLink('calendar'),'Club calendar','No upcoming fixtures are posted.')+
     fixturePanel('Recent results',history.slice(0,5),viewLink('history'),'Match history','This club has no posted results yet.')+'</div></div>'+squad;
   return '<section class="section league-explorer club-dashboard">'+leagueViewNavigation('/clubs',context)+'<a class="league-back" href="'+leagueViewLink('/clubs',context)+'" data-link>← All clubs</a>'+
-    '<article class="league-club-profile club-profile-dashboard">'+(club.banner?'<img class="club-profile-banner" src="'+escapeHtml(club.banner)+'" alt="" fetchpriority="high">':'')+
+    '<article class="league-club-profile club-profile-dashboard" data-club-key="'+escapeHtml(key)+'">'+(club.banner?'<img class="club-profile-banner" src="'+escapeHtml(club.banner)+'" alt="" fetchpriority="high">':'')+
     '<img class="league-profile-art" '+leagueClubArtworkAttributes(club.image,'profile')+' alt="'+escapeHtml(club.name)+' stadium or club artwork">'+
     '<div><img class="league-profile-crest" src="'+escapeHtml(club.logo||'/assets/ufl-mark.webp')+'" alt=""><span class="section-kicker">'+escapeHtml(context.selected.label+' · '+context.division)+'</span><h1>'+escapeHtml(club.name)+'</h1><p>'+escapeHtml(club.location)+'</p><div class="league-mini-stats">'+stats+'</div></div></article>'+
     '<nav class="club-dashboard-tabs" aria-label="Club sections">'+[['overview','Overview'],['calendar','Calendar'],['history','History'],['squad','Squad']].map(([id,label])=>'<a href="'+viewLink(id)+'" data-link'+(view===id?' aria-current="page"':'')+'>'+label+'</a>').join('')+'</nav>'+body+'</section>';
@@ -353,10 +353,11 @@ async function refreshLeagueFeed() {
   clearTimeout(leagueLiveRefreshTimer);
   const path=window.location.pathname;
   if(path==='/schedules')return refreshPublicScheduleSnapshot(path);
-  if(!['/standings','/stats'].includes(path))return;
+  const clubProfile=path.startsWith('/clubs/');
+  if(!clubProfile&&!['/standings','/stats'].includes(path))return;
   const search=window.location.search, params=new URLSearchParams(search), context=leagueViewContext(params);
   if(context.selected.id!=='2')return;
-  const kind=path.slice(1), key=`${context.division}:${kind}`, previous=leagueLiveFeeds.get(key);
+  const kind=clubProfile?'stats':path.slice(1), key=`${context.division}:${kind}`, previous=leagueLiveFeeds.get(key);
   if(leagueLivePending.has(key))return;
   if(previous&&Date.now()-previous.loadedAt<300000){leagueLiveRefreshTimer=setTimeout(refreshLeagueFeed,300000-(Date.now()-previous.loadedAt));return;}
   leagueLivePending.add(key);
