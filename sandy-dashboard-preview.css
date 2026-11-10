@@ -19,5 +19,5 @@
 @media(max-width:760px){.sandy-dashboard-crest{width:84px;height:84px}.sandy-dual-chart>div{min-width:27px}.sandy-dual-chart i{width:8px}.sandy-dashboard-preview .club-dashboard-tabs{position:sticky;top:82px;z-index:30;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}.sandy-dashboard-preview .club-dashboard-tabs button{padding:.8rem .3rem;font-size:.86rem}.sandy-dashboard-preview .club-dashboard-tabs button:last-child{grid-column:auto}.sandy-dashboard-preview .compare-rows>div{grid-template-columns:minmax(0,1fr) minmax(80px,auto) minmax(0,1fr);gap:.45rem}.sandy-dashboard-preview .compare-rows strong{min-width:0;overflow-wrap:anywhere}.house-pair-grid,.house-honor-grid{grid-template-columns:1fr}.house-honor-card.is-headline{grid-column:auto}.house-fc-mountains .sandy-dashboard-hero:after{font-size:5.5rem}}
 
 @media (max-width: 360px) {
-  .sandy-dashboard-preview .club-dashboard-tabs button { padding-inline: .2rem; font-size: .74rem; }
+  .sandy-dashboard-preview .club-dashboard-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
