@@ -16,7 +16,6 @@
   display: block;
   width: 100%;
   height: auto;
-  max-height: 440px;
   object-fit: contain;
   background: var(--white);
 }
@@ -61,7 +60,6 @@
   display: block;
   width: 100%;
   height: auto;
-  max-height: 380px;
   object-fit: contain;
   background: #0b1d30;
   border: 1px solid #30465d;
