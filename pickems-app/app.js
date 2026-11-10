@@ -192,11 +192,11 @@ function renderActivity(){
   const international = state.competition === internationalKey;
   const labels = international ? ['Match night', 'Cup'] : ['Week', 'Season'];
   $('#pickem-leader-title').textContent = state.simplePeriod === 'weekly' ? `${labels[0]} ${state.simpleWeek} leaders` : `${labels[1]} leaders`;
-  $('[data-leader-scope]').forEach(button => {
+  for (const button of $$('[data-leader-scope]')) {
     const weekly = button.dataset.leaderScope === 'weekly';
     button.textContent = weekly ? (international ? labels[0] : 'Weekly') : labels[1];
     button.classList.toggle('active', button.dataset.leaderScope === state.simplePeriod);
-  });
+  }
   $('#activity').innerHTML=leaderboardEntries.length?leaderboardEntries.map(entry=>`<div class="activity-row"><span class="avatar">${entry.avatarUrl?`<img src="${escapeHtml(entry.avatarUrl)}" alt="">`:escapeHtml(entry.displayName.slice(0,2).toUpperCase())}</span><p><strong>${escapeHtml(entry.displayName)}</strong><small>@${escapeHtml(entry.username)} · ${entry.picksMade} picks${state.simplePeriod==='weekly'&&entry.tiebreaker!==null?` · TB ${entry.tiebreaker}${entry.tiebreakerDiff!==null?entry.tiebreakerDiff===0?' (exact)':` (off ${entry.tiebreakerDiff})`:''}`:''}</small></p><b>${entry.score} pt${entry.score===1?'':'s'}</b></div>`).join(''):'<p class="empty-community">No scored community ballots yet. Be the first Unc on the board.</p>';
 }
 async function loadAuth(){

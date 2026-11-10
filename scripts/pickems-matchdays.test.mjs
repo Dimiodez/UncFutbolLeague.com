@@ -151,3 +151,23 @@ test('Pick’ems switches between International and domestic competition control
  assert.equal(divisionSwitch.hidden, false);
  assert.deepEqual(divisions.map(button => button['aria-pressed']), ['false','true']);
 });
+
+test('Pick’ems renders International and domestic leaderboard controls', () => {
+ const control = scope => ({dataset:{leaderScope:scope},classList:{toggle(){}}});
+ const buttons = [control('weekly'), control('season')], title = {}, activity = {};
+ const source = read('pickems-app/app.js');
+ const nodes = {'#pickem-leader-title':title,'#activity':activity,'[data-leader-scope]':buttons};
+ const state = {competition:'s1-internationals',simpleWeek:1,simplePeriod:'weekly'};
+ const render = vm.runInNewContext(
+  "const $=selector=>Array.isArray(nodes[selector]) ? nodes[selector][0] : nodes[selector], $$=selector=>nodes[selector], internationalKey='s1-internationals', leaderboardEntries=[];" +
+  source.slice(source.indexOf('function renderActivity()'), source.indexOf('async function loadAuth()')) + 'renderActivity;',
+  {nodes,state});
+ render();
+ assert.equal(title.textContent, 'Match night 1 leaders');
+ assert.deepEqual(buttons.map(button => button.textContent), ['Match night','Cup']);
+ assert.match(activity.innerHTML, /No scored community ballots yet/);
+ state.competition = 's2-10v10';
+ render();
+ assert.equal(title.textContent, 'Week 1 leaders');
+ assert.deepEqual(buttons.map(button => button.textContent), ['Weekly','Season']);
+});
