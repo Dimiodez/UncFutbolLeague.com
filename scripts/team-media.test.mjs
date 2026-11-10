@@ -115,3 +115,19 @@ test('real SQLite migration and roster join preserve explicit division boundarie
   assert.equal(await canManageTeam(env,actor,'6v6','ROM'),false);
  }finally{db.close();}
 });
+
+test('a club banner uses its own publication slot and retains the logo and stadium',async()=>{
+ const {env,state}=setup();
+ const form=uploadForm();form.set('kind','banner');
+ const response=await manage({request:request(form),env});
+ assert.equal(response.status,201);
+ const saved=await response.json();
+ assert.match(saved.url,/^\/api\/team-media\/images\//);
+ assert.match(state.batches[0][1].sql,/INSERT INTO team_banner_publications/);
+ assert.equal(state.batches[0][1].values[0],'6v6');
+ assert.equal(state.batches[0][1].values[1],'ROM');
+ assert.equal(state.batches[0].filter(statement=>statement.sql.includes('team_media_publications')).length,0);
+ const outsider=setup();outsider.state.granted=false;
+ assert.equal((await manage({request:request(form),env:outsider.env})).status,403);
+ assert.equal(outsider.state.stored.length,0);
+});

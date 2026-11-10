@@ -27,10 +27,10 @@ export async function liveTeamHub(request,env){
  }
  const team=hubTeams().find(t=>t.id===id);if(!team)return json({error:'Team not found.'},404);
  const access=await hubContext(env.DB,actor,team);if(!access.allowed)return json({error:'This team hub is private to its assigned managers, linked roster members and the owner.'},403);
- const {players}=await rosterSnapshot(env),roster=players[team.division].filter(p=>p.club===team.key).map(p=>({id:String(p.identity),name:p.name}));
+ const {players}=await rosterSnapshot(env),roster=players[team.division].filter(p=>p.club===team.key).map(p=>({id:String(p.identity),profileId:String(p.id||p.identity),name:p.name}));
  if(request.method==='GET'){
   const row=await env.DB.prepare("SELECT payload,revision,updated_at FROM team_hub_playbooks WHERE season='2' AND division=? AND team_key=?").bind(team.division,team.key).first();
-  return json({team:{...team,...access,league:`Season 2 · ${team.division}`,logo:'/assets/ufl-mark.webp',publicUrl:`/clubs/${encodeURIComponent(team.key)}?season=2&division=${team.division}`},roster,rosterSource:'Current registered team roster · new players appear automatically',playbook:row?JSON.parse(row.payload):{version:1,boards:[]},revision:row?.revision||0,updatedAt:row?.updated_at||null,accountId:actor.discord_id});
+  return json({team:{...team,...access,canAssign:['owner','admin'].includes(actor.role),league:`Season 2 · ${team.division}`,logo:'/assets/ufl-mark.webp',publicUrl:`/clubs/${encodeURIComponent(team.key)}?season=2&division=${team.division}`},roster,rosterSource:'Current registered team roster · new players appear automatically',playbook:row?JSON.parse(row.payload):{version:1,boards:[]},revision:row?.revision||0,updatedAt:row?.updated_at||null,accountId:actor.discord_id});
  }
  if(!access.canEdit)return json({error:'Only this team’s assigned managers can edit tactics. Owner inspection is read-only unless also assigned as a manager.'},403);
  if(input.accountId!==actor.discord_id||!Number.isSafeInteger(input.revision)||input.revision<0)return json({error:'Account changed or invalid revision. Reload before saving.'},409);

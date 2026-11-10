@@ -249,3 +249,26 @@ for (const season of liveSeasons) {
   const refreshed = syncResults[seasons.findIndex(config => config.key === season.key)].status === 'fulfilled';
   console.log(`${refreshed ? 'Synced' : 'Retained'} ${season.key}: ${season.teamDetails.length} teams, ${season.weeks.length} matchweeks, ${season.weeks.flatMap(week => week.matches).length} matches.`);
 }
+
+const competitionMetadata = [
+  ...seasons.map(config => ({...config, id: config.division})),
+  {id:'international',key:'international',competitionId:4,seasonId:6},
+];
+const competitionStatusPath='pickems-app/seasons/competition-status.json';
+try {
+  const previous = JSON.parse(await readFile(competitionStatusPath,'utf8'));
+  const statusKeys={'Registrations':'registration','In Progress':'ongoing','Upcoming':'upcoming','Completed':'complete','Finished':'complete','Concluded':'complete'};
+  const updated=await Promise.allSettled(competitionMetadata.map(async config=>{
+    const {season}=await pageProps(config,'matches');
+    const status=Object.hasOwn(statusKeys,season.status?.status)?statusKeys[season.status.status]:null;
+    if(!status)throw Error('Unrecognized competition status for '+config.key);
+    return [config.id,{status,startsAt:season.date_competition_start||null,endsAt:season.date_competition_end||null,registrationEnds:season.date_registrations_end||null}];
+  }));
+  for(const result of updated){
+    if(result.status==='fulfilled')previous[result.value[0]]=result.value[1];
+    else console.warn('::warning::Season status retained. '+result.reason.message);
+  }
+  await writeFile(competitionStatusPath,JSON.stringify(previous,null,2)+'\n');
+} catch(error) {
+  console.warn('::warning::Competition status snapshot retained. '+error.message);
+}

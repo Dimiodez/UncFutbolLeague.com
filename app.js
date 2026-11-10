@@ -240,6 +240,7 @@ function funPage() {
 function leaguePage() {
   return pageHero('UFL · League', 'The official match centre', 'Teams, fixtures, tables, rules and every route to a UFL trophy.') +
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">L</span><div><span class="section-kicker">League</span><h2>Follow the whole season.</h2><p class="section-intro">Start with the current competition or move directly into the part of league operations you need.</p></div></div><div class="league-quick-links"><a href="/teams?season=2&division=6v6" data-link><b>6v6</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=10v10" data-link><b>10v10</b><span>Teams and club pages</span></a><a href="/teams?season=2&division=house" data-link><b>House</b><span>Community pickup teams</span></a></div><div class="league-suite-entry" data-league-suite-entry hidden></div><div class="hub-card-grid hub-card-grid-league">${[
+      {mark:'S2',title:'Current season',copy:'See competitions, registration status, fixtures and standings.',href:'/season',label:'View the season'},
       {mark:'T',title:'Clubs',copy:'Explore club identities, stadium artwork and squads across current and archived seasons.',href:'/clubs?season=2&division=6v6',label:'Browse clubs'},
       {mark:'INT',title:'UFL Internationals',copy:'Represent your nation. National squads, international fixtures, standings, stats and TOTW.',href:'/internationals',label:'Explore Internationals',native:true},
       {mark:'P',title:'Players',copy:'Find a teammate and explore the faces behind each club.',href:'/players',label:'Meet the players'},
@@ -1272,6 +1273,7 @@ function render() {
   else if (path === routes.utility) main.innerHTML = utilityHubPage();
   else if (path === routes.fun) main.innerHTML = funPage();
   else if (path === routes.league) main.innerHTML = leaguePage();
+  else if (path === '/season') main.innerHTML = uflSeasonPage();
   else if (path === '/arcade/loosey-goosey') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Loosey Goosey"><iframe class="integrated-app-frame" src="/goose-app/" title="Loosey Goosey soccer runner" scrolling="no"></iframe></section>';
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
@@ -1300,7 +1302,7 @@ function render() {
   else if(path==='/') main.innerHTML = homePage(); else main.innerHTML=pageHero('Page not found','This page is off the pitch.','The address may have changed. Use the navigation above or return to a hub.')+'<section class="section"><a class="button button-primary" href="/" data-link>Back to Home</a> <a class="button button-secondary" href="/league" data-link>League hub</a></section>';
   document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
-  const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
+  const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/season' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
   bindDynamicActions();
@@ -1315,6 +1317,7 @@ function render() {
   if(typeof hydrateTeamMedia==='function')hydrateTeamMedia();
   hydrateAccount();
   hydratePublishedEvents();
+  if(path==='/season')hydrateUflSeasonPage();
   hydrateByotPage();
   renderAggregateByotBoard();
   hydrateUsersDirectory();

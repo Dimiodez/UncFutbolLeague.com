@@ -170,7 +170,7 @@ function leagueClubVisual(key, season) {
   const media=season?.uflSeason===2&&typeof leagueTeamMediaState!=='undefined'?leagueTeamMediaState.teams?.[`${season.division}:${key}`]||{}:{};
   const stadium=season?.uflSeason===2?leagueStadiumPhotos[`${season.division}:${key}`]:null;
   const registered=season?.uflSeason===2?season?.teamDetails?.find(c=>c.key===key&&c.registered!==false):null;
-  if(registered) return {name,logo:logo||current?.logo||'/assets/ufl-mark.webp',image:stadium||current?.image||registered.cover||'/assets/ufl-banner.jpg',location:'Season 2 · VA registered',copy:'Registered for this division on Virtual Arena. Website player assignments remain staff-managed while official rosters are verified.',officialUrl:registered.url,...media};
+  if(registered) return {name,logo:logo||current?.logo||'/assets/ufl-mark.webp',image:stadium||current?.image||registered.cover||'/assets/ufl-banner.jpg',location:'Season 2 · VA registered',copy:'Registered for this division on Virtual Arena. Website player assignments remain staff-managed while official rosters are verified.',officialUrl:registered.url,banner:registered.cover||'',...media};
   if(current) return {name,logo:current.logo,image:stadium||current.image,location:'Season 2 · Provisional club',copy:'Meet the current squad. Club and player listings are from our collaborator’s roster; official VA registration will be linked as clubs register.',...media};
   const artwork=leagueArtwork.find(row=>row[0]===key&&name===leagueTeam(key,leagueSeasons['s1-6v6'])[0]);
   return {name,logo:artwork?`/assets/league/${artwork[1]}-crest.png`:logo,image:artwork?`/assets/league/${artwork[1]}.jpg`:'/assets/ufl-banner.jpg',location:artwork?.[2]||'UFL clubhouse',copy:artwork?.[3]||'Meet the squad. Club artwork and roster details will be added as the season takes shape.'};
@@ -211,14 +211,96 @@ function leaguePlayersPage(params) {
   const clubs=Object.keys(context.season?.teams||{});
   return pageHero('UFL · League','The players','The faces behind the clubs. Find a teammate, explore a squad, meet the league.')+`<section class="section league-explorer">${leagueViewNavigation('/players',context)}<div class="league-directory-head"><div><span class="section-kicker">Player directory</span><h2>Meet the lineup.</h2></div><label class="league-search">Search players<input id="league-player-search" type="search" placeholder="Player or club name" autocomplete="off"></label></div>${clubs.length?`<p class="sync-note">${context.archive?'Public collaborator directory snapshot · Season 1 reference rosters, not a complete official registration list.':'Provisional Season 2 rosters from our collaborator · VA registration and EA linking pending.'}</p><nav class="league-club-filters" aria-label="Filter players by club"><a class="${!club?'active':''}" href="${leagueViewLink('/players',context)}" data-link>All clubs <b>${context.players.length}</b></a>${clubs.map(key=>`<a class="${club===key?'active':''}" href="${leagueViewLink('/players',context,`&club=${key}`)}" data-link>${escapeHtml(leagueTeam(key,context.season)[0])} <b>${context.players.filter(p=>p.club===key).length}</b></a>`).join('')}</nav>`:''}<p id="league-player-count" aria-live="polite">${players.length} players</p><div class="league-player-grid">${players.map(p=>leaguePlayerCard(p,context)).join('')}</div><p id="league-player-no-results" class="empty-state" hidden>No players match that search.</p>${players.length?'':emptyState(context.archive?'No reference players for this club':'Player registration is coming next',context.archive?'There are no players listed for this club in the collaborator’s archived directory.':'The directory layout is ready. No Season 1 players have been carried into this season.',`<a class="button button-secondary" href="/players?season=1&division=6v6" data-link>Explore Season 1 players →</a>`)}</section>`;
 }
+function clubDashboardMatches(key,season) {
+  return (season.weeks||[]).flatMap(week=>[
+    ...week.matches.filter(match=>match[1]===key||match[2]===key).map(match=>{
+      const home=match[1]===key;
+      return {opponent:home?match[2]:match[1],home,state:scheduleMatchState(match,season),
+        for:match[home?3:4],against:match[home?4:3],kickoff:match[5]||week.scheduledAt,
+        round:match[6],week:week.week,date:week.date};
+    }),
+    ...(week.byes||[]).filter(bye=>bye.team===key).map(bye=>({
+      state:'bye',kickoff:bye.scheduledAt,round:bye.round,week:week.week,date:week.date
+    })),
+  ]).sort((a,b)=>(a.kickoff||0)-(b.kickoff||0));
+}
+
+function clubMatchRows(matches,context,empty) {
+  if(!matches.length)return '<p class="club-dash-empty">'+escapeHtml(empty)+'</p>';
+  return '<ul class="club-match-list">'+matches.map(match=>{
+    const opponent=match.opponent&&leagueClubVisual(match.opponent,context.season);
+    const when=match.kickoff?window.UFLTime?.format?.(match.kickoff*1000)||match.date:match.date;
+    const played=match.state==='played';
+    const result=played?(match.for>match.against?'W':match.for===match.against?'D':'L'):null;
+    const label=played?match.for+'–'+match.against:match.state==='missing'?'Result pending':match.state==='bye'?'Bye':(match.home?'Home':'Away');
+    return '<li><div class="club-match-opponent">'+(opponent?'<img src="'+escapeHtml(opponent.logo||'/assets/ufl-mark.webp')+'" alt="" loading="lazy">':'')+
+      '<div><small>'+escapeHtml(when||'Kickoff pending')+(match.round?' · Round '+escapeHtml(match.round):'')+'</small>'+
+      (opponent?'<a href="'+leagueViewLink('/clubs/'+encodeURIComponent(match.opponent),context)+'" data-link>'+escapeHtml(opponent.name)+'</a>':'<strong>No match this round</strong>')+
+      '</div></div><div class="club-match-result">'+(result?'<span data-form="'+result+'" aria-label="'+({W:'Win',D:'Draw',L:'Loss'}[result])+'">'+result+'</span>':'')+'<strong>'+escapeHtml(label)+'</strong></div></li>';
+  }).join('')+'</ul>';
+}
+
+function clubDashboardTable(key,context) {
+  const rows=context.season.standings||[], index=rows.findIndex(row=>row[0]===key);
+  if(index<0)return '<p class="club-dash-empty">This club has no published league position yet.</p>';
+  const from=Math.max(0,Math.min(index-1,rows.length-3));
+  return '<div class="club-table-scroll" tabindex="0" role="region" aria-label="Nearby standings"><table><thead><tr><th scope="col">#</th><th scope="col">Club</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>'+
+    rows.slice(from,from+3).map(([id,p,w,d,l,gf,ga,gd,pts],offset)=>{
+      const club=leagueClubVisual(id,context.season);
+      return '<tr'+(id===key?' class="club-current-row"':'')+'><td>'+(from+offset+1)+'</td><th scope="row"><a href="'+leagueViewLink('/clubs/'+encodeURIComponent(id),context)+'" data-link>'+escapeHtml(club.name)+'</a></th><td>'+p+'</td><td>'+w+'</td><td>'+d+'</td><td>'+l+'</td><td>'+signed(gd)+'</td><td><strong>'+pts+'</strong></td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+
+function clubDashboardLeaders(club,players,context) {
+  const boards=context.season.leaderboards?.players||{};
+  const leaders=[['goals','Goals'],['assists','Assists'],['goals_and_assists','Goals + assists']].flatMap(([kind,label])=>{
+    const first=boards[kind]?.records?.find(row=>row.team?.name===club.name&&row.data?.name&&Number(row.stat)>0);
+    if(!first)return [];
+    const matches=players.filter(player=>player.name.toLowerCase()===first.data.name.toLowerCase());
+    const player=matches.length===1?matches[0]:null;
+    return ['<article class="club-leader"><strong>'+escapeHtml(first.stat)+'</strong><span>'+label+'</span><div>'+
+      (player?.portrait?'<img src="'+escapeHtml(player.portrait)+'" alt="" loading="lazy">':'')+
+      '<b>'+escapeHtml(first.data.name)+'</b></div></article>'];
+  });
+  return leaders.length?'<div class="club-leaders">'+leaders.join('')+'</div>':'<p class="club-dash-empty">Club leaders will appear when player statistics are published.</p>';
+}
+
 function leagueClubProfile(key,params) {
   const context=leagueViewContext(params);
   key=context.clubAliases?.[key]||key;
-  if(!context.season?.teams?.[key]) return pageHero('UFL · League','Club not found','This club is not listed in the selected season.')+`<section class="section"><a href="${leagueViewLink('/clubs',context)}" data-link>Back to clubs →</a></section>`;
-  const club=leagueClubVisual(key,context.season),players=context.players.filter(p=>p.club===key);
-  const stats=context.season.teamDetails?.find(t=>t.key===key)?.stats;
-  return pageHero(`${context.selected.label} · ${context.division}`,club.name,club.location)+`<section class="section league-explorer">${leagueViewNavigation('/clubs',context)}<a class="league-back" href="${leagueViewLink('/clubs',context)}" data-link>← All clubs</a><article class="league-club-profile"><img class="league-profile-art" ${leagueClubArtworkAttributes(club.image,'profile')} alt="${escapeHtml(club.name)} club artwork"><div><img class="league-profile-crest" src="${escapeHtml(club.logo)}" alt="${escapeHtml(club.name)} crest"><span class="section-kicker">Club identity</span><h2>${escapeHtml(club.name)}</h2><p>${escapeHtml(club.copy)}</p><div class="league-mini-stats">${[['Played',stats?.played],['Wins',stats?.wins],['Points',stats?.points]].map(([label,value])=>`<div><strong>${value??'—'}</strong><span>${label}</span></div>`).join('')}</div><a href="${leagueViewLink('/standings',context)}" data-link>View season standings →</a></div></article><div class="league-directory-head"><div><span class="section-kicker">${context.archive?'Archived reference roster':'Provisional squad'}</span><h2>The dressing room.</h2></div><a href="${leagueViewLink('/players',context,`&club=${key}`)}" data-link>All club players →</a></div><div class="league-player-grid">${players.map(p=>leaguePlayerCard(p,context)).join('')}</div>${players.length?'':emptyState('Roster to follow','Player registration and club linking will be connected in the next phase.')}</section>`;
+  if(!context.season?.teams?.[key]) return pageHero('UFL · League','Club not found','This club is not listed in the selected season.')+
+    '<section class="section"><a href="'+leagueViewLink('/clubs',context)+'" data-link>Back to clubs →</a></section>';
+  const club=leagueClubVisual(key,context.season), players=context.players.filter(player=>player.club===key);
+  const record=context.season.standings?.find(row=>row[0]===key);
+  const matches=clubDashboardMatches(key,context.season), history=matches.filter(match=>match.state==='played').reverse();
+  const calendar=matches.filter(match=>match.state!=='played');
+  const next=calendar.find(match=>match.state==='upcoming'&&(!match.kickoff||match.kickoff*1000>=Date.now()-7200000));
+  const nextDay=next?calendar.filter(match=>match.week===next.week):[];
+  const view=['calendar','history','squad'].includes(params.get('view'))?params.get('view'):'overview';
+  const base='/clubs/'+encodeURIComponent(key);
+  const viewLink=id=>leagueViewLink(base,context,id==='overview'?'':'&view='+id);
+  const schedule='/schedules?'+new URLSearchParams({season:context.selected.id,type:context.division,team:key,matchday:'all'});
+  const standings=leagueViewLink('/standings',context);
+  const statList=[['Played',record?.[1]],['Wins',record?.[2]],['Draws',record?.[3]],['Losses',record?.[4]],['Points',record?.[8]]];
+  if(record?.[1]>0)statList.push(['Win rate',Math.round(record[2]/record[1]*100)+'%']);
+  const stats=statList.map(([label,value])=>'<div><strong>'+escapeHtml(value??'—')+'</strong><span>'+label+'</span></div>').join('');
+  const squad='<section class="club-dashboard-squad"><div class="club-panel-heading"><h2>Squad</h2><a href="'+leagueViewLink('/players',context,'&club='+encodeURIComponent(key))+'" data-link>Player directory →</a></div>'+
+    (players.length?'<div class="league-player-grid">'+players.map(player=>leaguePlayerCard(player,context)).join('')+'</div>':emptyState('Roster to follow','Registered players will appear here as the roster is updated.'))+'</section>';
+  const fixturePanel=(title,rows,link,label,empty)=>'<section class="club-dash-panel"><div class="club-panel-heading"><h2>'+title+'</h2><a href="'+link+'" data-link>'+label+' →</a></div>'+clubMatchRows(rows,context,empty)+'</section>';
+  const body=view==='calendar'?fixturePanel('Calendar',calendar,schedule,'Full league schedule','No fixtures or byes are published for this club yet.'):
+    view==='history'?fixturePanel('Match history',history,schedule,'Full league schedule','This club has no posted results yet.'):
+    view==='squad'?squad:
+    '<div class="club-dash-grid"><div><section class="club-dash-panel"><div class="club-panel-heading"><h2>Standings</h2><a href="'+standings+'" data-link>Full table →</a></div>'+clubDashboardTable(key,context)+'</section>'+
+    '<section class="club-dash-panel"><div class="club-panel-heading"><h2>Season leaders</h2><a href="'+leagueViewLink('/stats',context)+'" data-link>League stats →</a></div>'+clubDashboardLeaders(club,players,context)+'</section></div><div>'+
+    fixturePanel('Next matchday',nextDay,viewLink('calendar'),'Club calendar','No upcoming fixtures are posted.')+
+    fixturePanel('Recent results',history.slice(0,5),viewLink('history'),'Match history','This club has no posted results yet.')+'</div></div>'+squad;
+  return '<section class="section league-explorer club-dashboard">'+leagueViewNavigation('/clubs',context)+'<a class="league-back" href="'+leagueViewLink('/clubs',context)+'" data-link>← All clubs</a>'+
+    '<article class="league-club-profile club-profile-dashboard">'+(club.banner?'<img class="club-profile-banner" src="'+escapeHtml(club.banner)+'" alt="" fetchpriority="high">':'')+
+    '<img class="league-profile-art" '+leagueClubArtworkAttributes(club.image,'profile')+' alt="'+escapeHtml(club.name)+' stadium or club artwork">'+
+    '<div><img class="league-profile-crest" src="'+escapeHtml(club.logo||'/assets/ufl-mark.webp')+'" alt=""><span class="section-kicker">'+escapeHtml(context.selected.label+' · '+context.division)+'</span><h1>'+escapeHtml(club.name)+'</h1><p>'+escapeHtml(club.location)+'</p><div class="league-mini-stats">'+stats+'</div></div></article>'+
+    '<nav class="club-dashboard-tabs" aria-label="Club sections">'+[['overview','Overview'],['calendar','Calendar'],['history','History'],['squad','Squad']].map(([id,label])=>'<a href="'+viewLink(id)+'" data-link'+(view===id?' aria-current="page"':'')+'>'+label+'</a>').join('')+'</nav>'+body+'</section>';
 }
+
 function leaguePlayerProfile(id,params) {
   const context=leagueViewContext(params),alias=!context.archive&&typeof leagueManagedRosterState!=='undefined'?leagueManagedRosterState.aliases?.[id]:null,player=context.players.find(p=>p.id===id)||(alias?context.players.find(p=>p.identity===alias):null);
   if(!player) return pageHero('UFL · League','Player not found','This player is not listed in the selected season.')+`<section class="section"><a href="${leagueViewLink('/players',context)}" data-link>Back to players →</a></section>`;

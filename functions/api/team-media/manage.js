@@ -1,6 +1,6 @@
 import {json} from '../../_lib/auth.js';
 import {staffGuard,photoForm,validatePhoto} from '../../_lib/player-photos.js';
-import {canManageTeam,mediaStaff} from '../../_lib/team-media.js';
+import {canManageTeam,mediaStaff,TEAM_BANNERS_SCHEMA} from '../../_lib/team-media.js';
 export async function onRequestGet({request,env}){
  const guard=await staffGuard(request,env,false,true);if(guard.response)return guard.response;
  const params=new URL(request.url).searchParams,division=params.get('division'),team=params.get('team');
@@ -24,21 +24,29 @@ export async function onRequestPost({request,env}){
   await env.DB.batch([statement,env.DB.prepare('INSERT INTO audit_log(actor_discord_id,action,target_discord_id,details) VALUES(?,?,?,?)').bind(actor,`team_media_manager_${action}`,user,JSON.stringify({division,team}))]);
   return json({ok:true});
  }
- if(action!=='upload'||!['logo','stadium'].includes(form.get('kind')))return json({error:'Choose a logo or stadium photo.'},400);
+ if(action!=='upload'||!['logo','stadium','banner'].includes(form.get('kind')))return json({error:'Choose a club logo, banner or stadium photo.'},400);
  let photo;try{photo=await validatePhoto(form.get('photo'));}catch(error){return json({error:error.message},400);}
  const id=crypto.randomUUID(),key=`team-media/${id}`,kind=form.get('kind');
- const previous=await env.DB.prepare("SELECT a.id,a.object_key FROM team_media_publications p JOIN team_media_assets a ON a.id=p.asset_id WHERE p.season='2' AND p.division=? AND p.team_key=? AND p.kind=?").bind(division,team,kind).first();
+ const banner=kind==='banner';
+ if(banner)await env.DB.prepare(TEAM_BANNERS_SCHEMA).run();
+ const previous=banner
+  ?await env.DB.prepare("SELECT a.id,a.object_key FROM team_banner_publications p JOIN team_media_assets a ON a.id=p.asset_id WHERE p.season='2' AND p.division=? AND p.team_key=?").bind(division,team).first()
+  :await env.DB.prepare("SELECT a.id,a.object_key FROM team_media_publications p JOIN team_media_assets a ON a.id=p.asset_id WHERE p.season='2' AND p.division=? AND p.team_key=? AND p.kind=?").bind(division,team,kind).first();
+ const publish=banner
+  ?env.DB.prepare("INSERT INTO team_banner_publications(season,division,team_key,asset_id) VALUES('2',?,?,?) ON CONFLICT(season,division,team_key) DO UPDATE SET asset_id=excluded.asset_id").bind(division,team,id)
+  :env.DB.prepare("INSERT INTO team_media_publications(season,division,team_key,kind,asset_id) VALUES('2',?,?,?,?) ON CONFLICT(season,division,team_key,kind) DO UPDATE SET asset_id=excluded.asset_id").bind(division,team,kind,id);
  await env.PLAYER_PHOTOS.put(key,photo.bytes,{httpMetadata:{contentType:photo.type}});
  try{await env.DB.batch([
   env.DB.prepare('INSERT INTO team_media_assets(id,object_key,content_type,uploaded_by) VALUES(?,?,?,?)').bind(id,key,photo.type,actor),
-  env.DB.prepare("INSERT INTO team_media_publications(season,division,team_key,kind,asset_id) VALUES('2',?,?,?,?) ON CONFLICT(season,division,team_key,kind) DO UPDATE SET asset_id=excluded.asset_id").bind(division,team,kind,id),
+  publish,
   env.DB.prepare("INSERT INTO audit_log(actor_discord_id,action,details) VALUES(?,'team_image_published',?)").bind(actor,JSON.stringify({division,team,kind,assetId:id}))
  ]);}catch(error){await env.PLAYER_PHOTOS.delete(key);throw error;}
  // Replacements do not accumulate unused photos. UUID assets are never reused.
  // Clean up only after the new image has committed; never remove a current asset.
  if(previous){try{
-  const current=await env.DB.prepare('SELECT 1 AS current FROM team_media_publications WHERE asset_id=?').bind(previous.id).first();
-  if(!current){await env.PLAYER_PHOTOS.delete(previous.object_key);await env.DB.prepare('DELETE FROM team_media_assets WHERE id=? AND NOT EXISTS(SELECT 1 FROM team_media_publications WHERE asset_id=?)').bind(previous.id,previous.id).run();}
+  const publications=banner?'team_banner_publications':'team_media_publications';
+  const current=await env.DB.prepare('SELECT 1 AS current FROM '+publications+' WHERE asset_id=?').bind(previous.id).first();
+  if(!current){await env.PLAYER_PHOTOS.delete(previous.object_key);await env.DB.prepare('DELETE FROM team_media_assets WHERE id=? AND NOT EXISTS(SELECT 1 FROM '+publications+' WHERE asset_id=?)').bind(previous.id,previous.id).run();}
  }catch{console.warn('Replaced team image cleanup deferred.');}}
  return json({ok:true,url:`/api/team-media/images/${id}`},201);
 }
