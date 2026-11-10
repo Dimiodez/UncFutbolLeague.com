@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261110-internationals">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261110-international-rosters">
 </head>
 <body>
   <main class="pickems-shell">
@@ -37,6 +37,14 @@
 
     <section class="mode-pane active" data-pane="simple" data-competition-pane="pickems" hidden>
       <div class="week-browser"><div><p class="eyebrow" id="season-heading">FC27 · UFL Season 2</p><h2 id="pickem-calendar-heading">Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small><div id="pickem-international-calendar" hidden><p class="helper" id="pickem-calendar-note"></p><a class="source-link" href="/internationals/schedules" target="_top">Full Internationals calendar ↗</a></div></div><div class="week-tabs" id="simple-weeks"></div></div>
+      <section class="panel pickem-roster" id="pickem-roster-panel" hidden>
+        <label class="matchday-picker" for="pickem-roster-team">Team rosters
+          <select id="pickem-roster-team"><option value="">Choose a nation</option></select>
+        </label>
+        <p class="helper" id="pickem-roster-status" role="status" hidden></p>
+        <ul id="pickem-roster-list" hidden></ul>
+        <a class="source-link" id="pickem-roster-link" target="_top" hidden></a>
+      </section>
       <div class="pick-layout">
         <section class="panel">
           <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Loading matchday…</h2></div><span class="status open" id="simple-status">Checking voting window…</span></header>
@@ -68,6 +76,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20261015-save2"></script>
-  <script src="/pickems-app/app.js?v=20261110-international-leaderboard"></script>
+  <script src="/pickems-app/app.js?v=20261110-international-rosters"></script>
 </body>
 </html>
