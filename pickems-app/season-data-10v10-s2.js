@@ -1370,7 +1370,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "Vinicimnj",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/vinicimnj-1782960433.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/vinicimnj-1794259251.png",
               "url": "https://ufl.virtualarena.app/users/Vinicimnj"
             },
             "team": {
