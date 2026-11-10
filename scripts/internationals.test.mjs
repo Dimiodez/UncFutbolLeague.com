@@ -43,6 +43,24 @@ test('international pages escape roster content, expose no anonymous administrat
  for(const path of ['/internationals/unknown','/internationals/teams/ZZZ','/internationals/stats/ITA'])assert.equal((await internationalPage({request:new Request('https://site.test'+path),env:s.env})).status,404);
  s.sqlite.close();
 });
+test('international pages identify their section in the shared site menu', async () => {
+ const {sqlite, env} = setup();
+ const shell = fs.readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+ env.ASSETS.fetch = async () => new Response(shell);
+ try {
+  for (const [path, state] of [['/internationals','page'], ['/internationals/standings','location']]) {
+   const response = await internationalPage({request:new Request('https://site.test'+path), env});
+   assert.equal(response.status, 200);
+   const html = await response.text();
+   const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] || '';
+   assert.ok(header.includes('class="nav-group nav-split-group nav-hub active" data-nav-hub="league"'));
+   assert.ok(header.includes('href="/internationals" aria-current="'+state+'"'));
+  }
+ } finally {
+  sqlite.close();
+ }
+});
+
 test('published source failures are not disguised as an empty successful table',async()=>{
  const s=setup();s.sqlite.prepare("UPDATE international_competitions SET publish_results=1,shared_league_id='future-verified-source'").run();
  assert.equal((await api({request:request(),env:s.env})).status,503);s.sqlite.close();
