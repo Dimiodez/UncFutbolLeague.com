@@ -1,9 +1,20 @@
 /* Shared navigation and safe, same-tab login handoff. No permissions or auth tokens. */
 (() => {
  const routeKey=url=>url.pathname+'|'+(url.searchParams.get('season')||'2')+'|'+(url.searchParams.get('division')||url.searchParams.get('type')||'');
- const safeReturn=value=>{
-  if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\\u0000-\u0020]/.test(value))return null;
-  try{const u=new URL(value,'https://www.uncfutbolleague.com');if(u.origin!=='https://www.uncfutbolleague.com'||!['/team-hub','/pickems','/coaching','/arcade','/league-suite','/league-suite/ea-clubs','/league-suite/dashboard','/league-suite/join'].includes(u.pathname))return null;return u.pathname+u.search;}catch{return null;}
+ const returnRoutes = new Set([
+  '/team-hub', '/pickems', '/coaching', '/coaching/new', '/arcade', '/arcade/cleat',
+  '/arcade/loosey-goosey', '/arcade/sandy-uppy', '/arcade/mountain-mayhem',
+  '/league-suite', '/league-suite/ea-clubs', '/league-suite/dashboard', '/league-suite/join',
+ ]);
+ const guidePath = /^\/coaching\/[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}(?:\/edit)?$/i;
+ const safeReturn = value => {
+  if (typeof value !== 'string' || value.length > 600 || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u0020]/.test(value)) return null;
+  try {
+    const url = new URL(value, 'https://www.uncfutbolleague.com');
+    if (url.origin !== 'https://www.uncfutbolleague.com') return null;
+    if (returnRoutes.has(url.pathname) || guidePath.test(url.pathname)) return url.pathname + url.search;
+  } catch {}
+  return null;
  };
  const matchdayFragment = /^#matchday-\d+$/;
  let pending = typeof location !== 'undefined' && location.pathname === '/schedules' && matchdayFragment.test(location.hash)
@@ -61,19 +72,29 @@
     target?.scrollIntoView({behavior: 'instant'});
     return;
   }
+  if (intent.clubTab) {
+    main.querySelector('[aria-label="Club sections"] [aria-current="page"]')?.focus({preventScroll: true});
+    return;
+  }
   if(intent.newPage){scrollTo({left:0,top:0,behavior:'instant'});const h=main.querySelector('h1')||main;h.setAttribute('tabindex','-1');h.focus({preventScroll:true});}
  }
  function enhancePage(main){
   const path=location.pathname,home=path==='/',heading=main.querySelector('h1')||main.querySelector('h2');
   document.body.classList.toggle('interior-route',!home);
   const toolTitles={'/func':'FUNC Card Studio','/wheel':'Unc Wheel','/pickems':'Pick’ems','/arcade/cleat':'Cleat Arcade','/arcade/loosey-goosey':'Loosey Goosey','/arcade/sandy-uppy':'Sandy Uppy','/arcade/mountain-mayhem':'Mountain Mayhem'};
-  if(!home&&heading)document.title=heading.textContent.trim()+' · UNC Futbol League';else if(home)document.title='UNC Futbol League';
+  const internationals = path === '/internationals' || path.startsWith('/internationals/');
+  if (!home && heading && !internationals) document.title = heading.textContent.trim() + ' · UNC Futbol League';
+  else if (home) document.title = 'UNC Futbol League';
   if(toolTitles[path])document.title=toolTitles[path]+' · UNC Futbol League';
   let bar=main.querySelector(':scope > .page-context');
   if(!bar){bar=document.createElement('nav');bar.className='page-context';bar.setAttribute('aria-label','Page context');main.prepend(bar);}
   bar.replaceChildren();
-  if(!home){const parent=path.startsWith('/arcade/')?['/arcade','← Back to Arcade']:path.startsWith('/teams/house/')?['/teams?division=house','← All house teams']:path.startsWith('/league-suite')?['/league','← League hub']:path.startsWith('/wheel')?['/utility','← Utility hub']:['/','← Home'];const link=document.createElement('a');link.href=parent[0];link.textContent=parent[1];if(document.body.dataset.standaloneNavigation!=='true')link.setAttribute('data-link','');bar.append(link);}
-  window.UFLTime?.control(bar);
+  if(!home && path !== '/arcade/sandy-uppy'){const parent=path.startsWith('/arcade/')?['/arcade','← Back to Arcade']:path.startsWith('/teams/house/')?['/teams?division=house','← All house teams']:path.startsWith('/league-suite')?['/league','← League hub']:path.startsWith('/wheel')?['/utility','← Utility hub']:['/','← Home'];const link=document.createElement('a');link.href=parent[0];link.textContent=parent[1];if(document.body.dataset.standaloneNavigation!=='true')link.setAttribute('data-link','');bar.append(link);}
+  if (home || ['/account', '/season'].includes(path) ||
+    /^\/(?:schedules|clubs\/|teams\/house\/|internationals|league-suite|team-hub)/.test(path)) {
+    window.UFLTime?.control(bar);
+  }
+  bar.hidden = !bar.childElementCount;
   if(home)main.querySelector('#home-calendar')?.prepend(bar);
   if(path==='/ufb'||path.startsWith('/coaching/'))installGuideNavigation(main);
   if(path==='/ufb'){
@@ -102,7 +123,12 @@
   const next=new URL(link.href,location.href);if(next.origin!==location.origin)return;
   if(next.pathname==='/account')rememberReturn(next.searchParams.get('returnTo'));
   if(!link.hasAttribute('data-link'))return;
-  saveScroll();pending={newPage:routeKey(next)!==routeKey(new URL(location.href)),hash:next.hash};
+  saveScroll();
+  pending = {
+    newPage: routeKey(next) !== routeKey(new URL(location.href)),
+    hash: next.hash,
+    clubTab: !!link.closest('[aria-label="Club sections"]'),
+  };
   closeMenus();
  },true);
  window.addEventListener('popstate', event => {
@@ -130,7 +156,20 @@
  document.addEventListener('click',event=>{if(!event.target.closest('.site-header'))closeMenus();});
  function init(){
   const watchedNav=document.querySelector('.main-nav');
-  if(watchedNav)new MutationObserver(syncOverlay).observe(watchedNav,{attributes:true,attributeFilter:['class']});
+  if (watchedNav) {
+    new MutationObserver(syncOverlay).observe(watchedNav, {attributes: true, attributeFilter: ['class']});
+    const hubs = watchedNav.querySelector('.nav-hubs');
+    const actions = watchedNav.querySelector('.nav-actions');
+    const compact = window.matchMedia?.('(max-width: 1240px)');
+    if (hubs && actions && compact) {
+      const order = () => {
+        if (compact.matches) hubs.before(actions);
+        else hubs.after(actions);
+      };
+      order();
+      compact.addEventListener('change', order);
+    }
+  }
   if(location.pathname==='/account')rememberReturn(new URLSearchParams(location.search).get('returnTo'));
   if(document.body.dataset.standaloneNavigation!=='true')return;
   const standaloneMain=document.querySelector('main');if(standaloneMain)enhancePage(standaloneMain);

@@ -232,7 +232,7 @@ function funPage() {
     `<section class="section hub-section"><div class="hub-intro"><span class="hub-letter">F</span><div><span class="section-kicker">Fun</span><h2>Built for bragging rights.</h2><p class="section-intro">Make a player card, call the next result or climb an arcade leaderboard. Serious prizes are not required.</p></div></div><div class="hub-card-grid">${[
       {mark:'FC',title:'FUNC Card Studio',copy:'Create a Futbol Unc Novelty Card with your portrait, club, position and custom attributes.',href:'/func',label:'Create a card'},
       {mark:'P',title:'Pick’ems',copy:'Predict matchweek results, save picks to your Discord account and chase the season leaderboard.',href:'/pickems',label:'Make your picks',status:'Season 2'},
-      {mark:'AR',title:'UFL Arcade',copy:'Play Cleat, Loosey Goosey and Sandy Uppy, then put your best run on the community boards.',href:'/arcade',label:'Enter the arcade'},
+      {mark:'AR',title:'UFL Arcade',copy:'Play Cleat, Loosey Goosey, Sandy Uppy and Mountain Mayhem. Put your best run on the community boards.',href:'/arcade',label:'Enter the arcade'},
       {mark:'♫',title:'Sound',copy:'YouTube playlists and albums for the warm-up, the lobby and the nostalgia.',href:'/sound',label:'Explore Sound',status:'Coming soon'}
     ].map(hubCard).join('')}</div></section>`;
 }
@@ -1269,6 +1269,7 @@ function render() {
   document.body.classList.toggle('matchday-route',path==='/schedules'&&['6v6','10v10'].includes(params.get('type')));
   document.body.classList.toggle('aggregate-embed', path === '/wheel/aggregate-byot' && params.get('embed') === '1');
   const main = document.querySelector('main');
+  const hadClubTabFocus = document.activeElement?.matches?.('[aria-label="Club sections"] a');
   const canonicalPath = path === '/' ? '/' : path;
   document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://www.uncfutbolleague.com${canonicalPath}`);
   if (path === routes.arcade) main.innerHTML = mountainArcadePage();
@@ -1311,7 +1312,11 @@ function render() {
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
   const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/season' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
-  if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
+  if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) {
+    const returnTo = encodeURIComponent(path + window.location.search);
+    main.insertAdjacentHTML('afterbegin', '<p class="arcade-signup-note"><a href="/account?returnTo=' + returnTo +
+      '" data-link>Sign up or sign in with Discord</a> before playing to add your personal best to the leaderboard.</p>');
+  }
   bindDynamicActions();
   if(path === routes.sound)window.hydrateSound();
   if(path === '/totw' || path === '/tots')window.hydrateLeagueAwards();
@@ -1331,6 +1336,9 @@ function render() {
   hydrateHomeCalendar();
   window.scrollTo({ ...scrollPosition, behavior: 'instant' });
   window.UFLUX?.afterRender(main);
+  if (hadClubTabFocus && document.activeElement === document.body) {
+    main.querySelector('[aria-label="Club sections"] [aria-current="page"]')?.focus({preventScroll: true});
+  }
 }
 
 window.addEventListener?.('ufl-timezone-change',()=>{if(location.pathname==='/'||location.pathname==='/schedules')render();});
@@ -1404,7 +1412,7 @@ document.querySelectorAll('.nav-group').forEach(group => {
   });
   group.addEventListener('mouseleave', () => {
     // A tap-open mobile menu stays open until a choice, another menu, or Escape.
-    if (window.matchMedia('(max-width: 1360px)').matches) return;
+    if (window.matchMedia('(max-width: 1240px)').matches) return;
     group.classList.remove('open');
     button.setAttribute('aria-expanded', 'false');
     button.blur();

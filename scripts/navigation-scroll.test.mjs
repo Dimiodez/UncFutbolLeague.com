@@ -20,3 +20,31 @@ test('route renders restore the previous viewport after the DOM temporarily shri
   vm.runInContext('render();',context);
   assert.equal(window.scrollY,340);
 });
+
+
+test('sign-in returns to the same guide or arcade game and rejects unapproved destinations', () => {
+  const navigation = fs.readFileSync(new URL('../navigation-ux.js', import.meta.url), 'utf8');
+  const guide = '/coaching/8177fa01-9f5d-4ada-8df7-3fb22b8d0401';
+  const game = '/arcade/sandy-uppy';
+  const redirects = [];
+  const session = new Map();
+  const location = {pathname: '/account', search: '', replace: value => redirects.push(value)};
+  const sessionStorage = {
+    getItem: key => session.get(key) ?? null,
+    setItem: (key, value) => session.set(key, value),
+    removeItem: key => session.delete(key),
+  };
+  const context = vm.createContext({window: {}, URL, URLSearchParams, location, sessionStorage});
+  vm.runInContext(navigation, context);
+  const ux = context.window.UFLUX;
+
+  for (const route of [guide, game]) {
+    assert.equal(ux.rememberReturn(route), true);
+    location.search = '?login=success';
+    assert.equal(ux.completeLoginReturn({authenticated: true}), true);
+    assert.equal(redirects.at(-1), route);
+  }
+  for (const route of ['//example.com/arcade', 'https://example.com/coaching', '/arcade/unlisted', '/api/auth/logout']) {
+    assert.equal(ux.safeReturn(route), null);
+  }
+});

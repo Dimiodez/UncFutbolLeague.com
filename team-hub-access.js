@@ -1,7 +1,20 @@
 import {escape as esc} from './team-hub-shell.js?v=20261012-hubs1';
 const root=document.querySelector('#hub-access-root'),message=document.querySelector('#hub-message');
 let data,busy=false,selectedTeam='6v6:ROM';
-async function api(body){const r=await fetch('/api/team-hub-access',{cache:'no-store',method:body?'POST':'GET',...(body?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})});const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to update team access.');return d;}
+async function api(body) {
+ const response = await fetch('/api/team-hub-access', {
+  cache: 'no-store',
+  method: body ? 'POST' : 'GET',
+  ...(body ? {headers: {'content-type': 'application/json'}, body: JSON.stringify(body)} : {}),
+ });
+ const data = await response.json().catch(() => null);
+ if (!response.ok || !data) {
+  const error = new Error(data?.error || 'Team access is temporarily unavailable. Please try again.');
+  error.status = response.status;
+  throw error;
+ }
+ return data;
+}
 const userLabel=id=>{const u=data.users.find(u=>u.id===id);return u?`${u.name} (@${u.username})`:id;};
 function render(){
  const team=data.teams.find(t=>t.id===selectedTeam)||data.teams[0];selectedTeam=team.id;
@@ -16,5 +29,20 @@ function render(){
  if(busy)root.querySelectorAll('button,select').forEach(e=>e.disabled=true);
 }
 async function write(body){if(busy)return;busy=true;render();try{await api({...body,accountId:data.accountId});message.textContent='Access saved. Membership is checked again on every private request.';data=await api();}catch(e){message.textContent=e.message;}finally{busy=false;render();}}
-async function load(){try{data=await api();render();}catch(e){message.textContent=e.message;root.innerHTML='<p>Only signed-in owners and administrators can assign access.</p><a href="/account">Sign in / account →</a>';}}
+async function load() {
+ try {
+  data = await api();
+  message.textContent = '';
+  render();
+ } catch (error) {
+  if (error.status === 401 || error.status === 403) {
+   message.textContent = 'Owner or administrator access required.';
+   root.innerHTML = '<p>Only signed-in owners and administrators can assign access.</p><a href="/account">Sign in / account →</a>';
+  } else {
+   message.textContent = 'Team access is temporarily unavailable.';
+   root.innerHTML = '<button type="button">Try again</button>';
+   root.querySelector('button').onclick = load;
+  }
+ }
+}
 load();

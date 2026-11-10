@@ -294,11 +294,20 @@ function leagueClubProfile(key,params) {
     '<section class="club-dash-panel"><div class="club-panel-heading"><h2>Season leaders</h2><a href="'+leagueViewLink('/stats',context)+'" data-link>League stats →</a></div>'+clubDashboardLeaders(club,players,context)+'</section></div><div>'+
     fixturePanel('Next matchday',nextDay,viewLink('calendar'),'Club calendar','No upcoming fixtures are posted.')+
     fixturePanel('Recent results',history.slice(0,5),viewLink('history'),'Match history','This club has no posted results yet.')+'</div></div>'+squad;
-  return '<section class="section league-explorer club-dashboard">'+leagueViewNavigation('/clubs',context)+'<a class="league-back" href="'+leagueViewLink('/clubs',context)+'" data-link>← All clubs</a>'+
-    '<article class="league-club-profile club-profile-dashboard" data-club-key="'+escapeHtml(key)+'">'+(club.banner?'<img class="club-profile-banner" src="'+escapeHtml(club.banner)+'" alt="" fetchpriority="high">':'')+
-    '<img class="league-profile-art" '+leagueClubArtworkAttributes(club.image,'profile')+' alt="'+escapeHtml(club.name)+' stadium or club artwork">'+
-    '<div><img class="league-profile-crest" src="'+escapeHtml(club.logo||'/assets/ufl-mark.webp')+'" alt=""><span class="section-kicker">'+escapeHtml(context.selected.label+' · '+context.division)+'</span><h1>'+escapeHtml(club.name)+'</h1><p>'+escapeHtml(club.location)+'</p><div class="league-mini-stats">'+stats+'</div></div></article>'+
-    '<nav class="club-dashboard-tabs" aria-label="Club sections">'+[['overview','Overview'],['calendar','Calendar'],['history','History'],['squad','Squad']].map(([id,label])=>'<a href="'+viewLink(id)+'" data-link'+(view===id?' aria-current="page"':'')+'>'+label+'</a>').join('')+'</nav>'+body+'</section>';
+  const tabs = '<nav class="club-dashboard-tabs" aria-label="Club sections">' +
+    [['overview','Overview'],['calendar','Calendar'],['history','History'],['squad','Squad']].map(([id,label]) =>
+      '<a href="'+viewLink(id)+'" data-link'+(view===id?' aria-current="page"':'')+'>'+label+'</a>').join('')+'</nav>';
+  const artwork = view === 'overview'
+    ? (club.banner?'<img class="club-profile-banner" src="'+escapeHtml(club.banner)+'" alt="" fetchpriority="high">':'') +
+      '<img class="league-profile-art" '+leagueClubArtworkAttributes(club.image,'profile')+' alt="'+escapeHtml(club.name)+' stadium or club artwork">' +
+      '<div><div class="league-mini-stats">'+stats+'</div></div>'
+    : '';
+  return '<section class="section league-explorer club-dashboard">'+leagueViewNavigation('/clubs',context)+
+    '<a class="league-back" href="'+leagueViewLink('/clubs',context)+'" data-link>← All clubs</a>'+
+    '<article class="league-club-profile club-profile-dashboard" data-club-key="'+escapeHtml(key)+'">'+
+    '<header class="club-profile-masthead"><div class="club-profile-identity"><img class="league-profile-crest" src="'+escapeHtml(club.logo||'/assets/ufl-mark.webp')+'" alt="">'+
+    '<div><span class="section-kicker">'+escapeHtml(context.selected.label+' · '+context.division)+'</span><h1>'+escapeHtml(club.name)+'</h1><p>'+escapeHtml(club.location)+'</p></div></div></header>'+
+    tabs+artwork+'</article>'+body+'</section>';
 }
 
 function leaguePlayerProfile(id,params) {

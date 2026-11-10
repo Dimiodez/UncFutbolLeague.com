@@ -19,7 +19,8 @@
       if(!response.ok)throw new Error(data.error||'The request could not be completed.');return data;
     };
     const button=(label,action,extra='')=>`<button type="button" class="coach-button" data-coach-action="${action}" ${extra}>${label}</button>`;
-    const signin=()=>'<a href="/account" data-link class="coach-button coach-primary">Sign in with Discord</a>';
+    const signin = () => '<a href="/account?returnTo=' + encodeURIComponent(location.pathname + location.search) +
+      '" data-link class="coach-button coach-primary">Sign in with Discord</a>';
     const heart=post=>`<button type="button" class="coach-heart ${post.hearted?'is-hearted':''}" data-heart="${post.id}" aria-pressed="${post.hearted}" aria-label="${post.hearted?'Remove heart from':'Heart'} ${esc(post.title)}" ${user?'':'disabled'}><span aria-hidden="true">${post.hearted?'♥':'♡'}</span> <span data-heart-count>${post.hearts}</span></button>`;
     const card=post=>`<article class="coach-card"><a href="${pathFor(post.id)}" data-link class="coach-card-link"><img src="${esc(post.coverUrl)}" alt="" loading="lazy" width="800" height="450"><div class="coach-card-copy"><span class="coach-eyebrow">${post.status==='hidden'?'Hidden · Author & staff only':'Community guide'}</span><h2>${esc(post.title)}</h2><p>${esc(post.hook)}</p></div></a><footer><span>By ${esc(post.author)}<small>${date(post.createdAt)}</small></span>${heart(post)}</footer></article>`;
     function bindHearts(){
@@ -46,7 +47,7 @@
     async function showGuide(id){
       const {post}=await api(`/api/coaching/${id}`);if(!root.isConnected)return;
       document.title=`${post.title} · UFL Coaching`;
-      content.innerHTML=`<a href="/coaching" data-link class="coach-back">← All guides</a><article class="coach-article"><header><span class="coach-eyebrow">${post.status==='hidden'?'Hidden · Author & staff only':'Community guide'}</span><h2>${esc(post.title)}</h2><p class="coach-hook">${esc(post.hook)}</p><div class="coach-article-meta"><span>By ${esc(post.author)} · ${date(post.createdAt)}${post.revision?` · Updated ${date(post.updatedAt)}`:''}</span>${heart(post)}</div></header><img class="coach-article-cover" src="${esc(post.coverUrl)}" alt="Cover for ${esc(post.title)}" width="1200" height="675"><div class="coach-body">${esc(post.body)}</div></article><div class="coach-author-tools">${post.canEdit?`<a href="${pathFor(id)}/edit" data-link class="coach-button coach-primary">Edit my guide</a>${button('Remove my guide','delete')}`:''}${post.canModerate?button(post.status==='hidden'?'Restore guide':'Hide guide',post.status==='hidden'?'restore':'hide'):''}</div>${user?'':'<p class="coach-signin-note">Sign in with Discord to leave a heart.</p>'}`;
+      content.innerHTML=`<a href="/coaching" data-link class="coach-back">← All guides</a><article class="coach-article"><header><span class="coach-eyebrow">${post.status==='hidden'?'Hidden · Author & staff only':'Community guide'}</span><h2>${esc(post.title)}</h2><p class="coach-hook">${esc(post.hook)}</p><div class="coach-article-meta"><span>By ${esc(post.author)} · ${date(post.createdAt)}${post.revision?` · Updated ${date(post.updatedAt)}`:''}</span>${heart(post)}</div></header><img class="coach-article-cover" src="${esc(post.coverUrl)}" alt="Cover for ${esc(post.title)}" width="1200" height="675"><div class="coach-body">${esc(post.body)}</div></article><div class="coach-author-tools">${post.canEdit?`<a href="${pathFor(id)}/edit" data-link class="coach-button coach-primary">Edit my guide</a>${button('Remove my guide','delete')}`:''}${post.canModerate?button(post.status==='hidden'?'Restore guide':'Hide guide',post.status==='hidden'?'restore':'hide'):''}</div>${user?'':'<p class="coach-signin-note">'+signin()+' to leave a heart.</p>'}`;
       content.querySelector('.coach-body').innerHTML=window.coachingRenderBody(post.body,post.images||[]);
       window.UFLUX?.installGuideNavigation?.(document.querySelector('main'));
       bindHearts();
@@ -105,6 +106,12 @@
       else if(parts.length===2)await showGuide(parts[1]);
       else if(parts.length===3&&parts[2]==='edit')await editor(parts[1]);
       else throw new Error('Guide not found.');
-    }catch(error){content.innerHTML='<div class="coach-empty"><h2>The playbook is unavailable.</h2><p id="coach-load-error"></p><a href="/coaching" data-link class="coach-button">Back to Coaching</a></div>';content.querySelector('#coach-load-error').textContent=error.message;}
+    } catch (error) {
+      if (!root.isConnected) return;
+      content.innerHTML = '<div class="coach-empty"><h2>The playbook is unavailable.</h2><p id="coach-load-error"></p>' +
+        button('Try again','retry') + '<a href="/coaching" data-link class="coach-button">Back to Coaching</a></div>';
+      content.querySelector('#coach-load-error').textContent = error.message;
+      content.querySelector('[data-coach-action="retry"]').onclick = () => window.hydrateCoaching();
+    }
   };
 })();

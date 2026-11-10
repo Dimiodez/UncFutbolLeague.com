@@ -101,3 +101,9 @@ body.matchday-route .page-hero h1{font-size:clamp(2rem,4vw,3.4rem);margin:8px 0}
 body.matchday-route .page-hero p:not(.eyebrow){margin:10px 0 0}
 .matchday-page.section{padding-top:24px;padding-bottom:32px}
 @media(max-width:700px){body.matchday-route .page-hero{padding:16px 12px}.matchday-page.section{padding-top:16px}}
+
+.schedule-hub-card h2 {
+  font-size: clamp(1.75rem, 3.4vw, 3rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
