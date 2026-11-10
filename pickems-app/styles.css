@@ -43,3 +43,11 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 #ballot-deadline{font-weight:700}
 .matchday-picker select:focus-visible,.pickem-week-actions button:focus-visible{outline:3px solid #62b5ef;outline-offset:3px}
 @media(max-width:600px){.week-browser{display:block}.week-browser .week-tabs{margin-top:16px;width:100%}.matchday-picker{flex-basis:100%}.pickem-week-actions{width:100%;justify-content:space-between}}
+
+.competition-division-switch[hidden] { display: none; }
+@media (min-width: 701px) {
+  .competition-switch { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  [data-pickem-internationals] { grid-column: 1 / -1; }
+}

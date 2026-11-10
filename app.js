@@ -932,7 +932,19 @@ function funcPage() {
 }
 
 function pickemsPage() {
-  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?v=20261015-ux1&amp;division=${new URLSearchParams(location.search).get('division')==='10v10'?'10v10':'6v6'}&amp;season=${new URLSearchParams(location.search).get('season')==='1'?'1':'2'}&amp;matchday=${encodeURIComponent(new URLSearchParams(location.search).get('matchday')||'')}" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+  const requested = new URLSearchParams(location.search);
+  const options = new URLSearchParams({
+    v: '20261110-internationals',
+    matchday: requested.get('matchday') || '',
+  });
+  if (requested.get('competition') === 's1-internationals') {
+    options.set('competition', 's1-internationals');
+  } else {
+    options.set('division', requested.get('division') === '10v10' ? '10v10' : '6v6');
+    options.set('season', requested.get('season') === '1' ? '1' : '2');
+  }
+  return `<section class="integrated-app pickems-host" aria-label="UFL Pick’ems"><iframe class="integrated-app-frame" src="/pickems-app/?${escapeHtml(options)}" title="UFL Pick’ems application" scrolling="no"></iframe></section>`;
+
 }
 
 function contactPage() {

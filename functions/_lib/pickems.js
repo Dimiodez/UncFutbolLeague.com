@@ -1,4 +1,6 @@
-export const PICKEM_COMPETITIONS = new Set(['s1-6v6', 's2-6v6', 's2-10v10']);
+import { INTERNATIONAL_PICKEM_KEY, loadInternationalPickemSeason } from './international-pickems.js';
+
+export const PICKEM_COMPETITIONS = new Set(['s1-6v6', 's2-6v6', 's2-10v10', INTERNATIONAL_PICKEM_KEY]);
 
 export function validPickemCompetition(value) {
   const key = typeof value === 'string' && value ? value : 's2-6v6';
@@ -6,10 +8,18 @@ export function validPickemCompetition(value) {
 }
 
 export async function syncPickemMatchesFromAsset(request, env, competition) {
-  const seasonAsset = competition === 's1-6v6' ? '/pickems-app/seasons/s1-6v6.json' : `/pickems-app/seasons/${competition}.json`;
-  const response = await env.ASSETS.fetch(new URL(seasonAsset, request.url));
-  if (!response.ok) return { available: false, matches: 0 };
-  const season = await response.json();
+  let season;
+  if (competition === INTERNATIONAL_PICKEM_KEY) {
+    try {
+      season = await loadInternationalPickemSeason(env);
+    } catch {
+      return { available: false, matches: 0 };
+    }
+  } else {
+    const response = await env.ASSETS.fetch(new URL(`/pickems-app/seasons/${competition}.json`, request.url));
+    if (!response.ok) return { available: false, matches: 0 };
+    season = await response.json();
+  }
   const matches = (season.weeks || []).flatMap(week => (week.matches || []).map(([id, home, away, homeScore, awayScore]) => ({
     id: Number(id),
     week: Number(week.week),
@@ -27,7 +37,7 @@ export async function syncPickemMatchesFromAsset(request, env, competition) {
       away_key=excluded.away_key,home_score=excluded.home_score,away_score=excluded.away_score,
       competition_key=excluded.competition_key,updated_at=CURRENT_TIMESTAMP
   `).bind(match.id, match.week, match.scheduledAt, match.home, match.away, match.homeScore, match.awayScore, competition)));
-  return { available: true, matches: matches.length, fixtures: matches };
+  return { available: true, matches: matches.length, fixtures: matches, season };
 }
 
 export async function ensurePickemCompetitionSchema(env) {
