@@ -41,6 +41,7 @@ export function internationalPickemSeason(data) {
   }
   return {
     teams,
+    calendarDates: data.windows?.length ?? 0,
     standingsSource: '/internationals/standings',
     standings: data.standings.map(row => [row.id, row.played, row.wins, row.draws, row.losses,
       row.goalsFor, row.goalsAgainst, row.goalDifference, row.points]),

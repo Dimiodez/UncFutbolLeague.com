@@ -22,7 +22,7 @@
       <nav class="competition-switch" aria-label="Pick’ems competition">
         <button class="active" data-pickem-season="2"><span>Current</span><strong>Season 2</strong><small>FC27</small></button>
         <button data-pickem-season="1"><span>Archived</span><strong>Season 1</strong><small>FC26</small></button>
-        <button data-pickem-internationals><span>Intercontinental Cup</span><strong>Internationals</strong><small>Season 1</small></button>
+        <button data-pickem-internationals><span>National teams</span><strong>Internationals</strong><small>FC27</small></button>
       </nav>
       <nav class="competition-division-switch" aria-label="Pick’ems division">
         <button class="active" data-pickem-division="6v6">6v6</button>
@@ -36,7 +36,7 @@
     </nav>
 
     <section class="mode-pane active" data-pane="simple" data-competition-pane="pickems" hidden>
-      <div class="week-browser"><div><p class="eyebrow" id="season-heading">FC27 · UFL Season 2</p><h2>Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small></div><div class="week-tabs" id="simple-weeks"></div></div>
+      <div class="week-browser"><div><p class="eyebrow" id="season-heading">FC27 · UFL Season 2</p><h2 id="pickem-calendar-heading">Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small><div id="pickem-international-calendar" hidden><p class="helper" id="pickem-calendar-note"></p><a class="source-link" href="/internationals/schedules" target="_top">Full Internationals calendar ↗</a></div></div><div class="week-tabs" id="simple-weeks"></div></div>
       <div class="pick-layout">
         <section class="panel">
           <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Loading matchday…</h2></div><span class="status open" id="simple-status">Checking voting window…</span></header>
@@ -68,6 +68,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20261015-save2"></script>
-  <script src="/pickems-app/app.js?v=20261110-internationals"></script>
+  <script src="/pickems-app/app.js?v=20261110-international-calendar"></script>
 </body>
 </html>

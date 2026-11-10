@@ -80,8 +80,17 @@ test('International Pick’ems use the published schedule, excluding unassigned 
   id: 'va-intl-339', startsAt: Date.parse('2026-11-11T00:00:00Z'),
   home: {id:'USA'}, away: {id:'BRA'}, homeScore: 2, awayScore: 1,
  }]);
- const schedule = internationalPickemSeason({teams: INITIAL_NATIONS, standings: [], fixtures});
+ const windows = [...read('migrations/20261106_internationals_dates.sql').matchAll(/VALUES\('intl-date-(\d{4}-\d{2}-\d{2})'/g)];
+ const schedule = internationalPickemSeason({teams: INITIAL_NATIONS, standings: [], fixtures, windows});
+ assert.equal(schedule.calendarDates, 18);
  assert.deepEqual(schedule.weeks.map(day => day.matches.length), [10,10,10,10,5]);
+ const openingWeek = schedule.weeks.slice(0, 2);
+ assert.deepEqual(openingWeek.map(day => day.rounds.map(row => row.round)), [[1,2],[3,4]]);
+ assert.equal(openingWeek[1].scheduledAt, Date.parse('2026-11-13T00:00:00Z') / 1000);
+ const openingFixtures = openingWeek.flatMap(day => day.matches);
+ for (const {id} of INITIAL_NATIONS) {
+  assert.equal(openingFixtures.filter(([,home,away]) => home === id || away === id).length, 4);
+ }
  const first = schedule.weeks[0];
  assert.deepEqual(first.rounds.map(row => row.round), [1,2]);
  assert.equal(first.scheduledAt, Date.parse('2026-11-11T00:00:00Z') / 1000);
