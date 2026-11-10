@@ -13,6 +13,7 @@ const state = { competition: 's2-6v6', selectedSeason: 2, selectedDivision: '6v6
 let season;
 let teamByKey;
 let teams;
+let matchupClubAliases = {};
 function useCompetition(key, requestedWeek) {
   state.competition = key;
   const config = competitions[key];
@@ -21,6 +22,8 @@ function useCompetition(key, requestedWeek) {
   season = seasonData[key] || { teams: {}, standings: [], weeks: [] };
   teamByKey = Object.fromEntries(Object.entries(season.teams || {}).map(([teamKey,[name,logo]]) => [teamKey,{key:teamKey,name,logo}]));
   teams = Object.values(teamByKey);
+  matchupClubAliases = config.season === 2 && typeof leagueRosterClubAliases === 'function'
+    ? leagueRosterClubAliases(config.division, season) : {};
   const unfinished = day => day.matches.some(match => match[3] === null || match[4] === null);
   const next = season.weeks?.find(day => unfinished(day) && (key !== internationalKey || day.scheduledAt * 1000 > Date.now()));
   const currentWeek = season.weeks?.some(day => day.week === requestedWeek)
@@ -94,7 +97,7 @@ function formatKickoff(week) { const data=weekData(week);return data?.scheduledA
 function fixtureKickoff(week,fixture){if(fixture.kickoff&&window.UFLTime)return window.UFLTime.format(fixture.kickoff*1000);return weekData(week)?.rounds?.find(round=>round.scheduledAt===fixture.kickoff)?.date||formatKickoff(week);}
 function byesForWeek(week){return (weekData(week)?.byes||[]).map(bye=>`${teamByKey[bye.team]?.name||bye.team} — BYE in round ${bye.round}`).join(' · ');}
 function clubUrl(team) {
-  const key = encodeURIComponent(team.key);
+  const key = encodeURIComponent(matchupClubAliases[team.key] || team.key);
   return state.competition === internationalKey ? '/internationals/teams/' + key
     : `/clubs/${key}?season=${state.selectedSeason}&division=${state.selectedDivision}`;
 }
@@ -156,7 +159,7 @@ function renderSimple() {
   // Preserve server-confirmed and failure state across rerenders.
   const week = state.simpleWeek, data = weekData(week), fixtures = fixturesForWeek(week);
   if (!data || !fixtures.length) return;
-  if (state.competition === internationalKey) updateMatchupOptions(fixtures);
+  if (hasMatchupRosters()) updateMatchupOptions(fixtures);
   const complete = fixtures.every(f => f.hs !== null && f.as !== null);
   const open = !complete && Date.now() < data.scheduledAt * 1000, saved = getBallot(week);
   $('#ballot-deadline').textContent=complete?'Final results · voting is closed':open?'Your whole ballot locks '+formatKickoff(week):'Voting locked '+formatKickoff(week)+' · awaiting official results';
@@ -261,18 +264,61 @@ document.addEventListener('click',async event=>{
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
-function renderMatchupRosters(fixtures = fixturesForWeek(state.simpleWeek)) {
-  const selectedId = $('#pickem-roster-match').value;
+function hasMatchupRosters() {
+  return state.competition === internationalKey || state.selectedSeason === 2;
+}
+let clubRosterRequest;
+function loadClubRosterNames() {
+  clubRosterRequest ??= fetch('/api/league-rosters', {cache:'no-store'}).then(async response => {
+    if (!response.ok) throw new Error('Club rosters unavailable');
+    const {players} = await response.json();
+    return Object.fromEntries(['6v6','10v10'].map(division => {
+      const namesByClub = new Map();
+      for (const {club, name} of players[division]) {
+        if (!club) continue;
+        if (!namesByClub.has(club)) namesByClub.set(club, []);
+        namesByClub.get(club).push(name);
+      }
+      return [division, namesByClub];
+    }));
+  }).catch(error => {
+    clubRosterRequest = null;
+    throw error;
+  });
+  return clubRosterRequest;
+}
+async function renderMatchupRosters(fixtures = fixturesForWeek(state.simpleWeek)) {
+  const select = $('#pickem-roster-match');
+  const selectedId = select.value;
   const fixture = fixtures.find(match => match.id === selectedId);
   const squads = $('#pickem-roster-squads');
   squads.hidden = !fixture;
-  squads.innerHTML = fixture ? [fixture.home, fixture.away].map(team => {
-    const names = season.rosters?.[team.key] ?? [];
+  if (!fixture) {
+    squads.replaceChildren();
+    return;
+  }
+
+  const {competition, selectedDivision, simpleWeek} = state;
+  let clubNames;
+  let unavailable = false;
+  if (competition !== internationalKey) {
+    squads.textContent = 'Loading club rosters…';
+    try {
+      clubNames = (await loadClubRosterNames())[selectedDivision];
+    } catch {
+      unavailable = true;
+    }
+    if (state.competition !== competition || state.simpleWeek !== simpleWeek || select.value !== selectedId) return;
+  }
+  squads.innerHTML = [fixture.home, fixture.away].map(team => {
+    const names = competition === internationalKey ? season.rosters?.[team.key] ?? []
+      : clubNames?.get(matchupClubAliases[team.key] || team.key) ?? [];
     const roster = names.length
       ? '<ul>' + names.map(name => '<li>' + escapeHtml(name) + '</li>').join('') + '</ul>'
-      : '<p class="helper">No players listed yet.</p>';
-    return `<section><h3>${escapeHtml(team.name)}</h3>${roster}<a class="source-link" href="${clubUrl(team)}" target="_top">View squad ↗</a></section>`;
-  }).join('') : '';
+      : `<p class="helper">${unavailable ? 'Roster unavailable.' : 'No players listed yet.'}</p>`;
+    const name = escapeHtml(team.name);
+    return `<section><h3>${name}</h3>${roster}<a class="source-link" href="${clubUrl(team)}" target="_top" aria-label="View ${name} squad">View squad ↗</a></section>`;
+  }).join('');
 }
 function updateMatchupOptions(fixtures) {
   const select = $('#pickem-roster-match');
@@ -361,7 +407,7 @@ async function renderCompetition(requestedWeek){
   $('#pickem-calendar-heading').textContent = international ? 'Intercontinental Cup match nights' : 'Official matchweeks';
   $('#pickem-international-calendar').hidden = !international;
   const rosterPanel = $('#pickem-roster-panel');
-  if (rosterPanel) rosterPanel.hidden = !international;
+  if (rosterPanel) rosterPanel.hidden = !hasMatchupRosters();
   if (international) {
     const dates = season.calendarDates ? `The FC27 Internationals calendar has ${season.calendarDates} scheduled dates.` : 'Internationals runs throughout FC27.';
     $('#pickem-calendar-note').textContent = `${dates} The ballots below cover confirmed Intercontinental Cup league fixtures. Knockouts, Euro / Copa, and World Cup dates are listed in the full calendar.`;

@@ -990,3 +990,17 @@ const leagueProvisionalSeasons = {
   }
 };
 
+
+function leagueRosterClubAliases(division, official, provisional = leagueProvisionalSeasons[division]) {
+  // Provider abbreviations can change. Preserve collaborator profile/roster keys
+  // when an official entry has the same key or a unique normalized club name.
+  const clubIdentity=name=>String(name||'').replace(/^UFL\s+/i,'').toLowerCase().replace(/[^a-z0-9]/g,'');
+  return Object.fromEntries(Object.entries(official?.teams||{}).map(([key,team])=>{
+    const detail=official?.teamDetails?.find(row=>row.key===key);
+    const links=provisional?leagueOfficialClubLinks[division]||{}:{};
+    const reviewed=detail?.teamId?Object.values(links).find(link=>link.teamId===detail.teamId):links[key];
+    const exact=provisional?.clubs.find(c=>c.key===key);
+    const matches=provisional?.clubs.filter(c=>clubIdentity(c.name)===clubIdentity(team[0]))||[];
+    return [key,reviewed?.key||exact?.key||(matches.length===1?matches[0].key:key)];
+  }));
+}
