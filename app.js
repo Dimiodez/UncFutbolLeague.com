@@ -339,7 +339,6 @@ function bindScheduleAgenda(){
  const host=document.querySelector('[data-schedule-agenda-key]');if(!host)return;
  const save=()=>{schedulesPage.openState??=new Map();schedulesPage.openState.set(host.dataset.scheduleAgendaKey,new Set([...host.querySelectorAll('.schedule-week[open]')].map(d=>d.id.replace('matchday-',''))));};
  host.querySelectorAll('.schedule-week').forEach(d=>d.addEventListener('toggle',save));
- host.querySelectorAll('[data-schedule-jump]').forEach(a=>a.addEventListener('click',event=>{const target=host.querySelector('#matchday-'+a.dataset.scheduleJump);if(!target)return;event.preventDefault();target.open=true;save();target.scrollIntoView({block:'start',behavior:'smooth'});}));
 }
 function schedulesPage(params) {
   const requestedType=params.get('type');
@@ -359,7 +358,15 @@ function schedulesPage(params) {
   const navigation='<div class="league-tab-stack">'+leagueSeasonTabs('/schedules',selectedSeason.id,'type',type)+scheduleLandingTabs(type,selectedSeason.id)+'</div>';
   const missingCount=allWeeks.reduce((n,w)=>n+w.matches.filter(m=>(!team||m[1]===team||m[2]===team)&&scheduleMatchState(m,season)==='missing').length,0);
   const filterLink=(mode,day='all')=>'/schedules?'+new URLSearchParams({season:selectedSeason.id,type,matchday:day,...(team?{team}:{}),...(mode?{status:mode}:{})});
-  const shortcuts=allWeeks.length?'<div class="schedule-quick-actions"><a class="button button-secondary" href="'+filterLink('','')+'" data-link>Current / next matchday</a><a class="button button-secondary" href="'+filterLink('missing')+'" data-link>Missing results ('+missingCount+')</a><a class="button button-secondary" href="'+filterLink('')+'" data-link>All matchdays</a></div><nav class="schedule-date-shortcuts" aria-label="Schedule dates">'+allWeeks.filter(w=>!status||w.matches.some(m=>(!team||m[1]===team||m[2]===team)&&scheduleMatchState(m,season)===status)).map(w=>'<a href="#matchday-'+w.week+'" data-schedule-jump="'+w.week+'"><strong>'+escapeHtml(scheduleDateLabel(w))+'</strong><span>Matchday '+w.week+'</span></a>').join('')+'</nav>':'';
+  const dateShortcuts = allWeeks.filter(week => !status || week.matches.some(match =>
+    (!team || match[1] === team || match[2] === team) && scheduleMatchState(match, season) === status
+  )).map(week => {
+    const href = destination(week.week) + '#matchday-' + week.week;
+    const selected = !showAll && week === current;
+    return '<a href="' + escapeHtml(href) + '" data-link' + (selected ? ' aria-current="true"' : '') +
+      '><strong>' + escapeHtml(scheduleDateLabel(week)) + '</strong><span>Matchday ' + week.week + '</span></a>';
+  }).join('');
+  const shortcuts=allWeeks.length?'<div class="schedule-quick-actions"><a class="button button-secondary" href="'+filterLink('','')+'" data-link>Current / next matchday</a><a class="button button-secondary" href="'+filterLink('missing')+'" data-link>Missing results ('+missingCount+')</a><a class="button button-secondary" href="'+filterLink('')+'" data-link>All matchdays</a></div><nav class="schedule-date-shortcuts" aria-label="Schedule dates">'+dateShortcuts+'</nav>':'';
   const controls=allWeeks.length?'<details class="schedule-filter-panel" '+(team||status?'open':'')+'><summary>Filter by team, matchday or result</summary><form class="matchday-controls" action="/schedules" method="get" aria-label="Find fixtures"><input type="hidden" name="season" value="'+selectedSeason.id+'"><input type="hidden" name="type" value="'+type+'"><label>Matchday<select name="matchday" id="schedule-matchday">'+allWeeks.map(week=>'<option value="'+week.week+'" '+(!showAll&&week===current?'selected':'')+'>Matchday '+week.week+' · '+escapeHtml(window.UFLTime?.format(week.scheduledAt*1000)||week.date||'Date pending')+'</option>').join('')+'<option value="all" '+(showAll?'selected':'')+'>Whole season</option></select></label><label>Team<select name="team" id="schedule-team"><option value="">All teams</option>'+Object.entries(season.teams).sort((a,b)=>a[1][0].localeCompare(b[1][0])).map(([key,value])=>'<option value="'+escapeHtml(key)+'" '+(team===key?'selected':'')+'>'+escapeHtml(value[0])+'</option>').join('')+'</select></label><label>Results<select name="status"><option value="">All matches</option>'+[['missing','Missing / needs review'],['played','Completed'],['upcoming','Upcoming / in progress']].map(([key,label])=>'<option value="'+key+'" '+(status===key?'selected':'')+'>'+label+'</option>').join('')+'</select></label><button class="button button-primary" type="submit">View matches</button></form><nav class="matchday-paging" aria-label="Matchday navigation">'+(!showAll&&currentIndex>0?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex-1].week)+'" data-link>← Previous</a>':'<span></span>')+'<a href="/schedules?season='+selectedSeason.id+'&type='+type+'" data-link>Jump to today / next matchday</a>'+(!showAll&&currentIndex<allWeeks.length-1?'<a class="button button-secondary" href="'+destination(allWeeks[currentIndex+1].week)+'" data-link>Next →</a>':'<span></span>')+'</nav></details>':'';
   const weeks=allWeeks.map(week=>{
     const matches=week.matches.filter(m=>(!team||m[1]===team||m[2]===team)&&(!status||scheduleMatchState(m,season)===status)),byes=status?[]:(week.byes||[]).filter(bye=>!team||bye.team===team);
@@ -1376,7 +1383,7 @@ function bindDynamicActions() {
 
 document.addEventListener('click', event => {
   const link = event.target.closest('a[data-link]');
-  if (!link || event.metaKey || event.ctrlKey || link.target) return;
+  if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target || link.hasAttribute('download')) return;
   event.preventDefault();
   history.pushState({}, '', link.href);
   document.querySelector('.main-nav').classList.remove('open');

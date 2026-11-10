@@ -1,6 +1,6 @@
 const uflSeasonCards = [
   {id:'6v6',name:'UNC Fútbol League 6v6',label:'6v6 · Season 2',schedule:'/schedules?season=2&type=6v6',table:'/standings?season=2&division=6v6',official:'https://ufl.virtualarena.app/competitions/1/seasons/2'},
-  {id:'10v10',name:'UNC Fútbol League 10v10',label:'10v10 · Season 1 on VA',schedule:'/schedules?season=2&type=10v10',table:'/standings?season=2&division=10v10',official:'https://ufl.virtualarena.app/competitions/3/seasons/5'},
+  {id:'10v10',name:'UNC Fútbol League 10v10',label:'10v10 · UFL Season 2',providerSeason:'Virtual Arena Season 1',schedule:'/schedules?season=2&type=10v10',table:'/standings?season=2&division=10v10',official:'https://ufl.virtualarena.app/competitions/3/seasons/5'},
   {id:'international',name:'UFL Intercontinental Cup',label:'Internationals · Season 1',schedule:'/internationals/schedules',table:'/internationals/standings',official:'https://ufl.virtualarena.app/competitions/4/seasons/6'},
 ];
 const uflSeasonStatuses = {registration:'Registrations open',ongoing:'In progress',upcoming:'Upcoming',complete:'Completed'};
@@ -18,12 +18,32 @@ async function hydrateUflSeasonPage() {
     board.innerHTML=uflSeasonCards.map(card=>{
       const details=statuses[card.id], status=details?.status;
       const registration=status==='registration';
-      const timing=registration?details.registrationEnds:status==='ongoing'?details.endsAt:status==='upcoming'?details.startsAt:null;
-      const date=timing&&Date.parse(timing)?new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',timeZone:window.UFLTime?.zone?.()||'America/Chicago'}).format(new Date(timing)):'';
-      const note=date?(registration?'Registrations close ':status==='ongoing'?'Competition ends ':'Competition starts ')+date:'';
+      const domestic = card.id === '6v6' || card.id === '10v10';
+      const weeks = domestic ? leagueSeasonFor(card.id, '2')?.weeks || [] : [];
+      const lastKickoff = Math.max(0, ...weeks.flatMap(week => [
+        Number(week.scheduledAt) || 0,
+        ...(week.rounds || []).map(round => Number(round.scheduledAt) || 0),
+      ]));
+      let timing;
+      let label;
+      if (registration) {
+        timing = Date.parse(details.registrationEnds);
+        label = 'Registrations close';
+      } else if (status === 'upcoming') {
+        timing = Date.parse(details.startsAt);
+        label = 'Competition starts';
+      } else if (status === 'ongoing' || !status) {
+        timing = lastKickoff ? lastKickoff * 1000 : Date.parse(details?.endsAt);
+        label = lastKickoff ? 'Last scheduled matchday' : 'Competition ends';
+      }
+      const date = Number.isFinite(timing)
+        ? new Intl.DateTimeFormat('en-US', {month: 'short', day: 'numeric', timeZone: window.UFLTime?.zone?.() || 'America/New_York'}).format(timing)
+        : '';
+      const note = date ? label + ' ' + date : '';
       return '<article class="season-competition card"><span class="section-kicker">'+escapeHtml(card.label)+'</span><h2>'+escapeHtml(card.name)+'</h2>'+
         '<span class="season-state" data-state="'+escapeHtml(status||'unknown')+'">'+escapeHtml(uflSeasonStatuses[status]||'Status unavailable')+'</span>'+
         (note?'<p>'+escapeHtml(note)+'</p>':'')+
+        (card.providerSeason?'<p class="season-provider-label">'+escapeHtml(card.providerSeason)+'</p>':'')+
         '<div class="season-card-links"><a href="'+card.schedule+'"'+(card.id==='international'?'':' data-link')+'>Fixtures</a><a href="'+card.table+'"'+(card.id==='international'?'':' data-link')+'>Standings</a><a href="'+card.official+'" rel="noopener noreferrer" target="_blank">'+(registration?'Registration on VA ↗':'Official competition ↗')+'</a></div></article>';
     }).join('');
   }

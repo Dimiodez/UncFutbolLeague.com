@@ -5,10 +5,17 @@ function publicContext(){const app=read('app.js'),context=vm.createContext({wind
 test('public schedules keep all matchdays in collapsible groups with dated shortcuts in both divisions',()=>{
  for(const division of ['6v6','10v10']){const c=publicContext();c.division=division;const html=vm.runInContext("schedulesPage(new URLSearchParams('season=2&type='+division+'&matchday=all'))",c),season=JSON.parse(read('pickems-app/seasons/s2-'+division+'.json'));
  assert.equal((html.match(/<details class="schedule-week"/g)||[]).length,season.weeks.length);
- assert.equal((html.match(/data-schedule-jump=/g)||[]).length,season.weeks.length);
+ assert.equal((html.match(/#matchday-\d+" data-link/g)||[]).length,season.weeks.length);
  assert(!/<details class="schedule-week"[^>]*\bopen\b/.test(html));assert(html.includes('Missing results ('));assert(html.includes('Current / next matchday'));
  for(const week of season.weeks)assert(html.includes('id="matchday-'+week.week+'"'));
  }
+});
+test('schedule date shortcuts carry the matchday and active filters into a shareable URL',()=>{
+ const context=publicContext();
+ const html=vm.runInContext("schedulesPage(new URLSearchParams('season=2&type=10v10&matchday=1&status=played'))",context);
+ assert.match(html,/href="\/schedules\?season=2&amp;type=10v10&amp;matchday=1&amp;status=played#matchday-1" data-link aria-current="true"/);
+ assert.match(html,/<option value="1" selected>/);
+ assert.match(html,/<details class="schedule-week" id="matchday-1" open>/);
 });
 test('a public missing-results filter includes overdue and review fixtures, excludes completed scores and future starts',()=>{
  const c=publicContext();c.matches=[[1,'A','B',0,0,1],[2,'A','B',null,null,1],[3,'A','B',null,null,9999999999],[4,'A','B',null,null,9999999999]];

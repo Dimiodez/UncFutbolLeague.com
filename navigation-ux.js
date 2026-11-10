@@ -5,7 +5,10 @@
   if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\\u0000-\u0020]/.test(value))return null;
   try{const u=new URL(value,'https://www.uncfutbolleague.com');if(u.origin!=='https://www.uncfutbolleague.com'||!['/team-hub','/pickems','/coaching','/arcade','/league-suite','/league-suite/ea-clubs','/league-suite/dashboard','/league-suite/join'].includes(u.pathname))return null;return u.pathname+u.search;}catch{return null;}
  };
- let pending=null;
+ const matchdayFragment = /^#matchday-\d+$/;
+ let pending = typeof location !== 'undefined' && location.pathname === '/schedules' && matchdayFragment.test(location.hash)
+   ? {hash: location.hash}
+   : null;
  function rememberReturn(value){const path=safeReturn(value);if(!path)return false;try{sessionStorage.setItem('ufl-login-return',JSON.stringify({path,at:Date.now()}));return true;}catch{return false;}}
  function completeLoginReturn(state){
   if(!state?.authenticated||location.pathname!=='/account')return false;
@@ -15,11 +18,31 @@
   if(!path)return false;try{sessionStorage.removeItem('ufl-login-return');}catch{}location.replace(path);return true;
  }
  function closeMenus(focus=false){
-  const menu=document.querySelector('.menu-button'),nav=document.querySelector('.main-nav'),opened=nav?.classList.contains('open');
-  nav?.classList.remove('open');menu?.setAttribute('aria-expanded','false');
+  const menu = document.querySelector('.menu-button');
+  const nav = document.querySelector('.main-nav');
+  const overlayWasOpen = nav?.classList.contains('open');
+  const focusedGroup = document.activeElement?.closest('.nav-group');
+  const openGroups = [...document.querySelectorAll('.nav-group.open')];
+  const focusedDropdown = document.activeElement?.closest('.nav-menu');
+  const returnToGroup = openGroups.includes(focusedGroup) || focusedDropdown ? focusedGroup : null;
+
+  nav?.classList.remove('open');
+  menu?.setAttribute('aria-expanded', 'false');
   syncOverlay();
-  document.querySelectorAll('.nav-group.open').forEach(group=>{group.classList.remove('open');group.querySelector(':scope > button')?.setAttribute('aria-expanded','false');});
-  if(focus&&opened)menu?.focus();
+  for (const group of openGroups) {
+    group.classList.remove('open');
+    group.querySelector(':scope > button')?.setAttribute('aria-expanded', 'false');
+  }
+  if (!focus) return;
+  if (overlayWasOpen) {
+    menu?.focus();
+    return;
+  }
+  if (returnToGroup?.matches(':hover')) {
+    returnToGroup.classList.add('nav-dismissed');
+    returnToGroup.addEventListener('mouseleave', () => returnToGroup.classList.remove('nav-dismissed'), {once: true});
+  }
+  returnToGroup?.querySelector(':scope > button')?.focus();
  }
  function saveScroll(){try{history.replaceState({...history.state,uflScroll:{left:scrollX,top:scrollY}},'',location.href);}catch{}}
  function afterRender(main){
@@ -28,7 +51,16 @@
   if(!pending)return;
   const intent=pending;pending=null;
   if(intent.restore){scrollTo({...intent.restore,behavior:'instant'});return;}
-  if(intent.hash){try{document.getElementById(decodeURIComponent(intent.hash.slice(1)))?.scrollIntoView({behavior:'instant'});}catch{}return;}
+  if (intent.hash) {
+    let target;
+    try { target = document.getElementById(decodeURIComponent(intent.hash.slice(1))); } catch {}
+    if (location.pathname === '/schedules' && matchdayFragment.test(intent.hash) && target) {
+      target.open = true;
+      target.querySelector('summary')?.focus({preventScroll: true});
+    }
+    target?.scrollIntoView({behavior: 'instant'});
+    return;
+  }
   if(intent.newPage){scrollTo({left:0,top:0,behavior:'instant'});const h=main.querySelector('h1')||main;h.setAttribute('tabindex','-1');h.focus({preventScroll:true});}
  }
  function enhancePage(main){
@@ -73,7 +105,12 @@
   saveScroll();pending={newPage:routeKey(next)!==routeKey(new URL(location.href)),hash:next.hash};
   closeMenus();
  },true);
- window.addEventListener('popstate',event=>{pending={restore:event.state?.uflScroll||{left:0,top:0}};});
+ window.addEventListener('popstate', event => {
+  const restore = event.state?.uflScroll;
+  pending = !restore && matchdayFragment.test(location.hash) && location.pathname === '/schedules'
+    ? {hash: location.hash}
+    : {restore: restore || {left: 0, top: 0}};
+ });
  function overlayOpen(){return document.querySelector('.main-nav.open')&&getComputedStyle(document.querySelector('.menu-button')).display!=='none';}
  const obscured=new Map();
  function syncOverlay(){

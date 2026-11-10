@@ -77,7 +77,8 @@ body[data-standalone-navigation] .site-header .brand img{width:52px;height:58px}
 .schedule-date-shortcuts{padding-bottom:12px;border-bottom:1px solid var(--line)}
 .schedule-date-shortcuts a{display:grid;gap:4px;min-height:48px;min-width:92px;padding:10px 14px;border:1px solid var(--line);border-radius:7px;background:var(--paper);text-decoration:none;text-align:center;color:var(--ink)}
 .schedule-date-shortcuts span{font-size:.75rem;color:var(--muted)}
-.schedule-date-shortcuts a:hover{border-color:var(--red)}
+.schedule-date-shortcuts a:hover,.schedule-date-shortcuts a[aria-current="true"]{border-color:var(--red)}
+.schedule-date-shortcuts a[aria-current="true"]{box-shadow:inset 0 -3px var(--red)}
 details.schedule-week{scroll-margin-top:110px}
 .schedule-week>summary.schedule-week-head{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px 20px;cursor:pointer;min-height:88px;position:relative;padding-right:48px}
 .schedule-week>summary::after{content:'+';position:absolute;right:20px;top:24px;font-size:1.6rem;color:var(--red)}
