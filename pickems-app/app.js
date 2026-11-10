@@ -156,6 +156,7 @@ function renderSimple() {
   // Preserve server-confirmed and failure state across rerenders.
   const week = state.simpleWeek, data = weekData(week), fixtures = fixturesForWeek(week);
   if (!data || !fixtures.length) return;
+  if (state.competition === internationalKey) updateMatchupOptions(fixtures);
   const complete = fixtures.every(f => f.hs !== null && f.as !== null);
   const open = !complete && Date.now() < data.scheduledAt * 1000, saved = getBallot(week);
   $('#ballot-deadline').textContent=complete?'Final results · voting is closed':open?'Your whole ballot locks '+formatKickoff(week):'Voting locked '+formatKickoff(week)+' · awaiting official results';
@@ -260,27 +261,73 @@ document.addEventListener('click',async event=>{
   const save=event.target.closest('[data-save-detail]');if(save){const card=save.closest('[data-detail-card]'),players={},thresholds={};$$('[data-player]',card).forEach(s=>players[s.dataset.player]=s.value);$$('[data-threshold]',card).forEach(s=>thresholds[s.dataset.threshold]=s.value);localStorage.setItem(`ufl-detail-${save.dataset.saveDetail}`,JSON.stringify({home:$('[data-home]',card).value,away:$('[data-away]',card).value,players,thresholds,saved:true}));save.textContent='Saved ✓';showToast('Detailed picks saved.');}
 });
 document.addEventListener('change',event=>{if(event.target.matches('[data-threshold]')&&event.target.value==='2+'){$$('[data-threshold]',event.target.closest('.detail-card')).forEach(s=>{if(s!==event.target)s.value='1+';});}});
-function renderInternationalRoster() {
-  const select = $('#pickem-roster-team');
-  const status = $('#pickem-roster-status');
-  const list = $('#pickem-roster-list');
-  const link = $('#pickem-roster-link');
-  const team = select.value ? teamByKey[select.value] : null;
-  const names = team ? season.rosters?.[team.key] ?? [] : [];
+function renderMatchupRosters(fixtures = fixturesForWeek(state.simpleWeek)) {
+  const selectedId = $('#pickem-roster-match').value;
+  const fixture = fixtures.find(match => match.id === selectedId);
+  const squads = $('#pickem-roster-squads');
+  squads.hidden = !fixture;
+  squads.innerHTML = fixture ? [fixture.home, fixture.away].map(team => {
+    const names = season.rosters?.[team.key] ?? [];
+    const roster = names.length
+      ? '<ul>' + names.map(name => '<li>' + escapeHtml(name) + '</li>').join('') + '</ul>'
+      : '<p class="helper">No players listed yet.</p>';
+    return `<section><h3>${escapeHtml(team.name)}</h3>${roster}<a class="source-link" href="${clubUrl(team)}" target="_top">View squad ↗</a></section>`;
+  }).join('') : '';
+}
+function updateMatchupOptions(fixtures) {
+  const select = $('#pickem-roster-match');
+  if (!select) return;
+  const previous = select.value;
+  select.replaceChildren(new Option('Choose a matchup', ''), ...fixtures.map(({home, away, id, round}) =>
+    new Option(`${home.name} vs ${away.name}${round ? ` · Round ${round}` : ''}`, id)));
+  if (fixtures.some(match => match.id === previous)) select.value = previous;
+  renderMatchupRosters(fixtures);
+}
+function setupMatchupSidebar() {
+  const panel = $('#pickem-roster-panel');
+  const sidebar = $('#pickem-sidebar');
+  if (!panel || !sidebar) return;
+  const wide = window.matchMedia('(min-width: 951px)');
+  const inline = $('#pickem-roster-inline');
+  const placePanel = () => {
+    if (wide.matches) sidebar.prepend(panel);
+    else inline.append(panel);
+  };
+  placePanel();
+  wide.addEventListener('change', placePanel);
 
-  status.hidden = !team;
-  status.textContent = names.length ? `${names.length} registered player${names.length === 1 ? '' : 's'}` : 'No players are listed for this nation yet.';
-  list.hidden = names.length === 0;
-  list.replaceChildren(...names.map(name => {
-    const player = document.createElement('li');
-    player.textContent = name;
-    return player;
-  }));
-  link.hidden = !team;
-  if (team) {
-    link.href = clubUrl(team);
-    link.textContent = `View ${team.name} squad ↗`;
-  }
+  const frame = window.frameElement;
+  if (!frame) return;
+  const host = frame.ownerDocument.defaultView;
+  const header = frame.ownerDocument.querySelector('.site-header');
+  let animationFrame = null;
+  const syncPosition = () => {
+    animationFrame = null;
+    if (!wide.matches || panel.hidden || !frame.isConnected) return;
+    // The site scrolls around the full-height iframe, so use its visible top.
+    const inset = Math.max(0, header?.getBoundingClientRect().bottom ?? 0) + 16;
+    const frameTop = frame.getBoundingClientRect().top;
+    sidebar.style.setProperty('--pickem-visible-top', `${Math.max(16, inset - frameTop)}px`);
+    sidebar.style.setProperty('--pickem-visible-height', `${Math.max(0, host.innerHeight - inset - 16)}px`);
+  };
+  const schedulePosition = () => {
+    if (animationFrame === null) animationFrame = host.requestAnimationFrame(syncPosition);
+  };
+  const listen = () => {
+    host.addEventListener('scroll', schedulePosition, {passive:true});
+    host.addEventListener('resize', schedulePosition);
+    schedulePosition();
+  };
+  listen();
+  window.addEventListener('pageshow', listen);
+  window.addEventListener('pagehide', () => {
+    host.removeEventListener('scroll', schedulePosition);
+    host.removeEventListener('resize', schedulePosition);
+    if (animationFrame !== null) host.cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+  });
+  wide.addEventListener('change', schedulePosition);
+  new ResizeObserver(schedulePosition).observe(panel);
 }
 let competitionRender = 0;
 async function renderCompetition(requestedWeek){
@@ -316,14 +363,6 @@ async function renderCompetition(requestedWeek){
   const rosterPanel = $('#pickem-roster-panel');
   if (rosterPanel) rosterPanel.hidden = !international;
   if (international) {
-    if (rosterPanel) {
-      const rosterSelect = $('#pickem-roster-team');
-      const selectedTeam = rosterSelect.value;
-      rosterSelect.replaceChildren(new Option('Choose a nation', ''),
-        ...teams.map(team => new Option(team.name, team.key)));
-      if (Object.hasOwn(teamByKey, selectedTeam)) rosterSelect.value = selectedTeam;
-      renderInternationalRoster();
-    }
     const dates = season.calendarDates ? `The FC27 Internationals calendar has ${season.calendarDates} scheduled dates.` : 'Internationals runs throughout FC27.';
     $('#pickem-calendar-note').textContent = `${dates} The ballots below cover confirmed Intercontinental Cup league fixtures. Knockouts, Euro / Copa, and World Cup dates are listed in the full calendar.`;
   }
@@ -356,8 +395,8 @@ async function renderCompetition(requestedWeek){
   window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
 }
 document.addEventListener('change',async event=>{
- if (event.target.id === 'pickem-roster-team') {
-   renderInternationalRoster();
+ if (event.target.id === 'pickem-roster-match') {
+   renderMatchupRosters();
    window.parent.postMessage({type:'ufl-app-resize'},window.location.origin);
    return;
  }
@@ -375,4 +414,5 @@ async function initialize(){
 document.addEventListener('input',event=>{if(event.target.id==='tiebreaker'){if(!saveNotices.get(ballotKey(state.competition,state.simpleWeek))?.blocked)saveNotices.delete(ballotKey(state.competition,state.simpleWeek));rememberDraft();updateSaveState();}});
 window.addEventListener('ufl-timezone-change',()=>{if(season.weeks?.length)renderSimple();});
 window.UFLTime?.control(document.querySelector('.competition-switch-stack'));
+setupMatchupSidebar();
 initialize().catch(()=>{const loading=$('#pickems-loading');loading.hidden=false;loading.innerHTML='Matchday could not be loaded. <a href="">Reload Pick’ems</a>';});

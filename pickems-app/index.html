@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261110-international-rosters">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261110-pickems-matchup-rosters">
 </head>
 <body>
   <main class="pickems-shell">
@@ -37,14 +37,13 @@
 
     <section class="mode-pane active" data-pane="simple" data-competition-pane="pickems" hidden>
       <div class="week-browser"><div><p class="eyebrow" id="season-heading">FC27 · UFL Season 2</p><h2 id="pickem-calendar-heading">Official matchweeks</h2><small class="data-source" id="data-source">Synced from Virtual Arena</small><div id="pickem-international-calendar" hidden><p class="helper" id="pickem-calendar-note"></p><a class="source-link" href="/internationals/schedules" target="_top">Full Internationals calendar ↗</a></div></div><div class="week-tabs" id="simple-weeks"></div></div>
-      <section class="panel pickem-roster" id="pickem-roster-panel" hidden>
-        <label class="matchday-picker" for="pickem-roster-team">Team rosters
-          <select id="pickem-roster-team"><option value="">Choose a nation</option></select>
-        </label>
-        <p class="helper" id="pickem-roster-status" role="status" hidden></p>
-        <ul id="pickem-roster-list" hidden></ul>
-        <a class="source-link" id="pickem-roster-link" target="_top" hidden></a>
-      </section>
+      <div id="pickem-roster-inline">
+        <section class="panel pickem-roster" id="pickem-roster-panel" hidden>
+          <label class="matchday-picker" for="pickem-roster-match">Matchup rosters</label>
+          <select class="pickem-matchup-select" id="pickem-roster-match"><option value="">Choose a matchup</option></select>
+          <div class="pickem-roster-squads" id="pickem-roster-squads" aria-live="polite" hidden></div>
+        </section>
+      </div>
       <div class="pick-layout">
         <section class="panel">
           <header class="panel-heading"><div><p class="eyebrow">Make your picks</p><h2 id="simple-title">Loading matchday…</h2></div><span class="status open" id="simple-status">Checking voting window…</span></header>
@@ -54,9 +53,11 @@
           <div class="tiebreaker"><span>TB</span><div><strong id="tb-question"></strong><small id="tb-lock"></small></div><input id="tiebreaker" type="number" min="0" max="30" placeholder="Goals" aria-label="Total goals tiebreaker"></div>
           <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">Loading ballot…</strong><span><i id="progress-bar"></i></span></div></footer><p id="save-status" class="save-status" role="status" aria-live="polite"></p>
         </section>
-        <aside class="rail">
-          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow" id="standings-origin">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
-          <section class="panel activity"><header class="panel-heading"><div><p class="eyebrow">Community</p><h2 id="pickem-leader-title">Weekly leaders</h2></div><div class="period-toggle"><button class="active" data-leader-scope="weekly">Weekly</button><button data-leader-scope="season">Season</button></div></header><div id="activity"></div></section>
+        <aside class="pickem-sidebar" id="pickem-sidebar">
+          <div class="rail pickem-sidebar-tables">
+            <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow" id="standings-origin">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
+            <section class="panel activity"><header class="panel-heading"><div><p class="eyebrow">Community</p><h2 id="pickem-leader-title">Weekly leaders</h2></div><div class="period-toggle"><button class="active" data-leader-scope="weekly">Weekly</button><button data-leader-scope="season">Season</button></div></header><div id="activity"></div></section>
+          </div>
         </aside>
       </div>
     </section>
@@ -76,6 +77,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20261015-save2"></script>
-  <script src="/pickems-app/app.js?v=20261110-international-rosters"></script>
+  <script src="/pickems-app/app.js?v=20261110-pickems-matchup-rosters"></script>
 </body>
 </html>

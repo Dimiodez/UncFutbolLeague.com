@@ -934,7 +934,7 @@ function funcPage() {
 function pickemsPage() {
   const requested = new URLSearchParams(location.search);
   const options = new URLSearchParams({
-    v: '20261110-international-rosters',
+    v: '20261110-pickems-matchup-rosters',
     matchday: requested.get('matchday') || '',
   });
   if (requested.get('competition') === 's1-internationals') {

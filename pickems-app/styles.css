@@ -53,10 +53,26 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 }
 
 .pickem-roster { margin-bottom: 16px; }
-.pickem-roster .matchday-picker { max-width: 28rem; }
-.pickem-roster ul { margin: 0 0 12px; padding-inline-start: 1.25rem; }
-.pickem-roster li { padding-block: 3px; overflow-wrap: anywhere; break-inside: avoid; }
-.pickem-roster .source-link { white-space: normal; }
-@media (min-width: 601px) {
-  .pickem-roster ul { columns: 2; max-width: 42rem; }
+.pickem-matchup-select { width: 100%; min-height: 46px; margin-top: 8px; padding: 10px; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+.pickem-matchup-select:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+.pickem-roster-squads:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.pickem-roster-squads section { min-width: 0; }
+.pickem-roster-squads section + section { border-inline-start: 1px solid var(--line); padding-inline-start: 12px; }
+.pickem-roster-squads h3 { margin: 0; font-size: .95rem; overflow-wrap: anywhere; }
+.pickem-roster-squads ul { margin: 6px 0 10px; padding-inline-start: 1.1rem; font-size: .8rem; }
+.pickem-roster-squads li { padding-block: 3px; overflow-wrap: anywhere; }
+.pickem-roster-squads .source-link { font-size: .8rem; white-space: normal; }
+
+@media (min-width: 951px) {
+  .pickem-sidebar:has(> .pickem-roster:not([hidden])) {
+    position: sticky;
+    top: var(--pickem-visible-top, 16px);
+    max-height: var(--pickem-visible-height, calc(100vh - 32px));
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .pickem-sidebar > .pickem-roster { flex: none; margin-bottom: 0; }
+  .pickem-sidebar .pickem-roster-squads { max-height: min(17rem, calc(var(--pickem-visible-height, 100vh) * .55)); overflow-y: auto; }
+  .pickem-sidebar:has(> .pickem-roster:not([hidden])) .pickem-sidebar-tables { min-height: 0; overflow-y: auto; }
 }
