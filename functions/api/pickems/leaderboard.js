@@ -9,11 +9,9 @@ export async function onRequestGet({ request, env }) {
   if (!competition) return json({ error: 'Invalid Pick’em competition.' }, 400);
   await ensurePickemCompetitionSchema(env);
 
-  const seasonAsset = `/pickems-app/seasons/${competition}.json`;
-  const seasonResponse = await env.ASSETS.fetch(new URL(seasonAsset, request.url));
-  if (!seasonResponse.ok) return json({ error: 'Official UFL results are temporarily unavailable.' }, 503);
-  const season = await seasonResponse.json();
-  await syncPickemMatchesFromAsset(request, env, competition);
+  const current = await syncPickemMatchesFromAsset(request, env, competition);
+  if (!current.available) return json({ error: 'Official UFL results are temporarily unavailable.' }, 503);
+  const season = current.season;
   const officialResults = new Map();
   let featuredTotal = null;
   for (const week of season.weeks ?? []) {
@@ -23,7 +21,7 @@ export async function onRequestGet({ request, env }) {
     }
     if (weekly && week.week === requestedWeek) {
       const featured = week.matches?.at(-1);
-      if (featured?.[3] !== null && featured?.[4] !== null) featuredTotal = featured[3] + featured[4];
+      if (Number.isInteger(featured?.[3]) && Number.isInteger(featured?.[4])) featuredTotal = featured[3] + featured[4];
     }
   }
 

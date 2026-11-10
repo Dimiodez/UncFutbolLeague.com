@@ -44,7 +44,7 @@ async function hydrateUflSeasonPage() {
         '<span class="season-state" data-state="'+escapeHtml(status||'unknown')+'">'+escapeHtml(uflSeasonStatuses[status]||'Status unavailable')+'</span>'+
         (note?'<p>'+escapeHtml(note)+'</p>':'')+
         (card.providerSeason?'<p class="season-provider-label">'+escapeHtml(card.providerSeason)+'</p>':'')+
-        '<div class="season-card-links"><a href="'+card.schedule+'"'+(card.id==='international'?'':' data-link')+'>Fixtures</a><a href="'+card.table+'"'+(card.id==='international'?'':' data-link')+'>Standings</a><a href="'+card.official+'" rel="noopener noreferrer" target="_blank">'+(registration?'Registration on VA ↗':'Official competition ↗')+'</a></div></article>';
+        '<div class="season-card-links"><a href="'+card.schedule+'"'+(card.id==='international'?'':' data-link')+'>Fixtures</a><a href="'+card.table+'"'+(card.id==='international'?'':' data-link')+'>Standings</a>'+(card.id==='international'?'<a href="/pickems?competition=s1-internationals" data-link>Pick’ems</a>':'')+'<a href="'+card.official+'" rel="noopener noreferrer" target="_blank">'+(registration?'Registration on VA ↗':'Official competition ↗')+'</a></div></article>';
     }).join('');
   }
   board.textContent='Loading competitions…';

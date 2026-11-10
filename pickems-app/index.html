@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261015-save2">
+  <link rel="stylesheet" href="/pickems-app/styles.css?v=20261110-internationals">
 </head>
 <body>
   <main class="pickems-shell">
@@ -19,9 +19,10 @@
     </header>
 
     <div class="competition-switch-stack">
-      <nav class="competition-switch" aria-label="Pick’ems season">
+      <nav class="competition-switch" aria-label="Pick’ems competition">
         <button class="active" data-pickem-season="2"><span>Current</span><strong>Season 2</strong><small>FC27</small></button>
         <button data-pickem-season="1"><span>Archived</span><strong>Season 1</strong><small>FC26</small></button>
+        <button data-pickem-internationals><span>Intercontinental Cup</span><strong>Internationals</strong><small>Season 1</small></button>
       </nav>
       <nav class="competition-division-switch" aria-label="Pick’ems division">
         <button class="active" data-pickem-division="6v6">6v6</button>
@@ -46,7 +47,7 @@
           <footer class="submit-bar"><button class="primary" id="save-simple">Submit your picks</button><div><strong id="progress-label">Loading ballot…</strong><span><i id="progress-bar"></i></span></div></footer><p id="save-status" class="save-status" role="status" aria-live="polite"></p>
         </section>
         <aside class="rail">
-          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
+          <section class="panel leaderboard"><header class="panel-heading"><div><p class="eyebrow" id="standings-origin">Virtual Arena</p><h2 id="simple-leader-title">6v6 standings</h2></div><a class="source-link" id="standings-source" href="https://ufl.virtualarena.app/competitions/1/seasons/2/standings" target="_blank" rel="noopener noreferrer">Full table ↗</a></header><div class="leader-head standings-head"><span>Club</span><span>P</span><span>GD</span><span>Pts</span></div><div id="simple-leaders"></div></section>
           <section class="panel activity"><header class="panel-heading"><div><p class="eyebrow">Community</p><h2 id="pickem-leader-title">Weekly leaders</h2></div><div class="period-toggle"><button class="active" data-leader-scope="weekly">Weekly</button><button data-leader-scope="season">Season</button></div></header><div id="activity"></div></section>
         </aside>
       </div>
@@ -67,6 +68,6 @@
   </main>
   <div class="toast" id="toast" role="status"></div>
   <script src="/pickems-app/season-data.js?v=20261015-save2"></script>
-  <script src="/pickems-app/app.js?v=20261015-save2"></script>
+  <script src="/pickems-app/app.js?v=20261110-internationals"></script>
 </body>
 </html>

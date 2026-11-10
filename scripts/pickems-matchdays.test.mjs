@@ -5,6 +5,11 @@ import vm from 'node:vm';
 import {DatabaseSync} from 'node:sqlite';
 import {syncPickemMatchesFromAsset} from '../functions/_lib/pickems.js';
 import {onRequestPost,onRequestGet} from '../functions/api/pickems/ballot.js';
+import {internationalPickemSeason} from '../functions/_lib/international-pickems.js';
+import {internationalFixtures} from '../functions/_lib/internationals.js';
+import {INITIAL_NATIONS} from '../functions/_lib/internationals-rosters.js';
+import {onRequestGet as internationalFeed} from '../functions/api/pickems/internationals.js';
+import {onRequestGet as leaderboard} from '../functions/api/pickems/leaderboard.js';
 import {sha256} from '../functions/_lib/auth.js';
 const read=file=>fs.readFileSync(new URL(`../${file}`,import.meta.url),'utf8');
 async function setup(){
@@ -68,4 +73,49 @@ test('unavailable official ballot fails closed without writing predictions',asyn
  const {db,env}=await setup();env.ASSETS.fetch=async()=>new Response('',{status:503});
  const response=await onRequestPost({request:request({competition:'s2-10v10',week:1,picks:{},tiebreaker:3}),env});
  assert.equal(response.status,503);assert.equal(db.prepare('SELECT COUNT(*) n FROM picks').get().n,0);
+});
+
+test('International Pick’ems use the published schedule, excluding unassigned knockout fixtures', () => {
+ const fixtures = internationalFixtures(INITIAL_NATIONS, [{
+  id: 'va-intl-339', startsAt: Date.parse('2026-11-11T00:00:00Z'),
+  home: {id:'USA'}, away: {id:'BRA'}, homeScore: 2, awayScore: 1,
+ }]);
+ const schedule = internationalPickemSeason({teams: INITIAL_NATIONS, standings: [], fixtures});
+ assert.deepEqual(schedule.weeks.map(day => day.matches.length), [10,10,10,10,5]);
+ const first = schedule.weeks[0];
+ assert.deepEqual(first.rounds.map(row => row.round), [1,2]);
+ assert.equal(first.scheduledAt, Date.parse('2026-11-11T00:00:00Z') / 1000);
+ assert.deepEqual(first.matches[0], [1000000339,'USA','BRA',2,1,first.scheduledAt,1,339]);
+});
+
+test('International ballots save and reload independently and lock at round one', async () => {
+ const {db, env} = await setup();
+ const prepare = env.DB.prepare;
+ let now = Date.parse('2026-11-10T23:55:00Z') / 1000;
+ env.DB.prepare = sql => {
+  if (sql.includes('FROM international_competitions')) return {bind: () => ({first: async () => ({})})};
+  if (sql.includes('FROM international_teams')) return {bind: () => ({all: async () => ({results: INITIAL_NATIONS})})};
+  if (sql.includes('FROM international_')) return {bind: () => ({all: async () => ({results: []})})};
+  return prepare(sql.replace('scheduled_at > unixepoch()', 'scheduled_at > ' + now));
+ };
+ db.prepare("INSERT INTO picks(discord_id,match_id,choice) VALUES('qa',77,'away')").run();
+ const response = await internationalFeed({env});
+ assert.equal(response.status, 200);
+ const schedule = await response.json(), day = schedule.weeks[0];
+ const picks = Object.fromEntries(day.matches.map(([id]) => [id, 'draw']));
+ const ballot = {competition:'s1-internationals',week:1,picks,tiebreaker:4};
+ assert.equal((await onRequestPost({request:request(ballot),env})).status, 200);
+ const get = new Request('https://www.uncfutbolleague.com/api/pickems/ballot?competition=s1-internationals&week=1',
+  {headers:{cookie:'__Host-ufl_session=test-session'}});
+ assert.deepEqual(await (await onRequestGet({request:get,env})).json(), {picks,tiebreaker:4});
+ db.prepare("UPDATE picks SET created_at=datetime(?, 'unixepoch') WHERE match_id > 1000000000").run(now);
+ const board = await leaderboard({request:new Request('https://www.uncfutbolleague.com/api/pickems/leaderboard?competition=s1-internationals&week=1'),env});
+ assert.equal(board.status,200);
+ const results = await board.json();
+ assert.equal(results.entries[0].picksMade,10);
+ assert.equal(results.entries[0].scoredMatches,0);
+ now = day.scheduledAt + 1;
+ assert.equal((await onRequestPost({request:request(ballot),env})).status,409);
+ assert.equal(db.prepare('SELECT choice FROM picks WHERE match_id=77').get().choice,'away');
+ db.close();
 });
