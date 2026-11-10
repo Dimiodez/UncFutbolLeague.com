@@ -18,13 +18,14 @@
 .club-dashboard-tabs a,.club-dashboard-tabs button{min-height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid transparent;background:transparent;color:inherit;border-radius:6px;padding:.5rem .8rem;font:700 .875rem Inter,sans-serif;text-decoration:none;cursor:pointer}
 .club-dashboard-tabs [aria-current="page"]{background:#c8183f;color:white}
 .club-dash-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:1rem}
+.club-dash-grid>div{min-width:0}
 .club-dash-panel{padding:clamp(.8rem,2vw,1.2rem);background:var(--white);border:1px solid var(--line);border-radius:12px;margin-bottom:1rem;min-width:0}
 .club-panel-heading{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.45rem .8rem;margin-bottom:.75rem}
 .club-panel-heading h2,.club-panel-heading h3,.club-dash-panel>h3{margin:0}
 .club-panel-heading a,.club-dash-panel>p{font-size:.875rem}
 .club-dash-empty{color:var(--muted);margin:.55rem 0}
 .club-table-scroll{overflow:auto;max-width:100%}
-.club-table-scroll table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:.82rem}
+.club-table-scroll table{width:100%;min-width:0;border-collapse:collapse;white-space:nowrap;font-size:.82rem}
 .club-table-scroll th,.club-table-scroll td{border-bottom:1px solid var(--line);text-align:left;padding:.5rem}
 .club-current-row{background:color-mix(in srgb,#c8183f 13%,var(--white))}
 .club-match-list,.hub-squad-list{list-style:none;padding:0;margin:0}
@@ -58,7 +59,7 @@
 .club-brand-grid img[data-club-preview="logo"]{object-fit:contain}
 .club-brand-grid form{display:grid;gap:.6rem}
 .club-brand-grid button{min-height:44px}
-@media(max-width:800px){.club-dash-grid{grid-template-columns:1fr}}
+@media(max-width:800px){.club-dash-grid{grid-template-columns:minmax(0,1fr)}.club-table-scroll th[scope="row"]{white-space:normal}}
 @media(max-width:520px){.club-dashboard-tabs a,.club-dashboard-tabs button{flex:1 1 40%}.hub-squad-list li{flex-wrap:wrap}.club-match-list li{align-items:flex-start}.club-match-result{font-size:.78rem}.club-profile-dashboard .league-profile-art{min-height:0;height:210px}}
 
 .club-lineup-pitch{position:relative;isolation:isolate;width:min(100%,580px);aspect-ratio:4/3;margin:.8rem auto;background:#173f37;border:1px solid #6c9e8d;border-radius:8px}
