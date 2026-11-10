@@ -284,7 +284,7 @@ async function renderCompetition(requestedWeek){
     $('#subtitle').textContent=international
       ? 'Pick a home win, draw, or away win for each league-stage match. The whole ballot locks at the first kickoff of each matchday.'
       : config.archived?'Season 1 is closed and preserved here with its final results and leaderboard.':`Pick every ${config.division} match across both rounds. The full matchday ballot locks at the first kickoff; BYEs need no pick. Times use your display timezone, labelled beside each kickoff.`;
-    $('#live-badge').innerHTML=`<i></i> ${config.archived?'ARCHIVED':`${config.division} · SEASON 2`}`;
+    $('#live-badge').innerHTML=`<i></i> ${international?'INTERCONTINENTAL CUP':config.archived?'ARCHIVED':`${config.division} · SEASON 2`}`;
     $('#season-heading').textContent=international?'UFL Intercontinental Cup · Season 1':`${config.game} · UFL Season ${config.season}${config.archived?' · Archive':''}`;
     await Promise.all([loadBallot(state.simpleWeek),loadLeaderboard()]);
     if (renderId !== competitionRender) return;
