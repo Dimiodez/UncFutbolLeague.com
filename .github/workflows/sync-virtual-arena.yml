@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches: [master]
-    paths: ['scripts/sync-virtual-arena.mjs', 'scripts/public-result-overrides.mjs', 'league-result-overrides.json', '.github/workflows/sync-virtual-arena.yml']
+    paths: ['scripts/sync-virtual-arena.mjs', 'scripts/sync-internationals.mjs', 'scripts/public-result-overrides.mjs', 'league-result-overrides.json', '.github/workflows/sync-virtual-arena.yml']
   schedule:
     # Baseline refresh outside matchnights.
     - cron: '15 5,11,17,23 * * *'
@@ -27,7 +27,7 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-      - name: Sync UFL Season 2 divisions
+      - name: Sync UFL club divisions and Internationals
         run: node scripts/sync-virtual-arena.mjs
       - name: Publish changed league data
         run: |
@@ -38,5 +38,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add pickems-app/season-data.js pickems-app/seasons pickems-app/season-data-6v6-s2.json pickems-app/season-data-10v10-s2.json pickems-app/season-data-6v6-s2.js pickems-app/season-data-10v10-s2.js
-          git commit -m "Sync UFL Season 2 Virtual Arena data"
+          git commit -m "Sync UFL Virtual Arena results and stats"
           git push

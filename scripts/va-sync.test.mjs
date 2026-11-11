@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 const source=fs.readFileSync(new URL('sync-virtual-arena.mjs',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'').split('const archivedSeason =')[0];
 function setup(status,props) {
-  const context=vm.createContext({console:{warn(){}},fetch:async()=>({status,ok:status===200,text:async()=>`<div data-page="${JSON.stringify({props}).replaceAll('"','&quot;')}"></div>`})});
+  const context=vm.createContext({AbortSignal,console:{warn(){}},fetch:async()=>({status,ok:status===200,text:async()=>`<div data-page="${JSON.stringify({props}).replaceAll('"','&quot;')}"></div>`})});
   vm.runInContext(source,context);
   return expression=>vm.runInContext(expression,context);
 }
@@ -20,12 +20,12 @@ test('optional stats still reject access errors and wrong seasons',async()=>{
 });
 
 const completeSource=fs.readFileSync(new URL('sync-virtual-arena.mjs',import.meta.url),'utf8');
-const recoverySource=completeSource.slice(completeSource.indexOf('const syncResults ='),completeSource.indexOf('const ownerResultOverrides='));
-function recover({allFail=false,wrongPrevious=false}={}) {
-  const context=vm.createContext({console:{warn(){}},seasons:[{key:'six',competitionId:1,seasonId:2},{key:'ten',competitionId:2,seasonId:4}],buildSeason:async config=>{
+const recoverySource=completeSource.slice(completeSource.indexOf("const internationalPath='"),completeSource.indexOf('const ownerResultOverrides='));
+function recover({allFail=false,wrongPrevious=false,internationalSuccess=false}={}) {
+  const context=vm.createContext({console:{warn(){},log(){}},pageProps:()=>{},mkdir:async()=>{},writeFile:async()=>{},buildInternationalSnapshot:async()=>{if(!internationalSuccess)throw Error('International feed unavailable');return {totals:{played:1},players:[],statsStatus:'available'};},seasons:[{key:'six',competitionId:1,seasonId:2},{key:'ten',competitionId:2,seasonId:4}],buildSeason:async config=>{
     if(config.key==='ten'||allFail) throw new Error('VA unavailable');
     return {...config,fresh:true,teams:{},teamDetails:[]};
-  },retainExistingTeams:(current)=>current,readFile:async path=>JSON.stringify(path.includes('six')?{competitionId:1,seasonId:2}:{key:'ten',competitionId:2,seasonId:wrongPrevious?3:4,retained:true})});
+  },retainExistingTeams:(current)=>current,readFile:async path=>{if(path.includes('s1-internationals'))throw Object.assign(Error('missing'),{code:'ENOENT'});return JSON.stringify(path.includes('six')?{competitionId:1,seasonId:2}:{key:'ten',competitionId:2,seasonId:wrongPrevious?3:4,retained:true});}});
   return vm.runInContext(`(async()=>{${recoverySource};return liveSeasons;})()`,context);
 }
 test('one failed division retains its snapshot while the other refreshes',async()=>{
@@ -84,4 +84,9 @@ test('published schedules preserve every official match and expose only actual g
    }
   }
  }
+});
+
+test('international success can refresh independently while both domestic snapshots are retained',async()=>{
+ const [six,ten]=await recover({allFail:true,internationalSuccess:true});
+ assert.equal(six.competitionId,1);assert.equal(ten.retained,true);
 });

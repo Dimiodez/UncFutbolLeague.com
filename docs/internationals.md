@@ -31,3 +31,18 @@ Owner explicitly requested both overall and separate regional standings. The ove
 VA currently shows 55 registrations while the owner's supplied national squads have 60 slots. Public registration data was captured for review only. Do not delete or merge profiles or move national players solely to match that count. Differences include additional/different VA usernames; owner's original squads and confirmed aliases remain authoritative until clarified. VA public team/match views inspected do not expose verified EA club IDs; automatic international EA collection remains gated off pending those IDs and a properly configured shared league source. No 6v6/10v10 routing or GitHub/Cloudflare settings are changed.
 
 The public schedule, standings, stats, results and TOTW surfaces link to this VA competition for reference. No published results, ratings or selections were fabricated.
+
+
+## Automated VA results and stats (November 11, 2026)
+
+The existing sync-virtual-arena workflow now imports the Intercontinental Cup (competition 4 / season 6) into pickems-app/seasons/s1-internationals.json. It runs every six hours outside matchnights and every fifteen minutes in the configured Tuesday/Thursday-night UTC window. GitHub schedules may be delayed. Commits use the existing master -> Cloudflare Pages integration; no new worker, credential, binding or repository connection is required.
+
+The live VA snapshot supersedes the initial static schedule-only behavior described above. Public internationalData loads it through the Pages ASSETS binding. Results, overall and regional standings, schedule scores and Pick'ems all consume it. The existing explicitly configured shared League Suite source still takes precedence if enabled. National rosters and canonical website player identities are not changed by the stats import.
+
+Provider IDs 28-37 map to ITA,FRA,GER,ESP,MEX,ARG,ENG,USA,BRA,CAN; match IDs stay va-intl-{VA ID}. Italy's provider abbreviation ITL does not change ITA. Grouped league standings are read directly from VA, validated against league fixtures, then filtered into regions without separate point calculations. Knockout results can appear in Results but never add league points. Unassigned future knockout participants and scores remain null.
+
+Player stats follow every pagination page of goals, assists, average match rating, goals+assists, tackles/game and defensive clean sheets. Rows are joined by VA public profile URL plus nation, never fuzzy-merged into website profiles. A missing metric is null rather than zero. Rating qualification rules belong to VA, so some players can have no published rating. No goalkeeper guidance or human keeper assumption is added.
+
+A failed core import retains the last good international snapshot without blocking domestic refreshes. A failed/partial stats import retains the last complete stats set and its timestamp, with a visible stale notice. A first import without stats publishes confirmed scores and standings with stats pending. Bad country mappings, missing fixtures, duplicate IDs, incomplete pagination and mismatched score/table totals fail validation.
+
+Future Euro/Copa and World Cup dates remain on the calendar; their separate VA competition/season IDs must be supplied and explicitly mapped before their results are imported. This link does not enable direct EA collection or automatic TOTW selections.

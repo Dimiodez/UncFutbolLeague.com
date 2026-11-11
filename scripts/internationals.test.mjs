@@ -156,3 +156,25 @@ test('overall and regional standings show the same approved result values, while
  assert.throws(()=>internationalFixtures(data.teams,[{...projected,id:'va-intl-332'}]),/mappings need review/);
  assert.throws(()=>internationalFixtures(data.teams,[{...projected,id:'unknown'}]),/mappings need review/);s.sqlite.close();
 });
+
+test('public VA snapshot drives results, both regional tables, full player stats and Pickems without roster changes',async()=>{
+ const {buildInternationalSnapshot}=await import('./sync-internationals.mjs');
+ const {internationalFixtureSource}=await import('./fixtures/international-va.mjs');
+ const {internationalPickemSeason}=await import('../functions/_lib/international-pickems.js');
+ const fixture=internationalFixtureSource(),snapshot=await buildInternationalSnapshot(fixture.pageProps);
+ const s=setup(),before=s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n;
+ s.env.ASSETS.fetch=async url=>new URL(url).pathname.endsWith('/s1-internationals.json')?Response.json(snapshot):new Response('');
+ const data=await internationalData(s.env),ballot=internationalPickemSeason(data);
+ assert.equal(data.resultsPublished,true);assert.equal(data.totals.played,10);assert.equal(data.players.length,12);
+ assert.equal(ballot.weeks[0].matches.filter(m=>m[3]!==null).length,10);
+ assert.equal(ballot.weeks[0].matches[0][0],1000000339);
+ assert(ballot.weeks.slice(1).flatMap(w=>w.matches).every(m=>m[3]===null&&m[4]===null));
+ assert(internationalContent(data,'results').includes('0 – 0'));
+ assert(internationalContent(data,'stats').includes('Player 11'));
+ const html=internationalContent(data,'standings');assert(html.includes('Overall Standings'));assert(html.includes('European Division'));assert(html.includes('Americas Division'));
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_players').get().n,before);
+ assert.equal(s.sqlite.prepare('SELECT count(*) n FROM league_roster_memberships').get().n,50);
+ s.env.ASSETS.fetch=async()=>Response.json({...snapshot,seasonId:5});
+ await assert.rejects(()=>internationalData(s.env),/mappings need review/);
+ s.sqlite.close();
+});
