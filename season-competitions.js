@@ -1,6 +1,6 @@
 const uflSeasonCards = [
-  {id:'6v6',name:'UNC Fútbol League 6v6',label:'6v6 · Season 2',schedule:'/schedules?season=2&type=6v6',table:'/standings?season=2&division=6v6',official:'https://ufl.virtualarena.app/competitions/1/seasons/2'},
-  {id:'10v10',name:'UNC Fútbol League 10v10',label:'10v10 · UFL Season 2',providerSeason:'Virtual Arena Season 1',schedule:'/schedules?season=2&type=10v10',table:'/standings?season=2&division=10v10',official:'https://ufl.virtualarena.app/competitions/3/seasons/5'},
+  {id:'6v6',overview:'/competitions/6v6',name:'UNC Fútbol League 6v6',label:'6v6 · Season 2',schedule:'/schedules?season=2&type=6v6',table:'/standings?season=2&division=6v6',official:'https://ufl.virtualarena.app/competitions/1/seasons/2'},
+  {id:'10v10',overview:'/competitions/10v10',name:'UNC Fútbol League 10v10',label:'10v10 · UFL Season 2',providerSeason:'Virtual Arena Season 1',schedule:'/schedules?season=2&type=10v10',table:'/standings?season=2&division=10v10',official:'https://ufl.virtualarena.app/competitions/3/seasons/5'},
   {id:'international',name:'UFL Intercontinental Cup',label:'Internationals · Season 1',schedule:'/internationals/schedules',table:'/internationals/standings',official:'https://ufl.virtualarena.app/competitions/4/seasons/6'},
 ];
 const uflSeasonStatuses = {registration:'Registrations open',ongoing:'In progress',upcoming:'Upcoming',complete:'Completed'};
@@ -10,22 +10,27 @@ function fetchUflSeasonStatuses() {
     .then(response => response.ok ? response.json() : {});
 }
 
-function uflHomeCompetitions() {
-  const links = uflSeasonCards.map(card => {
+function uflCompetitionCards(active = '') {
+  return uflSeasonCards.map(card => {
     const international = card.id === 'international';
-    const href = international ? '/internationals' : card.schedule;
-    return `<a class="home-competition-card" href="${escapeHtml(href)}"${international ? '' : ' data-link'}>
+    const href = international ? '/internationals' : card.overview;
+    return `<a class="home-competition-card" href="${escapeHtml(href)}"${international ? '' : ' data-link'} ${card.id === active ? 'aria-current="page"' : ''}>
       <span class="home-competition-state" data-home-competition-state="${card.id}" hidden></span>
       <span class="home-competition-name">${escapeHtml(card.name)} <span aria-hidden="true">→</span></span>
     </a>`;
   }).join('');
+}
+
+function uflHomeCompetitions() {
   return `<section class="section home-competitions" aria-labelledby="home-competitions-title">
-    <div class="home-competitions-heading">
-      <h2 id="home-competitions-title">Current competitions</h2>
-      <a href="/teams?division=house" data-link>House teams →</a>
-    </div>
-    <nav class="home-competition-grid" aria-label="Current competitions">${links}</nav>
+    <div class="home-competitions-heading"><h2 id="home-competitions-title">Current competitions</h2>
+      <a href="/teams?division=house" data-link>House teams →</a></div>
+    <nav class="home-competition-grid" aria-label="Current competitions">${uflCompetitionCards()}</nav>
   </section>`;
+}
+
+function updateUflCompetitionStatusBadges(section, statuses) {
+  updateUflCompetitionStatusBadges(section, statuses);
 }
 
 async function hydrateUflHomeCompetitions() {
@@ -81,7 +86,7 @@ async function hydrateUflSeasonPage() {
         '<span class="season-state" data-state="'+escapeHtml(status||'unknown')+'">'+escapeHtml(uflSeasonStatuses[status]||'Status unavailable')+'</span>'+
         (note?'<p>'+escapeHtml(note)+'</p>':'')+
         (card.providerSeason?'<p class="season-provider-label">'+escapeHtml(card.providerSeason)+'</p>':'')+
-        '<div class="season-card-links"><a href="'+card.schedule+'"'+(card.id==='international'?'':' data-link')+'>Fixtures</a><a href="'+card.table+'"'+(card.id==='international'?'':' data-link')+'>Standings</a>'+(card.id==='international'?'<a href="/pickems?competition=s1-internationals" data-link>Pick’ems</a>':'')+'<a href="'+card.official+'" rel="noopener noreferrer" target="_blank">'+(registration?'Registration on VA ↗':'Official competition ↗')+'</a></div></article>';
+        '<div class="season-card-links">'+(card.overview?'<a href="'+card.overview+'" data-link>Overview</a>':'')+'<a href="'+card.schedule+'"'+(card.id==='international'?'':' data-link')+'>Fixtures</a><a href="'+card.table+'"'+(card.id==='international'?'':' data-link')+'>Standings</a>'+(card.id==='international'?'<a href="/pickems?competition=s1-internationals" data-link>Pick’ems</a>':'')+'<a href="'+card.official+'" rel="noopener noreferrer" target="_blank">'+(registration?'Registration on VA ↗':'Official competition ↗')+'</a></div></article>';
     }).join('');
   }
   board.textContent='Loading competitions…';

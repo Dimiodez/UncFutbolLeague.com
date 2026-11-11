@@ -1333,6 +1333,7 @@ function render() {
   else if (path === routes.fun) main.innerHTML = funPage();
   else if (path === routes.league) main.innerHTML = leaguePage();
   else if (path === '/season') main.innerHTML = uflSeasonPage();
+  else if (/^\/competitions\/(6v6|10v10)$/.test(path)) main.innerHTML = competitionOverviewPage(path.split('/').pop(), params);
   else if (path === '/arcade/loosey-goosey') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Loosey Goosey"><iframe class="integrated-app-frame" src="/goose-app/" title="Loosey Goosey soccer runner" scrolling="no"></iframe></section>';
   else if (path === '/arcade/sandy-uppy') main.innerHTML = '<section class="integrated-app arcade-host" aria-label="Sandy Uppy"><iframe class="integrated-app-frame" src="/sandy-app/" title="Sandy Uppy beach soccer game" scrolling="no"></iframe></section>';
   else if (path === '/arcade/cleat') main.innerHTML = arcadeGamePage();
@@ -1361,7 +1362,7 @@ function render() {
   else if(path==='/') main.innerHTML = homePage(); else main.innerHTML=pageHero('Page not found','This page is off the pitch.','The address may have changed. Use the navigation above or return to a hub.')+'<section class="section"><a class="button button-primary" href="/" data-link>Back to Home</a> <a class="button button-secondary" href="/league" data-link>League hub</a></section>';
   document.querySelectorAll('.nav-actions > a').forEach(a => a.classList.toggle('active', new URL(a.href).pathname === path));
   document.querySelectorAll('.nav-group-link').forEach(a => a.classList.toggle('active', path === new URL(a.href).pathname || path.startsWith(`${new URL(a.href).pathname}/`)));
-  const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/season' || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
+  const activeHub = path === '/utility' || path.startsWith('/wheel') || path === '/coaching' || path.startsWith('/coaching/') ? 'utility' : path === '/fun' || path === '/sound' || path === '/func' || path === '/pickems' || path.startsWith('/arcade') ? 'fun' : path === '/league' || path === '/season' || path.startsWith('/competitions/') || path === '/teams' || path === '/standings' || path.startsWith('/schedules') || path === '/totw' || path === '/tots' ? 'league' : '';
   document.querySelectorAll('[data-nav-hub]').forEach(group => group.classList.toggle('active', group.dataset.navHub === activeHub));
   if (path === '/arcade' || (path.startsWith('/arcade/') && path !== '/arcade/submit')) {
     const returnTo = encodeURIComponent(path + window.location.search);
@@ -1382,6 +1383,7 @@ function render() {
   hydratePublishedEvents();
   if(path==='/season')hydrateUflSeasonPage();
   if(path==='/')hydrateUflHomeCompetitions();
+  if(path.startsWith('/competitions/'))hydrateCompetitionOverview();
   hydrateByotPage();
   renderAggregateByotBoard();
   hydrateUsersDirectory();
@@ -1393,7 +1395,7 @@ function render() {
   }
 }
 
-window.addEventListener?.('ufl-timezone-change',()=>{if(location.pathname==='/'||location.pathname==='/schedules')render();});
+window.addEventListener?.('ufl-timezone-change',()=>{if(location.pathname==='/'||location.pathname==='/schedules'||location.pathname.startsWith('/competitions/'))render();});
 
 function randomLocation() { return locations[Math.floor(Math.random() * locations.length)]; }
 function setLocation() {

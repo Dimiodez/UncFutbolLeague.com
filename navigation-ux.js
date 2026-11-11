@@ -91,7 +91,7 @@
   bar.replaceChildren();
   if(!home && path !== '/arcade/sandy-uppy'){const parent=path.startsWith('/arcade/')?['/arcade','← Back to Arcade']:path.startsWith('/teams/house/')?['/teams?division=house','← All house teams']:path.startsWith('/league-suite')?['/league','← League hub']:path.startsWith('/wheel')?['/utility','← Utility hub']:['/','← Home'];const link=document.createElement('a');link.href=parent[0];link.textContent=parent[1];if(document.body.dataset.standaloneNavigation!=='true')link.setAttribute('data-link','');bar.append(link);}
   if (home || ['/account', '/season'].includes(path) ||
-    /^\/(?:schedules|clubs\/|teams\/house\/|internationals|league-suite|team-hub)/.test(path)) {
+    /^\/(?:schedules|competitions\/|clubs\/|teams\/house\/|internationals|league-suite|team-hub)/.test(path)) {
     window.UFLTime?.control(bar);
   }
   bar.hidden = !bar.childElementCount;
