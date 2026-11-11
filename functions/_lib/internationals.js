@@ -1,3 +1,4 @@
+import {internationalVaSnapshot} from './international-va-snapshot.js';
 import {INTERNATIONAL_VA_FIXTURES,INTERNATIONAL_VA_SOURCE} from './international-va-fixtures.js';
 import {projectLeague} from './league-centre.js';
 export const INTL_ID='ufl-internationals';
@@ -28,12 +29,14 @@ export async function internationalData(env){
   const expected=new Set(teams.map(t=>t.id));
   if(league.teams.length!==expected.size||league.teams.some(t=>!expected.has(t.id)))throw Error('International team mappings need review.');
  }
+ const va=league?null:await internationalVaSnapshot(env);
+ if(va){const expected=new Set(teams.map(t=>t.id));if(va.standings.some(t=>!expected.has(t.id))||new Set(va.standings.map(t=>t.id)).size!==expected.size)throw Error('International team mappings need review.');}
  return {competition:{id:competition.id,name:competition.name,minPlayers:competition.match_min,maxPlayers:competition.match_max,humanKeepers:!!competition.human_keepers},
- source:{...INTERNATIONAL_VA_SOURCE},
+ source:{...INTERNATIONAL_VA_SOURCE,...(va?{syncedAt:va.syncedAt,statsFetchedAt:va.statsFetchedAt,statsStatus:va.statsStatus}:{} )},
  divisions:INTERNATIONAL_DIVISIONS.map(d=>({...d,teamIds:[...d.teamIds]})),
  teams:teams.map(t=>({id:t.id,divisionId:internationalDivisionFor(t.id),name:t.name,flag:t.flag,color:t.color,linked:!!t.ea_club_id,roster:rows.filter(r=>r.team_id===t.id).map(r=>({id:r.id,name:r.display_name,playerId:r.canonical_id||r.player_id,profileUrl:r.player_id?'/players/'+encodeURIComponent(r.profile_id||r.player_id)+'?season=2&division='+(r.division||'6v6'):null}))})),
- windows,selections,fixtures:internationalFixtures(teams,league?.fixtures||[]),standings:league?.standings||teams.map(t=>({id:t.id,name:t.name,played:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,goalDifference:0,points:0})),
- players:league?.players||[],resultsPublished:!!league,totals:league?.totals||{played:0,fixtures:INTERNATIONAL_VA_FIXTURES.length,pending:0,goals:0}};
+ windows,selections,fixtures:va?.fixtures||internationalFixtures(teams,league?.fixtures||[]),standings:va?.standings||league?.standings||teams.map(t=>({id:t.id,name:t.name,played:0,wins:0,draws:0,losses:0,goalsFor:0,goalsAgainst:0,goalDifference:0,points:0})),
+ players:va?.players||league?.players||[],resultsPublished:!!(league||va),totals:va?.totals||league?.totals||{played:0,fixtures:INTERNATIONAL_VA_FIXTURES.length,pending:0,goals:0}};
 }
 
 export function internationalFixtures(teams,projected=[]){

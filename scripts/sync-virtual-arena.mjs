@@ -1,3 +1,4 @@
+import {buildInternationalSnapshot} from './sync-internationals.mjs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import {applyPublicResultOverrides} from './public-result-overrides.mjs';
 
@@ -15,7 +16,7 @@ const decodeHtml = value => value
 
 async function pageProps(config, path, { allowMissing = false } = {}) {
   const seasonBase = `${BASE}/competitions/${config.competitionId}/seasons/${config.seasonId}`;
-  const response = await fetch(`${seasonBase}/${path}`, { headers: { 'user-agent': 'UncFutbolLeague.com data sync' } });
+  const response = await fetch(`${seasonBase}/${path}`, { signal: AbortSignal.timeout(30000), headers: { 'user-agent': 'UncFutbolLeague.com data sync' } });
   if (response.status === 404 && allowMissing && path === 'stats') {
     console.warn(`Virtual Arena ${config.key}/stats is not published yet; continuing core league sync.`);
     return { leaderboards: {}, statsUnavailable: true };
@@ -208,8 +209,22 @@ archivedSeason.status = 'archived';
 
 // Preserve a division's last good snapshot if its official feed is temporarily
 // unavailable, without preventing the other division from refreshing.
-const syncResults = await Promise.allSettled(seasons.map(buildSeason));
-if (syncResults.every(result => result.status === 'rejected')) {
+const internationalPath='pickems-app/seasons/s1-internationals.json';
+let previousInternational=null;
+try{previousInternational=JSON.parse(await readFile(internationalPath,'utf8'));}
+catch(error){if(error.code!=='ENOENT')throw error;}
+const [syncResults,[internationalResult]]=await Promise.all([
+ Promise.allSettled(seasons.map(buildSeason)),
+ Promise.allSettled([buildInternationalSnapshot(pageProps,previousInternational)])
+]);
+if(internationalResult.status==='fulfilled'){
+ await mkdir('pickems-app/seasons',{recursive:true});
+ await writeFile(internationalPath,JSON.stringify(internationalResult.value,null,2)+'\n');
+ console.log('Synced Internationals: '+internationalResult.value.totals.played+' results, '+internationalResult.value.players.length+' player stat rows ('+internationalResult.value.statsStatus+').');
+}else{
+ console.warn('::warning::International snapshot retained. '+internationalResult.reason.message);
+}
+if (syncResults.every(result => result.status === 'rejected')&&internationalResult.status==='rejected') {
   throw new Error(`All Virtual Arena divisions failed: ${syncResults.map(result => result.reason.message).join('; ')}`);
 }
 const liveSeasons = await Promise.all(syncResults.map(async (result, index) => {
