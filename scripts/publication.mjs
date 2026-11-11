@@ -46,3 +46,6 @@ publicRoots.add('internationals.css');publicRoots.add('internationals.js');
 publicRoots.add('season-competitions.js');
 publicRoots.add('club-dashboard.css');
 publicRoots.add('team-hub-overview.js');
+
+publicRoots.add('competition-overview.js');
+publicRoots.add('competition-overview.css');
