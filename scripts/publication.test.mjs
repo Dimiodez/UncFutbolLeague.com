@@ -27,3 +27,13 @@ test('build copies every selected file byte-for-byte and refuses existing output
     assert.throws(()=>buildPublic(output),/EEXIST/);
   }finally{fs.rmSync(temp,{recursive:true});}
 });
+
+test('every local script and stylesheet referenced by the site shell is published', () => {
+  const html = fs.readFileSync(path.join(siteRoot, 'index.html'), 'utf8');
+  const published = new Set(listFiles());
+  const references = [...html.matchAll(/(?:src|href)="(\/[^"]+\.(?:js|css)(?:\?[^"]*)?)"/g)];
+  for (const [, reference] of references) {
+    const file = reference.slice(1).split('?')[0];
+    assert.ok(published.has(file), 'Missing referenced public asset: ' + file);
+  }
+});
