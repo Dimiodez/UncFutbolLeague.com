@@ -1,0 +1,1197 @@
+{
+  "source": "https://ufl.virtualarena.app/competitions/4/seasons/6/players",
+  "competitionId": 4,
+  "seasonId": 6,
+  "reviewedOn": "2026-11-11",
+  "importId": "va-international-rosters-20261111",
+  "identityNotes": [
+    "Owner confirmed Linekt (VA 105, PSN Conman657) and connorjudsongarrett (VA 95, PSN Paolo_Neruda) are separate players; supersedes the earlier Connor (Linekt) label.",
+    "Owner confirmed SivyCK (VA 110) is existing Sivvy.",
+    "LuckyBean/luckybean_ and the quoted/unquoted Turd El Tito Ferguson labels reuse the existing national profiles."
+  ],
+  "totals": {
+    "registered": 64,
+    "reusedProfiles": 60,
+    "newProfiles": 4,
+    "addedMemberships": 12,
+    "retiredMemberships": 8
+  },
+  "players": [
+    {
+      "vaUserId": 14,
+      "vaName": "DimiOdez",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DimiOdez",
+      "teamId": "ARG",
+      "playerId": "1790183123676-110",
+      "displayName": "DimiOdez",
+      "newProfile": false,
+      "rosterId": "intl-ARG-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 10,
+      "vaName": "Dlowwtv",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Dlowwtv",
+      "teamId": "ARG",
+      "playerId": "1790190660338",
+      "displayName": "Dlowwtv",
+      "newProfile": false,
+      "rosterId": "intl-ARG-3",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 49,
+      "vaName": "DTXtre-",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DTXtre-",
+      "teamId": "ARG",
+      "playerId": "1790190806748",
+      "displayName": "DTXtre-",
+      "newProfile": false,
+      "rosterId": "intl-ARG-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 30,
+      "vaName": "77 Days Til Hockey Season",
+      "sourceUrl": "https://ufl.virtualarena.app/users/77%20Days%20Til%20Hockey%20Season",
+      "teamId": "ARG",
+      "playerId": "1790190860064-579",
+      "displayName": "Hockey Soon",
+      "newProfile": false,
+      "rosterId": "intl-ARG-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 86,
+      "vaName": "nb70",
+      "sourceUrl": "https://ufl.virtualarena.app/users/nb70",
+      "teamId": "ARG",
+      "playerId": "1790183039659",
+      "displayName": "nb70",
+      "newProfile": false,
+      "rosterId": "intl-ARG-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 65,
+      "vaName": "RaengerQuan",
+      "sourceUrl": "https://ufl.virtualarena.app/users/RaengerQuan",
+      "teamId": "ARG",
+      "playerId": "1790183038104",
+      "displayName": "RaengerQuan",
+      "newProfile": false,
+      "rosterId": "intl-ARG-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 118,
+      "vaName": "trump_1624",
+      "sourceUrl": "https://ufl.virtualarena.app/users/trump_1624",
+      "teamId": "ARG",
+      "playerId": "player-va-118",
+      "displayName": "trump_1624",
+      "newProfile": true,
+      "rosterId": "intl-va-118",
+      "match": "No existing profile"
+    },
+    {
+      "vaUserId": 20,
+      "vaName": "bRzGabriel98",
+      "sourceUrl": "https://ufl.virtualarena.app/users/bRzGabriel98",
+      "teamId": "BRA",
+      "playerId": "1790190586159-566",
+      "displayName": "bRzGabriel98",
+      "newProfile": false,
+      "rosterId": "intl-va-20",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 33,
+      "vaName": "Espahr",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Espahr",
+      "teamId": "BRA",
+      "playerId": "1790190704973-305",
+      "displayName": "ESpahr09",
+      "newProfile": false,
+      "rosterId": "intl-BRA-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 15,
+      "vaName": "Grazman12",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Grazman12",
+      "teamId": "BRA",
+      "playerId": "1790642340767-864",
+      "displayName": "Grazman12",
+      "newProfile": false,
+      "rosterId": "intl-BRA-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 60,
+      "vaName": "MateoEaves",
+      "sourceUrl": "https://ufl.virtualarena.app/users/MateoEaves",
+      "teamId": "BRA",
+      "playerId": "1790190705262-348",
+      "displayName": "MateoEaves",
+      "newProfile": false,
+      "rosterId": "intl-BRA-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 103,
+      "vaName": "saltinestallion",
+      "sourceUrl": "https://ufl.virtualarena.app/users/saltinestallion",
+      "teamId": "BRA",
+      "playerId": "player-88dab5b3-aa7f-4959-b888-cdc50091e193",
+      "displayName": "saltinestallion",
+      "newProfile": false,
+      "rosterId": "intl-va-103",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 6,
+      "vaName": "TheFlav",
+      "sourceUrl": "https://ufl.virtualarena.app/users/TheFlav",
+      "teamId": "BRA",
+      "playerId": "1790190639670",
+      "displayName": "TheFlav",
+      "newProfile": false,
+      "rosterId": "intl-BRA-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 21,
+      "vaName": "BIGHIMUP",
+      "sourceUrl": "https://ufl.virtualarena.app/users/BIGHIMUP",
+      "teamId": "CAN",
+      "playerId": "1790190667177",
+      "displayName": "BIGHIMUP",
+      "newProfile": false,
+      "rosterId": "intl-CAN-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 107,
+      "vaName": "defrankz",
+      "sourceUrl": "https://ufl.virtualarena.app/users/defrankz",
+      "teamId": "CAN",
+      "playerId": "intl-player-defrankz",
+      "displayName": "DeFrankz",
+      "newProfile": false,
+      "rosterId": "intl-CAN-6",
+      "match": "Exact name"
+    },
+    {
+      "vaUserId": 73,
+      "vaName": "DelCidd",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DelCidd",
+      "teamId": "CAN",
+      "playerId": "1790190676598",
+      "displayName": "DelCidd",
+      "newProfile": false,
+      "rosterId": "intl-va-73",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 18,
+      "vaName": "H00bear",
+      "sourceUrl": "https://ufl.virtualarena.app/users/H00bear",
+      "teamId": "CAN",
+      "playerId": "1790179851406",
+      "displayName": "H00bear",
+      "newProfile": false,
+      "rosterId": "intl-CAN-3",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 83,
+      "vaName": "LeBon",
+      "sourceUrl": "https://ufl.virtualarena.app/users/LeBon",
+      "teamId": "CAN",
+      "playerId": "1790644756893",
+      "displayName": "lebon",
+      "newProfile": false,
+      "rosterId": "intl-CAN-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 121,
+      "vaName": "luckybean_",
+      "sourceUrl": "https://ufl.virtualarena.app/users/luckybean_",
+      "teamId": "CAN",
+      "playerId": "intl-player-luckybean",
+      "displayName": "LuckyBean",
+      "newProfile": false,
+      "rosterId": "intl-CAN-4",
+      "match": "Reviewed alias"
+    },
+    {
+      "vaUserId": 13,
+      "vaName": "afoe000",
+      "sourceUrl": "https://ufl.virtualarena.app/users/afoe000",
+      "teamId": "ENG",
+      "playerId": "1790190796702",
+      "displayName": "afoe000",
+      "newProfile": false,
+      "rosterId": "intl-ENG-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 43,
+      "vaName": "KLee",
+      "sourceUrl": "https://ufl.virtualarena.app/users/KLee",
+      "teamId": "ENG",
+      "playerId": "1790122644795",
+      "displayName": "KLee",
+      "newProfile": false,
+      "rosterId": "intl-ENG-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 75,
+      "vaName": "percadin",
+      "sourceUrl": "https://ufl.virtualarena.app/users/percadin",
+      "teamId": "ENG",
+      "playerId": "1790190674359",
+      "displayName": "percadin",
+      "newProfile": false,
+      "rosterId": "intl-ENG-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 8,
+      "vaName": "Salmon",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Salmon",
+      "teamId": "ENG",
+      "playerId": "1790181684846-757",
+      "displayName": "Salmon",
+      "newProfile": false,
+      "rosterId": "intl-ENG-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 54,
+      "vaName": "Turd El Tito Ferguson",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Turd%20El%20Tito%20Ferguson",
+      "teamId": "ENG",
+      "playerId": "1790190859698-251",
+      "displayName": "Turd \"El Tito\" Ferguson",
+      "newProfile": false,
+      "rosterId": "intl-ENG-3",
+      "match": "Reviewed alias"
+    },
+    {
+      "vaUserId": 117,
+      "vaName": "colonel4bins",
+      "sourceUrl": "https://ufl.virtualarena.app/users/colonel4bins",
+      "teamId": "ESP",
+      "playerId": "intl-player-colonel4bins",
+      "displayName": "Colonel4Bins",
+      "newProfile": false,
+      "rosterId": "intl-ESP-5",
+      "match": "Exact name"
+    },
+    {
+      "vaUserId": 45,
+      "vaName": "J2theGut22",
+      "sourceUrl": "https://ufl.virtualarena.app/users/J2theGut22",
+      "teamId": "ESP",
+      "playerId": "1790181684944-833",
+      "displayName": "J2theGut22",
+      "newProfile": false,
+      "rosterId": "intl-ESP-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 93,
+      "vaName": "rfpqgold",
+      "sourceUrl": "https://ufl.virtualarena.app/users/rfpqgold",
+      "teamId": "ESP",
+      "playerId": "player-656a773a-d381-4dda-a0dc-0ee671261235",
+      "displayName": "rfpqgold",
+      "newProfile": false,
+      "rosterId": "intl-va-93",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 72,
+      "vaName": "Sesmas",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Sesmas",
+      "teamId": "ESP",
+      "playerId": "1790190671571",
+      "displayName": "Sesmas",
+      "newProfile": false,
+      "rosterId": "intl-va-72",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 2,
+      "vaName": "thealphabetman",
+      "sourceUrl": "https://ufl.virtualarena.app/users/thealphabetman",
+      "teamId": "ESP",
+      "playerId": "1790181684781-316",
+      "displayName": "thealphabetman",
+      "newProfile": false,
+      "rosterId": "intl-ESP-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 4,
+      "vaName": "Vinicimnj",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Vinicimnj",
+      "teamId": "ESP",
+      "playerId": "1790190586283-677",
+      "displayName": "Vinicimnj",
+      "newProfile": false,
+      "rosterId": "intl-ESP-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 76,
+      "vaName": "WizardBelly",
+      "sourceUrl": "https://ufl.virtualarena.app/users/WizardBelly",
+      "teamId": "ESP",
+      "playerId": "1790642014844",
+      "displayName": "WizardBelly",
+      "newProfile": false,
+      "rosterId": "intl-ESP-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 24,
+      "vaName": "Bilal",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Bilal",
+      "teamId": "FRA",
+      "playerId": "1790190859371-163",
+      "displayName": "bilal",
+      "newProfile": false,
+      "rosterId": "intl-FRA-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 68,
+      "vaName": "dirtbradley",
+      "sourceUrl": "https://ufl.virtualarena.app/users/dirtbradley",
+      "teamId": "FRA",
+      "playerId": "1790183044696",
+      "displayName": "dirtbradley",
+      "newProfile": false,
+      "rosterId": "intl-FRA-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 9,
+      "vaName": "DMellow",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DMellow",
+      "teamId": "FRA",
+      "playerId": "1790642010611",
+      "displayName": "DMellow",
+      "newProfile": false,
+      "rosterId": "intl-FRA-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 35,
+      "vaName": "ericburkley",
+      "sourceUrl": "https://ufl.virtualarena.app/users/ericburkley",
+      "teamId": "FRA",
+      "playerId": "intl-player-ericburkley",
+      "displayName": "ericburkley",
+      "newProfile": false,
+      "rosterId": "intl-FRA-2",
+      "match": "Exact name"
+    },
+    {
+      "vaUserId": 99,
+      "vaName": "johnycoach5086",
+      "sourceUrl": "https://ufl.virtualarena.app/users/johnycoach5086",
+      "teamId": "FRA",
+      "playerId": "player-va-99",
+      "displayName": "johnycoach5086",
+      "newProfile": true,
+      "rosterId": "intl-va-99",
+      "match": "No existing profile"
+    },
+    {
+      "vaUserId": 12,
+      "vaName": "KovacsKitchen",
+      "sourceUrl": "https://ufl.virtualarena.app/users/KovacsKitchen",
+      "teamId": "FRA",
+      "playerId": "1790190802026",
+      "displayName": "KovacsKitchen",
+      "newProfile": false,
+      "rosterId": "intl-FRA-3",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 28,
+      "vaName": "Robieshapiro",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Robieshapiro",
+      "teamId": "FRA",
+      "playerId": "1790121491288",
+      "displayName": "Robieshapiro",
+      "newProfile": false,
+      "rosterId": "intl-FRA-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 95,
+      "vaName": "connorjudsongarrett",
+      "sourceUrl": "https://ufl.virtualarena.app/users/connorjudsongarrett",
+      "teamId": "GER",
+      "playerId": "player-8d5d123b-6411-458f-8af4-248aa5cadae7",
+      "displayName": "connorjudsongarrett",
+      "newProfile": false,
+      "rosterId": "intl-GER-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 34,
+      "vaName": "Countryhype762",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Countryhype762",
+      "teamId": "GER",
+      "playerId": "1790642026871",
+      "displayName": "Countryhype762",
+      "newProfile": false,
+      "rosterId": "intl-GER-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 69,
+      "vaName": "elgucci_",
+      "sourceUrl": "https://ufl.virtualarena.app/users/elgucci_",
+      "teamId": "GER",
+      "playerId": "1790190663693",
+      "displayName": "elgucci_",
+      "newProfile": false,
+      "rosterId": "intl-GER-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 29,
+      "vaName": "glesh88",
+      "sourceUrl": "https://ufl.virtualarena.app/users/glesh88",
+      "teamId": "GER",
+      "playerId": "1790190704881-937",
+      "displayName": "glesh88",
+      "newProfile": false,
+      "rosterId": "intl-GER-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 105,
+      "vaName": "Linekt",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Linekt",
+      "teamId": "GER",
+      "playerId": "player-va-105",
+      "displayName": "Linekt",
+      "newProfile": true,
+      "rosterId": "intl-va-105",
+      "match": "Owner-confirmed separate player"
+    },
+    {
+      "vaUserId": 22,
+      "vaName": "Schweinslap",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Schweinslap",
+      "teamId": "GER",
+      "playerId": "1790181684658-361",
+      "displayName": "Schweinslap",
+      "newProfile": false,
+      "rosterId": "intl-GER-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 3,
+      "vaName": "BravoAnte",
+      "sourceUrl": "https://ufl.virtualarena.app/users/BravoAnte",
+      "teamId": "ITA",
+      "playerId": "1790183047280",
+      "displayName": "BravoAnte",
+      "newProfile": false,
+      "rosterId": "intl-ITA-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 113,
+      "vaName": "coop9191",
+      "sourceUrl": "https://ufl.virtualarena.app/users/coop9191",
+      "teamId": "ITA",
+      "playerId": "player-va-113",
+      "displayName": "coop9191",
+      "newProfile": true,
+      "rosterId": "intl-va-113",
+      "match": "No existing profile"
+    },
+    {
+      "vaUserId": 67,
+      "vaName": "germanwigends",
+      "sourceUrl": "https://ufl.virtualarena.app/users/germanwigends",
+      "teamId": "ITA",
+      "playerId": "1790190859482-283",
+      "displayName": "germanwigends",
+      "newProfile": false,
+      "rosterId": "intl-ITA-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 1,
+      "vaName": "Luuuiiisss7",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Luuuiiisss7",
+      "teamId": "ITA",
+      "playerId": "1790181684544-51",
+      "displayName": "Luuuiiisss7",
+      "newProfile": false,
+      "rosterId": "intl-ITA-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 101,
+      "vaName": "Tjhughes9",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Tjhughes9",
+      "teamId": "ITA",
+      "playerId": "1790123529156",
+      "displayName": "Tjhughes9",
+      "newProfile": false,
+      "rosterId": "intl-ITA-3",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 27,
+      "vaName": "XALESHX",
+      "sourceUrl": "https://ufl.virtualarena.app/users/XALESHX",
+      "teamId": "ITA",
+      "playerId": "1790190704776-702",
+      "displayName": "xaleshx",
+      "newProfile": false,
+      "rosterId": "intl-ITA-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 40,
+      "vaName": "11Cassio",
+      "sourceUrl": "https://ufl.virtualarena.app/users/11Cassio",
+      "teamId": "MEX",
+      "playerId": "player-0aff6621-bd26-48dc-b400-10157f0af402",
+      "displayName": "11Cassio",
+      "newProfile": false,
+      "rosterId": "intl-MEX-2",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 5,
+      "vaName": "Goose",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Goose",
+      "teamId": "MEX",
+      "playerId": "1790190778704-703",
+      "displayName": "Goose",
+      "newProfile": false,
+      "rosterId": "intl-MEX-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 37,
+      "vaName": "Rippy Nolan",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Rippy%20Nolan",
+      "teamId": "MEX",
+      "playerId": "1790190859244-598",
+      "displayName": "Rippy Nolan",
+      "newProfile": false,
+      "rosterId": "intl-MEX-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 92,
+      "vaName": "SamLoscarinho",
+      "sourceUrl": "https://ufl.virtualarena.app/users/SamLoscarinho",
+      "teamId": "MEX",
+      "playerId": "player-5af6a0df-2b2b-455e-9c04-5f8d47fbc825",
+      "displayName": "SamLoscarinho",
+      "newProfile": false,
+      "rosterId": "intl-va-92",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 110,
+      "vaName": "SivyCK",
+      "sourceUrl": "https://ufl.virtualarena.app/users/SivyCK",
+      "teamId": "MEX",
+      "playerId": "intl-player-sivvy",
+      "displayName": "Sivvy",
+      "newProfile": false,
+      "rosterId": "intl-MEX-5",
+      "match": "Reviewed alias"
+    },
+    {
+      "vaUserId": 70,
+      "vaName": "xdestroy-lonely",
+      "sourceUrl": "https://ufl.virtualarena.app/users/xdestroy-lonely",
+      "teamId": "MEX",
+      "playerId": "1790190642688",
+      "displayName": "xdestroy-lonely",
+      "newProfile": false,
+      "rosterId": "intl-MEX-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 7,
+      "vaName": "zo54",
+      "sourceUrl": "https://ufl.virtualarena.app/users/zo54",
+      "teamId": "MEX",
+      "playerId": "1790182936683-637",
+      "displayName": "zo54",
+      "newProfile": false,
+      "rosterId": "intl-MEX-3",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 39,
+      "vaName": "Cookie Monster",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Cookie%20Monster",
+      "teamId": "USA",
+      "playerId": "1790619965030",
+      "displayName": "Cookie Monster",
+      "newProfile": false,
+      "rosterId": "intl-va-39",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 74,
+      "vaName": "Darco",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Darco",
+      "teamId": "USA",
+      "playerId": "1790123570856",
+      "displayName": "Darco",
+      "newProfile": false,
+      "rosterId": "intl-USA-6",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 91,
+      "vaName": "Kool Kat007",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Kool%20Kat007",
+      "teamId": "USA",
+      "playerId": "1790123579369",
+      "displayName": "Kool Kat#007",
+      "newProfile": false,
+      "rosterId": "intl-va-91",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 85,
+      "vaName": "Lil Bean",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Lil%20Bean",
+      "teamId": "USA",
+      "playerId": "1790121452730",
+      "displayName": "Lil Bean",
+      "newProfile": false,
+      "rosterId": "intl-USA-5",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 26,
+      "vaName": "liz4",
+      "sourceUrl": "https://ufl.virtualarena.app/users/liz4",
+      "teamId": "USA",
+      "playerId": "1790183017803",
+      "displayName": "liz4",
+      "newProfile": false,
+      "rosterId": "intl-USA-1",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 52,
+      "vaName": "LondonIsRed",
+      "sourceUrl": "https://ufl.virtualarena.app/users/LondonIsRed",
+      "teamId": "USA",
+      "playerId": "1790183049971",
+      "displayName": "LondonIsRed",
+      "newProfile": false,
+      "rosterId": "intl-USA-4",
+      "match": "VA user ID"
+    },
+    {
+      "vaUserId": 64,
+      "vaName": "Starnesy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Starnesy",
+      "teamId": "USA",
+      "playerId": "1790190669844",
+      "displayName": "Starnesy",
+      "newProfile": false,
+      "rosterId": "intl-USA-3",
+      "match": "VA user ID"
+    }
+  ],
+  "previousMemberships": [
+    {
+      "id": "intl-ARG-2",
+      "teamId": "ARG",
+      "playerId": "1790183123676-110",
+      "name": "Chef Dez",
+      "active": 1
+    },
+    {
+      "id": "intl-ARG-4",
+      "teamId": "ARG",
+      "playerId": "1790190806748",
+      "name": "DTXtre-",
+      "active": 1
+    },
+    {
+      "id": "intl-ARG-3",
+      "teamId": "ARG",
+      "playerId": "1790190660338",
+      "name": "Dlowwtv",
+      "active": 1
+    },
+    {
+      "id": "intl-ARG-6",
+      "teamId": "ARG",
+      "playerId": "1790190860064-579",
+      "name": "Hockey's Back",
+      "active": 1
+    },
+    {
+      "id": "intl-ARG-5",
+      "teamId": "ARG",
+      "playerId": "1790183039659",
+      "name": "NB",
+      "active": 1
+    },
+    {
+      "id": "intl-ARG-1",
+      "teamId": "ARG",
+      "playerId": "1790183038104",
+      "name": "RaengerQuan",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-1",
+      "teamId": "BRA",
+      "playerId": "1790190704973-305",
+      "name": "ESpahr09",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-3",
+      "teamId": "BRA",
+      "playerId": "1790122664677",
+      "name": "GABE",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-5",
+      "teamId": "BRA",
+      "playerId": "1790642340767-864",
+      "name": "Grazman12",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-4",
+      "teamId": "BRA",
+      "playerId": "1790190705262-348",
+      "name": "MateoEaves",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-2",
+      "teamId": "BRA",
+      "playerId": "1790190639670",
+      "name": "TheFlav",
+      "active": 1
+    },
+    {
+      "id": "intl-BRA-6",
+      "teamId": "BRA",
+      "playerId": "intl-player-shmig",
+      "name": "shmig",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-1",
+      "teamId": "CAN",
+      "playerId": "1790190667177",
+      "name": "BIGHIMUP",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-6",
+      "teamId": "CAN",
+      "playerId": "intl-player-defrankz",
+      "name": "DeFrankz",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-3",
+      "teamId": "CAN",
+      "playerId": "1790179851406",
+      "name": "H00bear",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-2",
+      "teamId": "CAN",
+      "playerId": "1790644756893",
+      "name": "LeBon",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-4",
+      "teamId": "CAN",
+      "playerId": "intl-player-luckybean",
+      "name": "LuckyBean",
+      "active": 1
+    },
+    {
+      "id": "intl-CAN-5",
+      "teamId": "CAN",
+      "playerId": "intl-player-pantera",
+      "name": "Pantera",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-5",
+      "teamId": "ENG",
+      "playerId": "1790122644795",
+      "name": "KLee (Salmon Understudy ×2)",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-2",
+      "teamId": "ENG",
+      "playerId": "1790181684846-757",
+      "name": "Salmon",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-3",
+      "teamId": "ENG",
+      "playerId": "1790190859698-251",
+      "name": "Turd \"El Tito\" Ferguson",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-4",
+      "teamId": "ENG",
+      "playerId": "1790190796702",
+      "name": "afoe000",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-1",
+      "teamId": "ENG",
+      "playerId": "1790190674359",
+      "name": "percadin",
+      "active": 1
+    },
+    {
+      "id": "intl-ENG-6",
+      "teamId": "ENG",
+      "playerId": "intl-player-uy",
+      "name": "uY",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-5",
+      "teamId": "ESP",
+      "playerId": "intl-player-colonel4bins",
+      "name": "Colonel4Bins",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-6",
+      "teamId": "ESP",
+      "playerId": "1790181684944-833",
+      "name": "J2theGut22",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-3",
+      "teamId": "ESP",
+      "playerId": "1790122659659",
+      "name": "Kong the Don",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-4",
+      "teamId": "ESP",
+      "playerId": "1790190586283-677",
+      "name": "Vincimnj",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-2",
+      "teamId": "ESP",
+      "playerId": "1790642014844",
+      "name": "WizardBelly",
+      "active": 1
+    },
+    {
+      "id": "intl-ESP-1",
+      "teamId": "ESP",
+      "playerId": "1790181684781-316",
+      "name": "thealphabetman (biz)",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-4",
+      "teamId": "FRA",
+      "playerId": "1790642010611",
+      "name": "DMellow",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-3",
+      "teamId": "FRA",
+      "playerId": "1790190802026",
+      "name": "KovacsKitchen",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-6",
+      "teamId": "FRA",
+      "playerId": "1790121491288",
+      "name": "Robieshapiro",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-1",
+      "teamId": "FRA",
+      "playerId": "1790190859371-163",
+      "name": "bilal",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-5",
+      "teamId": "FRA",
+      "playerId": "1790183044696",
+      "name": "dirtbradley",
+      "active": 1
+    },
+    {
+      "id": "intl-FRA-2",
+      "teamId": "FRA",
+      "playerId": "intl-player-ericburkley",
+      "name": "ericburkley",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-5",
+      "teamId": "GER",
+      "playerId": "player-8d5d123b-6411-458f-8af4-248aa5cadae7",
+      "name": "Connor (Linekt)",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-1",
+      "teamId": "GER",
+      "playerId": "1790642026871",
+      "name": "Countryhype762",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-4",
+      "teamId": "GER",
+      "playerId": "1790190663693",
+      "name": "Gussi",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-3",
+      "teamId": "GER",
+      "playerId": "intl-player-l04techsupport",
+      "name": "L04TechSupport",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-6",
+      "teamId": "GER",
+      "playerId": "1790190704881-937",
+      "name": "glesh88",
+      "active": 1
+    },
+    {
+      "id": "intl-GER-2",
+      "teamId": "GER",
+      "playerId": "1790181684658-361",
+      "name": "schwein",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-1",
+      "teamId": "ITA",
+      "playerId": "1790183047280",
+      "name": "Bravo",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-5",
+      "teamId": "ITA",
+      "playerId": "1790814959657",
+      "name": "Rick Valentino",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-2",
+      "teamId": "ITA",
+      "playerId": "1790190704776-702",
+      "name": "XALESHX",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-4",
+      "teamId": "ITA",
+      "playerId": "1790190859482-283",
+      "name": "germanwigends",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-6",
+      "teamId": "ITA",
+      "playerId": "1790181684544-51",
+      "name": "luuuiiisss7",
+      "active": 1
+    },
+    {
+      "id": "intl-ITA-3",
+      "teamId": "ITA",
+      "playerId": "1790123529156",
+      "name": "thughes",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-2",
+      "teamId": "MEX",
+      "playerId": "player-0aff6621-bd26-48dc-b400-10157f0af402",
+      "name": "11Cassio",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-4",
+      "teamId": "MEX",
+      "playerId": "1790190778704-703",
+      "name": "Goose",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-6",
+      "teamId": "MEX",
+      "playerId": "1790190642688",
+      "name": "MATT",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-5",
+      "teamId": "MEX",
+      "playerId": "intl-player-sivvy",
+      "name": "Sivvy",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-1",
+      "teamId": "MEX",
+      "playerId": "1790190859244-598",
+      "name": "The Great Rippkin",
+      "active": 1
+    },
+    {
+      "id": "intl-MEX-3",
+      "teamId": "MEX",
+      "playerId": "1790182936683-637",
+      "name": "zo",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-6",
+      "teamId": "USA",
+      "playerId": "1790123570856",
+      "name": "Darco",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-5",
+      "teamId": "USA",
+      "playerId": "1790121452730",
+      "name": "Lil Bean",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-4",
+      "teamId": "USA",
+      "playerId": "1790183049971",
+      "name": "LondonIsRed",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-2",
+      "teamId": "USA",
+      "playerId": "intl-player-ministrobizcocho",
+      "name": "Ministro Bizcocho",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-3",
+      "teamId": "USA",
+      "playerId": "1790190669844",
+      "name": "Starnesy (Starnzy)",
+      "active": 1
+    },
+    {
+      "id": "intl-USA-1",
+      "teamId": "USA",
+      "playerId": "1790183017803",
+      "name": "liz",
+      "active": 1
+    }
+  ],
+  "retiredMemberships": [
+    {
+      "id": "intl-BRA-3",
+      "teamId": "BRA",
+      "playerId": "1790122664677",
+      "name": "GABE"
+    },
+    {
+      "id": "intl-BRA-6",
+      "teamId": "BRA",
+      "playerId": "intl-player-shmig",
+      "name": "shmig"
+    },
+    {
+      "id": "intl-CAN-5",
+      "teamId": "CAN",
+      "playerId": "intl-player-pantera",
+      "name": "Pantera"
+    },
+    {
+      "id": "intl-ENG-6",
+      "teamId": "ENG",
+      "playerId": "intl-player-uy",
+      "name": "uY"
+    },
+    {
+      "id": "intl-ESP-3",
+      "teamId": "ESP",
+      "playerId": "1790122659659",
+      "name": "Kong the Don"
+    },
+    {
+      "id": "intl-GER-3",
+      "teamId": "GER",
+      "playerId": "intl-player-l04techsupport",
+      "name": "L04TechSupport"
+    },
+    {
+      "id": "intl-ITA-5",
+      "teamId": "ITA",
+      "playerId": "1790814959657",
+      "name": "Rick Valentino"
+    },
+    {
+      "id": "intl-USA-2",
+      "teamId": "USA",
+      "playerId": "intl-player-ministrobizcocho",
+      "name": "Ministro Bizcocho"
+    }
+  ]
+}

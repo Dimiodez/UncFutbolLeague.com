@@ -46,3 +46,14 @@ Player stats follow every pagination page of goals, assists, average match ratin
 A failed core import retains the last good international snapshot without blocking domestic refreshes. A failed/partial stats import retains the last complete stats set and its timestamp, with a visible stale notice. A first import without stats publishes confirmed scores and standings with stats pending. Bad country mappings, missing fixtures, duplicate IDs, incomplete pagination and mismatched score/table totals fail validation.
 
 Future Euro/Copa and World Cup dates remain on the calendar; their separate VA competition/season IDs must be supplied and explicitly mapped before their results are imported. This link does not enable direct EA collection or automatic TOTW selections.
+
+
+## Reviewed national roster refresh (November 11, 2026)
+
+At the owner's request, all seven pages of VA competition 4 / season 6 registrations were checked against the live league_va_player_links registry and existing canonical profiles. The reviewed manifest is data/international-rosters-va-20261111.json. It replaces the older initial-squad snapshot as the current national roster: 64 unique registrations, 60 reused profiles, four new player profiles, 12 national membership additions and eight soft retirements. Current counts: ARG 7, BRA 6, CAN 6, ENG 5, ESP 7, FRA 7, GER 6, ITA 6, MEX 7, USA 7. Match-day limits do not cap squad size.
+
+The owner explicitly corrected the earlier identity confirmation: Linekt (VA user 105 / PSN Conman657) and connorjudsongarrett (VA user 95 / PSN Paolo_Neruda) are separate people. The old Connor (Linekt) national label is corrected; no global profiles are merged. The owner also confirmed SivyCK is existing Sivvy. LuckyBean/luckybean_ and quoted/unquoted Turd El Tito Ferguson reuse the existing profiles. The new profiles are johnycoach5086, trump_1624, coop9191 and Linekt. VA handles are public provider identities, not invented Discord account IDs.
+
+Apply migrations/20261111_international_va_rosters.sql to the website production DB after the previous roster and international migrations. It checks the reviewed pre-import roster and both directions of VA identity mappings before writing, records every national membership change in international_roster_audit, and records a completion marker. Replays after completion are no-ops, including after later administrator edits. A changed roster or conflicting identity mapping stops the import for review. Tests use foreign keys and verify profile reuse, both Germany identities, retained retired profiles, untouched club memberships, idempotence and failed preconditions.
+
+This is a reviewed roster import. The existing scheduled VA results/statistics sync remains separate and does not silently add, remove or merge player identities. Existing club memberships, account permissions, approved player photos, match history, and Cloudflare/GitHub deployment configuration are unchanged.
