@@ -1494,7 +1494,7 @@ window.UFL_SEASON_6V6_S2 = {
           {
             "data": {
               "name": "Salmon",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1791373480.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794371673.png",
               "url": "https://ufl.virtualarena.app/users/Salmon"
             },
             "team": {
