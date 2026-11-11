@@ -90,3 +90,9 @@ test('international success can refresh independently while both domestic snapsh
  const [six,ten]=await recover({allFail:true,internationalSuccess:true});
  assert.equal(six.competitionId,1);assert.equal(ten.retained,true);
 });
+
+test('scheduled VA publication detects newly created snapshots as well as tracked changes',()=>{
+ const workflow=fs.readFileSync(new URL('../.github/workflows/sync-virtual-arena.yml',import.meta.url),'utf8');
+ assert.match(workflow,/git status --porcelain -- [^\n]*pickems-app\/seasons/);
+ assert.match(workflow,/git add [^\n]*pickems-app\/seasons/);
+});

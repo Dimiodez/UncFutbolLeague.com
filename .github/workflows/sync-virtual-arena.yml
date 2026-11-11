@@ -31,7 +31,7 @@ jobs:
         run: node scripts/sync-virtual-arena.mjs
       - name: Publish changed league data
         run: |
-          if git diff --quiet -- pickems-app/season-data.js pickems-app/seasons pickems-app/season-data-6v6-s2.json pickems-app/season-data-10v10-s2.json pickems-app/season-data-6v6-s2.js pickems-app/season-data-10v10-s2.js; then
+          if [ -z "$(git status --porcelain -- pickems-app/season-data.js pickems-app/seasons pickems-app/season-data-6v6-s2.json pickems-app/season-data-10v10-s2.json pickems-app/season-data-6v6-s2.js pickems-app/season-data-10v10-s2.js)" ]; then
             echo "UNC Futbol League data is already current."
             exit 0
           fi
