@@ -110,6 +110,12 @@ function competitionOverviewPage(division, params = new URLSearchParams()) {
 function hydrateCompetitionOverview() {
   const root = document.querySelector('[data-competition-overview]');
   if (!root) return;
+  const navigation = root.querySelector('.home-competition-grid');
+  const active = navigation?.querySelector('[aria-current="page"]');
+  if (active && navigation.scrollWidth > navigation.clientWidth) {
+    navigation.scrollLeft = active.offsetLeft - navigation.offsetLeft -
+      (navigation.clientWidth - active.clientWidth) / 2;
+  }
   fetchUflSeasonStatuses().then(statuses => {
     if (!root.isConnected) return;
     updateUflCompetitionStatusBadges(root, statuses);

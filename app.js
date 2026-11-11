@@ -1383,7 +1383,7 @@ function render() {
   hydratePublishedEvents();
   if(path==='/season')hydrateUflSeasonPage();
   if(path==='/')hydrateUflHomeCompetitions();
-  hydrateCompetitionOverview();
+  if(path.startsWith('/competitions/'))hydrateCompetitionOverview();
   hydrateByotPage();
   renderAggregateByotBoard();
   hydrateUsersDirectory();
