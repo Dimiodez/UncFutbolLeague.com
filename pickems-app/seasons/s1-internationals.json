@@ -1,0 +1,2070 @@
+{
+  "schemaVersion": 1,
+  "key": "s1-internationals",
+  "competitionId": 4,
+  "seasonId": 6,
+  "source": "https://ufl.virtualarena.app/competitions/4/seasons/6",
+  "fixtures": [
+    {
+      "id": "va-intl-339",
+      "sourceMatchId": 339,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/339",
+      "round": "Round 1",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:00:00.000Z",
+      "homeId": "USA",
+      "awayId": "BRA",
+      "home": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "away": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "status": "played",
+      "homeScore": 0,
+      "awayScore": 2,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-340",
+      "sourceMatchId": 340,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/340",
+      "round": "Round 1",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:00:00.000Z",
+      "homeId": "GER",
+      "awayId": "MEX",
+      "home": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "away": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "status": "played",
+      "homeScore": 0,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-341",
+      "sourceMatchId": 341,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/341",
+      "round": "Round 1",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:00:00.000Z",
+      "homeId": "ESP",
+      "awayId": "ENG",
+      "home": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "played",
+      "homeScore": 1,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-342",
+      "sourceMatchId": 342,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/342",
+      "round": "Round 1",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:00:00.000Z",
+      "homeId": "CAN",
+      "awayId": "ARG",
+      "home": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "away": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "status": "played",
+      "homeScore": 1,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-343",
+      "sourceMatchId": 343,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/343",
+      "round": "Round 1",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:00:00.000Z",
+      "homeId": "FRA",
+      "awayId": "ITA",
+      "home": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "played",
+      "homeScore": 3,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-344",
+      "sourceMatchId": 344,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/344",
+      "round": "Round 2",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:30:00.000Z",
+      "homeId": "BRA",
+      "awayId": "GER",
+      "home": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "away": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "status": "played",
+      "homeScore": 2,
+      "awayScore": 4,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-345",
+      "sourceMatchId": 345,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/345",
+      "round": "Round 2",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:30:00.000Z",
+      "homeId": "USA",
+      "awayId": "ESP",
+      "home": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "away": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "status": "played",
+      "homeScore": 0,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-346",
+      "sourceMatchId": 346,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/346",
+      "round": "Round 2",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:30:00.000Z",
+      "homeId": "MEX",
+      "awayId": "CAN",
+      "home": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "away": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "status": "played",
+      "homeScore": 1,
+      "awayScore": 1,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-347",
+      "sourceMatchId": 347,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/347",
+      "round": "Round 2",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:30:00.000Z",
+      "homeId": "ENG",
+      "awayId": "FRA",
+      "home": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "away": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "status": "played",
+      "homeScore": 1,
+      "awayScore": 2,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-348",
+      "sourceMatchId": 348,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/348",
+      "round": "Round 2",
+      "stage": "league",
+      "startsAt": "2026-11-11T00:30:00.000Z",
+      "homeId": "ARG",
+      "awayId": "ITA",
+      "home": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "played",
+      "homeScore": 2,
+      "awayScore": 3,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-349",
+      "sourceMatchId": 349,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/349",
+      "round": "Round 3",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:00:00.000Z",
+      "homeId": "ESP",
+      "awayId": "BRA",
+      "home": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "away": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-350",
+      "sourceMatchId": 350,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/350",
+      "round": "Round 3",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:00:00.000Z",
+      "homeId": "CAN",
+      "awayId": "GER",
+      "home": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "away": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-351",
+      "sourceMatchId": 351,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/351",
+      "round": "Round 3",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:00:00.000Z",
+      "homeId": "FRA",
+      "awayId": "USA",
+      "home": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "away": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-352",
+      "sourceMatchId": 352,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/352",
+      "round": "Round 3",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:00:00.000Z",
+      "homeId": "ITA",
+      "awayId": "MEX",
+      "home": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "away": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-353",
+      "sourceMatchId": 353,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/353",
+      "round": "Round 3",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:00:00.000Z",
+      "homeId": "ARG",
+      "awayId": "ENG",
+      "home": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-354",
+      "sourceMatchId": 354,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/354",
+      "round": "Round 4",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:30:00.000Z",
+      "homeId": "BRA",
+      "awayId": "CAN",
+      "home": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "away": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-355",
+      "sourceMatchId": 355,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/355",
+      "round": "Round 4",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:30:00.000Z",
+      "homeId": "ESP",
+      "awayId": "FRA",
+      "home": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "away": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-356",
+      "sourceMatchId": 356,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/356",
+      "round": "Round 4",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:30:00.000Z",
+      "homeId": "GER",
+      "awayId": "ITA",
+      "home": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-357",
+      "sourceMatchId": 357,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/357",
+      "round": "Round 4",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:30:00.000Z",
+      "homeId": "USA",
+      "awayId": "ARG",
+      "home": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "away": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-358",
+      "sourceMatchId": 358,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/358",
+      "round": "Round 4",
+      "stage": "league",
+      "startsAt": "2026-11-13T00:30:00.000Z",
+      "homeId": "MEX",
+      "awayId": "ENG",
+      "home": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-359",
+      "sourceMatchId": 359,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/359",
+      "round": "Round 5",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:00:00.000Z",
+      "homeId": "FRA",
+      "awayId": "BRA",
+      "home": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "away": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-360",
+      "sourceMatchId": 360,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/360",
+      "round": "Round 5",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:00:00.000Z",
+      "homeId": "ITA",
+      "awayId": "CAN",
+      "home": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "away": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-361",
+      "sourceMatchId": 361,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/361",
+      "round": "Round 5",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:00:00.000Z",
+      "homeId": "ARG",
+      "awayId": "ESP",
+      "home": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "away": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-362",
+      "sourceMatchId": 362,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/362",
+      "round": "Round 5",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:00:00.000Z",
+      "homeId": "ENG",
+      "awayId": "GER",
+      "home": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "away": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-363",
+      "sourceMatchId": 363,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/363",
+      "round": "Round 5",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:00:00.000Z",
+      "homeId": "MEX",
+      "awayId": "USA",
+      "home": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "away": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-364",
+      "sourceMatchId": 364,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/364",
+      "round": "Round 6",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:30:00.000Z",
+      "homeId": "BRA",
+      "awayId": "ITA",
+      "home": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-365",
+      "sourceMatchId": 365,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/365",
+      "round": "Round 6",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:30:00.000Z",
+      "homeId": "FRA",
+      "awayId": "ARG",
+      "home": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "away": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-366",
+      "sourceMatchId": 366,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/366",
+      "round": "Round 6",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:30:00.000Z",
+      "homeId": "CAN",
+      "awayId": "ENG",
+      "home": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-367",
+      "sourceMatchId": 367,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/367",
+      "round": "Round 6",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:30:00.000Z",
+      "homeId": "ESP",
+      "awayId": "MEX",
+      "home": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "away": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-368",
+      "sourceMatchId": 368,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/368",
+      "round": "Round 6",
+      "stage": "league",
+      "startsAt": "2027-01-06T00:30:00.000Z",
+      "homeId": "GER",
+      "awayId": "USA",
+      "home": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "away": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-369",
+      "sourceMatchId": 369,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/369",
+      "round": "Round 7",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:00:00.000Z",
+      "homeId": "ARG",
+      "awayId": "BRA",
+      "home": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "away": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-370",
+      "sourceMatchId": 370,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/370",
+      "round": "Round 7",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:00:00.000Z",
+      "homeId": "ENG",
+      "awayId": "ITA",
+      "home": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-371",
+      "sourceMatchId": 371,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/371",
+      "round": "Round 7",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:00:00.000Z",
+      "homeId": "MEX",
+      "awayId": "FRA",
+      "home": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "away": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-372",
+      "sourceMatchId": 372,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/372",
+      "round": "Round 7",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:00:00.000Z",
+      "homeId": "USA",
+      "awayId": "CAN",
+      "home": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "away": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-373",
+      "sourceMatchId": 373,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/373",
+      "round": "Round 7",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:00:00.000Z",
+      "homeId": "GER",
+      "awayId": "ESP",
+      "home": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "away": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-374",
+      "sourceMatchId": 374,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/374",
+      "round": "Round 8",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:30:00.000Z",
+      "homeId": "BRA",
+      "awayId": "ENG",
+      "home": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-375",
+      "sourceMatchId": 375,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/375",
+      "round": "Round 8",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:30:00.000Z",
+      "homeId": "ARG",
+      "awayId": "MEX",
+      "home": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "away": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-376",
+      "sourceMatchId": 376,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/376",
+      "round": "Round 8",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:30:00.000Z",
+      "homeId": "ITA",
+      "awayId": "USA",
+      "home": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "away": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-377",
+      "sourceMatchId": 377,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/377",
+      "round": "Round 8",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:30:00.000Z",
+      "homeId": "FRA",
+      "awayId": "GER",
+      "home": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "away": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-378",
+      "sourceMatchId": 378,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/378",
+      "round": "Round 8",
+      "stage": "league",
+      "startsAt": "2027-01-08T00:30:00.000Z",
+      "homeId": "CAN",
+      "awayId": "ESP",
+      "home": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "away": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-379",
+      "sourceMatchId": 379,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/379",
+      "round": "Round 9",
+      "stage": "league",
+      "startsAt": "2027-01-13T00:00:00.000Z",
+      "homeId": "MEX",
+      "awayId": "BRA",
+      "home": {
+        "id": "MEX",
+        "name": "Mexico"
+      },
+      "away": {
+        "id": "BRA",
+        "name": "Brazil"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-380",
+      "sourceMatchId": 380,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/380",
+      "round": "Round 9",
+      "stage": "league",
+      "startsAt": "2027-01-13T00:00:00.000Z",
+      "homeId": "USA",
+      "awayId": "ENG",
+      "home": {
+        "id": "USA",
+        "name": "USA"
+      },
+      "away": {
+        "id": "ENG",
+        "name": "England"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-381",
+      "sourceMatchId": 381,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/381",
+      "round": "Round 9",
+      "stage": "league",
+      "startsAt": "2027-01-13T00:00:00.000Z",
+      "homeId": "GER",
+      "awayId": "ARG",
+      "home": {
+        "id": "GER",
+        "name": "Germany"
+      },
+      "away": {
+        "id": "ARG",
+        "name": "Argentina"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-382",
+      "sourceMatchId": 382,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/382",
+      "round": "Round 9",
+      "stage": "league",
+      "startsAt": "2027-01-13T00:00:00.000Z",
+      "homeId": "ESP",
+      "awayId": "ITA",
+      "home": {
+        "id": "ESP",
+        "name": "Spain"
+      },
+      "away": {
+        "id": "ITA",
+        "name": "Italy"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-383",
+      "sourceMatchId": 383,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/383",
+      "round": "Round 9",
+      "stage": "league",
+      "startsAt": "2027-01-13T00:00:00.000Z",
+      "homeId": "CAN",
+      "awayId": "FRA",
+      "home": {
+        "id": "CAN",
+        "name": "Canada"
+      },
+      "away": {
+        "id": "FRA",
+        "name": "France"
+      },
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-332",
+      "sourceMatchId": 332,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/332",
+      "round": "Quarter Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-13T00:30:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-333",
+      "sourceMatchId": 333,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/333",
+      "round": "Quarter Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-13T00:30:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-334",
+      "sourceMatchId": 334,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/334",
+      "round": "Quarter Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-13T00:30:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-335",
+      "sourceMatchId": 335,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/335",
+      "round": "Quarter Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-13T00:30:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-336",
+      "sourceMatchId": 336,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/336",
+      "round": "Semi Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-15T00:00:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-337",
+      "sourceMatchId": 337,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/337",
+      "round": "Semi Finals",
+      "stage": "knockout",
+      "startsAt": "2027-01-15T00:00:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    },
+    {
+      "id": "va-intl-338",
+      "sourceMatchId": 338,
+      "sourceUrl": "https://ufl.virtualarena.app/matches/338",
+      "round": "Final",
+      "stage": "knockout",
+      "startsAt": "2027-01-15T00:30:00.000Z",
+      "homeId": null,
+      "awayId": null,
+      "home": null,
+      "away": null,
+      "status": "scheduled",
+      "homeScore": null,
+      "awayScore": null,
+      "forfeit": false
+    }
+  ],
+  "standings": [
+    {
+      "id": "FRA",
+      "name": "France",
+      "played": 2,
+      "wins": 2,
+      "draws": 0,
+      "losses": 0,
+      "goalsFor": 5,
+      "goalsAgainst": 2,
+      "points": 6,
+      "goalDifference": 3
+    },
+    {
+      "id": "ESP",
+      "name": "Spain",
+      "played": 2,
+      "wins": 1,
+      "draws": 1,
+      "losses": 0,
+      "goalsFor": 2,
+      "goalsAgainst": 1,
+      "points": 4,
+      "goalDifference": 1
+    },
+    {
+      "id": "MEX",
+      "name": "Mexico",
+      "played": 2,
+      "wins": 1,
+      "draws": 1,
+      "losses": 0,
+      "goalsFor": 2,
+      "goalsAgainst": 1,
+      "points": 4,
+      "goalDifference": 1
+    },
+    {
+      "id": "GER",
+      "name": "Germany",
+      "played": 2,
+      "wins": 1,
+      "draws": 0,
+      "losses": 1,
+      "goalsFor": 4,
+      "goalsAgainst": 3,
+      "points": 3,
+      "goalDifference": 1
+    },
+    {
+      "id": "BRA",
+      "name": "Brazil",
+      "played": 2,
+      "wins": 1,
+      "draws": 0,
+      "losses": 1,
+      "goalsFor": 4,
+      "goalsAgainst": 4,
+      "points": 3,
+      "goalDifference": 0
+    },
+    {
+      "id": "ITA",
+      "name": "Italy",
+      "played": 2,
+      "wins": 1,
+      "draws": 0,
+      "losses": 1,
+      "goalsFor": 4,
+      "goalsAgainst": 5,
+      "points": 3,
+      "goalDifference": -1
+    },
+    {
+      "id": "CAN",
+      "name": "Canada",
+      "played": 2,
+      "wins": 0,
+      "draws": 2,
+      "losses": 0,
+      "goalsFor": 2,
+      "goalsAgainst": 2,
+      "points": 2,
+      "goalDifference": 0
+    },
+    {
+      "id": "ARG",
+      "name": "Argentina",
+      "played": 2,
+      "wins": 0,
+      "draws": 1,
+      "losses": 1,
+      "goalsFor": 3,
+      "goalsAgainst": 4,
+      "points": 1,
+      "goalDifference": -1
+    },
+    {
+      "id": "ENG",
+      "name": "England",
+      "played": 2,
+      "wins": 0,
+      "draws": 1,
+      "losses": 1,
+      "goalsFor": 2,
+      "goalsAgainst": 3,
+      "points": 1,
+      "goalDifference": -1
+    },
+    {
+      "id": "USA",
+      "name": "USA",
+      "played": 2,
+      "wins": 0,
+      "draws": 0,
+      "losses": 2,
+      "goalsFor": 0,
+      "goalsAgainst": 3,
+      "points": 0,
+      "goalDifference": -3
+    }
+  ],
+  "totals": {
+    "played": 10,
+    "fixtures": 52,
+    "pending": 42,
+    "goals": 28
+  },
+  "players": [
+    {
+      "id": "BRA:/users/bRzGabriel98",
+      "name": "bRzGabriel98",
+      "teamId": "BRA",
+      "teamName": "Brazil",
+      "sourceUrl": "https://ufl.virtualarena.app/users/bRzGabriel98",
+      "apps": 2,
+      "goals": 3,
+      "assists": 0,
+      "rating": 7.8,
+      "goalContributions": 3,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/connorjudsongarrett",
+      "name": "connorjudsongarrett",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/connorjudsongarrett",
+      "apps": 1,
+      "goals": 3,
+      "assists": 0,
+      "rating": null,
+      "goalContributions": null,
+      "tacklesPerGame": null,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/BravoAnte",
+      "name": "BravoAnte",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/BravoAnte",
+      "apps": 2,
+      "goals": 2,
+      "assists": 1,
+      "rating": 7.4,
+      "goalContributions": 3,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "FRA:/users/Bilal",
+      "name": "Bilal",
+      "teamId": "FRA",
+      "teamName": "France",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Bilal",
+      "apps": 2,
+      "goals": 2,
+      "assists": 0,
+      "rating": 7.9,
+      "goalContributions": 2,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/DimiOdez",
+      "name": "DimiOdez",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DimiOdez",
+      "apps": 2,
+      "goals": 2,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 2,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "FRA:/users/Robieshapiro",
+      "name": "Robieshapiro",
+      "teamId": "FRA",
+      "teamName": "France",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Robieshapiro",
+      "apps": 2,
+      "goals": 2,
+      "assists": 0,
+      "rating": 7.7,
+      "goalContributions": 2,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ENG:/users/Salmon",
+      "name": "Salmon",
+      "teamId": "ENG",
+      "teamName": "England",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Salmon",
+      "apps": 2,
+      "goals": 2,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 2,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/elgucci_",
+      "name": "elgucci_",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/elgucci_",
+      "apps": 2,
+      "goals": 1,
+      "assists": 2,
+      "rating": 7.3,
+      "goalContributions": 3,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/Luuuiiisss7",
+      "name": "Luuuiiisss7",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Luuuiiisss7",
+      "apps": 2,
+      "goals": 1,
+      "assists": 1,
+      "rating": 7.4,
+      "goalContributions": 2,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "BRA:/users/saltinestallion",
+      "name": "saltinestallion",
+      "teamId": "BRA",
+      "teamName": "Brazil",
+      "sourceUrl": "https://ufl.virtualarena.app/users/saltinestallion",
+      "apps": 2,
+      "goals": 1,
+      "assists": 1,
+      "rating": 7.3,
+      "goalContributions": 2,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/Vinicimnj",
+      "name": "Vinicimnj",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Vinicimnj",
+      "apps": 2,
+      "goals": 1,
+      "assists": 1,
+      "rating": 7.1,
+      "goalContributions": 2,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "FRA:/users/johnycoach5086",
+      "name": "johnycoach5086",
+      "teamId": "FRA",
+      "teamName": "France",
+      "sourceUrl": "https://ufl.virtualarena.app/users/johnycoach5086",
+      "apps": 2,
+      "goals": 1,
+      "assists": 0,
+      "rating": 8.1,
+      "goalContributions": 1,
+      "tacklesPerGame": 2.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/Sesmas",
+      "name": "Sesmas",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Sesmas",
+      "apps": 2,
+      "goals": 1,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 1,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/XALESHX",
+      "name": "XALESHX",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/XALESHX",
+      "apps": 2,
+      "goals": 1,
+      "assists": 0,
+      "rating": 7.5,
+      "goalContributions": 1,
+      "tacklesPerGame": 2.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/zo54",
+      "name": "zo54",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/zo54",
+      "apps": 2,
+      "goals": 1,
+      "assists": 0,
+      "rating": 7.2,
+      "goalContributions": 1,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "BRA:/users/Espahr",
+      "name": "Espahr",
+      "teamId": "BRA",
+      "teamName": "Brazil",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Espahr",
+      "apps": 2,
+      "goals": 0,
+      "assists": 2,
+      "rating": 7.1,
+      "goalContributions": 2,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "FRA:/users/KovacsKitchen",
+      "name": "KovacsKitchen",
+      "teamId": "FRA",
+      "teamName": "France",
+      "sourceUrl": "https://ufl.virtualarena.app/users/KovacsKitchen",
+      "apps": 2,
+      "goals": 0,
+      "assists": 2,
+      "rating": 6.8,
+      "goalContributions": 2,
+      "tacklesPerGame": 3,
+      "cleanSheets": 0
+    },
+    {
+      "id": "FRA:/users/DMellow",
+      "name": "DMellow",
+      "teamId": "FRA",
+      "teamName": "France",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DMellow",
+      "apps": 2,
+      "goals": 0,
+      "assists": 1,
+      "rating": 7.2,
+      "goalContributions": 1,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/germanwigends",
+      "name": "germanwigends",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/germanwigends",
+      "apps": 2,
+      "goals": 0,
+      "assists": 1,
+      "rating": 7.2,
+      "goalContributions": 1,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/glesh88",
+      "name": "glesh88",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/glesh88",
+      "apps": 2,
+      "goals": 0,
+      "assists": 1,
+      "rating": 6.8,
+      "goalContributions": 1,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/Rippy%20Nolan",
+      "name": "Rippy Nolan",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Rippy%20Nolan",
+      "apps": 2,
+      "goals": 0,
+      "assists": 1,
+      "rating": 7,
+      "goalContributions": 1,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/77%20Days%20Til%20Hockey%20Season",
+      "name": "77 Days Til Hockey Season",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/77%20Days%20Til%20Hockey%20Season",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ENG:/users/afoe000",
+      "name": "afoe000",
+      "teamId": "ENG",
+      "teamName": "England",
+      "sourceUrl": "https://ufl.virtualarena.app/users/afoe000",
+      "apps": 1,
+      "goals": 0,
+      "assists": 0,
+      "rating": null,
+      "goalContributions": null,
+      "tacklesPerGame": null,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/BIGHIMUP",
+      "name": "BIGHIMUP",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/BIGHIMUP",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/colonel4bins",
+      "name": "colonel4bins",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/colonel4bins",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.9,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/Cookie%20Monster",
+      "name": "Cookie Monster",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Cookie%20Monster",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/coop9191",
+      "name": "coop9191",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/coop9191",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.9,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/Countryhype762",
+      "name": "Countryhype762",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Countryhype762",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.7,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/Darco",
+      "name": "Darco",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Darco",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/defrankz",
+      "name": "defrankz",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/defrankz",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/DelCidd",
+      "name": "DelCidd",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DelCidd",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/Dlowwtv",
+      "name": "Dlowwtv",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Dlowwtv",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/DTXtre-",
+      "name": "DTXtre-",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DTXtre-",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.9,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/Goose",
+      "name": "Goose",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Goose",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.6,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "BRA:/users/Grazman12",
+      "name": "Grazman12",
+      "teamId": "BRA",
+      "teamName": "Brazil",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Grazman12",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/H00bear",
+      "name": "H00bear",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/H00bear",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 8.5,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/J2theGut22",
+      "name": "J2theGut22",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/J2theGut22",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.4,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ENG:/users/KLee",
+      "name": "KLee",
+      "teamId": "ENG",
+      "teamName": "England",
+      "sourceUrl": "https://ufl.virtualarena.app/users/KLee",
+      "apps": 1,
+      "goals": 0,
+      "assists": 0,
+      "rating": null,
+      "goalContributions": null,
+      "tacklesPerGame": null,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/Kool%20Kat007",
+      "name": "Kool Kat007",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Kool%20Kat007",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.2,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/LeBon",
+      "name": "LeBon",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/LeBon",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.4,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/Lil%20Bean",
+      "name": "Lil Bean",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Lil%20Bean",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/Linekt",
+      "name": "Linekt",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Linekt",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.4,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/liz4",
+      "name": "liz4",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/liz4",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/LondonIsRed",
+      "name": "LondonIsRed",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/LondonIsRed",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.7,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/luckybean_",
+      "name": "luckybean_",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/luckybean_",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.4,
+      "goalContributions": 0,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
+      "id": "BRA:/users/MateoEaves",
+      "name": "MateoEaves",
+      "teamId": "BRA",
+      "teamName": "Brazil",
+      "sourceUrl": "https://ufl.virtualarena.app/users/MateoEaves",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.2,
+      "goalContributions": 0,
+      "tacklesPerGame": 0.5,
+      "cleanSheets": 1
+    },
+    {
+      "id": "ARG:/users/nb70",
+      "name": "nb70",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/nb70",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.8,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ENG:/users/percadin",
+      "name": "percadin",
+      "teamId": "ENG",
+      "teamName": "England",
+      "sourceUrl": "https://ufl.virtualarena.app/users/percadin",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.8,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/RaengerQuan",
+      "name": "RaengerQuan",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/RaengerQuan",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.4,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/rfpqgold",
+      "name": "rfpqgold",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/rfpqgold",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.7,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/SamLoscarinho",
+      "name": "SamLoscarinho",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/SamLoscarinho",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "GER:/users/Schweinslap",
+      "name": "Schweinslap",
+      "teamId": "GER",
+      "teamName": "Germany",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Schweinslap",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 0,
+      "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/SivyCK",
+      "name": "SivyCK",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/SivyCK",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.9,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "USA:/users/Starnesy",
+      "name": "Starnesy",
+      "teamId": "USA",
+      "teamName": "USA",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Starnesy",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 6.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 1.5,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ITA:/users/Tjhughes9",
+      "name": "Tjhughes9",
+      "teamId": "ITA",
+      "teamName": "Italy",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Tjhughes9",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.1,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/trump_1624",
+      "name": "trump_1624",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/trump_1624",
+      "apps": 1,
+      "goals": 0,
+      "assists": 0,
+      "rating": null,
+      "goalContributions": null,
+      "tacklesPerGame": null,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ENG:/users/Turd%20El%20Tito%20Ferguson",
+      "name": "Turd El Tito Ferguson",
+      "teamId": "ENG",
+      "teamName": "England",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Turd%20El%20Tito%20Ferguson",
+      "apps": 1,
+      "goals": 0,
+      "assists": 0,
+      "rating": null,
+      "goalContributions": null,
+      "tacklesPerGame": null,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ESP:/users/WizardBelly",
+      "name": "WizardBelly",
+      "teamId": "ESP",
+      "teamName": "Spain",
+      "sourceUrl": "https://ufl.virtualarena.app/users/WizardBelly",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.2,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    },
+    {
+      "id": "MEX:/users/xdestroy-lonely",
+      "name": "xdestroy-lonely",
+      "teamId": "MEX",
+      "teamName": "Mexico",
+      "sourceUrl": "https://ufl.virtualarena.app/users/xdestroy-lonely",
+      "apps": 2,
+      "goals": 0,
+      "assists": 0,
+      "rating": 7.6,
+      "goalContributions": 0,
+      "tacklesPerGame": 1,
+      "cleanSheets": 0
+    }
+  ],
+  "statsStatus": "available",
+  "statsFetchedAt": "2026-11-11T13:16:41.070Z",
+  "syncedAt": "2026-11-11T13:16:41.070Z"
+}
