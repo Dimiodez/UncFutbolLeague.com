@@ -209,7 +209,7 @@ async function hydrateHouseClub(slug,month='all',fresh=false){
 
 function homePage() {
   return `<section class="hero"><div class="hero-inner"><p class="eyebrow">Est. 2026 · EA FC Community League</p><h1>Football for <em>the seasoned.</em></h1><p class="hero-copy">A Discord-born league where football IQ beats pace abuse, the banter stays elite, and every match deserves a post-game story.</p><div class="button-row"><a class="button button-primary" href="/contact" data-link>Request an invite →</a><a class="button button-secondary" href="/schedules" data-link>View schedules</a></div></div><div class="ticker"><span>6v6 League</span><span>10v10 League</span><span>House Teams</span><span>Community Cups</span><span>Pick’ems</span><span>No pace merchants*</span></div></section>
-  <section class="section home-calendar" id="home-calendar" aria-labelledby="home-calendar-title"><span class="section-kicker">Matchday essentials</span><h2 id="home-calendar-title">This week in UFL</h2><nav class="home-quick-links" aria-label="Matchday shortcuts"><a href="/schedules?season=2&type=6v6" data-link>6v6 fixtures</a><a href="/schedules?season=2&type=10v10" data-link>10v10 fixtures</a><a href="/pickems" data-link>Make your picks</a><a href="/clubs" data-link>Find your team</a><a href="/standings" data-link>Standings</a></nav><div class="home-calendar-grid"><p role="status">Checking the schedule…</p></div></section>
+  <section class="section home-calendar" id="home-calendar" aria-labelledby="home-calendar-title"><span class="section-kicker">Matchday essentials</span><h2 id="home-calendar-title">This week in UFL</h2><nav class="home-quick-links" aria-label="Matchday shortcuts"><a href="/schedules?season=2&type=6v6" data-link>6v6 fixtures</a><a href="/schedules?season=2&type=10v10" data-link>10v10 fixtures</a><a href="/internationals/schedules">International fixtures</a><a href="/pickems" data-link>Make your picks</a><a href="/clubs" data-link>Find your team</a><a href="/standings" data-link>Standings</a></nav><div class="home-calendar-grid"><p role="status">Checking the schedule…</p></div></section>
   ${featuredClubSection()}
   ${uflHomeCompetitions()}
   <section class="section home-playground"><span class="section-kicker">Around the clubhouse</span><h2>More than match night.</h2><p class="section-intro">Make your picks, build a novelty player card, or let the wheel settle the argument nobody else wants to settle.</p><div class="cards"><article class="card"><span class="num">P</span><h3>UFL Pick’ems</h3><p>Save predictions to your Discord account and climb the shared weekly and season leaderboards.</p><a href="/pickems" data-link>Make your picks →</a></article><article class="card"><span class="num">F</span><h3>FUNC Card Studio</h3><p>Create a Futbol Unc Novelty Card with your face, club crest, position, and custom attributes.</p><a href="/func" data-link>Build your card →</a></article><article class="card"><span class="num">W</span><h3>The Unc Wheel</h3><p>Draft teams, randomize a cup night, and leave the difficult decisions to suspiciously dramatic chance.</p><a href="/wheel" data-link>Spin the wheel →</a></article></div></section>
@@ -319,12 +319,12 @@ function teamsPage(params) {
   return pageHero(`UFL ${selectedSeason.label}${selectedSeason.archived?' archive':''}`,data.title,data.intro) + `<section class="section">${navigation}<div class="status-row"><span class="season-chip ${selectedSeason.current?'season-chip-live':''}">${selectedSeason.game} · ${selectedSeason.archived?'Archived':`UFL ${selectedSeason.label}`}</span></div><p class="sync-note">Synced from Virtual Arena${season?.syncedAt?` · ${new Date(season.syncedAt).toLocaleString()}`:''}</p>${cards?`<div class="league-team-grid">${cards}</div>`:empty}</section>`;
 }
 
-function defaultScheduleWeek(weeks,now=Date.now()){
+function defaultScheduleWeek(weeks,now=Date.now(),showLatestIfPast=true){
   if(!weeks?.length)return null;
   return weeks.find(week=>{
     const ends=Math.max(Number(week.scheduledAt)||0,...(week.rounds||[]).map(round=>Number(round.scheduledAt)||0));
     return ends>0&&ends*1000+7200000>=now;
-  })||weeks.at(-1);
+  })||(showLatestIfPast?weeks.at(-1):null);
 }
 
 function scheduleMatchState(match,season,now=Date.now()){
@@ -814,17 +814,56 @@ async function hydrateByotPage() {
   form.addEventListener('submit',async event=>{event.preventDefault();message.textContent='Publishing…';const button=form.querySelector('[type="submit"]');button.disabled=true;try{const snapshot=makeByotSnapshot(form);const startsAt=new Date(form.elements.startsAt.value).toISOString();const response=await fetch('/api/admin/events',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({title:form.elements.title.value.trim(),destination:'community-events',format:'byot',startsAt,status:'published',snapshot})});const result=await response.json().catch(()=>({}));if(!response.ok) throw new Error(result.error||'Unable to publish this tournament.');message.textContent='Published. Refreshing the BYOT schedule…';window.setTimeout(render,300);}catch(error){message.textContent=error.message;button.disabled=false;}});
 }
 
+function homeMatchdayCard({label, title, week, fixturesUrl, pickemsUrl, pickemsLabel, nativeFixtures=false, now}) {
+  const startsAt = week?.scheduledAt * 1000;
+  const kickoff = week ? window.UFLTime?.format(startsAt) || week.date || new Date(startsAt).toLocaleString([], {
+    month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'
+  }) : '';
+  const details = week ? `<p>${escapeHtml(kickoff)} · ${week.matches.length} fixtures</p>` : '';
+  const deadline = week ? `<p class="home-pickem-deadline">Pick’ems ${startsAt > now ? 'lock ' + escapeHtml(kickoff) : 'closed for this matchday'}</p>` : '';
+  return `<article class="home-event-card home-matchweek-card">
+    <span class="season-chip season-chip-live">${escapeHtml(label)}</span>
+    <h3>${escapeHtml(title)}</h3>
+    ${details}
+    <a href="${escapeHtml(fixturesUrl)}"${nativeFixtures ? '' : ' data-link'}>View fixtures →</a>
+    ${deadline}
+    <a href="${escapeHtml(pickemsUrl)}" data-link>Open ${escapeHtml(pickemsLabel)} Pick’ems →</a>
+  </article>`;
+}
+
 async function hydrateHomeCalendar() {
-  const root=document.querySelector('#home-calendar .home-calendar-grid');
-  if(!root) return;
-  const leagueCards=['6v6','10v10'].map(division=>{const season=leagueSeasonFor(division),week=defaultScheduleWeek(season?.weeks);return week?'<article class="home-event-card home-matchweek-card"><span class="season-chip season-chip-live">'+division+' · Season 2</span><h3>Matchday '+week.week+'</h3><p>'+escapeHtml(window.UFLTime?.format(week.scheduledAt*1000)||week.date)+' · '+week.matches.length+' fixtures</p><a href="/schedules?season=2&type='+division+'&matchday='+week.week+'" data-link>View fixtures →</a><p class="home-pickem-deadline">Pick’ems '+(week.scheduledAt*1000>Date.now()?'lock '+escapeHtml(window.UFLTime?.format(week.scheduledAt*1000)||week.date):'closed for this matchday')+'</p><a href="/pickems?division='+division+'&matchday='+week.week+'" data-link>Open '+division+' Pick’ems →</a></article>':'';}).join('');
-  root.innerHTML=leagueCards||'<p>Checking community events…</p>';
-  try {
-    const response=await fetch('/api/events?calendar=1'),data=await response.json();
-    if(!response.ok) throw new Error();
-    const eventCards=data.events.map(event=>{const byot=event.snapshot?.series==='byot',label=byot?'BYOT Tournament':event.destination==='league-cup'?'League Cup':'Community Event';return `<a class="home-event-card" href="${escapeHtml(eventSharePath(event))}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?window.UFLTime?.format(event.startsAt)||new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${label} →</small></a>`;}).join('');
-    root.innerHTML=leagueCards+eventCards||'<p class="admin-empty">Season 2 registration is open. Fixtures and community events will appear here when published.</p>';
-  } catch { root.innerHTML=leagueCards||'<p class="admin-empty">Calendar temporarily unavailable.</p>'; }
+  const root = document.querySelector('#home-calendar .home-calendar-grid');
+  if (!root) return;
+  const now = Date.now();
+  const leagueCards = ['6v6','10v10'].map(division => {
+    const week = defaultScheduleWeek(leagueSeasonFor(division)?.weeks, now);
+    if (!week) return '';
+    return homeMatchdayCard({
+      label: division + ' · Season 2', title: 'Matchday ' + week.week, week,
+      fixturesUrl: '/schedules?season=2&type=' + division + '&matchday=' + week.week,
+      pickemsUrl: '/pickems?division=' + division + '&matchday=' + week.week,
+      pickemsLabel: division, now,
+    });
+  }).join('');
+  const internationalCard = week => homeMatchdayCard({
+    label:'Internationals · Season 1', title:week ? 'Matchday ' + week.week : 'UFL Intercontinental Cup',
+    week, fixturesUrl:'/internationals/schedules', nativeFixtures:true, pickemsLabel:'Internationals',
+    pickemsUrl:'/pickems?competition=s1-internationals' + (week ? '&matchday=' + week.week : ''), now,
+  });
+  root.innerHTML = leagueCards + internationalCard();
+  const [international, calendar] = await Promise.allSettled([
+    fetch('/api/pickems/internationals').then(response => response.ok ? response.json() : {}),
+    fetch('/api/events?calendar=1').then(response => response.ok ? response.json() : {}),
+  ]);
+  if (!root.isConnected) return;
+  const weeks = international.status === 'fulfilled' ? international.value.weeks : null;
+  const week = Array.isArray(weeks) ? defaultScheduleWeek(weeks, now, false) : null;
+  const events = calendar.status === 'fulfilled' && Array.isArray(calendar.value.events) ? calendar.value.events : [];
+  const eventCards = events.map(event => {
+    const byot=event.snapshot?.series==='byot',label=byot?'BYOT Tournament':event.destination==='league-cup'?'League Cup':'Community Event';
+    return `<a class="home-event-card" href="${escapeHtml(eventSharePath(event))}" data-link><span class="season-chip event-status-${escapeHtml(event.lifecycleStatus)}">${escapeHtml(event.lifecycleStatus)}</span><h3>${escapeHtml(event.title)}</h3><p>${event.startsAt?window.UFLTime?.format(event.startsAt)||new Date(event.startsAt).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'}):'Time to be announced'}</p><small>${label} →</small></a>`;
+  }).join('');
+  root.innerHTML = leagueCards + internationalCard(week) + eventCards;
 }
 
 function standingsPage(params) {
