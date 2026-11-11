@@ -474,3 +474,35 @@ html[data-theme="vintage"] option { background: #f4ead2; color: #30291f; border-
 .byot-manage{margin:16px 0;border:1px solid var(--line);padding:16px}.byot-manage>summary{cursor:pointer;font-weight:700}
 
 .page-context[hidden] { display: none; }
+
+.home-competitions { padding-block: clamp(1.75rem, 4vw, 3.5rem); }
+.home-competitions-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; margin-bottom: 1rem; }
+.home-competitions-heading h2 { margin: 0; font: 800 clamp(1.8rem, 3.6vw, 2.65rem)/1 "Barlow Condensed", sans-serif; text-transform: uppercase; }
+.home-competitions-heading a { font-weight: 700; text-underline-offset: .22em; }
+.home-competition-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
+.home-competition-card {
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: .65rem;
+  padding: .85rem 1rem;
+  border: 1px solid #56728a;
+  border-radius: .85rem;
+  background: linear-gradient(0deg, #06152c 6%, rgba(6,21,44,.72)), url('/assets/ufl-banner.jpg') center 48% / cover #06152c;
+  color: #fff;
+  text-decoration: none;
+}
+.home-competition-card:hover { border-color: var(--red); }
+.home-competition-card:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+.home-competition-name { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: .65rem; margin-top: auto; font: 800 clamp(1.3rem, 2.2vw, 1.72rem)/1.08 "Barlow Condensed", sans-serif; }
+.home-competition-name span { color: #bce5ff; }
+.home-competition-state { border-radius: 999px; padding: .25rem .55rem; background: #0b2039; font-size: .72rem; font-weight: 700; }
+.home-competition-state::before { content: ''; display: inline-block; width: .43rem; height: .43rem; margin-inline-end: .35rem; border-radius: 50%; background: #bce5ff; vertical-align: .05em; }
+.home-competition-state[data-state="ongoing"]::before { background: #ffd36b; }
+.home-competition-state[data-state="registration"]::before { background: #85e6ac; }
+@media (max-width: 700px) {
+  .home-competition-grid { grid-template-columns: 1fr; }
+  .home-competition-card { min-height: 90px; }
+}

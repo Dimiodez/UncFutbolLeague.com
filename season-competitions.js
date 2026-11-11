@@ -5,6 +5,43 @@ const uflSeasonCards = [
 ];
 const uflSeasonStatuses = {registration:'Registrations open',ongoing:'In progress',upcoming:'Upcoming',complete:'Completed'};
 
+function fetchUflSeasonStatuses() {
+  return fetch('/pickems-app/seasons/competition-status.json',{cache:'no-store'})
+    .then(response => response.ok ? response.json() : {});
+}
+
+function uflHomeCompetitions() {
+  const links = uflSeasonCards.map(card => {
+    const international = card.id === 'international';
+    const href = international ? '/internationals' : card.schedule;
+    return `<a class="home-competition-card" href="${escapeHtml(href)}"${international ? '' : ' data-link'}>
+      <span class="home-competition-state" data-home-competition-state="${card.id}" hidden></span>
+      <span class="home-competition-name">${escapeHtml(card.name)} <span aria-hidden="true">→</span></span>
+    </a>`;
+  }).join('');
+  return `<section class="section home-competitions" aria-labelledby="home-competitions-title">
+    <div class="home-competitions-heading">
+      <h2 id="home-competitions-title">Current competitions</h2>
+      <a href="/teams?division=house" data-link>House teams →</a>
+    </div>
+    <nav class="home-competition-grid" aria-label="Current competitions">${links}</nav>
+  </section>`;
+}
+
+async function hydrateUflHomeCompetitions() {
+  const section = document.querySelector('.home-competitions');
+  if (!section) return;
+  const statuses = await fetchUflSeasonStatuses().catch(() => ({}));
+  if (!section.isConnected) return;
+  for (const badge of section.querySelectorAll('[data-home-competition-state]')) {
+    const status = statuses[badge.dataset.homeCompetitionState]?.status;
+    if (!Object.hasOwn(uflSeasonStatuses, status)) continue;
+    badge.dataset.state = status;
+    badge.textContent = uflSeasonStatuses[status];
+    badge.hidden = false;
+  }
+}
+
 function uflSeasonPage() {
   return pageHero('UFL · League','Current season','Find the competitions, registration status, fixtures and standings for the UFL season.')+
     '<section class="section"><div class="season-board" aria-label="Current competitions" data-season-board></div><div data-season-cups></div></section>';
@@ -49,7 +86,7 @@ async function hydrateUflSeasonPage() {
   }
   board.textContent='Loading competitions…';
   const results=await Promise.allSettled([
-    fetch('/pickems-app/seasons/competition-status.json',{cache:'no-store'}).then(response=>response.ok?response.json():{}),
+    fetchUflSeasonStatuses(),
     fetch('/api/events?destination=league-cup',{cache:'no-store'}).then(response=>response.ok?response.json():{}),
   ]);
   if(!board.isConnected)return;
