@@ -12,9 +12,9 @@
     "registrationEnds": "2026-10-20T03:55:00.000000Z"
   },
   "international": {
-    "status": "registration",
+    "status": "ongoing",
     "startsAt": "2026-11-10T17:32:00.000000Z",
     "endsAt": "2027-01-14T17:32:00.000000Z",
-    "registrationEnds": "2026-11-27T17:32:00.000000Z"
+    "registrationEnds": "2026-11-10T19:32:00.000000Z"
   }
 }
