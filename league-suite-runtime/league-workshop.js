@@ -8,7 +8,10 @@ import {acceptPendingResult,restorePendingResults} from './league-pending-result
 import {bindTeamRuleControls,readTeamRuleControls} from './team-rule-controls.js';
 import {bindMatchnightControls} from './league-matchnight-controls.js';
 import {renderAdministration} from './league-administration.js';
-import {renderLeaguePage} from './league-page.js?v=20261106-agenda1';
+import {renderLeaguePage} from './league-page.js?v=20261112-link1';
+import {linkDraftTeamClub} from './league-team-linking.js';
+import {eaClubRequest,mountTeamClubSearch} from './league-team-search.js?v=20261112-link1';
+import {installInternationalTeamSetup} from './league-international-setup.js?v=20261112-link1';
 import {editDraftTeam,removeDraftTeam,updatePageSettings} from './league-page-model.js';
 import {acceptFixtureResult,restoreAcceptedResults} from './league-results.js?v=20261016-suite1';
 import {importAutomaticTrial} from './league-ea-auto.js?v=20261016-suite1';
@@ -22,6 +25,7 @@ import {correctFixture,applyConfirmedTrialCorrection} from './league-result-corr
 import {workspaceId,workspaceLocation,workspaceUrl} from './workspace-location.js';
 import {LEAGUE_TABS} from './league-page-model.js';
 const uxStyle=document.createElement('link');uxStyle.rel='stylesheet';uxStyle.href='/league-suite-assets/league-workshop-ux.css?v=20261016-layout2';document.head.append(uxStyle);
+const clubLinkStyle=document.createElement('link');clubLinkStyle.rel='stylesheet';clubLinkStyle.href='/league-suite-assets/league-team-search.css?v=20261112-link1';document.head.append(clubLinkStyle);
 installWorkshopBrand();
 installEaTestLab();
 const markLocalSaved=watchUnsaved(document.querySelector('main.workshop'));
@@ -29,6 +33,7 @@ const form=document.querySelector('#league-builder'),message=document.querySelec
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const KEY='ufl-v2-workshop-drafts-v1';let drafts=[],seasons=[],competitions=[];
 const sharedLeagues=new Map();let syncingShared=false;
+installInternationalTeamSetup(document.querySelector('#league-drafts').parentElement);
 let draftStorageReadable=true;
 let activeLeague=null,activeTab='overview',migratedByeCount=0;
 const pageHost=document.createElement('section');pageHost.className='league-page';pageHost.hidden=true;
@@ -79,9 +84,22 @@ function renderDrafts({sectionOnly=false}={}){
   const draft=drafts[index],section=document.createElement('section');section.className='workshop-registration';
   section.innerHTML=`<h3>Teams · Registration ${draft.registrationOpen?'open':'closed'}</h3><p>${draft.scheduleGenerated?'Draft schedule generated. Reopening registration clears it so new teams can be included.':'No schedule yet. Add teams now or return later; at least 3 teams are needed only when generating fixtures.'}</p><ul>${draft.settings.teams.map(team=>`<li><strong>${escape(team.name)}</strong>${team.eaClubId?` · EA club ${escape(team.eaClubId)} (not verified)`:' · EA club not linked'}</li>`).join('')||'<li>No teams registered yet.</li>'}</ul><form data-register="${index}"><div class="workshop-pair"><label>Team name<input name="name" maxlength="80" required ${draft.registrationOpen?'':'disabled'}></label><label>EA club ID (optional)<input name="eaClubId" inputmode="numeric" pattern="[0-9]{1,20}" ${draft.registrationOpen?'':'disabled'}></label></div><button type="submit" ${draft.registrationOpen?'':'disabled'}>Register team in this draft</button></form><div class="workshop-toolbar"><button data-registration="${index}">${draft.registrationOpen?'Close registration':'Reopen registration'}</button><button data-generate="${index}" ${draft.settings.teams.length<3||draft.registrationOpen?'disabled':''}>${draft.scheduleGenerated?'Regenerate':'Generate'} draft fixtures</button></div><small>Close registration when your teams are ready. Names and IDs entered here do not prove EA ownership or grant manager permissions.</small>`;
   card.querySelector('p').after(section);
+   section.querySelectorAll('ul li').forEach((item,i)=>{const team=draft.settings.teams[i];if(team?.eaClubLink?.id===team.eaClubId)item.innerHTML=`<strong>${escape(team.name)}</strong> · EA club ${escape(team.eaClubId)} · Linked from EA search`;});
   if(!registrationAllowed(draft)){section.querySelectorAll('form input,form button').forEach(control=>control.disabled=true);if(draft.registrationOpen)section.querySelector('h3').textContent='Teams · Outside registration window';}
  });
- root.querySelectorAll('[data-register]').forEach(teamForm=>teamForm.addEventListener('submit',event=>{event.preventDefault();try{const index=Number(teamForm.dataset.register);drafts[index]=registerLeagueTeam(drafts[index],Object.fromEntries(new FormData(teamForm)));renderDrafts();message.textContent='Team registered in this league draft. Save your drafts to keep the change.';}catch(error){message.textContent=error.message;}}));
+  root.querySelectorAll('[data-register]').forEach(teamForm=>{
+   let selection=null;
+   if(!teamForm.elements.name.disabled){const searchArea=mountTeamClubSearch({host:teamForm,name:()=>teamForm.elements.name.value,onLink:async club=>{
+    const data=await eaClubRequest('/verify',{club});selection=data.club;teamForm.elements.eaClubId.value=selection.id;
+    return `${selection.name} · EA ${selection.id} selected. Register the team below to save this link.`;
+   }});const submit=teamForm.querySelector('button[type="submit"]');teamForm.insertBefore(searchArea,submit);
+   const manual=document.createElement('details'),summary=document.createElement('summary');summary.textContent='Enter an EA club ID manually (optional)';manual.append(summary,teamForm.elements.eaClubId.closest('label'));teamForm.insertBefore(manual,submit);}
+   teamForm.addEventListener('submit',event=>{event.preventDefault();try{
+    const index=Number(teamForm.dataset.register);let next=registerLeagueTeam(drafts[index],Object.fromEntries(new FormData(teamForm)));
+    if(selection?.id===teamForm.elements.eaClubId.value)next=linkDraftTeamClub(next,next.settings.teams.at(-1).id,selection);
+    drafts[index]=next;persistDrafts();renderDrafts();pageReport('Team registered and saved on this device. Save drafts online to continue on another device.');
+   }catch(error){message.textContent=error.message;}});
+  });
  root.querySelectorAll('[data-registration]').forEach(button=>button.addEventListener('click',async()=>{
   const index=Number(button.dataset.registration),draft=drafts[index];if(!draft.registrationOpen&&draft.scheduleGenerated&&!confirm('Reopen registration and clear this draft schedule? Teams are preserved. No live results are affected.'))return;
   button.disabled=true;try{
@@ -112,6 +130,15 @@ function renderDrafts({sectionOnly=false}={}){
    onRegisterCollection:async()=>{try{const id=drafts[index].settings.serverLeagueId||drafts[index].settings.trialSchedule||crypto.randomUUID(),response=await fetch('/api/league-suite/league-results',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation:'register',id,draft:{settings:{...drafts[index].settings,serverLeagueId:id,collectionEnabled:true},acceptedResults:drafts[index].acceptedResults||[]}})}),data=await response.json();if(!response.ok)throw Error(data.error);drafts[index].settings.serverLeagueId=id;drafts[index].settings.collectionEnabled=true;persistDrafts();await syncSharedResults();pageReport('Shared server collection enabled. Browser can be closed.');}catch(error){pageReport(error.message);}},
    onSave:()=>{persistDrafts();pageReport('All league drafts saved on this device. Use Save drafts online above to continue on mobile or another PC.');},
    onTeamEdit:(id,values)=>{drafts[index]=editDraftTeam(drafts[index],id,values);renderDrafts();persistDrafts();pageReport('Team changes saved on this device.');},
+   onTeamLink:async(teamId,club)=>{
+    const current=drafts[index],leagueId=current.settings.serverLeagueId||current.settings.trialSchedule,row=sharedLeagues.get(leagueId);
+    linkDraftTeamClub(current,teamId,club);
+    const data=await eaClubRequest(row?'/team-link':'/verify',row?{leagueId,revision:row.revision,teamId,club}:{club});
+    if(row){await syncSharedResults(true);pageReport('EA club linked and saved online for this league. Existing results and permissions are unchanged.');return data.note;}
+    if(drafts[index]!==current)throw Error('The draft changed while EA was checking. Search again; no club link was saved.');
+    const next=linkDraftTeamClub(current,teamId,data.club);
+    drafts[index]=next;persistDrafts();renderDrafts();pageReport('EA club linked and saved on this device. Use Save drafts online to keep it across devices.');return 'EA club linked to this draft.';
+   },
    onImportTeam:(team,{checkOnly=false}={})=>{
     const existing=drafts[index].settings.teams.find(t=>t.remoteTeamId===team.id);
     let next=existing?editDraftTeam(drafts[index],existing.id,{name:team.name,eaClubId:team.ea_id}):registerLeagueTeam(drafts[index],{name:team.name,eaClubId:team.ea_id});

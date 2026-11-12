@@ -73,7 +73,7 @@ export function editDraftTeam(draft,id,values){
  const name=String(values.name??'').trim(),eaClubId=String(values.eaClubId??'').trim();
  if(!name||name.length>80||eaClubId&&!/^\d{1,20}$/.test(eaClubId))throw Error('Enter a team name and an optional numeric EA club ID.');
  if(draft.settings.teams.some(team=>team.id!==id&&(team.name.toLowerCase()===name.toLowerCase()||eaClubId&&team.eaClubId===eaClubId)))throw Error('That team name or EA club ID is already in this league.');
- return {...draft,settings:{...draft.settings,teams:draft.settings.teams.map(team=>team.id===id?{...team,name,eaClubId}:team)}};
+ return {...draft,settings:{...draft.settings,teams:draft.settings.teams.map(team=>team.id===id?{...team,name,eaClubId,eaClubLink:team.eaClubId===eaClubId?team.eaClubLink:undefined}:team)}};
 }
 
 export function removeDraftTeam(draft,id){
