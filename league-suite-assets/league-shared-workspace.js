@@ -1,5 +1,6 @@
 import {buildLeagueSchedule} from './league-engine.js';
 import {mergeSharedTestDraft} from './league-va-schedule.js';
+import {reconcileTeamClubLinks} from './league-team-linking.js';
 
 // Hydrate authorized server records even when this device has no browser drafts.
 // Never create/register a server league or replace unrelated local drafts.
@@ -18,7 +19,10 @@ export function reconcileSharedLeagues(localDrafts,rows){
    // Server-accepted decisions are authoritative, including late games and staff corrections.
    // Do not re-run today's candidate window against previously accepted evidence.
    next.push(mergeSharedTestDraft(draft,row.draft));
-  }else next[index]=mergeSharedTestDraft(next[index],row.draft);
+  }else{
+   const merged=mergeSharedTestDraft(next[index],row.draft);
+   next[index]=row.draft.settings.vaSchedule?merged:reconcileTeamClubLinks(merged,row.draft.settings.teams);
+  }
  }
  return next;
 }

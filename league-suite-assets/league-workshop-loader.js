@@ -1,3 +1,3 @@
 const status=document.querySelector('[data-workspace-loading]');
-try{await import('./league-workshop.js?v=20261106-agenda1');document.body.classList.remove('workspace-loading');status?.remove();}
+try{await import('./league-workshop.js?v=20261112-link1');document.body.classList.remove('workspace-loading');status?.remove();}
 catch{if(status){status.setAttribute('role','alert');status.innerHTML='League Suite could not be loaded. Your stored drafts have not been cleared. <a href="">Reload workspace</a> · <a href="/league">Return to League</a>';}}
