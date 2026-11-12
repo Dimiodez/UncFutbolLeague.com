@@ -1294,6 +1294,20 @@
       "cleanSheets": 0
     },
     {
+      "id": "CAN:/users/defrankz",
+      "name": "defrankz",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/defrankz",
+      "apps": 2,
+      "goals": 2,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 2,
+      "tacklesPerGame": 0,
+      "cleanSheets": 0
+    },
+    {
       "id": "ARG:/users/DimiOdez",
       "name": "DimiOdez",
       "teamId": "ARG",
@@ -1459,6 +1473,20 @@
       "rating": 7.1,
       "goalContributions": 2,
       "tacklesPerGame": 2,
+      "cleanSheets": 0
+    },
+    {
+      "id": "CAN:/users/H00bear",
+      "name": "H00bear",
+      "teamId": "CAN",
+      "teamName": "Canada",
+      "sourceUrl": "https://ufl.virtualarena.app/users/H00bear",
+      "apps": 2,
+      "goals": 0,
+      "assists": 2,
+      "rating": 8.5,
+      "goalContributions": 2,
+      "tacklesPerGame": 0,
       "cleanSheets": 0
     },
     {
@@ -1644,20 +1672,6 @@
       "cleanSheets": 0
     },
     {
-      "id": "CAN:/users/defrankz",
-      "name": "defrankz",
-      "teamId": "CAN",
-      "teamName": "Canada",
-      "sourceUrl": "https://ufl.virtualarena.app/users/defrankz",
-      "apps": 2,
-      "goals": 0,
-      "assists": 0,
-      "rating": 7.3,
-      "goalContributions": 0,
-      "tacklesPerGame": 0,
-      "cleanSheets": 0
-    },
-    {
       "id": "CAN:/users/DelCidd",
       "name": "DelCidd",
       "teamId": "CAN",
@@ -1725,20 +1739,6 @@
       "rating": 7,
       "goalContributions": 0,
       "tacklesPerGame": 1,
-      "cleanSheets": 0
-    },
-    {
-      "id": "CAN:/users/H00bear",
-      "name": "H00bear",
-      "teamId": "CAN",
-      "teamName": "Canada",
-      "sourceUrl": "https://ufl.virtualarena.app/users/H00bear",
-      "apps": 2,
-      "goals": 0,
-      "assists": 0,
-      "rating": 8.5,
-      "goalContributions": 0,
-      "tacklesPerGame": 0,
       "cleanSheets": 0
     },
     {
@@ -2065,6 +2065,6 @@
     }
   ],
   "statsStatus": "available",
-  "statsFetchedAt": "2026-11-11T13:16:41.070Z",
-  "syncedAt": "2026-11-11T13:16:41.070Z"
+  "statsFetchedAt": "2026-11-12T22:42:46.345Z",
+  "syncedAt": "2026-11-12T22:42:46.346Z"
 }
