@@ -1043,7 +1043,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "Salmon",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794371673.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794459451.png",
               "url": "https://ufl.virtualarena.app/users/Salmon"
             },
             "team": {
@@ -1187,7 +1187,7 @@ window.UFL_SEASON_10V10_S2 = {
           {
             "data": {
               "name": "Salmon",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794371673.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794459451.png",
               "url": "https://ufl.virtualarena.app/users/Salmon"
             },
             "team": {
