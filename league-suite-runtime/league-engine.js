@@ -1,6 +1,7 @@
 import {EA_TRIAL_ID,buildEaTrial} from './league-ea-trial.js?v=20261014-trial1';
 import {EA_TEN_TRIAL_ID,buildEaTenTrial} from './league-ea-ten-trial.js';
 import {buildVaSchedule} from './league-va-schedule.js';
+import {buildInternationalSchedule} from './league-international-schedule.js';
 // Shared schedule and candidate matching logic. Never treats raw EA games as league results.
 export function validateTeamRules(values){
  if(!['6v6','10v10','Custom'].includes(values.format))throw Error('Choose a valid format.');
@@ -85,6 +86,7 @@ export function registerLeagueTeam(draft,team,{now=Date.now(),restoring=false}={
 }
 export function buildLeagueSchedule(settings){
  settings=validateScheduleSettings(settings);
+ if(settings.internationalSchedule)return buildInternationalSchedule(settings);
  if(settings.vaSchedule)return buildVaSchedule(settings);
  if(settings.trialSchedule===EA_TRIAL_ID)return buildEaTrial(settings,zonedTimestamp);
  if(settings.trialSchedule===EA_TEN_TRIAL_ID)return buildEaTenTrial(settings,zonedTimestamp);

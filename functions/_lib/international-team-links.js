@@ -22,6 +22,7 @@ export async function internationalTeamLinksApi(request,env,{verify=verifyEaClub
  const team=teams.find(t=>t.id===payload.teamId);
  if(!team||!Object.hasOwn(payload,'expectedClubId'))return json({error:'Choose a national team from this competition.'},400);
  if((team.ea_club_id||null)!==payload.expectedClubId)return json({error:'This national team changed online. Refresh before linking.'},409);
+ if(env.LEAGUE_SUITE_DB&&String(payload.club?.id||'')!==team.ea_club_id){const test=await env.LEAGUE_SUITE_DB.prepare('SELECT enabled FROM preview_league_results WHERE id=?').bind('ufl-internationals-ea-test-20261112').first();if(test?.enabled)return json({error:'Stop international test collection and review its saved club mappings before changing this national link.'},409);}
  if(active&&String(payload.club?.id||'')!==team.ea_club_id)return json({error:'International collection is already published. A club-ID change requires a reviewed, dated replacement.'},409);
  if(teams.some(t=>t.id!==team.id&&t.ea_club_id===payload.club?.id))return json({error:'That EA club is already linked to another national team.'},409);
  try{

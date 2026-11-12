@@ -27,7 +27,7 @@ export function projectLeague(row,{now=Date.now()}={}){
  });
  const standings=leagueStandings(draft).map((t,i)=>({...teamView(t),rank:i+1,played:t.played,wins:t.wins,draws:t.draws??0,losses:t.regularLosses+t.extraLosses,goalsFor:t.goalsFor,goalsAgainst:t.goalsAgainst,goalDifference:t.goalsFor-t.goalsAgainst,points:t.points,form:form.get(t.id).slice(-5).map(f=>f.result)}));
  const records=acceptedAppearances(draft),players=playerTotals(records).map(p=>({playerId:p.playerId,name:p.name,teamId:p.teamId,teamName:draft.settings.teams.find(t=>t.id===p.teamId)?.name||p.teamName,position:p.position,apps:p.apps,rating:p.averageRating,ratingCount:p.ratingCount,passAccuracy:p.passAccuracy,tackleAccuracy:p.tackleAccuracy,...Object.fromEntries(fields.map(k=>[k,p.known[k]?p.totals[k]:null]))}));
- return {id:row.id,revision:row.revision,name:draft.settings.league,season:draft.settings.season,format:draft.settings.format,timeZone:draft.settings.timeZone,
+ return {id:row.id,revision:row.revision,name:draft.settings.league,season:draft.settings.season,format:draft.settings.format,competitionKind:draft.settings.competitionKind||'domestic',timeZone:draft.settings.timeZone,
   scoring:standardTrial(draft)?'3 points for a win · 1 for a draw · 0 for a loss':'Regulation win 3 · Extra-time win 2 · Extra-time loss 1',
   teams:draft.settings.teams.map(teamView),standings,fixtures,players,sourceCounts,
   totals:{played:results.size,fixtures:fixtures.length,pending:fixtures.filter(f=>f.status==='review').length,awaiting:fixtures.filter(f=>f.status==='awaiting').length,appearances:records.length,goals:fixtures.reduce((n,f)=>n+(f.homeScore??0)+(f.awayScore??0),0)},

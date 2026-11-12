@@ -14,6 +14,7 @@ export function linkDraftTeamClub(draft,teamId,club){
  if(!/^\d{1,20}$/.test(String(club?.id??''))||typeof club?.name!=='string'||!club.name.trim()||club.name.length>80||club.platform!=='common-gen5')throw Error('Choose a valid EA club search result.');
  if(draft.settings.teams.some(t=>t.id!==teamId&&String(t.eaClubId)===club.id))throw Error('That EA club is already linked to another team in this league.');
  if(String(team.eaClubId||'')!==club.id){
+  if(draft.settings.internationalSchedule)throw Error('Manage national club IDs in International setup while the test tracker is stopped. Do not change the tracker’s saved identities.');
   if(team.eaClubReplacement)throw Error('This team has a dated club replacement. Staff must review that history before changing its club link.');
   const recorded=[...(draft.acceptedResults||[]),...(draft.pendingResults||[])];
   if(recorded.some(r=>{const f=draft.fixtures.find(f=>f.id===r.fixtureId);return !f||f.home.id===teamId||f.away.id===teamId;}))throw Error('This team already has recorded matches. Use a reviewed, dated club replacement instead of changing its historical ID.');
