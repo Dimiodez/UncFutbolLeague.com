@@ -26,7 +26,7 @@ If rolling back worker code, stop this tracker first; older worker bundles do no
 
 ## One-time VA historical baseline
 
-The owner requested continuing from the results and stats already gathered from VA. `data/international-baseline-20261112.json` freezes the ten completed VA match reports (339–348), their original EA match IDs/timestamps, player sheets and published standings/leaderboard totals. `scripts/capture-international-baseline.mjs` captures this evidence once and refuses to overwrite it.
+The owner requested continuing from the results and stats already gathered from VA. `data/international-baseline-20261112.js` freezes the ten completed VA match reports (339–348), their original EA match IDs/timestamps, player sheets and published standings/leaderboard totals. The data is packaged as an ES module for the existing Cloudflare build tool. `scripts/capture-international-baseline.mjs` captures this evidence once and refuses to overwrite it.
 
 Suite offers Preview existing VA results & stats, then Import verified VA baseline. Preview requires original EA friendly evidence from the collector cache: exact match ID, timestamp, national club pair and unique player-name match within that club. Numeric EA player IDs map to VA user IDs only inside this competition. Missing or ambiguous identity evidence blocks the entire import. All ten standings and 59 player aggregate totals are checked against the frozen source, including available rating averages. Future EA appearances use the same competition identity and combine actual appearance ratings, rather than averaging averages.
 

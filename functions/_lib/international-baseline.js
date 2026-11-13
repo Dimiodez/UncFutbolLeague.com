@@ -1,4 +1,4 @@
-import evidence from '../../data/international-baseline-20261112.json' with {type:'json'};
+import evidence from '../../data/international-baseline-20261112.js';
 import {INTERNATIONAL_VA_FIXTURES} from './international-va-fixtures.js';
 import {buildLeagueSchedule} from '../../league-suite-runtime/league-engine.js';
 import {correctFixture} from '../../league-suite-runtime/league-result-corrections.js';
