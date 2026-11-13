@@ -1,5 +1,5 @@
 import {buildLeagueSchedule} from '../../league-suite-runtime/league-engine.js';
-import {leagueStandings,acceptedAppearances,standardTrial} from '../../league-suite-runtime/league-results.js';
+import {leagueStandings,acceptedAppearances,standardTrial,leaguePlayerIdentity} from '../../league-suite-runtime/league-results.js';
 import {playerTotals,numeric} from '../../league-suite-runtime/league-player-stats.js';
 
 // Read-only projection of saved, accepted records. Live provider feeds, local
@@ -12,7 +12,7 @@ const appearanceView=p=>({name:p.name,playerId:p.playerId,teamId:p.teamId,positi
 
 export function projectLeague(row,{now=Date.now()}={}){
  const saved=typeof row.draft_json==='string'?JSON.parse(row.draft_json):row.draft;
- const draft={...buildLeagueSchedule(saved.settings),acceptedResults:saved.acceptedResults||[]};
+ const draft={...buildLeagueSchedule(saved.settings),acceptedResults:saved.acceptedResults||[],internationalBaseline:saved.internationalBaseline};
  const results=new Map(draft.acceptedResults.map(r=>[r.fixtureId,r]));
  if(results.size!==draft.acceptedResults.length)throw Error('Duplicate accepted fixtures.');
  for(const result of results.values())if(!draft.fixtures.some(f=>f.id===result.fixtureId)||![result.homeScore,result.awayScore].every(v=>Number.isInteger(v)&&v>=0))throw Error('Invalid saved match result.');
@@ -23,7 +23,7 @@ export function projectLeague(row,{now=Date.now()}={}){
   const r=results.get(f.id),status=r?'played':pending.has(f.id)?'review':f.startsAt<now?'awaiting':'scheduled';
   if(r){sourceCounts[sourceOf(r)]++;for(const [team,own,other] of [[f.home,r.homeScore,r.awayScore],[f.away,r.awayScore,r.homeScore]])form.get(team.id).push({fixtureId:f.id,result:own>other?'W':own===other?'D':'L'});}
   return {id:f.id,round:f.round,week:f.week,date:f.date,startsAt:f.startsAt,home:teamView(f.home),away:teamView(f.away),status,
-   ...(r?{homeScore:r.homeScore,awayScore:r.awayScore,source:sourceOf(r),statsStatus:r.provenance?.kind==='va-score-only'?'unavailable':r.correction?.statsReview?'needs-review':r.appearances?.length?'available':'unavailable',appearances:(r.appearances||[]).map(appearanceView)}:{})};
+   ...(r?{homeScore:r.homeScore,awayScore:r.awayScore,source:sourceOf(r),statsStatus:r.provenance?.kind==='va-score-only'?'unavailable':r.correction?.statsReview?'needs-review':r.appearances?.length?'available':'unavailable',appearances:(r.appearances||[]).map(p=>appearanceView(leaguePlayerIdentity(draft,p)))}:{})};
  });
  const standings=leagueStandings(draft).map((t,i)=>({...teamView(t),rank:i+1,played:t.played,wins:t.wins,draws:t.draws??0,losses:t.regularLosses+t.extraLosses,goalsFor:t.goalsFor,goalsAgainst:t.goalsAgainst,goalDifference:t.goalsFor-t.goalsAgainst,points:t.points,form:form.get(t.id).slice(-5).map(f=>f.result)}));
  const records=acceptedAppearances(draft),players=playerTotals(records).map(p=>({playerId:p.playerId,name:p.name,teamId:p.teamId,teamName:draft.settings.teams.find(t=>t.id===p.teamId)?.name||p.teamName,position:p.position,apps:p.apps,rating:p.averageRating,ratingCount:p.ratingCount,passAccuracy:p.passAccuracy,tackleAccuracy:p.tackleAccuracy,...Object.fromEntries(fields.map(k=>[k,p.known[k]?p.totals[k]:null]))}));
@@ -32,6 +32,7 @@ export function projectLeague(row,{now=Date.now()}={}){
   teams:draft.settings.teams.map(teamView),standings,fixtures,players,sourceCounts,
   totals:{played:results.size,fixtures:fixtures.length,pending:fixtures.filter(f=>f.status==='review').length,awaiting:fixtures.filter(f=>f.status==='awaiting').length,appearances:records.length,goals:fixtures.reduce((n,f)=>n+(f.homeScore??0)+(f.awayScore??0),0)},
   history:saved.historyReconciliation?{checkedAt:saved.historyReconciliation.checkedAt,throughRound:saved.historyReconciliation.throughRound,compared:saved.historyReconciliation.compared,matched:saved.historyReconciliation.matched,missing:saved.historyReconciliation.missing?.length||0,differences:(saved.historyReconciliation.differences||[]).map(d=>({date:d.date,home:d.home,away:d.away,recordedScore:d.recordedScore,vaScore:d.vaScore}))}:null,
+  baseline:saved.internationalBaseline?{source:'VA match reports',importedAt:saved.internationalBaseline.importedAt,matches:saved.internationalBaseline.fixtureIds.length}:null,
   collection:{enabled:!!row.enabled,lastCheck:stamp(row.checked_at),lastSuccess:stamp(row.succeeded_at)}};
 }
 

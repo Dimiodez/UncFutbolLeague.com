@@ -33,7 +33,11 @@ export function restoreAcceptedResults(draft,results=[]){
   const seen=new Set();checked.acceptedResults.at(-1).appearances=result.appearances.map(p=>{if(!p||typeof p.playerId!=='string'||!p.playerId||seen.has(p.playerId)||typeof p.name!=='string'||p.name.length>100||!p.name.trim()||![fixture.home.id,fixture.away.id].includes(p.teamId)||p.position!==null&&!PLAYER_POSITIONS.includes(p.position)||['rating','goals','assists'].some(key=>p[key]!==null&&(!Number.isFinite(p[key])||p[key]<0))||p.rating>10)throw Error('Invalid saved player appearance.');if(p.details!==undefined&&(!p.details||typeof p.details!=='object'||Array.isArray(p.details)||Object.entries(p.details).some(([key,value])=>!DETAIL_FIELDS.includes(key)||value!==null&&(!Number.isFinite(value)||value<0))))throw Error('Invalid saved detailed stats.');seen.add(p.playerId);return {...p,teamName:[fixture.home,fixture.away].find(t=>t.id===p.teamId).name};});
  }for(const result of checked.acceptedResults){const original=results.find(r=>r.fixtureId===result.fixtureId);if(original?.provenance)result.provenance=checkedProvenance(original.provenance,checked.fixtures.find(f=>f.id===result.fixtureId));}return checked;
 }
-export function acceptedAppearances(draft){return (draft.acceptedResults||[]).flatMap(result=>result.appearances.map(player=>({...player,matchId:result.matchId,timestamp:result.timestamp,status:'accepted',leagueKey:awardLeagueKey(draft.settings),season:draft.settings.season})));}
+export function leaguePlayerIdentity(draft,player){
+ const link=draft.internationalBaseline?.playerLinks?.find(link=>link.teamId===player.teamId&&link.eaPlayerId===player.playerId);
+ return link?{...player,playerId:link.playerId,name:link.name}:player;
+}
+export function acceptedAppearances(draft){return (draft.acceptedResults||[]).flatMap(result=>result.appearances.map(player=>({...leaguePlayerIdentity(draft,player),matchId:result.matchId,timestamp:result.timestamp,status:'accepted',leagueKey:awardLeagueKey(draft.settings),season:draft.settings.season})));}
 export function leagueStandings(draft){
  const policy=draft.settings.pageContent?.standings||{},rows=new Map(draft.settings.teams.map(team=>[team.id,{...team,played:0,wins:0,regularWins:0,extraWins:0,extraLosses:0,regularLosses:0,goalsFor:0,goalsAgainst:0,points:0,headToHead:0}]));
  if(standardTrial(draft)){

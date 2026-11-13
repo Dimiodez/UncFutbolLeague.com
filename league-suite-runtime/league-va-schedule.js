@@ -75,5 +75,5 @@ export function mergeSharedTestDraft(local,shared){
  for(const result of shared.acceptedResults||[]){const prior=merged.get(result.fixtureId);if(!prior?.correction?.localOnly)merged.set(result.fixtureId,result);}
  const acceptedResults=[...merged.values()];for(const result of acceptedResults)if(!base.fixtures.some(f=>f.id===result.fixtureId))throw Error('Shared calendar is missing a saved result; browser draft retained.');
  const pendingResults=(shared.pendingResults||[]).filter(p=>!merged.has(p.fixtureId));
- return {...base,acceptedResults,pendingResults};
+ return {...base,acceptedResults,pendingResults,...(shared.internationalBaseline?{internationalBaseline:shared.internationalBaseline}:{})};
 }
