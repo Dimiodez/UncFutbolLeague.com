@@ -9,6 +9,7 @@ import {projectLeague} from '../functions/_lib/league-centre.js';
 import {validWorkshopTeamId} from '../league-suite-runtime/league-team-identity.js';
 import {planInternationalBaseline,INTERNATIONAL_BASELINE_EVIDENCE} from '../functions/_lib/international-baseline.js';
 import {baselineGames,baselineTeams} from './fixtures/international-baseline.mjs';
+import {mergeSharedTestDraft} from '../league-suite-runtime/league-va-schedule.js';
 const teams=()=>INTERNATIONAL_COUNTRIES.map((id,i)=>({id,name:id,ea_club_id:String(800000+i)}));
 function setup(){
  const sqlite=new DatabaseSync(':memory:');sqlite.exec('CREATE TABLE preview_league_results(id TEXT PRIMARY KEY,draft_json TEXT,revision INTEGER DEFAULT 1,enabled INTEGER DEFAULT 1,checked_at TEXT,succeeded_at TEXT,health TEXT,updated_at TEXT);CREATE TABLE preview_collection_runs(id TEXT PRIMARY KEY,league_id TEXT,checked_at TEXT,mode TEXT,status TEXT,diagnostics_json TEXT);CREATE TABLE preview_ea_match_archive(league_id TEXT,match_id TEXT,game_json TEXT,PRIMARY KEY(league_id,match_id));CREATE TABLE international_teams(competition_id TEXT,id TEXT,name TEXT,ea_club_id TEXT);');
@@ -67,6 +68,7 @@ test('VA baseline reproduces all ten reports, standings and player aggregates, w
  const future=before.settings.internationalSchedule.fixtures.filter(f=>f.startsAt>Date.parse('2026-11-14'));for(const f of future)assert.equal(next.settings.internationalSchedule.fixtures.find(n=>n.id===f.id).startsAt,f.startsAt);
  for(const r of next.acceptedResults){assert(r.correction);assert(r.appearances.every(p=>p.vaReport.userId));assert.equal(r.matchId,INTERNATIONAL_BASELINE_EVIDENCE.reports.find(s=>s.fixtureId===r.fixtureId).ea.matchId);}
  assert.throws(()=>baselinePlan(next),/already imported/);
+ const browser=mergeSharedTestDraft(buildLeagueSchedule(before.settings),next);assert.equal(browser.fixtures.length,45);assert.equal(browser.acceptedResults.length,10);assert.deepEqual(browser.internationalBaseline,next.internationalBaseline);assert.equal(browser.fixtures.find(f=>f.id===tonight[0].id).startsAt,tonight[0].startsAt);
 });
 test('baseline fails without exact EA evidence, conflicting names or valid stats and never partially modifies input',()=>{
  const saved=baselineDraft(),before=JSON.stringify(saved),games=baselineGames();

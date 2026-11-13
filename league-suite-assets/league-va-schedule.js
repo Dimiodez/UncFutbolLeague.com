@@ -70,10 +70,12 @@ export function buildVaSchedule(settings){
 }
 export function mergeSharedTestDraft(local,shared){
  const calendar=shared.settings?.vaSchedule;
- const base=calendar?{...local,...buildVaSchedule({...local.settings,vaSchedule:calendar,teams:shared.settings.teams,collectionEnabled:true,scoringMode:'standard'})}:local;
+ const international=shared.settings?.internationalSchedule;
+ const base=international?{...local,...buildInternationalSchedule({...local.settings,internationalSchedule:international,teams:shared.settings.teams,startDate:shared.settings.startDate,collectionEnabled:true,scoringMode:'standard'})}:calendar?{...local,...buildVaSchedule({...local.settings,vaSchedule:calendar,teams:shared.settings.teams,collectionEnabled:true,scoringMode:'standard'})}:local;
  const merged=new Map((local.acceptedResults||[]).map(r=>[r.fixtureId,r]));
  for(const result of shared.acceptedResults||[]){const prior=merged.get(result.fixtureId);if(!prior?.correction?.localOnly)merged.set(result.fixtureId,result);}
  const acceptedResults=[...merged.values()];for(const result of acceptedResults)if(!base.fixtures.some(f=>f.id===result.fixtureId))throw Error('Shared calendar is missing a saved result; browser draft retained.');
  const pendingResults=(shared.pendingResults||[]).filter(p=>!merged.has(p.fixtureId));
  return {...base,acceptedResults,pendingResults,...(shared.internationalBaseline?{internationalBaseline:shared.internationalBaseline}:{})};
 }
+import {buildInternationalSchedule} from './league-international-schedule.js';
