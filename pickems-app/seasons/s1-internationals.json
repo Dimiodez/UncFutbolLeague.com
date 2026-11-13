@@ -1332,7 +1332,7 @@
       "assists": 2,
       "rating": 7.2,
       "goalContributions": 5,
-      "tacklesPerGame": 1.8,
+      "tacklesPerGame": 2,
       "cleanSheets": 0
     },
     {
@@ -1444,7 +1444,7 @@
       "assists": 0,
       "rating": 7.7,
       "goalContributions": 2,
-      "tacklesPerGame": 1.5,
+      "tacklesPerGame": 1.8,
       "cleanSheets": 0
     },
     {
@@ -1626,7 +1626,7 @@
       "assists": 4,
       "rating": 7.1,
       "goalContributions": 4,
-      "tacklesPerGame": 0.3,
+      "tacklesPerGame": 0.5,
       "cleanSheets": 0
     },
     {
@@ -2121,6 +2121,6 @@
     }
   ],
   "statsStatus": "available",
-  "statsFetchedAt": "2026-11-13T13:04:05.733Z",
-  "syncedAt": "2026-11-13T13:04:05.733Z"
+  "statsFetchedAt": "2026-11-13T14:28:20.406Z",
+  "syncedAt": "2026-11-13T14:28:20.406Z"
 }
