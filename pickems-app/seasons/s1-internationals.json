@@ -1308,6 +1308,20 @@
       "cleanSheets": 0
     },
     {
+      "id": "ARG:/users/DTXtre-",
+      "name": "DTXtre-",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DTXtre-",
+      "apps": 4,
+      "goals": 4,
+      "assists": 0,
+      "rating": 7.3,
+      "goalContributions": 4,
+      "tacklesPerGame": 0.8,
+      "cleanSheets": 0
+    },
+    {
       "id": "FRA:/users/KovacsKitchen",
       "name": "KovacsKitchen",
       "teamId": "FRA",
@@ -1350,6 +1364,20 @@
       "cleanSheets": 0
     },
     {
+      "id": "ARG:/users/DimiOdez",
+      "name": "DimiOdez",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/DimiOdez",
+      "apps": 4,
+      "goals": 3,
+      "assists": 1,
+      "rating": 7,
+      "goalContributions": 4,
+      "tacklesPerGame": 0.8,
+      "cleanSheets": 0
+    },
+    {
       "id": "ESP:/users/Sesmas",
       "name": "Sesmas",
       "teamId": "ESP",
@@ -1361,20 +1389,6 @@
       "rating": 7.6,
       "goalContributions": 4,
       "tacklesPerGame": 1.3,
-      "cleanSheets": 0
-    },
-    {
-      "id": "ARG:/users/DimiOdez",
-      "name": "DimiOdez",
-      "teamId": "ARG",
-      "teamName": "Argentina",
-      "sourceUrl": "https://ufl.virtualarena.app/users/DimiOdez",
-      "apps": 4,
-      "goals": 3,
-      "assists": 0,
-      "rating": 7,
-      "goalContributions": 3,
-      "tacklesPerGame": 0.8,
       "cleanSheets": 0
     },
     {
@@ -1448,20 +1462,6 @@
       "cleanSheets": 0
     },
     {
-      "id": "ARG:/users/DTXtre-",
-      "name": "DTXtre-",
-      "teamId": "ARG",
-      "teamName": "Argentina",
-      "sourceUrl": "https://ufl.virtualarena.app/users/DTXtre-",
-      "apps": 4,
-      "goals": 2,
-      "assists": 0,
-      "rating": 7.3,
-      "goalContributions": 2,
-      "tacklesPerGame": 0.8,
-      "cleanSheets": 0
-    },
-    {
       "id": "ENG:/users/Salmon",
       "name": "Salmon",
       "teamId": "ENG",
@@ -1500,6 +1500,20 @@
       "assists": 3,
       "rating": 7.1,
       "goalContributions": 4,
+      "tacklesPerGame": 1.3,
+      "cleanSheets": 0
+    },
+    {
+      "id": "ARG:/users/Dlowwtv",
+      "name": "Dlowwtv",
+      "teamId": "ARG",
+      "teamName": "Argentina",
+      "sourceUrl": "https://ufl.virtualarena.app/users/Dlowwtv",
+      "apps": 4,
+      "goals": 1,
+      "assists": 2,
+      "rating": 7.5,
+      "goalContributions": 3,
       "tacklesPerGame": 1.3,
       "cleanSheets": 0
     },
@@ -1641,20 +1655,6 @@
       "rating": 7,
       "goalContributions": 1,
       "tacklesPerGame": 1.5,
-      "cleanSheets": 0
-    },
-    {
-      "id": "ARG:/users/Dlowwtv",
-      "name": "Dlowwtv",
-      "teamId": "ARG",
-      "teamName": "Argentina",
-      "sourceUrl": "https://ufl.virtualarena.app/users/Dlowwtv",
-      "apps": 4,
-      "goals": 0,
-      "assists": 1,
-      "rating": 7.5,
-      "goalContributions": 1,
-      "tacklesPerGame": 1.3,
       "cleanSheets": 0
     },
     {
@@ -2121,6 +2121,6 @@
     }
   ],
   "statsStatus": "available",
-  "statsFetchedAt": "2026-11-13T06:06:00.296Z",
-  "syncedAt": "2026-11-13T06:06:00.296Z"
+  "statsFetchedAt": "2026-11-13T13:04:05.733Z",
+  "syncedAt": "2026-11-13T13:04:05.733Z"
 }
