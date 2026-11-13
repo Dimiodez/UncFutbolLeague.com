@@ -26,11 +26,21 @@ export function installInternationalTeamSetup(host){
  async function loadAfterLink(){loaded=false;await load();}
  async function loadTracker(){
   tracker.replaceChildren();const heading=document.createElement('h3');heading.textContent='Automatic international test tracker';tracker.append(heading);
-  const note=document.createElement('p');note.textContent='EA-only parallel test from November 12. Results automatically feed this test’s standings and player totals. Earlier season totals and the public VA source stay unchanged.';tracker.append(note);
+  const note=document.createElement('p');note.textContent='Automatic EA collection updates the saved standings and player totals. Import verified VA history once to continue the season from its existing totals. Public result-source settings remain unchanged.';tracker.append(note);
   try{
    const r=await fetch('/api/league-suite/international-tracker',{cache:'no-store'}),data=await r.json();if(!r.ok)throw Error(data.error);
    const health=document.createElement('p');health.setAttribute('role','status');health.textContent=`${data.prepared?(data.enabled?'Enabled · Worker checks every 5 minutes':'Prepared · Stopped'):'Not prepared'} · Worker build: ${data.workerReady?'international-ready':'deployment required'} · ${data.accepted} accepted · ${data.pending} awaiting review · Last worker check: ${data.checkedAt||'not yet recorded'}`;tracker.append(health);
    if(data.health?.error||data.health?.warnings?.length){const warning=document.createElement('p');warning.textContent=data.health.error||data.health.warnings.join(' ');tracker.append(warning);}
+   if(data.baseline){const baseline=document.createElement('p');baseline.textContent=`VA baseline imported · ${data.baseline.matches} historical matches · New matches continue from EA.${data.tonight?' November 12 kickoff: 9:00 / 9:30 PM Central.':''}`;tracker.append(baseline);}
+   else if(data.prepared){
+    const preview=document.createElement('button');preview.type='button';preview.textContent='Preview existing VA results & stats';tracker.append(preview);
+    preview.onclick=async()=>{preview.disabled=true;health.textContent='Checking the ten VA match sheets against original EA player identities…';try{
+     const response=await fetch('/api/league-suite/international-tracker',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'preview-baseline',revision:data.revision})}),plan=await response.json();if(!response.ok)throw Error(plan.error);
+     health.textContent=`Verified VA baseline: ${plan.summary.matches} matches · ${plan.summary.goals} goals · ${plan.summary.appearances} player appearances · ${plan.summary.players} players. Existing collected results stay intact. Tonight will use 9:00 / 9:30 PM Central.`;
+     const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Import verified VA baseline';tracker.append(confirm);
+     confirm.onclick=async()=>{confirm.disabled=true;try{const result=await fetch('/api/league-suite/international-tracker',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:'import-baseline',revision:plan.revision,digest:plan.digest})}),saved=await result.json();if(!result.ok)throw Error(saved.error);await loadTracker();}catch(error){health.textContent=error.message;confirm.disabled=false;}};
+    }catch(error){health.textContent=error.message;preview.disabled=false;}};
+   }
    const action=document.createElement('button');action.type='button';action.textContent=!data.prepared?'Prepare international test':data.enabled?'Stop test collection':'Start automatic test tracking';action.disabled=data.prepared&&!data.enabled&&!data.workerReady;
    action.onclick=async()=>{action.disabled=true;try{const response=await fetch('/api/league-suite/international-tracker',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({action:!data.prepared?'prepare':data.enabled?'stop':'start',revision:data.revision})}),result=await response.json();if(!response.ok)throw Error(result.error);await loadTracker();}catch(error){health.textContent=error.message;action.disabled=false;}};tracker.append(action);
    if(data.prepared){const link=document.createElement('a');link.className='button';link.href=data.viewUrl;link.textContent='Open test results, table & player stats';tracker.append(link);}

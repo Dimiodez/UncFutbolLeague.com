@@ -4,7 +4,7 @@ This is a separate worker-backed test, not the public results-source migration. 
 
 - Tracker ID: `ufl-internationals-ea-test-20261112`.
 - Collector: existing `ufl-preview-league-collector`, format 6v6, existing five-minute cron and hosted friendly transport. The 10v10 worker skips this format; no new worker, secret, binding or cron is needed.
-- Calendar: 35 verified remaining Intercontinental league fixtures from November 12, including tonight's ten fixtures at 6:00 and 6:30 PM America/Chicago. Original `va-intl-*` IDs remain stable. The first ten historical games and seven knockout placeholders are excluded from this parallel test; no VA scores or stats are imported into its totals.
+- Calendar: initially prepared with 35 remaining league fixtures. The owner-approved historical import expands it to all 45 league fixtures with stable `va-intl-*` IDs. Seven knockout placeholders remain excluded. The owner confirmed November 12 kickoff at **9:00 / 9:30 PM America/Chicago**; the baseline import corrects those ten fixture times. Later dates retain their VA calendar times until confirmed.
 - Scoring: accepted results only, win 3/draw 1/loss 0. Existing EA archive, duplicate detection, incomplete/ambiguous/quit-score review, staff correction protection and player-stat enrichment are reused unchanged.
 - Collection: 15 minutes before the first kickoff until 120 minutes after the final kickoff; missed fixtures retry for seven days. Feed failures remain visible and do not fabricate zero-score games or forfeits.
 
@@ -23,3 +23,13 @@ If rolling back worker code, stop this tracker first; older worker bundles do no
 ## Tests
 
 `scripts/international-tracker.test.mjs` uses SQLite and both worker format paths to test tonight's fixture windows, all ten automatic results, standings/player totals, duplicate-free repeat polling, no VA dependence, feed failures, authorization/CSRF, disabled preparation, worker-release gating, stale revisions and stop safety. Browser/runtime calendar code is included in the publication parity guard.
+
+## One-time VA historical baseline
+
+The owner requested continuing from the results and stats already gathered from VA. `data/international-baseline-20261112.json` freezes the ten completed VA match reports (339–348), their original EA match IDs/timestamps, player sheets and published standings/leaderboard totals. `scripts/capture-international-baseline.mjs` captures this evidence once and refuses to overwrite it.
+
+Suite offers Preview existing VA results & stats, then Import verified VA baseline. Preview requires original EA friendly evidence from the collector cache: exact match ID, timestamp, national club pair and unique player-name match within that club. Numeric EA player IDs map to VA user IDs only inside this competition. Missing or ambiguous identity evidence blocks the entire import. All ten standings and 59 player aggregate totals are checked against the frozen source, including available rating averages. Future EA appearances use the same competition identity and combine actual appearance ratings, rather than averaging averages.
+
+Import is revision guarded and transactional. A permanent audit record stores the complete before/after drafts, owner and evidence digest in `preview_international_baseline_audit`. Existing accepted results, pending records, worker enablement and public migration settings remain unchanged. Imported results retain original EA evidence plus VA provenance and protected staff-correction metadata. An existing baseline cannot be replaced by rerunning the operation. The existing international-ready worker preserves these fields and corrections, so importing history does not require another worker deployment.
+
+Regression tests cover the full 10-match / 28-goal / 113-appearance baseline, 59 players, kickoff correction, future fixture preservation, exact identity checks, unchanged inputs on failure, future EA stat continuation, repeat-import rejection, read-only preview, audit/transaction behavior, concurrent revision conflicts and collector protection of history.

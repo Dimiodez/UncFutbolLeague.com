@@ -197,7 +197,7 @@ form.addEventListener('submit',event=>{event.preventDefault();try{
  if(drafts.some(draft=>draft.settings.season.trim().toLowerCase()===settings.season.trim().toLowerCase()&&draft.settings.league.trim().toLowerCase()===settings.league.trim().toLowerCase()))throw Error('That league already exists in this season draft. Use another name.');
  drafts.push(createLeagueDraft(settings));activeLeague=drafts.length-1;activeTab='overview';renderDrafts();persistDrafts();pageReport('League created and saved on this device with zero teams. Set up its tabs now and add teams later.');
  }catch(error){message.textContent=error.message;}});
-function draftFile(){return {version:4,seasons,competitions,leagues:drafts.map(draft=>({settings:draft.settings,registrationOpen:draft.registrationOpen,scheduleGenerated:draft.scheduleGenerated,acceptedResults:draft.acceptedResults||[],pendingResults:draft.pendingResults||[]}))};}
+function draftFile(){return {version:4,seasons,competitions,leagues:drafts.map(draft=>({settings:draft.settings,registrationOpen:draft.registrationOpen,scheduleGenerated:draft.scheduleGenerated,acceptedResults:draft.acceptedResults||[],pendingResults:draft.pendingResults||[],...(draft.internationalBaseline?{internationalBaseline:draft.internationalBaseline}:{})}))};}
 function restoreDrafts(data){
  migratedByeCount=0;
  if(Array.isArray(data))data={version:1,leagues:data};
@@ -212,7 +212,7 @@ function restoreDrafts(data){
   let validated=createLeagueDraft({...settings,teams:[]});
   for(const team of settings.teams)validated=registerLeagueTeam(validated,team,{restoring:true});
   validated.settings.teams=settings.teams.map(team=>({...team}));
-  if(data.version===1||entry.scheduleGenerated)return restorePendingResults(restoreAcceptedResults(buildLeagueSchedule(validated.settings),entry.acceptedResults||[]),entry.pendingResults||[]);
+if(data.version===1||entry.scheduleGenerated)return {...restorePendingResults(restoreAcceptedResults(buildLeagueSchedule(validated.settings),entry.acceptedResults||[]),entry.pendingResults||[]),...(entry.internationalBaseline?{internationalBaseline:entry.internationalBaseline}:{})};
   return {...validated,registrationOpen:entry.registrationOpen!==false};
  });
  const savedSeasons=data.version>=3?data.seasons:[],savedCups=data.version>=3?data.competitions:[];

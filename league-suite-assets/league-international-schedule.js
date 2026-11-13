@@ -15,5 +15,5 @@ export function buildInternationalSchedule(settings){
  }).sort((a,b)=>a.startsAt-b.startsAt||a.id.localeCompare(b.id));
  const dates=[...new Set(fixtures.map(f=>f.date))];for(const f of fixtures)f.week=dates.indexOf(f.date)+1;
  const nights=dates.map((date,i)=>({week:i+1,date,fixtures:fixtures.filter(f=>f.date===date),byes:settings.teams.filter(t=>!fixtures.some(f=>f.date===date&&(f.home.id===t.id||f.away.id===t.id)))}));
- return {settings,fixtures,nights,registrationOpen:false,scheduleGenerated:true,warnings:['International EA-only parallel test. Totals start with the November 12 test fixtures; earlier VA results/stats remain on the public site. Knockouts are excluded.']};
+ return {settings,fixtures,nights,registrationOpen:false,scheduleGenerated:true,warnings:[calendar.baselineIncluded?'Verified VA history plus ongoing automatic EA collection. November 12 kickoff confirmed at 9:00/9:30 PM Central. Knockouts are excluded.':'International EA-only parallel test. Earlier VA results/stats remain on the public site until imported. Knockouts are excluded.']};
 }
