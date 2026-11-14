@@ -1,8 +1,9 @@
 export async function onRequest({request,env}){
  if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});
  const shell=await(await env.ASSETS.fetch(new Request(new URL('/',request.url)))).text();
+ const fonts=(shell.match(/<link\b[^>]*(?:fonts\.googleapis\.com|fonts\.gstatic\.com)[^>]*>/g)||[]).join('');
  const header=shell.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0]||'<header class="site-header"><a href="/">UNC FUTBOL LEAGUE</a></header>';
  const footer=shell.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0]||'';
  const html=`<!doctype html><html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>My teams · UNC Futbol League</title><link rel="stylesheet" href="/styles.css?v=20261110-p23"><link rel="stylesheet" href="/my-teams.css?v=20261113-1"><script src="/theme-init.js"></script><script src="/navigation-ux.js?v=20261110-p23" defer></script><script src="/my-teams.js?v=20261113-1" type="module"></script></head><body data-standalone-navigation="true"><a class="skip-link" href="#main">Skip to teams</a>${header}<main id="main" tabindex="-1"><section class="section"><nav aria-label="Page context"><a href="/account">← My account</a> · <a href="/league">League home</a> · <a href="/team-hub">My team hubs</a></nav><span class="section-kicker">Your club, your next season</span><h1>My teams</h1><p>Create your team, link its EA club and apply to leagues accepting entries.</p><p id="teams-status" role="status" aria-live="polite">Loading your teams…</p><div id="teams-root"></div></section></main>${footer}</body></html>`;
- return new Response(request.method==='HEAD'?null:html,{headers:{'content-type':'text/html; charset=utf-8','cache-control':'private, no-store','vary':'Cookie'}});
+ return new Response(request.method==='HEAD'?null:html.replace('</head>',fonts+'</head>'),{headers:{'content-type':'text/html; charset=utf-8','cache-control':'private, no-store','vary':'Cookie'}});
 }
