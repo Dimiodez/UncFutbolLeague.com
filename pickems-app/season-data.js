@@ -3711,7 +3711,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png",
         "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-timbers-1790644273.jpg",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Timbers",
-        "rosterSize": 13,
+        "rosterSize": 14,
         "stats": {
           "played": 8,
           "wins": 5,
@@ -3740,7 +3740,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
         "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-milan-1790954043.jpg",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
-        "rosterSize": 12,
+        "rosterSize": 10,
         "stats": {
           "played": 8,
           "wins": 6,
@@ -4914,8 +4914,8 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/users/BIGHIMUP"
               },
               "team": {
-                "name": "UFL Milan",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
+                "name": "UFL Timbers",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-timbers-1790644273.png"
               },
               "stat": "6",
               "played": 8
