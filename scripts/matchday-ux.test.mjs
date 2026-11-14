@@ -11,7 +11,7 @@ function uxContext(){
 }
 test('login returns are limited to safe internal member destinations',()=>{
  const {ux}=uxContext();
- for(const path of ['/team-hub?team=6v6%3AARS','/pickems?division=10v10','/coaching','/arcade'])assert.equal(ux.safeReturn(path),path);
+ for(const path of ['/my-teams','/team-hub?team=6v6%3AARS','/pickems?division=10v10','/coaching','/arcade'])assert.equal(ux.safeReturn(path),path);
  for(const path of ['https://evil.example','//evil.example','/\\evil.example','/api/auth/logout','/admin','/team-hub/../api/auth/logout','/team-hub\n','/%2f%2fevil.example'])assert.equal(ux.safeReturn(path),null);
 });
 test('successful sign-in returns to the selected team without retaining the destination',()=>{
