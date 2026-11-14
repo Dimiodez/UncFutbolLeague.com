@@ -2,6 +2,7 @@ import {getSession,json,sameOrigin} from './auth.js';
 import {ROSTER_CLUBS} from './roster-clubs.js';
 import {rosterSnapshot} from './league-rosters.js';
 import {validatePlaybook} from '../../team-tactics-model.js';
+import {acceptedMemberHubs,memberTeamHub} from './member-team-hubs.js';
 export const HUB_SCHEMA=[
  `CREATE TABLE IF NOT EXISTS team_hub_managers(season TEXT NOT NULL,division TEXT NOT NULL,team_key TEXT NOT NULL,discord_id TEXT NOT NULL REFERENCES users(discord_id),assigned_by TEXT NOT NULL,created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,PRIMARY KEY(season,division,team_key,discord_id))`,
  `CREATE TABLE IF NOT EXISTS team_hub_accounts(discord_id TEXT PRIMARY KEY REFERENCES users(discord_id),player_id TEXT NOT NULL UNIQUE REFERENCES league_players(id),assigned_by TEXT NOT NULL,updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`,
@@ -23,8 +24,10 @@ export async function liveTeamHub(request,env){
  const id=request.method==='GET'?new URL(request.url).searchParams.get('team'):input.teamId;
  if(!id&&request.method==='GET'){
   const teams=[];for(const team of hubTeams()){const access=await hubContext(env.DB,actor,team);if(access.allowed)teams.push({...team,...access});}
+  teams.push(...await acceptedMemberHubs(env.DB,actor));
   return json({teams,accountId:actor.discord_id,canAssign:['owner','admin'].includes(actor.role)});
  }
+ if(typeof id==='string'&&id.startsWith('member:'))return memberTeamHub(request,env,actor,id,input);
  const team=hubTeams().find(t=>t.id===id);if(!team)return json({error:'Team not found.'},404);
  const access=await hubContext(env.DB,actor,team);if(!access.allowed)return json({error:'This team hub is private to its assigned managers, linked roster members and the owner.'},403);
  const {players}=await rosterSnapshot(env),roster=players[team.division].filter(p=>p.club===team.key).map(p=>({id:String(p.identity),profileId:String(p.id||p.identity),name:p.name}));

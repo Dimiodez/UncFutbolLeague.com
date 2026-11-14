@@ -14,6 +14,7 @@ publicRoots.add('matchday-ux.css');
 publicRoots.add('league-awards-page.js');
 publicRoots.add('league-awards-page.css');
 publicRoots.add('team-hub-sidebar.css');
+publicRoots.add('my-teams.js');publicRoots.add('my-teams.css');
 publicRoots.add('team-hub-loader.js');
 publicRoots.add('team-hub-ux.js');publicRoots.add('team-hub-ux.css');
 for(const file of ['team-hub.html','team-hub.js','team-hub.css','team-hub-live.css','team-hub-shell.js','team-hub-comparison.js','team-tactics-model.js','fc27-formations.js','team-hub-entry.js','team-hub-access.html','team-hub-access.js'])publicRoots.add(file);

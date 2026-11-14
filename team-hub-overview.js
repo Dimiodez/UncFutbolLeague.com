@@ -160,6 +160,14 @@ export function installClubHub(root,context,board){
  links.forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.hubNav)));
  overview.querySelector('[data-open-tactics]').addEventListener('click',()=>navigate('tactics'));
  show(clubHubView());
+ if(team.memberTeam){
+  season.href='/my-teams';season.textContent='League entries →';
+  const registration=root.querySelector('.hub-meta a');if(registration)registration.textContent='Team registration →';
+  overview.querySelector('[data-hub-matchday]').innerHTML='<section class="club-dash-panel"><h3>Accepted league entries</h3><p>'+esc(team.league)+'</p><p>Your team hub is ready. Fixtures and league records will appear when staff publish the season.</p></section>';
+  settings.innerHTML='<section class="club-dash-panel"><h3>Team & manager</h3><p>Manager: '+esc(team.managerName)+'</p><p>'+esc(team.eaClubName)+' · EA '+esc(team.eaClubId)+'</p><a href="/my-teams">Team details, applications & manager assignments →</a></section>';
+  squad.querySelector('[data-squad-note]').textContent='No registered players yet.';
+  return;
+ }
  portraits||=json('/api/player-portraits').catch(()=>null);
  portraits.then(approved=>{if(nav.isConnected)fillFaces(root,roster,approved);});
  if(!cache.has(team.id)){

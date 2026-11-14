@@ -2,7 +2,7 @@
 (() => {
  const routeKey=url=>url.pathname+'|'+(url.searchParams.get('season')||'2')+'|'+(url.searchParams.get('division')||url.searchParams.get('type')||'');
  const returnRoutes = new Set([
-  '/team-hub', '/pickems', '/coaching', '/coaching/new', '/arcade', '/arcade/cleat',
+  '/team-hub', '/my-teams', '/pickems', '/coaching', '/coaching/new', '/arcade', '/arcade/cleat',
   '/arcade/loosey-goosey', '/arcade/sandy-uppy', '/arcade/mountain-mayhem',
   '/league-suite', '/league-suite/ea-clubs', '/league-suite/dashboard', '/league-suite/join',
  ]);

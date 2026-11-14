@@ -3,7 +3,7 @@ import {FC27_FORMATION_OPTIONS,canonicalFormationName,formationSlots} from './fc
 import {PHASES,newTactic,assignPlayer,changeFormation} from './team-tactics-model.js?v=20261013-recovery2';
 import {installBoardComparison} from './team-hub-comparison.js?v=20261013-recovery2';
 import {installTeamHubUX} from './team-hub-ux.js?v=20261013-recovery2';
-import {installClubHub} from './team-hub-overview.js?v=20261110-club-hub1';
+import {installClubHub} from './team-hub-overview.js?v=20261113-member-hubs';
 installWorkshopBrand();
 // Styles are loaded by the HTML shell, even if a module cannot start.
 const root=document.querySelector('#team-hub-root'),message=document.querySelector('#hub-message');
@@ -31,6 +31,7 @@ async function load(){
 function renderTeamChooser(data){
  document.title='My team hubs · UNC Futbol League';
  root.innerHTML='<section class="rule-card"><span class="hub-kicker">Private team workspaces</span><h2>My team hubs</h2><p>Manager playbooks and read-only owner inspection are separate. Access is checked by the server.</p><div class="hub-chooser-filters"><label>Find a team<input type="search" data-team-search placeholder="Team name"></label><label>Division<select data-team-division><option value="">All divisions</option><option>6v6</option><option>10v10</option></select></label><label><input type="checkbox" data-team-archive> Include legacy entries</label></div><div data-team-choices></div></section>';
+ const manage=document.createElement('a');manage.className='hub-link';manage.href='/my-teams';manage.textContent='Create a team or manage league applications →';root.querySelector('h2').after(manage);
  const draw=()=>{
   const query=root.querySelector('[data-team-search]').value.toLowerCase(),division=root.querySelector('[data-team-division]').value,legacy=root.querySelector('[data-team-archive]').checked;
   const teams=data.teams.filter(t=>(!query||t.name.toLowerCase().includes(query))&&(!division||t.division===division)&&(legacy||!/place\s*holder/i.test(t.name)));

@@ -1,6 +1,21 @@
 import {invitationCard,watchUnsaved,statusBadge} from './league-workspace-status.js';
 const escape=value=>String(value??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const boardQueues=new Map();
+export function memberTeamEntries(data,leagueIds){
+ return data.teams.filter(t=>data.applications.some(a=>a.team_id===t.id&&leagueIds.includes(a.league_id)&&a.status==='approved')).map(t=>({...t,ea_id:t.ea_club_id,in_game_name:t.ea_club_name||''}));
+}
+function renderMemberRegistration({host,draft,onSettings,onImport,onReport}){
+ const panel=document.createElement('section');panel.className='rule-card';panel.innerHTML='<h3>Member team registration</h3><p>Members create their own teams. Owner/admin can create teams, assign managers and approve league applications.</p><div class="workshop-toolbar"><button type="button" data-setup>Set up member team registration</button><button type="button" data-approved>Refresh approved member teams</button><a href="/my-teams">Teams & managers →</a></div><p role="status" data-note></p><div data-entries></div>';host.append(panel);
+ const note=panel.querySelector('[data-note]');
+ panel.querySelector('[data-setup]').onclick=async event=>{const button=event.target;button.disabled=true;try{let id=draft.settings.inviteBoardId;if(!id){const result=await registrationRequest({action:'create',settings:draft.settings,open:draft.registrationOpen});id=result.boardId;onSettings({...draft.settings,inviteBoardId:id,managerInviteUrl:result.url});}location.assign('/my-teams?league='+encodeURIComponent('board:'+id));}catch(error){note.textContent=error.message;button.disabled=false;}};
+ panel.querySelector('[data-approved]').onclick=async event=>{const button=event.target;button.disabled=true;try{
+  const response=await fetch('/api/my-teams',{cache:'no-store'}),data=await response.json();if(!response.ok)throw Error(data.error);
+  const ids=[draft.settings.serverLeagueId||draft.settings.trialSchedule,draft.settings.inviteBoardId?'board:'+draft.settings.inviteBoardId:null].filter(Boolean),entries=memberTeamEntries(data,ids),list=panel.querySelector('[data-entries]');list.replaceChildren();
+  note.textContent=entries.length?'Accepted teams are ready to add or sync to this draft.':'No approved member applications for this league yet. Use Set up member team registration to open applications.';
+  for(const team of entries){const row=document.createElement('p'),label=document.createElement('span'),add=document.createElement('button'),existing=draft.settings.teams.find(t=>t.remoteTeamId===team.id);label.textContent=team.name+' · Manager: '+team.manager_name+' ';add.type='button';add.textContent=existing?'Sync team & manager to draft':'Add approved team to draft';add.disabled=!!draft.scheduleGenerated;add.onclick=()=>{try{onImport(team,{checkOnly:true});onImport(team);onReport('Approved member team and manager saved to this draft.');}catch(error){note.textContent=error.message;}};row.append(label,add);list.append(row);}
+  if(draft.scheduleGenerated&&entries.length)note.textContent='The schedule is already generated. Review the draft’s registration state before adding or syncing teams; existing fixtures are protected.';
+ }catch(error){note.textContent=error.message;}finally{button.disabled=false;}};
+}
 export function registrationRequest(body){
  if(body.settings){const s=body.settings;body={...body,settings:Object.fromEntries(['league','season','format','size','maxTeamSize','keepersEnabled','startDate','time','timeZone','weekday','matchnightCount','secondWeekday','repeatWeeks','spacingMinutes','windows'].map(key=>[key,s[key]]))};}
  const send=async()=>{const response=await fetch('/api/registration',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),data=await response.json();if(!response.ok)throw Error(data.error);return data;};
@@ -8,6 +23,7 @@ export function registrationRequest(body){
  if(!body.boardId)return send();const previous=boardQueues.get(body.boardId)||Promise.resolve(),next=previous.catch(()=>{}).then(send);boardQueues.set(body.boardId,next);const cleanup=()=>{if(boardQueues.get(body.boardId)===next)boardQueues.delete(body.boardId);};next.then(cleanup,cleanup);return next;
 }
 export function renderRegistrationInvites({host,draft,onSettings,onImport,onReport}){
+ renderMemberRegistration({host,draft,onSettings,onImport,onReport});
  const section=document.createElement('section');section.className='rule-card';section.innerHTML='<h3>Team registration & managers</h3><p>Generate a league invite, then open the inbox to authorize registered users as Team Managers. They can register their team, edit its details and invite players after approval. Manager access applies only to this league; it never grants admin rights.</p><p>Approved teams and player memberships are saved in shared preview storage, separate from live rosters and the bot. League schedules remain local drafts.</p><a href="/api/auth/discord" target="_blank" rel="noopener">Sign in with Discord</a><div class="workshop-toolbar"><button type="button" data-create>Generate new manager invitation</button><button type="button" data-sync>Update invite settings</button><button type="button" data-inbox>Refresh registration inbox</button></div><p data-invite-url></p><p role="status" data-invite-status></p><div data-manager-access></div><div data-inbox-list></div>';
  section.dataset.shared='true';host.append(section);const status=section.querySelector('[data-invite-status]'),board=()=>draft.settings.inviteBoardId,mark=watchUnsaved(section,board()?'Saved online · preview registration':'Not connected online yet');
  const showUrl=(url,kind='Manager',teamName='')=>invitationCard(section.querySelector('[data-invite-url]'),url,{...draft.settings,kind,teamName});if(draft.settings.managerInviteUrl)showUrl(draft.settings.managerInviteUrl);
