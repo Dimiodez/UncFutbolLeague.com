@@ -3595,7 +3595,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-maykop-1790807893.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/UFL%20Maykop",
-        "rosterSize": 9,
+        "rosterSize": 12,
         "stats": {
           "played": 8,
           "wins": 6,
@@ -3624,7 +3624,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png",
         "cover": null,
         "url": "https://ufl.virtualarena.app/teams/Real%20Madrid",
-        "rosterSize": 11,
+        "rosterSize": 10,
         "stats": {
           "played": 8,
           "wins": 3,
@@ -3740,7 +3740,7 @@ window.UFL_SEASONS = {
         "logo": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png",
         "cover": "https://ufl.virtualarena.app/tenancy/assets/images/teams/cover-photos/ufl-milan-1790954043.jpg",
         "url": "https://ufl.virtualarena.app/teams/UFL%20Milan",
-        "rosterSize": 10,
+        "rosterSize": 12,
         "stats": {
           "played": 8,
           "wins": 6,
@@ -4580,8 +4580,8 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/users/bRzGabriel98"
               },
               "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
               },
               "stat": "8",
               "played": 8
@@ -4737,8 +4737,8 @@ window.UFL_SEASONS = {
                 "url": "https://ufl.virtualarena.app/users/bRzGabriel98"
               },
               "team": {
-                "name": "Real Madrid",
-                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/real-madrid-1791137253.png"
+                "name": "UFL Milan",
+                "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-milan-1790955600.png"
               },
               "stat": "10",
               "played": 8
