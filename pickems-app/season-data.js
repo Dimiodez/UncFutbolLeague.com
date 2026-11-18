@@ -1189,8 +1189,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-    "syncedAt": "2026-11-18T04:51:29.000Z",
-    "statsFetchedAt": "2026-11-18T04:51:29.000Z",
+    "syncedAt": "2026-11-18T08:00:17.000Z",
+    "statsFetchedAt": "2026-11-18T08:00:17.000Z",
     "statsStatus": "available",
     "teams": {
       "ARS": [
@@ -3518,8 +3518,8 @@ window.UFL_SEASONS = {
     "standingsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/standings",
     "teamsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/teams",
     "statsSource": "https://ufl.virtualarena.app/competitions/3/seasons/5/stats",
-    "syncedAt": "2026-11-18T04:04:52.000Z",
-    "statsFetchedAt": "2026-11-18T04:04:52.000Z",
+    "syncedAt": "2026-11-18T08:00:17.000Z",
+    "statsFetchedAt": "2026-11-18T08:00:17.000Z",
     "statsStatus": "available",
     "teams": {
       "NSH": [
