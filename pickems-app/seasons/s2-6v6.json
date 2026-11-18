@@ -11,8 +11,8 @@
   "standingsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/standings",
   "teamsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/teams",
   "statsSource": "https://ufl.virtualarena.app/competitions/1/seasons/2/stats",
-  "syncedAt": "2026-11-07T08:00:14.000Z",
-  "statsFetchedAt": "2026-11-07T08:00:14.000Z",
+  "syncedAt": "2026-11-18T04:51:29.000Z",
+  "statsFetchedAt": "2026-11-18T04:51:29.000Z",
   "statsStatus": "available",
   "teams": {
     "ARS": [
@@ -272,19 +272,19 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes",
       "rosterSize": 8,
       "stats": {
-        "played": 8,
-        "wins": 5,
+        "played": 9,
+        "wins": 6,
         "draws": 0,
         "losses": 3,
-        "goals_for": 6,
+        "goals_for": 7,
         "goals_against": 5,
-        "goal_difference": 1,
-        "points": 15,
+        "goal_difference": 2,
+        "points": 18,
         "form": [
           "W",
           "W",
-          "W",
           "L",
+          "W",
           "W"
         ]
       }
@@ -330,20 +330,20 @@
       "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca",
       "rosterSize": 8,
       "stats": {
-        "played": 8,
+        "played": 9,
         "wins": 8,
         "draws": 0,
-        "losses": 0,
+        "losses": 1,
         "goals_for": 39,
-        "goals_against": 7,
-        "goal_difference": 32,
+        "goals_against": 8,
+        "goal_difference": 31,
         "points": 24,
         "form": [
           "W",
           "W",
           "W",
           "W",
-          "W"
+          "L"
         ]
       }
     }
@@ -351,14 +351,25 @@
   "standings": [
     [
       "TLC",
-      8,
+      9,
       8,
       0,
-      0,
+      1,
       39,
-      7,
-      32,
+      8,
+      31,
       24
+    ],
+    [
+      "PHN",
+      9,
+      6,
+      0,
+      3,
+      7,
+      5,
+      2,
+      18
     ],
     [
       "ROM",
@@ -369,17 +380,6 @@
       11,
       7,
       4,
-      15
-    ],
-    [
-      "PHN",
-      8,
-      5,
-      0,
-      3,
-      6,
-      5,
-      1,
       15
     ],
     [
@@ -918,8 +918,8 @@
           142,
           "PHN",
           "TLC",
-          null,
-          null,
+          1,
+          0,
           1795140000,
           9
         ],
@@ -1489,12 +1489,12 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "18",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
               "name": "Salmon",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794459451.png",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/salmon-1794978172.png",
               "url": "https://ufl.virtualarena.app/users/Salmon"
             },
             "team": {
@@ -1515,7 +1515,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "10",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1541,7 +1541,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "7",
-            "played": 8
+            "played": 9
           }
         ]
       },
@@ -1561,7 +1561,20 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "11",
-            "played": 8
+            "played": 9
+          },
+          {
+            "data": {
+              "name": "Sesmas",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/users/Sesmas"
+            },
+            "team": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+            },
+            "stat": "11",
+            "played": 9
           },
           {
             "data": {
@@ -1578,19 +1591,6 @@
           },
           {
             "data": {
-              "name": "Sesmas",
-              "image": null,
-              "url": "https://ufl.virtualarena.app/users/Sesmas"
-            },
-            "team": {
-              "name": "UFL Toluca",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-            },
-            "stat": "11",
-            "played": 8
-          },
-          {
-            "data": {
               "name": "Starnesy",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
               "url": "https://ufl.virtualarena.app/users/Starnesy"
@@ -1600,7 +1600,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "7",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1633,7 +1633,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "23",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1646,7 +1646,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "18",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1659,7 +1659,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "17",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1672,7 +1672,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "12",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
@@ -1705,7 +1705,7 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "3.3",
-            "played": 6
+            "played": 7
           },
           {
             "data": {
@@ -1768,32 +1768,6 @@
         "records": [
           {
             "data": {
-              "name": "Luuuiiisss7",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
-              "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
-            },
-            "team": {
-              "name": "UFL Druzhba",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-druzhba-1791222977.png"
-            },
-            "stat": "0",
-            "played": 8
-          },
-          {
-            "data": {
-              "name": "zo54",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/zo-1783612765.png",
-              "url": "https://ufl.virtualarena.app/users/zo54"
-            },
-            "team": {
-              "name": "UFL Pumas UNAM",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-pumas-unam-1784030138.png"
-            },
-            "stat": "0",
-            "played": 8
-          },
-          {
-            "data": {
               "name": "Dlowwtv",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/dlowwtv-1784737035.png",
               "url": "https://ufl.virtualarena.app/users/Dlowwtv"
@@ -1803,26 +1777,52 @@
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "0",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
-              "name": "Grazman12",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/grazman12-1783963861.png",
-              "url": "https://ufl.virtualarena.app/users/Grazman12"
+              "name": "Starnesy",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/starnesy-1790641677.png",
+              "url": "https://ufl.virtualarena.app/users/Starnesy"
             },
             "team": {
-              "name": "UFL Bayern",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-bayern-1783994382.png"
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
             "stat": "0",
-            "played": 8
+            "played": 9
           },
           {
             "data": {
-              "name": "Schweinslap",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/schweinslap-1793631576.png",
-              "url": "https://ufl.virtualarena.app/users/Schweinslap"
+              "name": "elgucci_",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/elgucci-1787944405.png",
+              "url": "https://ufl.virtualarena.app/users/elgucci_"
+            },
+            "team": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+            },
+            "stat": "0",
+            "played": 9
+          },
+          {
+            "data": {
+              "name": "Sesmas",
+              "image": null,
+              "url": "https://ufl.virtualarena.app/users/Sesmas"
+            },
+            "team": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+            },
+            "stat": "0",
+            "played": 9
+          },
+          {
+            "data": {
+              "name": "Luuuiiisss7",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/luuuiiisss7-1784507908.png",
+              "url": "https://ufl.virtualarena.app/users/Luuuiiisss7"
             },
             "team": {
               "name": "UFL Druzhba",
@@ -1853,6 +1853,19 @@
           },
           {
             "data": {
+              "name": "BIGHIMUP",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bighimup-1790618012.png",
+              "url": "https://ufl.virtualarena.app/users/BIGHIMUP"
+            },
+            "team": {
+              "name": "UFL Toluca",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
+            },
+            "stat": "2",
+            "played": 7
+          },
+          {
+            "data": {
               "name": "mystahdeek",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/mystahdeek-1784522832.png",
               "url": "https://ufl.virtualarena.app/users/mystahdeek"
@@ -1863,19 +1876,6 @@
             },
             "stat": "2",
             "played": 7
-          },
-          {
-            "data": {
-              "name": "BIGHIMUP",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/users/avatars/bighimup-1790618012.png",
-              "url": "https://ufl.virtualarena.app/users/BIGHIMUP"
-            },
-            "team": {
-              "name": "UFL Toluca",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
-            },
-            "stat": "2",
-            "played": 6
           },
           {
             "data": {
@@ -1933,8 +1933,8 @@
               "name": "UFL Toluca",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
-            "stat": "8.8",
-            "played": 8
+            "stat": "8.6",
+            "played": 9
           },
           {
             "data": {
@@ -1946,8 +1946,8 @@
               "name": "UFL Toluca",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
-            "stat": "8.7",
-            "played": 8
+            "stat": "8.4",
+            "played": 9
           },
           {
             "data": {
@@ -1972,8 +1972,8 @@
               "name": "UFL Toluca",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-toluca-1790618117.png"
             },
-            "stat": "8.1",
-            "played": 8
+            "stat": "8",
+            "played": 9
           }
         ]
       }
@@ -1995,18 +1995,18 @@
           },
           {
             "data": {
-              "name": "UFL Roma",
-              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
-              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
-            },
-            "team": null,
-            "stat": 5
-          },
-          {
-            "data": {
               "name": "UFL Rippettes",
               "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-rippettes-1791852327.png",
               "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes"
+            },
+            "team": null,
+            "stat": 6
+          },
+          {
+            "data": {
+              "name": "UFL Roma",
+              "image": "https://ufl.virtualarena.app/tenancy/assets/images/teams/logos/small/ufl-roma-1790684832.png",
+              "url": "https://ufl.virtualarena.app/teams/UFL%20Roma"
             },
             "team": null,
             "stat": 5
@@ -2251,7 +2251,7 @@
               "url": "https://ufl.virtualarena.app/teams/UFL%20Toluca"
             },
             "team": null,
-            "stat": 32
+            "stat": 31
           },
           {
             "data": {
@@ -2287,7 +2287,7 @@
               "url": "https://ufl.virtualarena.app/teams/UFL%20Rippettes"
             },
             "team": null,
-            "stat": 1
+            "stat": 2
           }
         ]
       }
