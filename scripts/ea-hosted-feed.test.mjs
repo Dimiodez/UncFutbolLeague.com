@@ -39,9 +39,9 @@ for(const settings of [eaTrialSettings,eaTenTrialSettings])test(`${settings().fo
 });
 
 test('hosted runner submits only successful EA-direct friendly responses and reports failures',async()=>{
- const key='b'.repeat(64),requests=[],fetcher=async(url,opts)=>{requests.push({url,opts});return Response.json(url.endsWith('/ea-fetch-plan')?{clubs:['123']}:{});};
+ const key='b'.repeat(64),requests=[],fetcher=async(url,opts)=>{requests.push({url,opts});return Response.json(url.endsWith('/ea-fetch-plan')?{clubs:['123']}:{stored:true,clubId:'123',matches:0});};
  const result=await collectHosted({key,fetcher,readFeed:async()=>({available:true,source:'EA direct',matches:[]})});assert.equal(result.stored,1);assert.equal(requests.length,2);assert.equal(JSON.parse(requests[1].opts.body).type,'friendly');requests.length=0;
- await assert.rejects(()=>collectHosted({key,fetcher,readFeed:async()=>failed('friendly')}),/failed/);assert.equal(requests.length,1);await assert.rejects(()=>collectHosted({key:'',fetcher}),/credential/);
+ await assert.rejects(()=>collectHosted({key,fetcher,sleep:async()=>{},readFeed:async()=>failed('friendly')}),/failed/);assert.equal(requests.length,1);await assert.rejects(()=>collectHosted({key:'',fetcher}),/credential/);
 });
 
 test('one hosted runner keeps polling after a transient failure without waiting for another scheduled job',async()=>{

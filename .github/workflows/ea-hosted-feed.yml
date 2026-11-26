@@ -16,7 +16,7 @@ on:
         default: true
   push:
     branches: [master]
-    paths: ['.github/workflows/ea-hosted-feed.yml']
+    paths: ['.github/workflows/ea-hosted-feed.yml', 'scripts/collect-ea-hosted.mjs']
   workflow_run:
     workflows: ['Sync UNC Futbol League data']
     types: [completed]
